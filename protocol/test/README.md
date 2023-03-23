@@ -2,13 +2,9 @@
 
 ## Overview
 
-Recommand cApp protocol. It is a JSON based protocol.
+Recommand cApp protocol.
 
 ## Details
-
-### Protocol Check
-
-The reversed keyword `type` is treated as the start of `Easy Protocol`, when the `protocol` data is a JSON string and the keyword is one of the JSON key. Then it is a `Easy Protocol` anchor.
 
 ### Anchor link
 

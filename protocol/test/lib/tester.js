@@ -1,6 +1,6 @@
 const { ApiPromise, WsProvider } =require('@polkadot/api');
 const { Keyring } =require('@polkadot/api');
-const {anchorJS} = require('../publish/anchor.js');
+const {anchorJS} = require('./anchor.js');
 
 const config={
     color:'\x1b[36m%s\x1b[0m',
@@ -17,6 +17,10 @@ let test_end=0;
 const funs={};
 
 const self={
+    //auto run entry
+    auto:(list,preWorks)=>{
+        self.run(list,list.length);
+    },
     run:(list,count)=>{
         if(list.length===0){
             test_end=self.stamp();
@@ -33,6 +37,8 @@ const self={
             },1500);
         });
     },
+
+    //report part
     report:()=>{
         console.log(`\nTested Function Overview.`);
         for(let fun in funs){
@@ -44,23 +50,14 @@ const self={
             }
         }
     },
-    prework:(ck)=>{
+    prework:(list,ck)=>{
         console.log('Ready to prepare the env for testing ...');
         self.initAccounts(accounts,()=>{
             console.log('Accounts ready.');
             return ck && ck();
         });
     },
-    initAccounts:(accs,ck)=>{
-        if(accs.length===0) return ck && ck();
-        const account=accs.shift();
-        anchorJS.load(account.encry,account.password,(res)=>{
-            console.log(`Get pair from JSON encry account data. Account : ${account.encry.address}`);
-            pairs.push(res);
-            return self.initAccounts(accs,ck);
-        });
-    },
-    pushFun:(name,test,intro)=>{
+    setSummary:(name,test,intro)=>{
         if(!funs[name]) funs[name]=[];
         funs[name].push([test,intro===undefined?'':intro]);
     },
@@ -70,35 +67,21 @@ const self={
     getKV:(k)=>{
         return cache[k]===undefined?null:cache[k];
     },
+    
+    
+
+
     stamp:()=>{
         return new Date().getTime();
     },
-    getPair:(id)=>{
-        if(!pairs[id]) return false;
-        return pairs[id];
-    },
     random:function(min, max){
         return Math.round(Math.random() * (max - min)) + min;
-      },
+    },
     randomData:(len)=>{
         let str='';
         for(let i=0;i<len;i++){
             str+=Math.ceil(Math.random() * 10)-1;
         }
         return str;
-    },
-    auto:(list)=>{
-        ApiPromise.create({ provider: new WsProvider(config.endpoint) }).then((api) => {
-            console.log('Linker to substrate node created...');
-            websocket=api;
-
-            anchorJS.set(api);
-            anchorJS.setKeyring(Keyring);
-            self.prework(()=>{
-                test_start=self.stamp();
-                console.log(`\n********************Start of test********************\n`);
-                self.run(list,list.length);
-            });
-        });
     },
 };
