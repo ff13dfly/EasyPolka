@@ -10,11 +10,13 @@ Recommand cApp protocol. It is a JSON based protocol.
 
 The reversed keyword `type` is treated as the start of `Easy Protocol`, when the `protocol` data is a JSON string and the keyword is one of the JSON key. Then it is a `Easy Protocol` anchor.
 
+![Easy Protocol Decode Map](../images/on_chain_linked_list.png)
+
 ### Anchor link
 
 ### Reversed Keywords
 
-### cApp Lanch
+### cApp Lancher
 
 ## Test
 
@@ -33,4 +35,9 @@ The reversed keyword `type` is treated as the start of `Easy Protocol`, when the
 
 ### Anchor Link Decode
 
-### Chian Application Launch
+### Chain Application Launch
+
+```javascript
+    const cApp = new Function("agent", "con", "error", raw);
+    cApp(RPC, "container", code.failed ? code.failed : null);
+```

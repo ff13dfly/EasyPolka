@@ -1,9 +1,15 @@
-//!important This is the library for Esay Protocol
+//!important This is the implement of Esay Protocol
+
+// TS 学习资料
+// https://blog.csdn.net/jiang_ziY/article/details/124072737
+
+// complile TS to JS
+// npx tsc protocol.ts
 
 // import anchorJS, need to confirm and get libs
 import {anchorJS} from '../lib/anchor.js';
 
-// npx tsc protocol.ts
+
 const proto={
     "data":{
         "fmt":"string",
@@ -15,6 +21,8 @@ const proto={
         "ver":"version",
     }
 };
+
+enum easyType{APP='app', DATA='data'};
 
 const check={
     auto:(proto:object)=>{
@@ -32,7 +40,7 @@ type cAppObject={
 
 }
 type dataObject={
-    
+
 }
 
 type anchorObject={
@@ -51,7 +59,6 @@ type anchorObject={
 };
 
 const funs={
-    //check
     init:(name:string,ck:any)=>{
         anchorJS.search(name,(data:anchorObject)=>{
             console.log(data);

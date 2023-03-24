@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "@polkadot/api": "^10.1.4"
   }
 }
