@@ -25,3 +25,14 @@ const obj={
 };
 
 self.check(123,obj);
+
+
+//format of return Array
+type testFun=(str:string) => string[];
+
+const aaa:testFun=(a:string)=>{
+    return [a,a,a];
+};
+
+const res=aaa("hello");
+console.log(res);
