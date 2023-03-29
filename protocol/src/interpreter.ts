@@ -3,17 +3,17 @@
 import { localtionObject,anchorObject,errorObject,APIObject,cAppResult } from "./protocol";
 
 
-let API:APIObject|null=null;
+let API:APIObject=null;
 
 const self={
-    run:(location:localtionObject|string,inputAPI:APIObject|null,ck?:any)=>{
+    run:(location:localtionObject,inputAPI:APIObject,ck:Function)=>{
         if(API===null && inputAPI!==null) API=inputAPI;
 
         self.check(location,(res:anchorObject|errorObject)=>{
-
+            return ck && ck(res);
         });
     },
-    check:(location:localtionObject|string,ck:(res: anchorObject | errorObject) => void)=>{
+    check:(location:localtionObject,ck:(res: anchorObject | errorObject) => void)=>{
         if(API===null) return ck && ck({error:"No API to get data."});
 
         console.log(`Checking : ${JSON.stringify(location)}`);

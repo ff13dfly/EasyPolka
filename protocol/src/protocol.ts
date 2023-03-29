@@ -7,7 +7,7 @@
 //anchor location object
 export type localtionObject=[
     name  : string,
-    block? : number,
+    block : number,
 ] | string;
 
 //anchor data object, input from anchor.js
@@ -29,15 +29,21 @@ export type anchorObject={
 //error Object
 export type errorObject={
     "error":string;
+    "level"?:errorLevel;
 }
 
 /********************************/
 /************cApp part***********/
 /********************************/
 
+enum anchorType{
+    DATA="data",
+    APP="app",
+}
+
 //data type object
 export type dataObject={
-    "type":string;              //enum, ["data","app"]
+    "type":anchorType;
     "fmt":string;
     "code":string;              //data code
     "call"?:anchorObject;       //call target anchor
@@ -46,7 +52,7 @@ export type dataObject={
 
 //cApp type object
 export type cAppObject={
-    "type":string;
+    "type":anchorType;
     "fmt":string;
     "lib"?:localtionObject[]|string[];
     "ver"?:string;
@@ -66,18 +72,23 @@ export type APIObject={
         "history"?:(anchor:string,ck:Function) => anchorObject[]|errorObject;
     };
     "auto"?:Function;       //Gateway auto access
-}
+}|null
 
 /********************************/
-/************ return ************/
+/************ result ************/
 /********************************/
+
+enum errorLevel{
+    ERROR="error",
+    WARN="warning",
+}
 
 // the decode result 
 export type cAppResult={
     API:APIObject;
-    error:errorObject[];
-    app:Function|null;
-    parameter:string[];
+    error:errorObject[];    //errors when loading cApp
+    app:Function|null;      //the app init from anchor raw data
+    parameter:string[];     //running parameters
     from?:anchorObject;     //if the cApp is called
     back?:string[];         //parameter when callback the from cApp
 }
