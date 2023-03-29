@@ -55,13 +55,23 @@ export enum formatType{
     JSON="json",
     NONE="",
 }
+
+export enum codeType{
+    ASCII="ascii",
+    UTF8="utf8",
+    HEX="hex",
+    NONE="",
+}
+
 //data type object
 export type dataProtocol={
     "type":anchorType.DATA;
     "fmt":formatType;
-    "code"?:string;             //data code
-    "call"?:localtionObject;       //call target anchor
-    "auth"?:localtionObject;       //anchor which the auth list storaged.
+    "code"?:codeType;             //data code
+    "call"?:localtionObject;    //call target anchor
+    "auth"?:localtionObject;    //anchor which the auth list storaged.
+    "push"?:string[];           //push to target cApp
+    "hide"?:localtionObject;    //anchor which storage the hide list defined by hideMap
 }
 
 //cApp type object
@@ -71,11 +81,16 @@ export type appProtocol={
     "ver":string;
     "lib"?:localtionObject[]|string[];
     "auth"?:localtionObject;
+    "hide"?:localtionObject;   //anchor which storage the hide list defined by hideMap
 }
 
 //auth anchor data format
 //Sample : {"5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg":32345}
 interface addressMap { [address: string]: number; }
+
+//hide map of target anchor
+//all can be 
+interface hideMap { [anchor: string]: number; }
 
 /********************************/
 /************cApp part***********/
@@ -89,26 +104,41 @@ export type APIObject={
         "history"?:(anchor:string,ck:Function) => anchorObject[]|errorObject;
     };
     "auto"?:Function;       //Gateway auto access
-}|null
+}|null;
 
 /********************************/
 /************ result ************/
 /********************************/
 
-// the decode result 
+// the decode result, easy protocol target
 export type cAppResult={
-    API:APIObject;
+    API:APIObject;          //APIs can be sent to cApp
     error:errorObject[];    //errors when loading cApp
     app:Function|null;      //the app init from anchor raw data
-    parameter:string[];     //running parameters
-    from?:anchorObject;     //if the cApp is called
+    parameter:string[];     //running parameters, from anchor link parameter
+    nodeJS:boolean;         //wether the nodeJS
+    from?:anchorObject;     //if the cApp is called from a data anchor
     back?:string[];         //parameter when callback
 }
 
+
+/********************************/
+/******** default value *********/
+/********************************/
+
 //default value object
 const defaultValue ={
-    dataObject:{},
-    cAppObject:{},
+
+    //cApp resutl object, if the anchor is empty
+    cAppResult:{
+        API:null,
+        error:[],
+        app:null,
+        parameter:[],
+        nodeJS:false,
+        from:"",
+        back:[],
+    },
 }
 
 export {defaultValue};

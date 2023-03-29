@@ -19,6 +19,11 @@ const self={
             });
         }
     },
+
+    // check running enviment (window or node.js)
+    env:()=>{
+
+    },
 }
 
 const run=(location:localtionObject,inputAPI:APIObject,ck:Function)=>{

@@ -20,6 +20,9 @@ var self = {
             });
         }
     },
+    // check running enviment (window or node.js)
+    env: function () {
+    },
 };
 var run = function (location, inputAPI, ck) {
     if (API === null && inputAPI !== null)

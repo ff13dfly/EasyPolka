@@ -23,3 +23,9 @@ var anchor_a = "";
 (0, decoder_1.linkDecoder)(anchor_a, function (res) {
     console.log(res);
 });
+if (window !== undefined) {
+    console.log("Browser");
+}
+else {
+    console.log("NodeJS");
+}
