@@ -13,11 +13,21 @@ const API={
         "latest":anchorJS.latest,
         "target":anchorJS.target,
         "history":anchorJS.history,
+        "lib":(list,ck)=>{
+            console.log(list);
+            return ck && ck();
+        },
+        "owner":anchorJS.owner,
+        "subcribe":anchorJS.subcribe,
     },
+    //"polka":{},
+    //"gateway":{}
 }
 
-easyRun(["hello",223],API,()=>{});
-easyRun(["你好",1234],API,()=>{});
+const address="5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg";
+
+easyRun(["hello",223],address,API,()=>{});
+easyRun(["你好",1234],address,API,()=>{});
 
 const data=easyProtocol(anchorType.APP);
 console.log(data);
@@ -27,8 +37,8 @@ linkDecoder(anchor_a,(res)=>{
     console.log(res);
 });
 
-if(window!==undefined){
-    console.log("Browser");
-}else{
-    console.log("NodeJS");
-}
+// if(window!==undefined){
+//     console.log("Browser");
+// }else{
+//     console.log("NodeJS");
+// }

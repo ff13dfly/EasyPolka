@@ -2,7 +2,7 @@
 
 ## Overview
 
-Recommand cApp protocol. It is a JSON based protocol.
+Recommand cApp protocol. It is a JSON based protocol, now `version 1.0`.
 
 ## Details
 

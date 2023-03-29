@@ -20,11 +20,14 @@ var self = {
             });
         }
     },
+    // check the authority of anchor if launch from data
+    authorize: function () {
+    },
     // check running enviment (window or node.js)
     env: function () {
     },
 };
-var run = function (location, inputAPI, ck) {
+var run = function (location, address, inputAPI, ck) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
     self.check(location, function (res) {

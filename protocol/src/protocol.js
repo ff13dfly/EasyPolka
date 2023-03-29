@@ -8,6 +8,7 @@ var errorLevel;
 (function (errorLevel) {
     errorLevel["ERROR"] = "error";
     errorLevel["WARN"] = "warning";
+    errorLevel["UNEXCEPT"] = "unexcept";
 })(errorLevel || (errorLevel = {}));
 /********************************/
 /***********format part**********/
@@ -37,7 +38,16 @@ var codeType;
 /********************************/
 //default value object
 var defaultValue = {
-    dataObject: {},
-    cAppObject: {},
+    //cApp resutl object, if the anchor is empty
+    cAppResult: {
+        API: null,
+        error: [],
+        app: null,
+        raw: null,
+        parameter: [],
+        nodeJS: false,
+        from: "",
+        back: [],
+    },
 };
 exports.defaultValue = defaultValue;

@@ -7,12 +7,14 @@
 /********************************/
 
 //anchor location object
+//1. anchor_name
+//2. [anchor_name,block_number]
 export type localtionObject=[
     name  : string,
     block : number,
 ] | string;
 
-//anchor data object, input from anchor.js
+//anchor data object, input from anchorJS
 export type anchorObject={
     "name":string;
 	"protocol":string|null|object;
@@ -35,8 +37,9 @@ export type errorObject={
 }
 
 enum errorLevel{
-    ERROR = "error",
-    WARN = "warning",
+    ERROR       = "error",
+    WARN        = "warning",
+    UNEXCEPT    = "unexcept",
 }
 
 /********************************/
@@ -44,30 +47,30 @@ enum errorLevel{
 /********************************/
 
 export enum anchorType{
-    DATA="data",
-    APP ="app",
+    DATA    = "data",
+    APP     = "app",
 }
 
 export enum formatType{
-    JAVASCRIPT="js",
-    CSS="css",
-    MARKDOWN="md",
-    JSON="json",
-    NONE="",
+    JAVASCRIPT  = "js",
+    CSS         = "css",
+    MARKDOWN    = "md",
+    JSON        = "json",
+    NONE        = "",
 }
 
 export enum codeType{
-    ASCII="ascii",
-    UTF8="utf8",
-    HEX="hex",
-    NONE="",
+    ASCII   = "ascii",
+    UTF8    = "utf8",
+    HEX     = "hex",
+    NONE    = "",
 }
 
 //data type object
 export type dataProtocol={
-    "type":anchorType.DATA;
-    "fmt":formatType;
-    "code"?:codeType;             //data code
+    "type":anchorType.DATA;     //`data` type
+    "fmt":formatType;           //raw data format
+    "code"?:codeType;           //data code
     "call"?:localtionObject;    //call target anchor
     "auth"?:localtionObject;    //anchor which the auth list storaged.
     "push"?:string[];           //push to target cApp
@@ -76,8 +79,8 @@ export type dataProtocol={
 
 //cApp type object
 export type appProtocol={
-    "type":anchorType.APP;
-    "fmt":formatType;
+    "type":anchorType.APP;              //`app` type
+    "fmt":formatType;                   //app format, JS only now
     "ver":string;
     "lib"?:localtionObject[]|string[];
     "auth"?:localtionObject;
@@ -89,21 +92,34 @@ export type appProtocol={
 interface addressMap { [address: string]: number; }
 
 //hide map of target anchor
-//all can be 
+//the history of the hide anchor is meanful.
 interface hideMap { [anchor: string]: number; }
 
 /********************************/
-/************cApp part***********/
+/************API part************/
 /********************************/
 
-//input API object type, define the 
+//!important this is not part of easy protocol, develop can limit the function freely
+//input API object type, define the basic functions
 export type APIObject={
-    "common":{              //normal anchor function
+    //normal anchor function
+    "common":{              
         "target":(anchor:string,block:number,ck:Function) => anchorObject|errorObject;
         "latest":(anchor:string,ck:Function) => anchorObject|errorObject;
-        "history"?:(anchor:string,ck:Function) => anchorObject[]|errorObject;
+        "history":(anchor:string,ck:Function) => anchorObject[]|errorObject;
+        "owner":(anchor:string,ck:Function) => any;
+        "lib":(list:anchorObject[],ck:Function) => any|errorObject;
+        "subcribe":(ck:Function,cfg:any) => anchorObject[];
     };
-    "auto"?:Function;       //Gateway auto access
+    //polkadot functions needed
+    "polka"?:{
+        "balance":(address:string,ck:Function) => any|errorObject;
+    },
+    //if gateway support, add here.
+    "gateway"?:{  
+        "auto":(svc:string,fun:string,param:object,ck:Function) => any|errorObject;
+        "health":(ck:Function)=>any|errorObject;
+    }
 }|null;
 
 /********************************/
@@ -112,12 +128,15 @@ export type APIObject={
 
 // the decode result, easy protocol target
 export type cAppResult={
-    API:APIObject;          //APIs can be sent to cApp
-    error:errorObject[];    //errors when loading cApp
-    app:Function|null;      //the app init from anchor raw data
+    app:Function|null;      //cApp function, if from the data type anchor, will load target cApp
+    raw:String|null;        //if cApp is not JS, leave the raw data here.
     parameter:string[];     //running parameters, from anchor link parameter
-    nodeJS:boolean;         //wether the nodeJS
+    error:errorObject[];    //errors when loading cApp
     from?:anchorObject;     //if the cApp is called from a data anchor
+
+    //parameters from launcher
+    API:APIObject;          //APIs can be sent to cApp
+    nodeJS:boolean;         //wether the nodeJS
     back?:string[];         //parameter when callback
 }
 
@@ -134,6 +153,7 @@ const defaultValue ={
         API:null,
         error:[],
         app:null,
+        raw:null,
         parameter:[],
         nodeJS:false,
         from:"",

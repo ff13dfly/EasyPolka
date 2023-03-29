@@ -20,13 +20,18 @@ const self={
         }
     },
 
+    // check the authority of anchor if launch from data
+    authorize:()=>{
+
+    },
+
     // check running enviment (window or node.js)
     env:()=>{
 
     },
 }
 
-const run=(location:localtionObject,inputAPI:APIObject,ck:Function)=>{
+const run=(location:localtionObject,address:string,inputAPI:APIObject,ck:Function)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
 
     self.check(location,(res:anchorObject|errorObject)=>{
