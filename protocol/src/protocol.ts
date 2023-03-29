@@ -1,4 +1,6 @@
-
+//!important This is the definition of Esay Protocol.
+//!important Easy Protocol is a simple protocol to launch cApp via Anchor network.
+//!important Easy Protocol version 1.0 supported.
 
 /********************************/
 /***********Anchor part**********/
@@ -32,13 +34,18 @@ export type errorObject={
     "level"?:errorLevel;
 }
 
+enum errorLevel{
+    ERROR = "error",
+    WARN = "warning",
+}
+
 /********************************/
-/************cApp part***********/
+/***********format part**********/
 /********************************/
 
 export enum anchorType{
     DATA="data",
-    APP="app",
+    APP ="app",
 }
 
 export enum formatType{
@@ -66,10 +73,13 @@ export type appProtocol={
     "auth"?:localtionObject;
 }
 
-//auth format
-// {
-//     "SS58 address":"{expired_block_number}"   //start_block is the storage one.
-// }
+//auth anchor data format
+//Sample : {"5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg":32345}
+interface addressMap { [address: string]: number; }
+
+/********************************/
+/************cApp part***********/
+/********************************/
 
 //input API object type, define the 
 export type APIObject={
@@ -85,11 +95,6 @@ export type APIObject={
 /************ result ************/
 /********************************/
 
-enum errorLevel{
-    ERROR="error",
-    WARN="warning",
-}
-
 // the decode result 
 export type cAppResult={
     API:APIObject;
@@ -97,7 +102,7 @@ export type cAppResult={
     app:Function|null;      //the app init from anchor raw data
     parameter:string[];     //running parameters
     from?:anchorObject;     //if the cApp is called
-    back?:string[];         //parameter when callback the from cApp
+    back?:string[];         //parameter when callback
 }
 
 //default value object

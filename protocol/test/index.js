@@ -7,6 +7,7 @@ var anchor_1 = require("../lib/anchor");
 var format_1 = require("../src/format");
 var interpreter_1 = require("../src/interpreter");
 var protocol_1 = require("../src/protocol");
+var decoder_1 = require("../src/decoder");
 var API = {
     "common": {
         "latest": anchor_1.anchorJS.latest,
@@ -18,3 +19,7 @@ var API = {
 (0, interpreter_1.easyRun)(["你好", 1234], API, function () { });
 var data = (0, format_1.easyProtocol)(protocol_1.anchorType.APP);
 console.log(data);
+var anchor_a = "";
+(0, decoder_1.linkDecoder)(anchor_a, function (res) {
+    console.log(res);
+});

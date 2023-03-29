@@ -5,7 +5,8 @@
 - An easy way to develop blockchain , base on Polkadot/Substrate. Totally on chain application solution.
 
 Structure of EasyPolka is here.
-![EasyPolka Structure](https://github.com/ff13dfly/EasyPolka/blob/main/images/structure.png?raw=true)
+
+![EasyPolka Structure](./images/structure.png)
 
 ## Components
 

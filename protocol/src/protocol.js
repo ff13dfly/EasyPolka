@@ -1,11 +1,16 @@
 "use strict";
-/********************************/
-/***********Anchor part**********/
-/********************************/
+//!important This is the definition of Esay Protocol.
+//!important Easy Protocol is a simple protocol to launch cApp via Anchor network.
+//!important Easy Protocol version 1.0 supported.
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultValue = exports.formatType = exports.anchorType = void 0;
+var errorLevel;
+(function (errorLevel) {
+    errorLevel["ERROR"] = "error";
+    errorLevel["WARN"] = "warning";
+})(errorLevel || (errorLevel = {}));
 /********************************/
-/************cApp part***********/
+/***********format part**********/
 /********************************/
 var anchorType;
 (function (anchorType) {
@@ -20,14 +25,6 @@ var formatType;
     formatType["JSON"] = "json";
     formatType["NONE"] = "";
 })(formatType = exports.formatType || (exports.formatType = {}));
-/********************************/
-/************ result ************/
-/********************************/
-var errorLevel;
-(function (errorLevel) {
-    errorLevel["ERROR"] = "error";
-    errorLevel["WARN"] = "warning";
-})(errorLevel || (errorLevel = {}));
 //default value object
 var defaultValue = {
     dataObject: {},
