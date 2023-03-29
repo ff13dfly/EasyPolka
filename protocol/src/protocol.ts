@@ -36,27 +36,34 @@ export type errorObject={
 /************cApp part***********/
 /********************************/
 
-enum anchorType{
+export enum anchorType{
     DATA="data",
     APP="app",
 }
 
+export enum formatType{
+    JAVASCRIPT="js",
+    CSS="css",
+    MARKDOWN="md",
+    JSON="json",
+    NONE="",
+}
 //data type object
-export type dataObject={
-    "type":anchorType;
-    "fmt":string;
-    "code":string;              //data code
-    "call"?:anchorObject;       //call target anchor
-    "auth"?:anchorObject;       //anchor which the auth list storaged.
+export type dataProtocol={
+    "type":anchorType.DATA;
+    "fmt":formatType;
+    "code"?:string;             //data code
+    "call"?:localtionObject;       //call target anchor
+    "auth"?:localtionObject;       //anchor which the auth list storaged.
 }
 
 //cApp type object
-export type cAppObject={
-    "type":anchorType;
-    "fmt":string;
+export type appProtocol={
+    "type":anchorType.APP;
+    "fmt":formatType;
+    "ver":string;
     "lib"?:localtionObject[]|string[];
-    "ver"?:string;
-    "auth"?:anchorObject;
+    "auth"?:localtionObject;
 }
 
 //auth format

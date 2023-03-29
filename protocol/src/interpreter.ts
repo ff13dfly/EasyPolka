@@ -1,23 +1,13 @@
 //!important This is the library for Esay Protocol
 
-import { localtionObject,anchorObject,errorObject,APIObject,cAppResult } from "./protocol";
-
+import { localtionObject,anchorObject,errorObject,APIObject} from "./protocol";
 
 let API:APIObject=null;
 
 const self={
-    run:(location:localtionObject,inputAPI:APIObject,ck:Function)=>{
-        if(API===null && inputAPI!==null) API=inputAPI;
-
-        self.check(location,(res:anchorObject|errorObject)=>{
-            return ck && ck(res);
-        });
-    },
     check:(location:localtionObject,ck:(res: anchorObject | errorObject) => void)=>{
         if(API===null) return ck && ck({error:"No API to get data."});
-
         console.log(`Checking : ${JSON.stringify(location)}`);
-
         if(Array.isArray(location)){
             const [anchor,block]=location;
             API.common.target(anchor,block,(data:anchorObject|errorObject)=>{
@@ -31,6 +21,11 @@ const self={
     },
 }
 
-const run=self.run;
+const run=(location:localtionObject,inputAPI:APIObject,ck:Function)=>{
+    if(API===null && inputAPI!==null) API=inputAPI;
 
-export {run as easyProtocol};
+    self.check(location,(res:anchorObject|errorObject)=>{
+        return ck && ck(res);
+    });
+};
+export {run as easyRun};

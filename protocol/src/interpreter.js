@@ -1,15 +1,9 @@
 "use strict";
 //!important This is the library for Esay Protocol
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.easyProtocol = void 0;
+exports.easyRun = void 0;
 var API = null;
 var self = {
-    run: function (location, inputAPI, ck) {
-        if (API === null && inputAPI !== null)
-            API = inputAPI;
-        self.check(location, function (res) {
-        });
-    },
     check: function (location, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data." });
@@ -27,5 +21,11 @@ var self = {
         }
     },
 };
-var run = self.run;
-exports.easyProtocol = run;
+var run = function (location, inputAPI, ck) {
+    if (API === null && inputAPI !== null)
+        API = inputAPI;
+    self.check(location, function (res) {
+        return ck && ck(res);
+    });
+};
+exports.easyRun = run;
