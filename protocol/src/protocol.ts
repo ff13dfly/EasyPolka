@@ -67,29 +67,35 @@ export enum codeType{
 }
 
 //data type object
+//TODO: auth is not fully logical now. Need to confirm the calling address
+//TODO: there are two ways.
+//1. auth between anchors, that can be checked.
+//2. auth between address and anchor, it is hard to check. people can mock the auth address
 export type dataProtocol={
-    "type":rawType.DATA;     //`data` type
-    "fmt":formatType;           //raw data format
-    "code"?:codeType;           //data code
-    "call"?:anchorLocation;    //call target anchor
-    "auth"?:anchorLocation;    //anchor which the auth list storaged.
-    "push"?:string[];           //push to target cApp
-    "hide"?:anchorLocation;    //anchor which storage the hide list defined by hideMap
+    "type":rawType.DATA;                // `data` type
+    "fmt":formatType;                   // raw data format
+    "code"?:codeType;                   // data code
+    "call"?:anchorLocation;             // call target anchor
+    "push"?:string[];                   // list of push to target cApp name
+    "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
+    "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
 }
 
 //cApp type object
 export type appProtocol={
-    "type":rawType.APP;              //`app` type
-    "fmt":formatType;                   //app format, JS only now
-    "ver":string;
-    "lib"?:anchorLocation[]|string[];
-    "auth"?:anchorLocation;
-    "hide"?:anchorLocation;   //anchor which storage the hide list defined by hideMap
+    "type":rawType.APP;                 // `app` type
+    "fmt":formatType;                   // app format, JS only now
+    "ver":string;                       // the cApp version, need incremnet when update
+    "lib"?:anchorLocation[];            // the list of required anchor list
+    "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
+    "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
 }
 
 //auth anchor data format
-//Sample : {"5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg":32345}
-interface addressMap { [address: string]: number; }
+//only the auth between anchors.
+//Sample:{"hello":32345} 
+// the number is expired block number of the auth, if 0, it is unlimited.
+interface authMap { [anchor: string]: number; }
 
 //hide map of target anchor
 //the history of the hide anchor is meanful.
