@@ -14,8 +14,9 @@ var API = {
         "target": anchor_1.anchorJS.target,
         "history": anchor_1.anchorJS.history,
         "lib": function (list, ck) {
+            var res = [];
             console.log(list);
-            return ck && ck();
+            return ck && ck(res);
         },
         "owner": anchor_1.anchorJS.owner,
         "subcribe": anchor_1.anchorJS.subcribe,
@@ -26,7 +27,7 @@ var API = {
 var address = "5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg";
 (0, interpreter_1.easyRun)(["hello", 223], address, API, function () { });
 (0, interpreter_1.easyRun)(["你好", 1234], address, API, function () { });
-var data = (0, format_1.easyProtocol)(protocol_1.anchorType.APP);
+var data = (0, format_1.easyProtocol)(protocol_1.rawType.APP);
 console.log(data);
 var anchor_a = "";
 (0, decoder_1.linkDecoder)(anchor_a, function (res) {

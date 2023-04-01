@@ -6,9 +6,9 @@ var protocol_1 = require("./protocol");
 var format = function (type, cfg) {
     var protocol;
     switch (type) {
-        case protocol_1.anchorType.APP:
+        case protocol_1.rawType.APP:
             protocol = {
-                "type": protocol_1.anchorType.APP,
+                "type": protocol_1.rawType.APP,
                 "fmt": protocol_1.formatType.JAVASCRIPT,
                 "ver": "1.0.0",
             };
@@ -17,9 +17,9 @@ var format = function (type, cfg) {
             if (cfg && cfg.lib)
                 protocol.lib = cfg.lib;
             break;
-        case protocol_1.anchorType.DATA:
+        case protocol_1.rawType.DATA:
             protocol = {
-                "type": protocol_1.anchorType.DATA,
+                "type": protocol_1.rawType.DATA,
                 "fmt": protocol_1.formatType.NONE,
             };
             if (cfg && cfg.fmt)
@@ -33,7 +33,7 @@ var format = function (type, cfg) {
             break;
         default:
             protocol = {
-                "type": protocol_1.anchorType.DATA,
+                "type": protocol_1.rawType.DATA,
                 "fmt": protocol_1.formatType.NONE,
             };
             break;

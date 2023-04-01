@@ -47,8 +47,9 @@ enum errorLevel{
 /********************************/
 
 export enum rawType{
-    DATA    = "data",
-    APP     = "app",
+    DATA = "data",      //data, can call cApp to run
+    APP  = "app",       //cApp code, can run directly
+    LIB  = "lib",       //code can not be run directly
 }
 
 export enum formatType{
@@ -60,10 +61,10 @@ export enum formatType{
 }
 
 export enum codeType{
-    ASCII   = "ascii",
-    UTF8    = "utf8",
-    HEX     = "hex",
-    NONE    = "",
+    ASCII = "ascii",
+    UTF8  = "utf8",
+    HEX   = "hex",
+    NONE  = "",
 }
 
 //data type object
@@ -84,12 +85,24 @@ export type dataProtocol={
 //cApp type object
 export type appProtocol={
     "type":rawType.APP;                 // `app` type
-    "fmt":formatType;                   // app format, JS only now
+    "fmt":formatType.JAVASCRIPT;        // app format, JS only now
     "ver":string;                       // the cApp version, need incremnet when update
     "lib"?:anchorLocation[];            // the list of required anchor list
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
     "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
 }
+
+//lib type object
+export type libProtocol={
+    "type":rawType.LIB;                 // `app` type
+    "fmt":formatType;                   // app format, JS only now
+    "ver":string;                       // the cApp version, need incremnet when update
+    "code"?:codeType;                   // library code type
+    "lib"?:anchorLocation[];            // the list of required anchor list
+    "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
+    "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+}
+
 
 //auth anchor data format
 //only the auth between anchors.
