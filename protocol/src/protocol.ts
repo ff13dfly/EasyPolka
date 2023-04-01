@@ -9,7 +9,7 @@
 //anchor location object
 //1. anchor_name
 //2. [anchor_name,block_number]
-export type localtionObject=[
+export type anchorLocation=[
     name  : string,
     block : number,
 ] | string;
@@ -46,7 +46,7 @@ enum errorLevel{
 /***********format part**********/
 /********************************/
 
-export enum anchorType{
+export enum rawType{
     DATA    = "data",
     APP     = "app",
 }
@@ -68,23 +68,23 @@ export enum codeType{
 
 //data type object
 export type dataProtocol={
-    "type":anchorType.DATA;     //`data` type
+    "type":rawType.DATA;     //`data` type
     "fmt":formatType;           //raw data format
     "code"?:codeType;           //data code
-    "call"?:localtionObject;    //call target anchor
-    "auth"?:localtionObject;    //anchor which the auth list storaged.
+    "call"?:anchorLocation;    //call target anchor
+    "auth"?:anchorLocation;    //anchor which the auth list storaged.
     "push"?:string[];           //push to target cApp
-    "hide"?:localtionObject;    //anchor which storage the hide list defined by hideMap
+    "hide"?:anchorLocation;    //anchor which storage the hide list defined by hideMap
 }
 
 //cApp type object
 export type appProtocol={
-    "type":anchorType.APP;              //`app` type
+    "type":rawType.APP;              //`app` type
     "fmt":formatType;                   //app format, JS only now
     "ver":string;
-    "lib"?:localtionObject[]|string[];
-    "auth"?:localtionObject;
-    "hide"?:localtionObject;   //anchor which storage the hide list defined by hideMap
+    "lib"?:anchorLocation[]|string[];
+    "auth"?:anchorLocation;
+    "hide"?:anchorLocation;   //anchor which storage the hide list defined by hideMap
 }
 
 //auth anchor data format
@@ -108,7 +108,7 @@ export type APIObject={
         "latest":(anchor:string,ck:Function) => anchorObject|errorObject;
         "history":(anchor:string,ck:Function) => anchorObject[]|errorObject;
         "owner":(anchor:string,ck:Function) => any;
-        "lib":(list:anchorObject[],ck:Function) => any|errorObject;
+        "lib":(list:anchorLocation[],ck:Function) => any|errorObject;
         "subcribe":(ck:Function,cfg:any) => anchorObject[];
     };
     //polkadot functions needed
