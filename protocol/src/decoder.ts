@@ -1,7 +1,15 @@
 //!important This is the library for decoding anchor link
 
-import { anchorLocation}from "./protocol";
+//!important 3 format of anchor linker. The "/" is optional.
+//!important `anchor://${anchor}/${block}[/]`;
+//!important `anchor://${anchor}[/]`;
+//!important `anchor://${anchor}/${block}[/]?${key_1}=${value_1}&${key_2}=${value_2}`;
 
+//follow the URL way to solve the sepecial characters.
+
+import { anchorLocation }from "./protocol";
+
+//linker decoder result
 type decoderResult={
     location:anchorLocation;
     param?:params;
@@ -17,13 +25,13 @@ const setting={
 };
 
 
-const decoder=(link:string,cfg?:any,ck?:Function)=>{
+const decoder=(link:string,cfg?:any)=>{
     let res:decoderResult={
         location:["hello",223],
-
+        param:{"from":"cApp"},
     };
 
-    return ck && ck(res);
+    return res;
 };
 
 export {decoder as linkDecoder};

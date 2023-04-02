@@ -16,6 +16,8 @@ var format = function (type, cfg) {
                 protocol.auth = cfg.auth;
             if (cfg && cfg.lib)
                 protocol.lib = cfg.lib;
+            if (cfg && cfg.ver)
+                protocol.ver = cfg.ver;
             break;
         case protocol_1.rawType.DATA:
             protocol = {
@@ -30,6 +32,13 @@ var format = function (type, cfg) {
                 protocol.auth = cfg.auth;
             if (cfg && cfg.call)
                 protocol.call = cfg.call;
+            break;
+        case protocol_1.rawType.LIB:
+            protocol = {
+                "type": protocol_1.rawType.LIB,
+                "fmt": protocol_1.formatType.NONE,
+                "ver": "1.0.0",
+            };
             break;
         default:
             protocol = {
