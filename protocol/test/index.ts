@@ -25,10 +25,10 @@ const API={
     //"gateway":{}
 }
 
-const address="5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg";
+//const address="5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg";
 
-easyRun(["hello",223],address,API,()=>{});
-easyRun(["你好",1234],address,API,()=>{});
+easyRun(["hello",223],API,()=>{});
+easyRun(["你好",1234],API,()=>{});
 
 const data=easyProtocol(rawType.APP);
 console.log(data);
