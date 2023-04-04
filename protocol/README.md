@@ -41,3 +41,15 @@ The reversed keyword `type` is treated as the start of `Easy Protocol`, when the
     const cApp = new Function("agent", "con", "error", raw);
     cApp(RPC, "container", code.failed ? code.failed : null);
 ```
+
+### Hide Target Anchor History
+
+- If there is `hide` keyword in protocol, will check the target anchor `hide`.
+- If theer is `salt` keyword in protocol, will check the target `md5( anchor + salt[1] )` to check hide block list.
+- No special setting, will check the default hide anchor `md5(anchor)`.
+
+### Authrity of Anchor
+
+- If there is `auth` keyword in protocol, will check the target anchor `auth`.
+- If theer is `salt` keyword in protocol, will check the target `md5( anchor + salt[0] )` to check authority list.
+- No special setting, will check the default authority anchor `md5(anchor)`.

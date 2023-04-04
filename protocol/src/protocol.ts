@@ -80,6 +80,7 @@ export type dataProtocol={
     "push"?:string[];                   // list of push to target cApp name
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
     "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "salt"?:string[];                   // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
 //cApp type object
@@ -90,6 +91,7 @@ export type appProtocol={
     "lib"?:anchorLocation[];            // the list of required anchor list
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
     "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "salt"?:string[];                   // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
 //lib type object
@@ -101,6 +103,7 @@ export type libProtocol={
     "lib"?:anchorLocation[];            // the list of required anchor list
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
     "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "salt"?:string[];                   // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
 
