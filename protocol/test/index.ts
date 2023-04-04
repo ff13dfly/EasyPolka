@@ -2,8 +2,11 @@
 // npx tsc index.ts
 // node index.js
 
-// import { ApiPromise, WsProvider } from '@polkadot/api';
-// import { Keyring } from '@polkadot/api';
+// declare var ApiPromise: any; 
+// declare var WsProvider: any;
+// declare var Keyring: any; 
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { Keyring } from '@polkadot/api';
 
 import { anchorJS } from "../lib/anchor";
 import { easyProtocol } from "../src/format";
@@ -28,25 +31,26 @@ const API={
     //"gateway":{}
 }
 
-// const self={
-//     prepare:(node:string,ck:Function)=>{
-//         try {
-//             const provider = new WsProvider(node);
-//             ApiPromise.create({ provider: provider }).then((api) => {
-//                 if(!anchorJS.set(api)){
-//                     console.log('Error anchor node.');
-//                 }
-//                 anchorJS.setKeyring(Keyring);
-//                 return ck && ck();
-//             });
-//           } catch (error) {
-//             return ck && ck(error);
-//           }
-//     },
-// }
+const self={
+    prepare:(node:string,ck:Function)=>{
+        try {
+            console.log({node});
+            const provider = new WsProvider(node);
+            ApiPromise.create({ provider: provider }).then((api) => {
+                if(!anchorJS.set(api)){
+                    console.log('Error anchor node.');
+                }
+                anchorJS.setKeyring(Keyring);
+                return ck && ck();
+            });
+          } catch (error) {
+            return ck && ck(error);
+          }
+    },
+}
 
-const server="ws://localhost:9944";
-//self.prepare(server,()=>{
+const server="ws://127.0.0.1:9944";
+self.prepare(server,()=>{
     easyRun(["hello",223],API,()=>{});
     easyRun(["你好",1234],API,()=>{});
     
@@ -57,4 +61,4 @@ const server="ws://localhost:9944";
     linkDecoder(anchor_a,(res)=>{
         console.log(res);
     });
-//});
+});
