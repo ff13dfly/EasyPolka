@@ -3,6 +3,8 @@
 // npx tsc index.ts
 // node index.js
 Object.defineProperty(exports, "__esModule", { value: true });
+// import { ApiPromise, WsProvider } from '@polkadot/api';
+// import { Keyring } from '@polkadot/api';
 var anchor_1 = require("../lib/anchor");
 var format_1 = require("../src/format");
 var interpreter_1 = require("../src/interpreter");
@@ -24,17 +26,30 @@ var API = {
     //"polka":{},
     //"gateway":{}
 };
-var address = "5CaYdQ6i2mWgHmBpQXgmVdPqvYxSwoLo4KFchFnpzn8Kbdtg";
-(0, interpreter_1.easyRun)(["hello", 223], address, API, function () { });
-(0, interpreter_1.easyRun)(["你好", 1234], address, API, function () { });
+// const self={
+//     prepare:(node:string,ck:Function)=>{
+//         try {
+//             const provider = new WsProvider(node);
+//             ApiPromise.create({ provider: provider }).then((api) => {
+//                 if(!anchorJS.set(api)){
+//                     console.log('Error anchor node.');
+//                 }
+//                 anchorJS.setKeyring(Keyring);
+//                 return ck && ck();
+//             });
+//           } catch (error) {
+//             return ck && ck(error);
+//           }
+//     },
+// }
+var server = "ws://localhost:9944";
+//self.prepare(server,()=>{
+(0, interpreter_1.easyRun)(["hello", 223], API, function () { });
+(0, interpreter_1.easyRun)(["你好", 1234], API, function () { });
 var data = (0, format_1.easyProtocol)(protocol_1.rawType.APP);
 console.log(data);
 var anchor_a = "";
 (0, decoder_1.linkDecoder)(anchor_a, function (res) {
     console.log(res);
 });
-// if(window!==undefined){
-//     console.log("Browser");
-// }else{
-//     console.log("NodeJS");
-// }
+//});
