@@ -78,6 +78,7 @@ export type dataProtocol={
     "code"?:codeType;                   // data code
     "call"?:anchorLocation;             // call target anchor
     "push"?:string[];                   // list of push to target cApp name. This name is not anchor name
+    "args"?:argumentMap;                // arguments will sent to calling cApp
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
     "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
@@ -116,6 +117,8 @@ interface authMap { [anchor: string]: number; }
 //hide map of target anchor
 //the history of the hide anchor is meanful.
 interface hideMap { [anchor: string]: number; }
+
+interface argumentMap {[key:string]:string;}
 
 /********************************/
 /************API part************/
