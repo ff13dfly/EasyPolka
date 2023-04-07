@@ -24,6 +24,7 @@ Recommand cApp protocol.
         npx tsc ${sample}.ts
 
         # ignore the lib check, or you will get a lot of message
+        # npx tsc index.ts --skipLibCheck
         npx tsc ${sample}.ts --skipLibCheck
 
         # run the compiled file

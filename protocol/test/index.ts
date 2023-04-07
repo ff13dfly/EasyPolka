@@ -51,14 +51,25 @@ const self={
 
 const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
-    easyRun(["hello",223],API,()=>{});
-    easyRun(["你好",1234],API,()=>{});
+    //easyRun(["hello",223],API,()=>{});
+    //easyRun(["你好",1234],API,()=>{});
     
-    const data=easyProtocol(rawType.APP);
-    console.log(data);
+    //const data=easyProtocol(rawType.APP);
     
-    const anchor_a="";
-    linkDecoder(anchor_a,(res)=>{
+    const anchor_location=[
+        "anchor://hello",
+        "anchor://hello/",
+        "anchor://hello/128",
+        "anchor://hello/128/",
+        "anchor://hello?ka=333&kb=string",
+        "anchor://hello/?ka=333&kb=string",
+        "anchor://hello/3323?ka=333&kb=data",
+        "anchor://hello/3323/?ka=333&kb=data",
+        "anchor://heLLo/3323/?pa=333&pb=data",
+    ]
+    for(let i=0;i<anchor_location.length;i++){
+        const row=anchor_location[i];
+        const res=linkDecoder(row);
         console.log(res);
-    });
+    }
 });

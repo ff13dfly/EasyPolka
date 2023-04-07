@@ -9,9 +9,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var api_1 = require("@polkadot/api");
 var api_2 = require("@polkadot/api");
 var anchor_1 = require("../lib/anchor");
-var format_1 = require("../src/format");
-var interpreter_1 = require("../src/interpreter");
-var protocol_1 = require("../src/protocol");
 var decoder_1 = require("../src/decoder");
 var API = {
     "common": {
@@ -49,12 +46,23 @@ var self = {
 };
 var server = "ws://127.0.0.1:9944";
 self.prepare(server, function () {
-    (0, interpreter_1.easyRun)(["hello", 223], API, function () { });
-    (0, interpreter_1.easyRun)(["你好", 1234], API, function () { });
-    var data = (0, format_1.easyProtocol)(protocol_1.rawType.APP);
-    console.log(data);
-    var anchor_a = "";
-    (0, decoder_1.linkDecoder)(anchor_a, function (res) {
+    //easyRun(["hello",223],API,()=>{});
+    //easyRun(["你好",1234],API,()=>{});
+    //const data=easyProtocol(rawType.APP);
+    var anchor_location = [
+        "anchor://hello",
+        "anchor://hello/",
+        "anchor://hello/128",
+        "anchor://hello/128/",
+        "anchor://hello?ka=333&kb=string",
+        "anchor://hello/?ka=333&kb=string",
+        "anchor://hello/3323?ka=333&kb=data",
+        "anchor://hello/3323/?ka=333&kb=data",
+        "anchor://heLLo/3323/?pa=333&pb=data",
+    ];
+    for (var i = 0; i < anchor_location.length; i++) {
+        var row = anchor_location[i];
+        var res = (0, decoder_1.linkDecoder)(row);
         console.log(res);
-    });
+    }
 });

@@ -22,14 +22,47 @@ interface params {
 const setting={
     "check":false,      //auto check the anchor exsist
     "utf8":true,        //auto decode parameter to UTF8
+    "pre":"anchor://",  //protocol prefix
 };
 
+const self={
+    getParams:(str:string)=>{
+        let map:any={};
+        const arr=str.split("&");
+        for(let i=0;i<arr.length;i++){
+            const row=arr[i];
+            const kv=row.split("=");
+            if(kv.length!==2) return {error:"error parameter"}
+            map[kv[0]]=kv[1];
+        }
+        return map;
+    },
+}
 
 const decoder=(link:string,cfg?:any)=>{
     let res:decoderResult={
-        location:["hello",223],
-        param:{"from":"cApp"},
+        location:["",0],
     };
+
+    //1. remove prefix `anchor://`
+    const str=link.toLocaleLowerCase();
+    const body=str.substring(setting.pre.length,str.length);
+    console.log(`Need decode link:${str},body:${body}`);
+
+    //2. check parameter
+    const arr=body.split("?");
+    const isParam=arr.length===1?false:true;
+    if(isParam){
+        const ps=self.getParams(arr[1]);
+        if(ps.error){
+            return ps;
+        }
+        res.param=self.getParams(arr[1]);
+    }
+
+    //3. decode anchor location
+    
+    
 
     return res;
 };
