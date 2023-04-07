@@ -35,10 +35,29 @@ var decoder = function (link, cfg) {
     if (isParam) {
         var ps = self.getParams(arr[1]);
         if (ps.error) {
+            return ps;
         }
         res.param = self.getParams(arr[1]);
     }
+    body = arr[0];
     //3. decode anchor location
+    var ls = body.split("/");
+    var last = [];
+    for (var i = 0; i < ls.length; i++) {
+        if (ls[i] !== '')
+            last.push(ls[i]);
+    }
+    console.log(last);
+    //4. export result
+    if (last.length === 1) {
+        res.location[0] = last[0];
+        res.location[1] = 0;
+    }
+    else {
+        var block = last.pop();
+        res.location[1] = parseInt(block);
+        res.location[0] = last.join('/');
+    }
     return res;
 };
 exports.linkDecoder = decoder;

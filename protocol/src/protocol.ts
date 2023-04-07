@@ -9,10 +9,8 @@
 //anchor location object
 //1. anchor_name
 //2. [anchor_name,block_number]
-export type anchorLocation=[
-    name  : string,
-    block : number,
-] | string;
+export type anchorLocation=[string,number] | string;
+
 
 //anchor data object, input from anchorJS
 export type anchorObject={

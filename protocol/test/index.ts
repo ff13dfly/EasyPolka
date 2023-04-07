@@ -53,9 +53,8 @@ const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
     //easyRun(["hello",223],API,()=>{});
     //easyRun(["你好",1234],API,()=>{});
-    
     //const data=easyProtocol(rawType.APP);
-    
+
     const anchor_location=[
         "anchor://hello",
         "anchor://hello/",
@@ -66,6 +65,7 @@ self.prepare(server,()=>{
         "anchor://hello/3323?ka=333&kb=data",
         "anchor://hello/3323/?ka=333&kb=data",
         "anchor://heLLo/3323/?pa=333&pb=data",
+        "anchor://heL/Lo/3323/?pa=333&pb=data",
     ]
     for(let i=0;i<anchor_location.length;i++){
         const row=anchor_location[i];

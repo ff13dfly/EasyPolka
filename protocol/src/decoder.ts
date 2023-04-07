@@ -10,8 +10,12 @@
 import { anchorLocation }from "./protocol";
 
 //linker decoder result
+// type decoderResult={
+//     location:anchorLocation;
+//     param?:params;
+// };
 type decoderResult={
-    location:anchorLocation;
+    location:[string,number];
     param?:params;
 };
 
@@ -46,7 +50,7 @@ const decoder=(link:string,cfg?:any)=>{
 
     //1. remove prefix `anchor://`
     const str=link.toLocaleLowerCase();
-    const body=str.substring(setting.pre.length,str.length);
+    let body=str.substring(setting.pre.length,str.length);
     console.log(`Need decode link:${str},body:${body}`);
 
     //2. check parameter
@@ -59,10 +63,25 @@ const decoder=(link:string,cfg?:any)=>{
         }
         res.param=self.getParams(arr[1]);
     }
+    body=arr[0];
 
     //3. decode anchor location
+    const ls=body.split("/");
+    const last=[];
+    for(let i=0;i<ls.length;i++){
+        if(ls[i]!=='') last.push(ls[i]);
+    }
+    console.log(last);
     
-    
+    //4. export result
+    if(last.length===1){
+        res.location[0]=last[0];
+        res.location[1]=0;
+    }else{
+        const block:any=last.pop();
+        res.location[1]=parseInt(block);
+        res.location[0]=last.join('/');
+    }
 
     return res;
 };

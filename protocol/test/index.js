@@ -59,6 +59,7 @@ self.prepare(server, function () {
         "anchor://hello/3323?ka=333&kb=data",
         "anchor://hello/3323/?ka=333&kb=data",
         "anchor://heLLo/3323/?pa=333&pb=data",
+        "anchor://heL/Lo/3323/?pa=333&pb=data",
     ];
     for (var i = 0; i < anchor_location.length; i++) {
         var row = anchor_location[i];
