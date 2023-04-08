@@ -1,5 +1,5 @@
 // npm i -D typescript
-// npx tsc index.ts
+// npx tsc index.ts --skipLibCheck
 // node index.js
 
 // declare var ApiPromise: any; 
@@ -66,6 +66,10 @@ self.prepare(server,()=>{
         "anchor://hello/3323/?ka=333&kb=data",
         "anchor://heLLo/3323/?pa=333&pb=data",
         "anchor://heL/Lo/3323/?pa=333&pb=data",
+        "anchor://hello/bbb/",
+        "anchors://hello/344/",
+        "anors://hello/344/",
+        "hello",
     ]
     for(let i=0;i<anchor_location.length;i++){
         const row=anchor_location[i];

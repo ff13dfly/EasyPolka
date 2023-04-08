@@ -1,6 +1,6 @@
 "use strict";
 // npm i -D typescript
-// npx tsc index.ts
+// npx tsc index.ts --skipLibCheck
 // node index.js
 Object.defineProperty(exports, "__esModule", { value: true });
 // declare var ApiPromise: any; 
@@ -60,6 +60,10 @@ self.prepare(server, function () {
         "anchor://hello/3323/?ka=333&kb=data",
         "anchor://heLLo/3323/?pa=333&pb=data",
         "anchor://heL/Lo/3323/?pa=333&pb=data",
+        "anchor://hello/bbb/",
+        "anchors://hello/344/",
+        "anors://hello/344/",
+        "hello",
     ];
     for (var i = 0; i < anchor_location.length; i++) {
         var row = anchor_location[i];

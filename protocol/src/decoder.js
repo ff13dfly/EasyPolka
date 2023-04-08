@@ -25,9 +25,16 @@ var decoder = function (link, cfg) {
     var res = {
         location: ["", 0],
     };
-    //1. remove prefix `anchor://`
     var str = link.toLocaleLowerCase();
-    var body = str.substring(setting.pre.length, str.length);
+    var pre = setting.pre;
+    if (str.length <= pre.length + 1)
+        return { error: "invalid string" };
+    var head = str.substring(0, pre.length);
+    if (head !== pre)
+        return { error: "invalid protocol" };
+    //0. format check
+    //1. remove prefix `anchor://`
+    var body = str.substring(pre.length, str.length);
     console.log("Need decode link:".concat(str, ",body:").concat(body));
     //2. check parameter
     var arr = body.split("?");
@@ -47,15 +54,18 @@ var decoder = function (link, cfg) {
         if (ls[i] !== '')
             last.push(ls[i]);
     }
-    console.log(last);
+    //console.log(last);
     //4. export result
     if (last.length === 1) {
         res.location[0] = last[0];
         res.location[1] = 0;
     }
     else {
-        var block = last.pop();
-        res.location[1] = parseInt(block);
+        var ele = last.pop();
+        var block = parseInt(ele);
+        if (isNaN(block))
+            return { error: "block number error" };
+        res.location[1] = block;
         res.location[0] = last.join('/');
     }
     return res;

@@ -47,10 +47,18 @@ const decoder=(link:string,cfg?:any)=>{
     let res:decoderResult={
         location:["",0],
     };
+    const str=link.toLocaleLowerCase();
+    const pre=setting.pre;
+
+    if(str.length <= pre.length+1) return {error:"invalid string"};
+    const head=str.substring(0,pre.length);
+    if(head!==pre) return {error:"invalid protocol"};
+
+    //0. format check
+    
 
     //1. remove prefix `anchor://`
-    const str=link.toLocaleLowerCase();
-    let body=str.substring(setting.pre.length,str.length);
+    let body=str.substring(pre.length,str.length);
     console.log(`Need decode link:${str},body:${body}`);
 
     //2. check parameter
@@ -71,15 +79,17 @@ const decoder=(link:string,cfg?:any)=>{
     for(let i=0;i<ls.length;i++){
         if(ls[i]!=='') last.push(ls[i]);
     }
-    console.log(last);
+    //console.log(last);
     
     //4. export result
     if(last.length===1){
         res.location[0]=last[0];
         res.location[1]=0;
     }else{
-        const block:any=last.pop();
-        res.location[1]=parseInt(block);
+        const ele:any=last.pop();
+        const block=parseInt(ele);
+        if(isNaN(block)) return {error:"block number error"}
+        res.location[1]=block;
         res.location[0]=last.join('/');
     }
 
