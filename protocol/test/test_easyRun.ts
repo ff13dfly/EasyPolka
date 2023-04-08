@@ -9,10 +9,8 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/api';
 
 import { anchorJS } from "../lib/anchor";
-import { easyProtocol } from "../src/format";
+import { anchorLocation } from "../src/protocol";
 import { easyRun } from "../src/interpreter";
-import { anchorLocation,rawType } from "../src/protocol";
-import { linkDecoder } from "../src/decoder";
 
 const API={
     "common":{
@@ -27,8 +25,6 @@ const API={
         "owner":anchorJS.owner,
         "subcribe":anchorJS.subcribe,
     },
-    //"polka":{},
-    //"gateway":{}
 }
 
 const self={
@@ -51,29 +47,6 @@ const self={
 
 const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
-    //easyRun(["hello",223],API,()=>{});
-    //easyRun(["你好",1234],API,()=>{});
-    //const data=easyProtocol(rawType.APP);
-
-    const anchor_location=[
-        "anchor://hello",
-        "anchor://hello/",
-        "anchor://hello/128",
-        "anchor://hello/128/",
-        "anchor://hello?ka=333&kb=string",
-        "anchor://hello/?ka=333&kb=string",
-        "anchor://hello/3323?ka=333&kb=data",
-        "anchor://hello/3323/?ka=333&kb=data",
-        "anchor://heLLo/3323/?pa=333&pb=data",
-        "anchor://heL/Lo/3323/?pa=333&pb=data",
-        "anchor://hello/bbb/",
-        "anchors://hello/344/",
-        "anors://hello/344/",
-        "hello",
-    ]
-    for(let i=0;i<anchor_location.length;i++){
-        const row=anchor_location[i];
-        const res=linkDecoder(row);
-        console.log(res);
-    }
+    easyRun(["hello",223],API,()=>{});
+    
 });

@@ -23,8 +23,6 @@ var API = {
         "owner": anchor_1.anchorJS.owner,
         "subcribe": anchor_1.anchorJS.subcribe,
     },
-    //"polka":{},
-    //"gateway":{}
 };
 var self = {
     prepare: function (node, ck) {
