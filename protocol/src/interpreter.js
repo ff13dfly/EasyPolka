@@ -10,19 +10,30 @@ var self = {
         if (API === null)
             return ck && ck({ error: "No API to get data." });
         var target = (0, decoder_1.linkDecoder)(linker);
-        var location = target.location;
+        if (target.error)
+            return ck && ck(target);
+        var _a = target.location, anchor = _a[0], block = _a[1];
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
-        if (Array.isArray(location)) {
-            var anchor = location[0], block = location[1];
+        if (block !== 0) {
             API.common.target(anchor, block, function (data) {
-                //if(data.error) return ck && ck({error:data.error});
-                //if(data.empty) return ck && ck({error:"Empty anchor."});
-                //console.log(data);
+                if (!data)
+                    return ck && ck({ error: "No such anchor." });
+                if (data.error)
+                    return ck && ck({ error: data.error });
+                if (data.empty)
+                    return ck && ck({ error: "Empty anchor." });
+                return ck && ck(data);
             });
         }
         else {
-            API.common.latest(location, function (data) {
-                //console.log(data);
+            API.common.latest(anchor, function (data) {
+                if (!data)
+                    return ck && ck({ error: "No such anchor." });
+                if (data.error)
+                    return ck && ck({ error: data.error });
+                if (data.empty)
+                    return ck && ck({ error: "Empty anchor." });
+                return ck && ck(data);
             });
         }
     },
@@ -37,7 +48,10 @@ var run = function (linker, inputAPI, ck) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
     self.check(linker, function (res) {
-        return ck && ck(res);
+        if (res.error)
+            return ck && ck(res);
+        //console.log(res);
+        //return ck && ck(res);
     });
 };
 exports.easyRun = run;

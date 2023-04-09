@@ -26,6 +26,7 @@ export type anchorObject={
 	"sell":     boolean;
 	"cost":     number;
 	"target":   string;
+    "error"?:   string;             //error message
 };
 
 //error Object

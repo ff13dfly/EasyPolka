@@ -9,8 +9,8 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/api';
 
 import { anchorJS } from "../lib/anchor";
+import { anchorLocation,anchorObject,errorObject } from "../src/protocol";
 
-import { anchorLocation } from "../src/protocol";
 import { easyRun } from "../src/interpreter";
 
 const API={
@@ -49,6 +49,7 @@ const self={
 const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
     const linker="anchor://hello/";
-    easyRun(linker,API,()=>{});
-    
+    easyRun(linker,API,(res:anchorObject|errorObject)=>{
+        console.log(res);
+    });
 });

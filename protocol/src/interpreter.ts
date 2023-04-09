@@ -1,7 +1,7 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorLocation,anchorObject,errorObject,APIObject} from "./protocol";
+import { anchorObject,errorObject,APIObject} from "./protocol";
 import { linkDecoder } from "./decoder";
 
 let API:APIObject=null;
@@ -11,19 +11,24 @@ const self={
         
         if(API===null) return ck && ck({error:"No API to get data."});
         const target=linkDecoder(linker);
-        const location=target.location;
+        if(target.error) return ck && ck(target);
+
+        const [anchor,block]=target.location;
 
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
-        if(Array.isArray(location)){
-            const [anchor,block]=location;
-            API.common.target(anchor,block,(data:anchorObject|errorObject)=>{
-                //if(data.error) return ck && ck({error:data.error});
-                //if(data.empty) return ck && ck({error:"Empty anchor."});
-                //console.log(data);
+        if(block!==0){
+            API.common.target(anchor,block,(data:any)=>{   
+                if(!data) return ck && ck({error:"No such anchor."});
+                if(data.error) return ck && ck({error:data.error});
+                if(data.empty) return ck && ck({error:"Empty anchor."});
+                return ck && ck(data);
             });
         }else{
-            API.common.latest(location,(data:anchorObject|errorObject)=>{
-                //console.log(data);
+            API.common.latest(anchor,(data:any)=>{
+                if(!data) return ck && ck({error:"No such anchor."});
+                if(data.error) return ck && ck({error:data.error});
+                if(data.empty) return ck && ck({error:"Empty anchor."});
+                return ck && ck(data);
             });
         }
     },
@@ -43,7 +48,10 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
 
     self.check(linker,(res:anchorObject|errorObject)=>{
-        return ck && ck(res);
+        if(res.error) return ck && ck(res);
+        
+        //console.log(res);
+        //return ck && ck(res);
     });
 };
 export {run as easyRun};

@@ -45,5 +45,7 @@ var self = {
 var server = "ws://127.0.0.1:9944";
 self.prepare(server, function () {
     var linker = "anchor://hello/";
-    (0, interpreter_1.easyRun)(linker, API, function () { });
+    (0, interpreter_1.easyRun)(linker, API, function (res) {
+        console.log(res);
+    });
 });
