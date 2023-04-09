@@ -59,7 +59,7 @@ const decoder=(link:string,cfg?:any)=>{
 
     //1. remove prefix `anchor://`
     let body=str.substring(pre.length,str.length);
-    console.log(`Need decode link:${str},body:${body}`);
+    //console.log(`Need decode link:${str},body:${body}`);
 
     //2. check parameter
     const arr=body.split("?");

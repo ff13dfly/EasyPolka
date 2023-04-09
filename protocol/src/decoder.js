@@ -35,7 +35,7 @@ var decoder = function (link, cfg) {
     //0. format check
     //1. remove prefix `anchor://`
     var body = str.substring(pre.length, str.length);
-    console.log("Need decode link:".concat(str, ",body:").concat(body));
+    //console.log(`Need decode link:${str},body:${body}`);
     //2. check parameter
     var arr = body.split("?");
     var isParam = arr.length === 1 ? false : true;
