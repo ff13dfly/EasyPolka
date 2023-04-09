@@ -1,10 +1,6 @@
-// npm i -D typescript
-// npx tsc index.ts --skipLibCheck
-// node index.js
+// npx tsc test_decoder.ts --skipLibCheck
+// node test_decoder.js
 
-// declare var ApiPromise: any; 
-// declare var WsProvider: any;
-// declare var Keyring: any; 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/api';
 
