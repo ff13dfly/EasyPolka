@@ -2,32 +2,20 @@
 
 ## Overview
 
-Recommand cApp protocol. It is a JSON based protocol, now `version 1.0`.
+* `Easy Protocol` is teh recommend `cApp` ( Chain Application ) protocol. It is a JSON based protocol, now `version 1.0`.
 
-## Details
-
-### Anchor link
-
-### Protocol Check
-
-The reversed keyword `type` is treated as the start of `Easy Protocol`, when the `protocol` data is a JSON string and the keyword is one of the JSON key. Then it is a `Easy Protocol` anchor.
-
-![Easy Protocol Decode Map](../images/on_chain_linked_list.png)
-
-### Reversed Keywords List
-
-### cApp Lancher
+* You can get all details via the [Easy Protocol](Easy_Protocol_v1.0.md).
 
 ## Test
 
-- TS file need to compile to JS file, then run via Node.js.
+* TS file need to compile to JS file, then run via Node.js.
 
     ```SHELL
         # install TS support
         npm i -D typescript
 
-        # compile ts file
-        npx tsc ${sample}.ts
+        # compile ts file by skipping the library
+        npx tsc ${sample}.ts --skipLibCheck
 
         # run the compiled file
         node ${sample}.js
@@ -42,21 +30,9 @@ The reversed keyword `type` is treated as the start of `Easy Protocol`, when the
     cApp(RPC, "container", code.failed ? code.failed : null);
 ```
 
-### Hide Target Anchor History
-
-- If there is `hide` keyword in protocol, will check the target anchor `hide`.
-- If theer is `salt` keyword in protocol, will check the target `md5( anchor + salt[1] )` to check hide block list.
-- No special setting, will check the default hide anchor `md5(anchor)`.
-
-### Authrity of Anchor
-
-- If there is `auth` keyword in protocol, will check the target anchor `auth`.
-- If theer is `salt` keyword in protocol, will check the target `md5( anchor + salt[0] )` to check authority list.
-- No special setting, will check the default authority anchor `md5(anchor)`.
-
 ### Sample
 
-- Basic cApp code
+* Basic cApp code
 
     ```JAVASCRIPT
         new Function(
@@ -83,12 +59,12 @@ The reversed keyword `type` is treated as the start of `Easy Protocol`, when the
         }
     ```
 
-- Demo cApp code.
+* Demo cApp code.
 
     ```JSON
         {
             "name":"entry_app",
-            "raw":"console.log(container);console.log(from);console.log(args);",
+            "raw":"console.log(container);console.log(from);console.log(args);console.log(arguments);",
             "protocol":{
                 "type":"app",
                 "fmt":"js",
@@ -97,7 +73,7 @@ The reversed keyword `type` is treated as the start of `Easy Protocol`, when the
         }
     ```
 
-- Launch from `data` type anchor.
+* Launch from `data` type anchor.
 
     ```JSON
         {
