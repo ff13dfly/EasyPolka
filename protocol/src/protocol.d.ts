@@ -154,8 +154,8 @@ export type APIObject={
 export type cAppResult={
     app:Function|null;      //cApp function, if from the data type anchor, will load target cApp
     raw:String|null;        //if cApp is not JS, leave the raw data here.
-    parameter:string[];     //running parameters, from anchor link parameter
-    error:errorObject[];    //errors when loading cApp
+    parameter?:string[];     //running parameters, from anchor link parameter
+    error?:errorObject[];    //errors when loading cApp
     from?:anchorObject;     //if the cApp is called from a data anchor
 
     //parameters from launcher
@@ -170,19 +170,19 @@ export type cAppResult={
 /********************************/
 
 //default value object
-const defaultValue ={
+// const defaultValue ={
 
-    //cApp resutl object, if the anchor is empty
-    cAppResult:{
-        API:null,
-        error:[],
-        app:null,
-        raw:null,
-        parameter:[],
-        nodeJS:false,
-        from:"",
-        back:[],
-    },
-}
+//     //cApp resutl object, if the anchor is empty
+//     cAppResult:{
+//         API:null,
+//         error:[],
+//         app:null,
+//         raw:null,
+//         parameter:[],
+//         nodeJS:false,
+//         from:"",
+//         back:[],
+//     },
+// }
 
-export {defaultValue};
+// export {defaultValue};

@@ -7,13 +7,10 @@ import { linkDecoder } from "./decoder";
 let API:APIObject=null;
 
 const self={
-    check:(linker:string,ck:(res: anchorObject | errorObject) => void)=>{
+    check:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
         
         if(API===null) return ck && ck({error:"No API to get data."});
-        const target=linkDecoder(linker);
-        if(target.error) return ck && ck(target);
-
-        const [anchor,block]=target.location;
+        const [anchor,block]=location;
 
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if(block!==0){
@@ -46,12 +43,26 @@ const self={
 
 const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
+    const target=linkDecoder(linker);
+    if(target.error) return ck && ck(target);
 
-    self.check(linker,(res:anchorObject|errorObject)=>{
+    let cObject:any={
+        raw:null,
+        error:[],
+    }
+    if(target.param) cObject.parameter=target.param;
+
+    self.check(target.location,(res:any)=>{
         if(res.error) return ck && ck(res);
         
-        //console.log(res);
-        //return ck && ck(res);
+        cObject.raw=res.raw;
+
+        try {
+            cObject.app = new Function("container","API","args","from","error",res.raw);
+        } catch (error) {
+            cObject.error.push({error:"Failed to get function"});
+        }
+        return ck && ck(cObject);
     });
 };
 export {run as easyRun};

@@ -27,7 +27,7 @@ const API={
 const self={
     prepare:(node:string,ck:Function)=>{
         try {
-            console.log({node});
+            //console.log({node});
             const provider = new WsProvider(node);
             ApiPromise.create({ provider: provider }).then((api) => {
                 if(!anchorJS.set(api)){
@@ -44,8 +44,11 @@ const self={
 
 const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
-    const linker="anchor://hello/";
-    easyRun(linker,API,(res:anchorObject|errorObject)=>{
-        console.log(res);
+    const linker="anchor://entry_app/?hello=world&me=fuu";
+    easyRun(linker,API,(result:any)=>{
+        console.log(result);
+        
+        //new Function("container","API","args","from","error",res.raw);
+        //if(result.app) result.app("con_id",API,{"hello":"world"});
     });
 });

@@ -6,13 +6,10 @@ exports.easyRun = void 0;
 var decoder_1 = require("./decoder");
 var API = null;
 var self = {
-    check: function (linker, ck) {
+    check: function (location, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data." });
-        var target = (0, decoder_1.linkDecoder)(linker);
-        if (target.error)
-            return ck && ck(target);
-        var _a = target.location, anchor = _a[0], block = _a[1];
+        var anchor = location[0], block = location[1];
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if (block !== 0) {
             API.common.target(anchor, block, function (data) {
@@ -47,11 +44,26 @@ var self = {
 var run = function (linker, inputAPI, ck) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
-    self.check(linker, function (res) {
+    var target = (0, decoder_1.linkDecoder)(linker);
+    if (target.error)
+        return ck && ck(target);
+    var cObject = {
+        raw: null,
+        error: [],
+    };
+    if (target.param)
+        cObject.parameter = target.param;
+    self.check(target.location, function (res) {
         if (res.error)
             return ck && ck(res);
-        //console.log(res);
-        //return ck && ck(res);
+        cObject.raw = res.raw;
+        try {
+            cObject.app = new Function("container", "API", "args", "from", "error", res.raw);
+        }
+        catch (error) {
+            cObject.error.push({ error: "Failed to get function" });
+        }
+        return ck && ck(cObject);
     });
 };
 exports.easyRun = run;

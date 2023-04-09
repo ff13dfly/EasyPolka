@@ -1,11 +1,7 @@
 "use strict";
-// npm i -D typescript
-// npx tsc index.ts --skipLibCheck
-// node index.js
+// npx tsc test_easyRun.ts --skipLibCheck
+// node test_easyRun.js
 Object.defineProperty(exports, "__esModule", { value: true });
-// declare var ApiPromise: any; 
-// declare var WsProvider: any;
-// declare var Keyring: any; 
 var api_1 = require("@polkadot/api");
 var api_2 = require("@polkadot/api");
 var anchor_1 = require("../lib/anchor");
@@ -27,7 +23,7 @@ var API = {
 var self = {
     prepare: function (node, ck) {
         try {
-            console.log({ node: node });
+            //console.log({node});
             var provider = new api_1.WsProvider(node);
             api_1.ApiPromise.create({ provider: provider }).then(function (api) {
                 if (!anchor_1.anchorJS.set(api)) {
@@ -44,8 +40,10 @@ var self = {
 };
 var server = "ws://127.0.0.1:9944";
 self.prepare(server, function () {
-    var linker = "anchor://hello/";
-    (0, interpreter_1.easyRun)(linker, API, function (res) {
-        console.log(res);
+    var linker = "anchor://entry_app/?hello=world&me=fuu";
+    (0, interpreter_1.easyRun)(linker, API, function (result) {
+        console.log(result);
+        //new Function("container","API","args","from","error",res.raw);
+        //if(result.app) result.app("con_id",API,{"hello":"world"});
     });
 });
