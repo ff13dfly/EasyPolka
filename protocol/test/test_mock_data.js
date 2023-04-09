@@ -71,7 +71,7 @@ function write_app_sample(index,ck){
     const pair= ks.addFromUri('//Alice');
 
     const anchor="entry_app";
-    const raw="console.log(container);console.log(from);console.log(args);";
+    const raw="console.log(container);console.log(from);console.log(args);console.log(arguments)";
     const protocol={
         "type":"app",
         "fmt":"js",

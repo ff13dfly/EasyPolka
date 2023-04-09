@@ -5,9 +5,9 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/api';
 
 import { anchorJS } from "../lib/anchor";
-import { anchorLocation,anchorObject,errorObject } from "../src/protocol";
+import { anchorLocation } from "../src/protocol";
 
-import { easyRun } from "../src/interpreter";
+import { easyProtocol } from "../src/interpreter";
 
 const API={
     "common":{
@@ -45,10 +45,11 @@ const self={
 const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
     const linker="anchor://entry_app/?hello=world&me=fuu";
-    easyRun(linker,API,(result:any)=>{
+    //const linker="anchor://data_caller";
+    easyProtocol(linker,API,(result:any)=>{
         console.log(result);
-        
+        //new Function("anchorJS","error",result.raw);
         //new Function("container","API","args","from","error",res.raw);
-        //if(result.app) result.app("con_id",API,{"hello":"world"});
+        if(result.app) result.app("con_id",API,{"hello":"world"});
     });
 });

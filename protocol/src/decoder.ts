@@ -9,11 +9,6 @@
 
 import { anchorLocation, errorObject }from "./protocol";
 
-//linker decoder result
-// type decoderResult={
-//     location:anchorLocation;
-//     param?:params;
-// };
 type decoderResult={
     location:[string,number];
     param?:params;
@@ -50,19 +45,17 @@ const decoder=(link:string,cfg?:any)=>{
     const str=link.toLocaleLowerCase();
     const pre=setting.pre;
 
+    //0. format check
     if(str.length <= pre.length+1) return {error:"invalid string"};
     const head=str.substring(0,pre.length);
     if(head!==pre) return {error:"invalid protocol"};
 
-    //0. format check
-    
-
     //1. remove prefix `anchor://`
     let body=str.substring(pre.length,str.length);
-    //console.log(`Need decode link:${str},body:${body}`);
 
     //2. check parameter
     const arr=body.split("?");
+    if(arr.length > 2) return { error: "error request, please check anchor name" };
     const isParam=arr.length===1?false:true;
     if(isParam){
         const ps=self.getParams(arr[1]);
@@ -79,7 +72,6 @@ const decoder=(link:string,cfg?:any)=>{
     for(let i=0;i<ls.length;i++){
         if(ls[i]!=='') last.push(ls[i]);
     }
-    //console.log(last);
     
     //4. export result
     if(last.length===1){

@@ -159,7 +159,7 @@ export type cAppResult={
     from?:anchorObject;     //if the cApp is called from a data anchor
 
     //parameters from launcher
-    API:APIObject;          //APIs can be sent to cApp
+    //API:APIObject;          //APIs can be sent to cApp
     nodeJS:boolean;         //wether the nodeJS
     back?:string[];         //parameter when callback
 }

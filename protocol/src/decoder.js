@@ -27,17 +27,18 @@ var decoder = function (link, cfg) {
     };
     var str = link.toLocaleLowerCase();
     var pre = setting.pre;
+    //0. format check
     if (str.length <= pre.length + 1)
         return { error: "invalid string" };
     var head = str.substring(0, pre.length);
     if (head !== pre)
         return { error: "invalid protocol" };
-    //0. format check
     //1. remove prefix `anchor://`
     var body = str.substring(pre.length, str.length);
-    //console.log(`Need decode link:${str},body:${body}`);
     //2. check parameter
     var arr = body.split("?");
+    if (arr.length > 2)
+        return { error: "error request, please check anchor name" };
     var isParam = arr.length === 1 ? false : true;
     if (isParam) {
         var ps = self.getParams(arr[1]);
@@ -54,7 +55,6 @@ var decoder = function (link, cfg) {
         if (ls[i] !== '')
             last.push(ls[i]);
     }
-    //console.log(last);
     //4. export result
     if (last.length === 1) {
         res.location[0] = last[0];
