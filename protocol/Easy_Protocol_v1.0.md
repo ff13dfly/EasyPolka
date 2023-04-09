@@ -6,7 +6,9 @@
 
 * `Easy Protocol` solve the relationship between Anchors, by follow this protocol, one Anchor can call another anchor to get data or run `cApp`.
 
-## Details
+* Support language : Javascript.
+
+## Relatioship Details
 
 ### Anchor Link
 
@@ -14,7 +16,7 @@
 
 * Charactor `?` is reversed, the Anchor which including `?` is not supported by `Easy Protocol`.
 
-### Protocol Check
+### How To Launch
 
 * The reversed keyword `type` is treated as the start of `Easy Protocol`, when the `protocol` data is a JSON string and the keyword is one of the JSON key. Then it is a `Easy Protocol` anchor.
 
@@ -39,17 +41,43 @@
     | Data | type,fmt|[hide],[auth],[salt]|[code],[call],[push],[args]|
     | Lib | type,fmt | [hide],[auth],[salt]| [code],[lib] |
 
-## How to decode
+## Types of Easy Protocol
 
-### Basic Keywords
+### Data
 
-#### Type of Anchor `type`
+* `type`
+* `fmt`
+* `hide`
+* `auth`
+* `salt`
+* `call`
+* `args`
+* `code`
+* `push`
 
-#### Format of Raw Data `fmt`
+### App
 
-### Public Functions
+* `type`
+* `fmt`
+* `ver`
+* `hide`
+* `auth`
+* `salt`
+* `lib`
 
-#### Hide Target Anchor History
+### Lib
+
+* `type`
+* `fmt`
+* `hide`
+* `auth`
+* `salt`
+* `lib`
+* `code`
+
+## Extend Functions
+
+### Hide Target Anchor History
 
 * If there is `hide` keyword in protocol, will check the target anchor `hide`.
 
@@ -65,10 +93,6 @@
 
 * No special setting, will check the default authority anchor `md5(anchor)`.
 
-### Extend Optional Keywords
+#### Library Management
 
-#### Data
-
-#### App
-
-#### Lib
+* Easy Protocol support full on-chain application.
