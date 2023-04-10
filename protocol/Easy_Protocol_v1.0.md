@@ -1,12 +1,12 @@
-# Easy Protocol
+# Easy Protocol ( v1.0 )
 
 ## Overview
 
-* `Easy Protocol` is teh recommend `cApp` ( Chain Application ) protocol. It is a JSON based protocol, now `version 1.0`.
+* `Easy Protocol` is teh recommend `cApp` ( Chain Application ) protocol. It is a JSON based protocol, now `version 1.0`. The protocol string must be written on the Anchor keywords `protocol`.
 
-* `Easy Protocol` solve the relationship between Anchors, by follow this protocol, one Anchor can call another anchor to get data or run `cApp`.
+* `Easy Protocol` solve the relationship between Anchors, by follow this protocol, one Anchor can call another anchor to get data or run `cApp`. Another hand, the `cApp Anchor` can call other `lib Anchor`, all code can be orginazed on chain.
 
-* Support language : Javascript.
+![a image show the relationship of Anchors]()
 
 ## Relatioship Details
 
@@ -81,17 +81,17 @@
 
 * If there is `hide` keyword in protocol, will check the target anchor `hide`.
 
-* If theer is `salt` keyword in protocol, will check the target `md5( anchor + salt[1] )` to check hide block list.
+* If theer is `salt` keyword in protocol, will check the target `hash( anchor + salt[1] )` to check hide block list. It is to avoid the same hash result.
 
-* No special setting, will check the default hide anchor `md5(anchor)`.
+* Important, the `hide` Anchor can be not owned to the owner of original Anchor. It means that the owner of Anchor can modify the target `hide` Anchor, in these cases, the same Anchor can act differently.
 
 #### Authrity of Anchor
 
 * If there is `auth` keyword in protocol, will check the target anchor `auth`.
 
-* If theer is `salt` keyword in protocol, will check the target `md5( anchor + salt[0] )` to check authority list.
+* If theer is `salt` keyword in protocol, will check the target `hash( anchor + salt[0] )` to check authority list.
 
-* No special setting, will check the default authority anchor `md5(anchor)`.
+* Important, the `hide` Anchor can be not owned to the owner of original Anchor.
 
 #### Library Management
 
