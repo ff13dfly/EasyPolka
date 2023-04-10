@@ -60,6 +60,8 @@ const list=[
     write_app_sample,
     write_data_sample,
     write_unexcept_data_sample,
+    write_mock_normal_libs,
+    write_mock_complex_libs,
 ];
 self.auto(list);
 
@@ -78,7 +80,7 @@ function write_app_sample(index,ck){
     };
 
     anchorJS.write(pair,anchor,raw,JSON.stringify(protocol),(res)=>{
-        console.log(`[${index}] Result:`);
+        console.log(`[${index}] Processing:`);
         console.log(res);
         if(res.step==="Finalized"){
             const end=self.stamp();
@@ -107,7 +109,7 @@ function write_data_sample(index,ck){
     };
 
     anchorJS.write(pair,anchor,JSON.stringify(raw),JSON.stringify(protocol),(res)=>{
-        console.log(`[${index}] Result:`);
+        console.log(`[${index}] Processing:`);
         console.log(res);
         if(res.step==="Finalized"){
             const end=self.stamp();
@@ -119,7 +121,7 @@ function write_data_sample(index,ck){
 
 function write_unexcept_data_sample(index,ck){
     const start=self.stamp();
-    console.log(config.color,`[${index}] ${start} Write the caller data by Bob`);
+    console.log(config.color,`[${index}] ${start} Write the unexcept data by Bob`);
     const ks = new Keyring({ type: 'sr25519' });
     const pair= ks.addFromUri('//Bob');
 
@@ -135,7 +137,7 @@ function write_unexcept_data_sample(index,ck){
     };
 
     anchorJS.write(pair,anchor,JSON.stringify(raw),JSON.stringify(protocol),(res)=>{
-        console.log(`[${index}] Result:`);
+        console.log(`[${index}] Processing:`);
         console.log(res);
         if(res.step==="Finalized"){
             const end=self.stamp();
@@ -143,4 +145,94 @@ function write_unexcept_data_sample(index,ck){
             return ck && ck();
         }
     });
+}
+
+function write_mock_normal_libs(index,ck){
+    const start=self.stamp();
+    console.log(config.color,`[${index}] ${start} Write the testing library by Alice.`);
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri('//Alice');
+
+    const anchor="jquery";
+    const raw="This is mock JQuery library";
+    const protocol={
+        "type":"lib",
+        "fmt":"js",
+        "ver":"3.8.1",
+    };
+
+    const list=[
+        {name:"jquery",raw:"This is mock JQuery library",protocol:{"type":"lib","fmt":"js","ver":"3.8.1"}},
+        {name:"bootstrap",raw:"This is mock bootstrap",protocol:{"type":"lib","fmt":"js","ver":"5.2.3","lib":["bootstrap_css"]}},
+        {name:"bootstrap_css",raw:"This is mock bootstrap css library",protocol:{"type":"lib","fmt":"css","ver":"3.8.1"}},
+        {name:"animate",raw:"This is mock animate css library",protocol:{"type":"lib","fmt":"css","ver":"1.2.1"}},
+    ];
+
+    function auto(list,ck){
+        if(list.length===0) return ck && ck();
+        const row=list.pop();
+        console.log(`Writing lib anchor : ${row.name}`);
+        anchorJS.write(pair,row.name,row.raw,JSON.stringify(row.protocol),(res)=>{
+            console.log(`[${index}] Processing:`);
+            console.log(res);
+            if(res.step==="Finalized"){
+                auto(list,ck);
+            }
+        });
+    }
+
+    auto(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    });
+
+}
+
+function write_mock_complex_libs(index,ck){
+    const start=self.stamp();
+    console.log(config.color,`[${index}] ${start} Write the testing library by Alice.`);
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri('//Alice');
+
+    const anchor="jquery";
+    const raw="This is mock JQuery library";
+    const protocol={
+        "type":"lib",
+        "fmt":"js",
+        "ver":"3.8.1",
+    };
+
+    const list=[
+        {name:"js_a",raw:"Entry lib js_a",protocol:{type:"lib",fmt:"js",ver:"1.8.1",lib:["js_a_1","js_b","js_a_2"]}},
+        {name:"js_a_1",raw:"Needed lib js_a_1",protocol:{type:"lib",fmt:"js",ver:"5.2.3"}},
+        {name:"js_a_2",raw:"Needed lib js_a_2",protocol:{type:"lib",fmt:"js",ver:"3.5.7"}},
+        {name:"js_b",raw:"Needed lib js_b",protocol:{type:"lib",fmt:"js",ver:"1.1.0",lib:["js_b_1","js_b_2","js_b_3"],ext:["js_b_e_1"]}},
+        {name:"js_b_1",raw:"Needed lib js_b_1",protocol:{type:"lib",fmt:"js",ver:"2.4.3"}},
+        {name:"js_b_2",raw:"Needed lib js_b_2",protocol:{type:"lib",fmt:"js",ver:"2.2.9",lib:["js_b_2_1","js_b_2_1"]}},
+        {name:"js_b_3",raw:"Needed lib js_b_3",protocol:{type:"lib",fmt:"js",ver:"2.3.1"}},
+        {name:"js_b_e_1",raw:"Needed lib js_b_e_1",protocol:{type:"lib",fmt:"js",ver:"2.3.5"}},
+        {name:"js_b_2_1",raw:"Needed lib js_b_2_1",protocol:{type:"lib",fmt:"js",ver:"1.2.7"}},
+        {name:"js_b_2_2",raw:"Needed lib js_b_2_2",protocol:{type:"lib",fmt:"js",ver:"1.2.3"}},
+    ];
+
+    function auto(list,ck){
+        if(list.length===0) return ck && ck();
+        const row=list.pop();
+        console.log(`Writing lib anchor : ${row.name}`);
+        anchorJS.write(pair,row.name,row.raw,JSON.stringify(row.protocol),(res)=>{
+            console.log(`[${index}] Processing:`);
+            console.log(res);
+            if(res.step==="Finalized"){
+                auto(list,ck);
+            }
+        });
+    }
+
+    auto(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    });
+
 }
