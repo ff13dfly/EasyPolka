@@ -29,6 +29,17 @@ const self={
             });
         }
     },
+    decoder:(args:string)=>{
+        let map:any={};
+        const arr=args.split("&");
+        for(let i=0;i<arr.length;i++){
+            const row=arr[i];
+            const kv=row.split("=");
+            if(kv.length!==2) return {error:"error parameter"}
+            map[kv[0]]=kv[1];
+        }
+        return map;
+    },
 
     getApp:()=>{
 
@@ -57,8 +68,9 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     if(target.error) return ck && ck(target);
 
     let cObject:any={
-        raw:null,
+        location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],
+        data:{},
     }
     if(target.param) cObject.parameter=target.param;
 
@@ -66,8 +78,10 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         if(res.error || res.empty) return ck && ck(res);
         if(!res.protocol || !res.protocol.type) return ck && ck({error:"Not EasyProtocol anchor."});
 
+        if(cObject.location[1]===0)cObject.location[1]=res.block;
+        cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=res;
+
         // 1.check anchor data
-        cObject.raw=res.raw;
         switch (res.protocol.type) {
             case "app":
                 console.log(`App type anchor`);
@@ -76,12 +90,43 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
                 } catch (error) {
                     cObject.error.push({error:"Failed to get function"});
                 }
+                ck && ck(cObject);
                 break;
 
             case "data":
                 console.log(`Data type anchor`);
-                cObject.from=target.location[0];
+                //console.log(res);
+                if(res.protocol && res.protocol.call){
+                    const app_answer=Array.isArray(res.protocol.call)?res.protocol.call:[res.protocol.call,0];
+                    return self.check(app_answer,(answer:any)=>{
+                        if(res.error || res.empty) return ck && ck(res);
+                        if(!res.protocol || !res.protocol.type) return ck && ck({error:"Called Not-EasyProtocol anchor."});
+                        
+                        cObject.from=cObject.location;
+                        cObject.location=[app_answer[0],answer.block];
 
+                        cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=answer;
+                        try {
+                            cObject.app = new Function("container","API","args","from","error",answer.raw);
+                        } catch (error) {
+                            cObject.error.push({error:"Failed to get function"});
+                        }
+
+                        
+
+                        if(res.protocol && res.protocol.args){
+                            const args=self.decoder(res.protocol.args);
+
+                            if(!args.error) cObject.parameter=args;
+                            else cObject.error.push(args);
+
+                        }
+
+                        ck && ck(cObject);
+                    });
+                }
+                ck && ck(cObject);
+                
                 break;
 
             case "lib":
@@ -90,12 +135,9 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
 
             default:
                 console.log(`Unexcept type anchor`);
+                ck && ck(cObject);
                 break;
         }
-
-        
-        return ck && ck(cObject);
     });
 };
 export {run as easyRun};
-export {run as easyProtocol};

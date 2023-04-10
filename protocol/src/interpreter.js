@@ -2,7 +2,7 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.easyProtocol = exports.easyRun = void 0;
+exports.easyRun = void 0;
 var decoder_1 = require("./decoder");
 var API = null;
 var self = {
@@ -34,6 +34,18 @@ var self = {
             });
         }
     },
+    decoder: function (args) {
+        var map = {};
+        var arr = args.split("&");
+        for (var i = 0; i < arr.length; i++) {
+            var row = arr[i];
+            var kv = row.split("=");
+            if (kv.length !== 2)
+                return { error: "error parameter" };
+            map[kv[0]] = kv[1];
+        }
+        return map;
+    },
     getApp: function () {
     },
     getData: function () {
@@ -54,8 +66,9 @@ var run = function (linker, inputAPI, ck) {
     if (target.error)
         return ck && ck(target);
     var cObject = {
-        raw: null,
+        location: [target.location[0], target.location[1] !== 0 ? target.location[1] : 0],
         error: [],
+        data: {},
     };
     if (target.param)
         cObject.parameter = target.param;
@@ -64,8 +77,10 @@ var run = function (linker, inputAPI, ck) {
             return ck && ck(res);
         if (!res.protocol || !res.protocol.type)
             return ck && ck({ error: "Not EasyProtocol anchor." });
+        if (cObject.location[1] === 0)
+            cObject.location[1] = res.block;
+        cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = res;
         // 1.check anchor data
-        cObject.raw = res.raw;
         switch (res.protocol.type) {
             case "app":
                 console.log("App type anchor");
@@ -75,20 +90,47 @@ var run = function (linker, inputAPI, ck) {
                 catch (error) {
                     cObject.error.push({ error: "Failed to get function" });
                 }
+                ck && ck(cObject);
                 break;
             case "data":
                 console.log("Data type anchor");
-                cObject.from = target.location[0];
+                //console.log(res);
+                if (res.protocol && res.protocol.call) {
+                    var app_answer_1 = Array.isArray(res.protocol.call) ? res.protocol.call : [res.protocol.call, 0];
+                    return self.check(app_answer_1, function (answer) {
+                        if (res.error || res.empty)
+                            return ck && ck(res);
+                        if (!res.protocol || !res.protocol.type)
+                            return ck && ck({ error: "Called Not-EasyProtocol anchor." });
+                        cObject.from = cObject.location;
+                        cObject.location = [app_answer_1[0], answer.block];
+                        cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = answer;
+                        try {
+                            cObject.app = new Function("container", "API", "args", "from", "error", answer.raw);
+                        }
+                        catch (error) {
+                            cObject.error.push({ error: "Failed to get function" });
+                        }
+                        if (res.protocol && res.protocol.args) {
+                            var args = self.decoder(res.protocol.args);
+                            if (!args.error)
+                                cObject.parameter = args;
+                            else
+                                cObject.error.push(args);
+                        }
+                        ck && ck(cObject);
+                    });
+                }
+                ck && ck(cObject);
                 break;
             case "lib":
                 console.log("Lib type anchor");
                 break;
             default:
                 console.log("Unexcept type anchor");
+                ck && ck(cObject);
                 break;
         }
-        return ck && ck(cObject);
     });
 };
 exports.easyRun = run;
-exports.easyProtocol = run;

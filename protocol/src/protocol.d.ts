@@ -152,16 +152,18 @@ export type APIObject={
 
 // the decode result, easy protocol target
 export type cAppResult={
-    app:Function|null;      //cApp function, if from the data type anchor, will load target cApp
-    raw:String|null;        //if cApp is not JS, leave the raw data here.
-    parameter?:string[];     //running parameters, from anchor link parameter
-    error?:errorObject[];    //errors when loading cApp
-    from?:anchorObject;     //if the cApp is called from a data anchor
-
+    app:Function|null;          //cApp function, if from the data type anchor, will load target cApp
+    data:object;                //anchor data. 
+    location:[string,number];   //anchor location
+    
+    parameter?:string[];        //running parameters, from anchor link parameter
+    error?:errorObject[];       //errors when loading cApp
+    from?:anchorObject;         //if the cApp is called from a data anchor
+    more?:object;               //extra parameters
     //parameters from launcher
-    //API:APIObject;          //APIs can be sent to cApp
-    nodeJS:boolean;         //wether the nodeJS
-    back?:string[];         //parameter when callback
+    //API:APIObject;            //APIs can be sent to cApp
+    nodeJS:boolean;             //wether the nodeJS
+    back?:string[];             //parameter when callback
 }
 
 
