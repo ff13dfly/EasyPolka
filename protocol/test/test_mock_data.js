@@ -1,10 +1,8 @@
 //!important This is the file to create the mock cApp data.
+//!important This JS can be run many times, the anchor data will be updated, but still can work
 
+//#run this mock.
 //node test_mock_data.js
-
-// import { ApiPromise, WsProvider } from '@polkadot/api';
-// import { Keyring } from '@polkadot/api';
-// import { anchorJS } from "../lib/anchor";
 
 const { ApiPromise, WsProvider } =require('@polkadot/api');
 const { Keyring } =require('@polkadot/api');
@@ -61,6 +59,7 @@ const self={
 const list=[
     write_app_sample,
     write_data_sample,
+    write_unexcept_data_sample,
 ];
 self.auto(list);
 
@@ -105,6 +104,34 @@ function write_data_sample(index,ck){
         "fmt":"json",
         "call":"entry_app",
         "args":"id=12&title=hello",
+    };
+
+    anchorJS.write(pair,anchor,JSON.stringify(raw),JSON.stringify(protocol),(res)=>{
+        console.log(`[${index}] Result:`);
+        console.log(res);
+        if(res.step==="Finalized"){
+            const end=self.stamp();
+            console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+            return ck && ck();
+        }
+    });
+}
+
+function write_unexcept_data_sample(index,ck){
+    const start=self.stamp();
+    console.log(config.color,`[${index}] ${start} Write the caller data by Bob`);
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri('//Bob');
+
+    const anchor="error_caller";
+    const raw={
+        "content":"This is a test to call an unexsist anchor",
+        "footer":"foot content",
+    };
+    const protocol={
+        "type":"data",
+        "fmt":"json",
+        "call":"entry_none",
     };
 
     anchorJS.write(pair,anchor,JSON.stringify(raw),JSON.stringify(protocol),(res)=>{

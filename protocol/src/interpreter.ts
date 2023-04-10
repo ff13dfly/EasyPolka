@@ -1,8 +1,10 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorObject,errorObject,APIObject,rawType} from "./protocol";
+import { anchorObject,errorObject,APIObject} from "./protocol";
 import { linkDecoder } from "./decoder";
+import { checkAuth } from "./auth";
+import { checkHide } from "./hide";
 
 let API:APIObject=null;
 
@@ -47,12 +49,20 @@ const self={
     getData:()=>{
 
     },
-    getLibs:()=>{
+    getLibs:(list:[],ck:Function)=>{
+        console.log(`Ready to get libs: ${JSON.stringify(list)}`);
+    },
+
+    more:()=>{
 
     },
 
     // check the authority of anchor if launch from data
     authorize:()=>{
+
+    },
+
+    hide:()=>{
 
     },
 
@@ -81,6 +91,13 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         if(cObject.location[1]===0)cObject.location[1]=res.block;
         cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=res;
 
+        checkAuth(target.location[0],'ab',()=>{
+
+        });
+        checkHide(target.location[0],'cc',()=>{
+
+        });
+
         // 1.check anchor data
         switch (res.protocol.type) {
             case "app":
@@ -90,17 +107,32 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
                 } catch (error) {
                     cObject.error.push({error:"Failed to get function"});
                 }
-                ck && ck(cObject);
+
+                if(res.protocol.lib){
+                    self.getLibs(res.protocol.lib,(map:any,order:[])=>{
+
+                        ck && ck(cObject);
+                    })
+                }else{
+                    ck && ck(cObject);
+                }
                 break;
 
             case "data":
                 console.log(`Data type anchor`);
                 //console.log(res);
-                if(res.protocol && res.protocol.call){
+                if(res.protocol.call){
                     const app_answer=Array.isArray(res.protocol.call)?res.protocol.call:[res.protocol.call,0];
                     return self.check(app_answer,(answer:any)=>{
-                        if(res.error || res.empty) return ck && ck(res);
-                        if(!res.protocol || !res.protocol.type) return ck && ck({error:"Called Not-EasyProtocol anchor."});
+                        if(answer.error || answer.empty){
+                            cObject.error.push({error:"Failed to load answer anchor"});
+                            return ck && ck(cObject);
+                        }
+
+                        if(!answer.protocol || !answer.protocol.type){
+                            cObject.error.push({error:"Called Not-EasyProtocol anchor."});
+                            return ck && ck(cObject);
+                        }
                         
                         cObject.from=cObject.location;
                         cObject.location=[app_answer[0],answer.block];
@@ -112,11 +144,8 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
                             cObject.error.push({error:"Failed to get function"});
                         }
 
-                        
-
-                        if(res.protocol && res.protocol.args){
+                        if(res.protocol.args){
                             const args=self.decoder(res.protocol.args);
-
                             if(!args.error) cObject.parameter=args;
                             else cObject.error.push(args);
 

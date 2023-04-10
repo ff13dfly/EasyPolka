@@ -1,6 +1,6 @@
-//!important This is the definition of Esay Protocol.
+//!important This is the Typescript implement of Esay Protocol version 1.0.
 //!important Easy Protocol is a simple protocol to launch cApp via Anchor network.
-//!important Easy Protocol version 1.0 supported.
+//!important All functions implement
 
 /********************************/
 /***********Anchor part**********/

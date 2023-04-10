@@ -4,6 +4,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.easyRun = void 0;
 var decoder_1 = require("./decoder");
+var auth_1 = require("./auth");
+var hide_1 = require("./hide");
 var API = null;
 var self = {
     check: function (location, ck) {
@@ -50,10 +52,15 @@ var self = {
     },
     getData: function () {
     },
-    getLibs: function () {
+    getLibs: function (list, ck) {
+        console.log("Ready to get libs: ".concat(JSON.stringify(list)));
+    },
+    more: function () {
     },
     // check the authority of anchor if launch from data
     authorize: function () {
+    },
+    hide: function () {
     },
     // check running enviment (window or node.js)
     env: function () {
@@ -80,6 +87,10 @@ var run = function (linker, inputAPI, ck) {
         if (cObject.location[1] === 0)
             cObject.location[1] = res.block;
         cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = res;
+        (0, auth_1.checkAuth)(target.location[0], 'ab', function () {
+        });
+        (0, hide_1.checkHide)(target.location[0], 'cc', function () {
+        });
         // 1.check anchor data
         switch (res.protocol.type) {
             case "app":
@@ -90,18 +101,29 @@ var run = function (linker, inputAPI, ck) {
                 catch (error) {
                     cObject.error.push({ error: "Failed to get function" });
                 }
-                ck && ck(cObject);
+                if (res.protocol.lib) {
+                    self.getLibs(res.protocol.lib, function (map, order) {
+                        ck && ck(cObject);
+                    });
+                }
+                else {
+                    ck && ck(cObject);
+                }
                 break;
             case "data":
                 console.log("Data type anchor");
                 //console.log(res);
-                if (res.protocol && res.protocol.call) {
+                if (res.protocol.call) {
                     var app_answer_1 = Array.isArray(res.protocol.call) ? res.protocol.call : [res.protocol.call, 0];
                     return self.check(app_answer_1, function (answer) {
-                        if (res.error || res.empty)
-                            return ck && ck(res);
-                        if (!res.protocol || !res.protocol.type)
-                            return ck && ck({ error: "Called Not-EasyProtocol anchor." });
+                        if (answer.error || answer.empty) {
+                            cObject.error.push({ error: "Failed to load answer anchor" });
+                            return ck && ck(cObject);
+                        }
+                        if (!answer.protocol || !answer.protocol.type) {
+                            cObject.error.push({ error: "Called Not-EasyProtocol anchor." });
+                            return ck && ck(cObject);
+                        }
                         cObject.from = cObject.location;
                         cObject.location = [app_answer_1[0], answer.block];
                         cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = answer;
@@ -111,7 +133,7 @@ var run = function (linker, inputAPI, ck) {
                         catch (error) {
                             cObject.error.push({ error: "Failed to get function" });
                         }
-                        if (res.protocol && res.protocol.args) {
+                        if (res.protocol.args) {
                             var args = self.decoder(res.protocol.args);
                             if (!args.error)
                                 cObject.parameter = args;

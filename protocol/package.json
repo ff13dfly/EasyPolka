@@ -3,6 +3,7 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
-    "@polkadot/api": "^10.2.2"
+    "@polkadot/api": "^10.2.2",
+    "md5": "^2.3.0"
   }
 }
