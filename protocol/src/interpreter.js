@@ -3,35 +3,38 @@
 //!important Can run cApp from `Anchor linker`
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.easyRun = void 0;
+var protocol_1 = require("./protocol");
 var decoder_1 = require("./decoder");
 var auth_1 = require("./auth");
 var hide_1 = require("./hide");
+var loader_1 = require("../lib/loader");
+var anchor_1 = require("../lib/anchor");
 var API = null;
 var self = {
     check: function (location, ck) {
         if (API === null)
-            return ck && ck({ error: "No API to get data." });
+            return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
         var anchor = location[0], block = location[1];
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if (block !== 0) {
             API.common.target(anchor, block, function (data) {
                 if (!data)
-                    return ck && ck({ error: "No such anchor." });
+                    return ck && ck({ error: "No such anchor.", level: protocol_1.errorLevel.ERROR });
                 if (data.error)
-                    return ck && ck({ error: data.error });
+                    return ck && ck({ error: data.error, level: protocol_1.errorLevel.ERROR });
                 if (data.empty)
-                    return ck && ck({ error: "Empty anchor." });
+                    return ck && ck({ error: "Empty anchor.", level: protocol_1.errorLevel.ERROR });
                 return ck && ck(data);
             });
         }
         else {
             API.common.latest(anchor, function (data) {
                 if (!data)
-                    return ck && ck({ error: "No such anchor." });
+                    return ck && ck({ error: "No such anchor.", level: protocol_1.errorLevel.ERROR });
                 if (data.error)
-                    return ck && ck({ error: data.error });
+                    return ck && ck({ error: data.error, level: protocol_1.errorLevel.ERROR });
                 if (data.empty)
-                    return ck && ck({ error: "Empty anchor." });
+                    return ck && ck({ error: "Empty anchor.", level: protocol_1.errorLevel.ERROR });
                 return ck && ck(data);
             });
         }
@@ -54,6 +57,12 @@ var self = {
     },
     getLibs: function (list, ck) {
         console.log("Ready to get libs: ".concat(JSON.stringify(list)));
+        var API = {
+            search: anchor_1.anchorJS.search,
+            target: anchor_1.anchorJS.target,
+        };
+        //Loader(list,API,ck);
+        (0, loader_1.Libs)(list, API, ck);
     },
     more: function () {
     },
@@ -87,9 +96,13 @@ var run = function (linker, inputAPI, ck) {
         if (cObject.location[1] === 0)
             cObject.location[1] = res.block;
         cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = res;
-        (0, auth_1.checkAuth)(target.location[0], 'ab', function () {
+        (0, auth_1.checkAuth)(target.location[0], 'ab', {}, function () {
         });
-        (0, hide_1.checkHide)(target.location[0], 'cc', function () {
+        (0, hide_1.checkHide)(target.location[0], 'cc', {}, function () {
+        });
+        self.getLibs(["js_a"], function (map, order) {
+            console.log(map);
+            console.log(order);
         });
         // 1.check anchor data
         switch (res.protocol.type) {
@@ -103,6 +116,8 @@ var run = function (linker, inputAPI, ck) {
                 }
                 if (res.protocol.lib) {
                     self.getLibs(res.protocol.lib, function (map, order) {
+                        //console.log(map);
+                        //console.log(order);
                         ck && ck(cObject);
                     });
                 }

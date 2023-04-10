@@ -1,32 +1,35 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorObject,errorObject,APIObject} from "./protocol";
+import { anchorObject,errorObject,APIObject,errorLevel} from "./protocol";
 import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
+
+import { Loader,Libs } from "../lib/loader"
+import { anchorJS } from "../lib/anchor";
 
 let API:APIObject=null;
 
 const self={
     check:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
         
-        if(API===null) return ck && ck({error:"No API to get data."});
+        if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const [anchor,block]=location;
 
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if(block!==0){
             API.common.target(anchor,block,(data:any)=>{   
-                if(!data) return ck && ck({error:"No such anchor."});
-                if(data.error) return ck && ck({error:data.error});
-                if(data.empty) return ck && ck({error:"Empty anchor."});
+                if(!data) return ck && ck({error:"No such anchor.",level:errorLevel.ERROR});
+                if(data.error) return ck && ck({error:data.error,level:errorLevel.ERROR});
+                if(data.empty) return ck && ck({error:"Empty anchor.",level:errorLevel.ERROR});
                 return ck && ck(data);
             });
         }else{
             API.common.latest(anchor,(data:any)=>{
-                if(!data) return ck && ck({error:"No such anchor."});
-                if(data.error) return ck && ck({error:data.error});
-                if(data.empty) return ck && ck({error:"Empty anchor."});
+                if(!data) return ck && ck({error:"No such anchor.",level:errorLevel.ERROR});
+                if(data.error) return ck && ck({error:data.error,level:errorLevel.ERROR});
+                if(data.empty) return ck && ck({error:"Empty anchor.",level:errorLevel.ERROR});
                 return ck && ck(data);
             });
         }
@@ -49,8 +52,14 @@ const self={
     getData:()=>{
 
     },
-    getLibs:(list:[],ck:Function)=>{
+    getLibs:(list:[string],ck:Function)=>{
         console.log(`Ready to get libs: ${JSON.stringify(list)}`);
+        const API={
+            search:anchorJS.search,
+            target:anchorJS.target,
+        }
+        //Loader(list,API,ck);
+        Libs(list,API,ck);
     },
 
     more:()=>{
@@ -91,12 +100,18 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         if(cObject.location[1]===0)cObject.location[1]=res.block;
         cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=res;
 
-        checkAuth(target.location[0],'ab',()=>{
+        checkAuth(target.location[0],'ab',{},()=>{
 
         });
-        checkHide(target.location[0],'cc',()=>{
+        checkHide(target.location[0],'cc',{},()=>{
 
         });
+
+        self.getLibs(["js_a"],(map:any,order:[])=>{
+            console.log(map);
+            console.log(order);
+        });
+        
 
         // 1.check anchor data
         switch (res.protocol.type) {
@@ -110,7 +125,8 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
 
                 if(res.protocol.lib){
                     self.getLibs(res.protocol.lib,(map:any,order:[])=>{
-
+                        //console.log(map);
+                        //console.log(order);
                         ck && ck(cObject);
                     })
                 }else{

@@ -1,11 +1,10 @@
 // npx tsc test_easyRun.ts --skipLibCheck
 // node test_easyRun.js
 
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { Keyring } from '@polkadot/api';
+import { ApiPromise, WsProvider,Keyring } from '@polkadot/api';
 
 import { anchorJS } from "../lib/anchor";
-import { anchorLocation } from "../src/protocol";
+//import { anchorLocation } from "../src/protocol";
 
 import { easyRun } from "../src/interpreter";
 
@@ -14,11 +13,6 @@ const API={
         "latest":anchorJS.latest,
         "target":anchorJS.target,
         "history":anchorJS.history,
-        "lib":(list:anchorLocation[],ck:Function)=>{
-            const res:any=[];
-            console.log(list);
-            return ck && ck(res);
-        },
         "owner":anchorJS.owner,
         "subcribe":anchorJS.subcribe,
     },

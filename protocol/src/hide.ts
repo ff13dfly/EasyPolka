@@ -9,7 +9,7 @@ export {creator as easyHide};
 
 
 // check anchor to get hide list
-const check=(anchor:string, salt:string,ck:Function,hide?:string)=>{
+const check=(anchor:string, salt:string,cfg:object,ck:Function,hide?:string)=>{
     const dkey=!hide?(anchor+salt):hide;
     const hash=md5(dkey);
     console.log(`Check hide anchor:${anchor}, hash : ${hash}`);

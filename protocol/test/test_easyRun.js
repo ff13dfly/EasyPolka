@@ -3,19 +3,14 @@
 // node test_easyRun.js
 Object.defineProperty(exports, "__esModule", { value: true });
 var api_1 = require("@polkadot/api");
-var api_2 = require("@polkadot/api");
 var anchor_1 = require("../lib/anchor");
+//import { anchorLocation } from "../src/protocol";
 var interpreter_1 = require("../src/interpreter");
 var API = {
     "common": {
         "latest": anchor_1.anchorJS.latest,
         "target": anchor_1.anchorJS.target,
         "history": anchor_1.anchorJS.history,
-        "lib": function (list, ck) {
-            var res = [];
-            console.log(list);
-            return ck && ck(res);
-        },
         "owner": anchor_1.anchorJS.owner,
         "subcribe": anchor_1.anchorJS.subcribe,
     },
@@ -29,7 +24,7 @@ var self = {
                 if (!anchor_1.anchorJS.set(api)) {
                     console.log('Error anchor node.');
                 }
-                anchor_1.anchorJS.setKeyring(api_2.Keyring);
+                anchor_1.anchorJS.setKeyring(api_1.Keyring);
                 return ck && ck();
             });
         }

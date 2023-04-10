@@ -204,16 +204,16 @@ function write_mock_complex_libs(index,ck){
     };
 
     const list=[
-        {name:"js_a",raw:"Entry lib js_a",protocol:{type:"lib",fmt:"js",ver:"1.8.1",lib:["js_a_1","js_b","js_a_2"]}},
-        {name:"js_a_1",raw:"Needed lib js_a_1",protocol:{type:"lib",fmt:"js",ver:"5.2.3"}},
-        {name:"js_a_2",raw:"Needed lib js_a_2",protocol:{type:"lib",fmt:"js",ver:"3.5.7"}},
-        {name:"js_b",raw:"Needed lib js_b",protocol:{type:"lib",fmt:"js",ver:"1.1.0",lib:["js_b_1","js_b_2","js_b_3"],ext:["js_b_e_1"]}},
-        {name:"js_b_1",raw:"Needed lib js_b_1",protocol:{type:"lib",fmt:"js",ver:"2.4.3"}},
-        {name:"js_b_2",raw:"Needed lib js_b_2",protocol:{type:"lib",fmt:"js",ver:"2.2.9",lib:["js_b_2_1","js_b_2_1"]}},
-        {name:"js_b_3",raw:"Needed lib js_b_3",protocol:{type:"lib",fmt:"js",ver:"2.3.1"}},
-        {name:"js_b_e_1",raw:"Needed lib js_b_e_1",protocol:{type:"lib",fmt:"js",ver:"2.3.5"}},
-        {name:"js_b_2_1",raw:"Needed lib js_b_2_1",protocol:{type:"lib",fmt:"js",ver:"1.2.7"}},
-        {name:"js_b_2_2",raw:"Needed lib js_b_2_2",protocol:{type:"lib",fmt:"js",ver:"1.2.3"}},
+        {name:"js_a",raw:';(function(){console.log("js_a mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"1.8.1",lib:["js_a_1","js_b","js_a_2"]}},
+        {name:"js_a_1",raw:';(function(){console.log("js_a_1 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"5.2.3"}},
+        {name:"js_a_2",raw:';(function(){console.log("js_a_2 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"3.5.7"}},
+        {name:"js_b",raw:';(function(){console.log("js_b mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"1.1.0",lib:["js_b_1","js_b_2","js_b_3"],ext:["js_b_e_1"]}},
+        {name:"js_b_1",raw:';(function(){console.log("js_b_1 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"2.4.3"}},
+        {name:"js_b_2",raw:';(function(){console.log("js_b_2 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"2.2.9",lib:["js_b_2_1","js_b_2_1"]}},
+        {name:"js_b_3",raw:';(function(){console.log("js_b_3 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"2.3.1"}},
+        {name:"js_b_e_1",raw:';(function(){console.log("js_b_e_1 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"2.3.5"}},
+        {name:"js_b_2_1",raw:';(function(){console.log("js_b_2_1 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"1.2.7"}},
+        {name:"js_b_2_2",raw:';(function(){console.log("js_b_2_2 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"1.2.3"}},
     ];
 
     function auto(list,ck){

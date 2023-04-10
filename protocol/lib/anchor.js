@@ -652,6 +652,7 @@ const self = {
 	},
 };
 
+//const anchorJS=
 exports.anchorJS={
 	set:self.setWebsocket,		//cache the linker promise object
 	setKeyring:self.setKeyring,	//set Keyring to get pair
@@ -675,3 +676,5 @@ exports.anchorJS={
 	unsell:self.unsell,			//revoke anchor from selling status
 	buy:self.buy,				//buy selling anchor
 };
+
+//export default anchorJS;

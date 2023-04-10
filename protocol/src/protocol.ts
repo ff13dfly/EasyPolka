@@ -1,6 +1,6 @@
 //!important This is the Typescript implement of Esay Protocol version 1.0.
 //!important Easy Protocol is a simple protocol to launch cApp via Anchor network.
-//!important All functions implement
+//!important All functions implement, but this implement only support JS with CSS application 
 
 /********************************/
 /***********Anchor part**********/
@@ -10,7 +10,6 @@
 //1. anchor_name
 //2. [anchor_name,block_number]
 export type anchorLocation=[string,number] | string;
-
 
 //anchor data object, input from anchorJS
 export type anchorObject={
@@ -35,7 +34,7 @@ export type errorObject={
     "level"?:errorLevel;
 }
 
-enum errorLevel{
+export enum errorLevel{
     ERROR       = "error",
     WARN        = "warning",
     UNEXCEPT    = "unexcept",
@@ -101,6 +100,7 @@ export type libProtocol={
     "ver":string;                       // the cApp version, need incremnet when update
     "code"?:codeType;                   // library code type
     "lib"?:anchorLocation[];            // the list of required anchor list
+    "ext"?:anchorLocation[];            // extend list of library
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
     "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
@@ -132,7 +132,7 @@ export type APIObject={
         "latest":(anchor:string,ck:Function) => anchorObject|errorObject;
         "history":(anchor:string,ck:Function) => anchorObject[]|errorObject;
         "owner":(anchor:string,ck:Function) => any;
-        "lib":(list:anchorLocation[],ck:Function) => any|errorObject;
+        "lib"?:(list:anchorLocation[],ck:Function) => any|errorObject;
         "subcribe":(ck:Function,cfg:any) => anchorObject[];
     };
     //polkadot functions needed
@@ -165,26 +165,3 @@ export type cAppResult={
     nodeJS:boolean;             //wether the nodeJS
     back?:string[];             //parameter when callback
 }
-
-
-/********************************/
-/******** default value *********/
-/********************************/
-
-//default value object
-// const defaultValue ={
-
-//     //cApp resutl object, if the anchor is empty
-//     cAppResult:{
-//         API:null,
-//         error:[],
-//         app:null,
-//         raw:null,
-//         parameter:[],
-//         nodeJS:false,
-//         from:"",
-//         back:[],
-//     },
-// }
-
-// export {defaultValue};
