@@ -2,19 +2,52 @@
 
 ## Overview
 
-* `Easy Protocol` is teh recommend `cApp` ( Chain Application ) protocol. It is a JSON based protocol, now `version 1.0`. The protocol string must be written on the Anchor keywords `protocol`.
+* `Easy Protocol` is a protocol to load Chain Application ( `cApp` in short ). It is a JSON based protocol, now `version 1.0`, should follow the [JSON format standard](http://json.org).
 
-* `Easy Protocol` solve the relationship between Anchors, by follow this protocol, one Anchor can call another anchor to get data or run `cApp`. Another hand, the `cApp Anchor` can call other `lib Anchor`, all code can be orginazed on chain.
+* `Easy Protocol` solve the relationship between on-chain data. Follow this, on-chain data can call `cApp` to decode it. Then the blockchain network which support `Easy Protocol` is a bootstrap system, can be accessed fully by a single entry.
 
 ![a image show the relationship of Anchors]()
 
-## Relatioship Details
+* `Easy Protocol` is not case sensitive. The max length of an `Easy Protocol` is 256 Bytes.
+
+* `Easy Protocol` do not check the code valid.
+
+## Data Structure
+
+### Anchor
+
+* Anchor data sample as follow. On-chain data is trustable, linked list way can save the storage and make every step of development meanful.
+
+    ```Javascript
+        {
+            name:"",        //unique name, called `Anchor Name`
+            raw:"",         //code or customized data
+            protocol:{      //Easy Protocol content
+                ...
+            }
+            pre:0,          //linked list
+        }
+    ```
+
+* Unique Anchor name.
+
+* On-chain Linked List.
+
+* Ownership. Anchor must be owned to single one account. Only the owner can modify the Anchor, and every modification must be storaged.Ownership can be transfered, but the history data must be linked to the owner when data was updating.
 
 ### Anchor Link
 
-* Anchor Link is a text to locate the Anchor network data. It can be easy read and load `cApp` properly.
+* Anchor Link is a text to locate the blockchain network data. It can be easy read and load `cApp` properly.
 
-* Charactor `?` is reversed, the Anchor which including `?` is not supported by `Easy Protocol`.
+* Charactor `?` is reversed, the name which including `?` is not supported by `Easy Protocol`.
+
+### Anchor Raw Data
+
+* Anchor Raw Data is used to storage code.
+
+* The max Anchor Raw data length is 4MB max.
+
+## Processing Details
 
 ### How To Launch
 
@@ -22,7 +55,7 @@
 
 ![Easy Protocol Decode Map](../images/on_chain_linked_list.png)
 
-* Anchor data will be checked as follow. 
+* Anchor data will be checked as follow.
 
     1. Check Anchor `protocol`, if it is `JSON` format and do have the keyword `type`.
     2. By `type`, Anchor will be treated as three types, `DATA`, `APP` and `LIB`.
@@ -39,13 +72,13 @@
     | ------ | ----------- |----------- |----------- |
     | App | type,fmt,ver| [hide],[auth],[salt] | [lib] |
     | Data | type,fmt|[hide],[auth],[salt]|[code],[call],[push],[args]|
-    | Lib | type,fmt | [hide],[auth],[salt]| [code],[lib] |
+    | Lib | type,fmt | [hide],[auth],[salt]| [code],[lib],[ext] |
 
-## Types of Easy Protocol
+## Types of Anchor
 
 ### Data
 
-* `type`
+* `type`, must be `data`.
 * `fmt`
 * `hide`
 * `auth`
@@ -57,7 +90,7 @@
 
 ### App
 
-* `type`
+* `type`, must be `app`.
 * `fmt`
 * `ver`
 * `hide`
@@ -67,12 +100,13 @@
 
 ### Lib
 
-* `type`
+* `type`, must be `lib`.
 * `fmt`
 * `hide`
 * `auth`
 * `salt`
-* `lib`
+* `lib`, the cycle calling problem.
+* `ext`
 * `code`
 
 ## Extend Functions
@@ -96,3 +130,9 @@
 #### Library Management
 
 * Easy Protocol support full on-chain application.
+
+## Glossary
+
+* Anchor
+* Anchor Name
+* Anchor Link
