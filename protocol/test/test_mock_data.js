@@ -7,6 +7,7 @@
 const { ApiPromise, WsProvider } =require('@polkadot/api');
 const { Keyring } =require('@polkadot/api');
 const {anchorJS} = require('../lib/anchor.js');
+const md5 =require("md5");
 
 const config={
     color:'\x1b[36m%s\x1b[0m',
@@ -34,6 +35,9 @@ const self={
             },1500);
         });
     },
+    accounts:(ck)=>{
+
+    },
     prework:(ck)=>{
         return ck && ck();
     },
@@ -51,17 +55,33 @@ const self={
             });
         });
     },
+    multi:(list,ck,index,pair)=>{
+        if(list.length===0) return ck && ck();
+        const row=list.shift();
+        console.log(`\nWriting lib anchor : ${row.name}`);
+        const strProto=typeof(row.protocol)=='string'?row.protocol:JSON.stringify(row.protocol);
+        const raw=typeof(row.raw)=='string'?row.raw:JSON.stringify(row.raw);
+        anchorJS.write(pair,row.name,raw,strProto,(res)=>{
+            console.log(`[${index}] Processing : ${row.name}, protocol ( ${strProto.length} bytes ) :${strProto}`);
+            console.log(res);
+            if(res.step==="Finalized"){
+                self.multi(list,ck,index,pair);
+            }
+        });
+    },
     stamp:()=>{
         return new Date().getTime();
     },
 };
 
 const list=[
-    write_app_sample,
-    write_data_sample,
-    write_unexcept_data_sample,
-    write_mock_normal_libs,
-    write_mock_complex_libs,
+    //write_app_sample,
+    //write_data_sample,
+    //write_unexcept_data_sample,
+    //write_mock_normal_libs,
+    //write_mock_complex_libs,
+    //write_salt_hide_sample,
+    write_anchor_hide_sample,
 ];
 self.auto(list);
 
@@ -73,21 +93,14 @@ function write_app_sample(index,ck){
 
     const anchor="entry_app";
     const raw="console.log(container);console.log(from);console.log(args);console.log(arguments)";
-    const protocol={
-        "type":"app",
-        "fmt":"js",
-        "ver":"1.0.0",
-    };
+    const protocol={"type":"app","fmt":"js","ver":"1.0.0"};
+    const list=[{name:anchor,raw:raw,protocol:protocol}];
 
-    anchorJS.write(pair,anchor,raw,JSON.stringify(protocol),(res)=>{
-        console.log(`[${index}] Processing:`);
-        console.log(res);
-        if(res.step==="Finalized"){
-            const end=self.stamp();
-            console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
-            return ck && ck();
-        }
-    });
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
 }
 
 function write_data_sample(index,ck){
@@ -108,15 +121,13 @@ function write_data_sample(index,ck){
         "args":"id=12&title=hello",
     };
 
-    anchorJS.write(pair,anchor,JSON.stringify(raw),JSON.stringify(protocol),(res)=>{
-        console.log(`[${index}] Processing:`);
-        console.log(res);
-        if(res.step==="Finalized"){
-            const end=self.stamp();
-            console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
-            return ck && ck();
-        }
-    });
+    const list=[{name:anchor,raw:raw,protocol:protocol}];
+
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
 }
 
 function write_unexcept_data_sample(index,ck){
@@ -130,21 +141,15 @@ function write_unexcept_data_sample(index,ck){
         "content":"This is a test to call an unexsist anchor",
         "footer":"foot content",
     };
-    const protocol={
-        "type":"data",
-        "fmt":"json",
-        "call":"entry_none",
-    };
+    const protocol={"type":"data","fmt":"json","call":"entry_none"};
 
-    anchorJS.write(pair,anchor,JSON.stringify(raw),JSON.stringify(protocol),(res)=>{
-        console.log(`[${index}] Processing:`);
-        console.log(res);
-        if(res.step==="Finalized"){
-            const end=self.stamp();
-            console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
-            return ck && ck();
-        }
-    });
+    const list=[{name:anchor,raw:raw,protocol:protocol}];
+
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
 }
 
 function write_mock_normal_libs(index,ck){
@@ -168,24 +173,11 @@ function write_mock_normal_libs(index,ck){
         {name:"animate",raw:"This is mock animate css library",protocol:{"type":"lib","fmt":"css","ver":"1.2.1"}},
     ];
 
-    function auto(list,ck){
-        if(list.length===0) return ck && ck();
-        const row=list.pop();
-        console.log(`Writing lib anchor : ${row.name}`);
-        anchorJS.write(pair,row.name,row.raw,JSON.stringify(row.protocol),(res)=>{
-            console.log(`[${index}] Processing:`);
-            console.log(res);
-            if(res.step==="Finalized"){
-                auto(list,ck);
-            }
-        });
-    }
-
-    auto(list,()=>{
+    self.multi(list,()=>{
         const end=self.stamp();
         console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
         return ck && ck();
-    });
+    },index,pair);
 
 }
 
@@ -216,23 +208,77 @@ function write_mock_complex_libs(index,ck){
         {name:"js_b_2_2",raw:';(function(){console.log("js_b_2_2 mock lib")})()',protocol:{type:"lib",fmt:"js",ver:"1.2.3"}},
     ];
 
-    function auto(list,ck){
-        if(list.length===0) return ck && ck();
-        const row=list.pop();
-        console.log(`Writing lib anchor : ${row.name}`);
-        anchorJS.write(pair,row.name,row.raw,JSON.stringify(row.protocol),(res)=>{
-            console.log(`[${index}] Processing:`);
-            console.log(res);
-            if(res.step==="Finalized"){
-                auto(list,ck);
-            }
-        });
-    }
-
-    auto(list,()=>{
+    self.multi(list,()=>{
         const end=self.stamp();
         console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
         return ck && ck();
-    });
+    },index,pair);
+}
 
+function write_salt_hide_sample(index,ck){
+    const start=self.stamp();
+    const seed='Bob';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Write the salt hide data by ${seed}`);
+
+    const list=[];
+    const anchor="hideme";
+    const raw="This is mock data to test hide function";
+    const protocol={"type":"data","fmt":"json","call":"entry_app","salt":["authacc","cda"]};
+    list.push({name:anchor,raw:raw,protocol:protocol});
+
+    const hide_name=md5(anchor+protocol.salt[1]);
+    const hide_raw=[23,33];
+    const hide_protocol={"type":"data","fmt":"json"};
+    list.push({name:hide_name,raw:JSON.stringify(hide_raw),protocol:hide_protocol});
+
+
+    const auth_name=md5(anchor+protocol.salt[0]);
+    const auth_raw={
+        "5DtBERu7U1SwPD1iebf5zHgjRsUnrU3iQgswySXeu6PK7eL4":0,
+        "5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9":8900,
+        "5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":32334,
+    };
+    const auth_protocol={"type":"data","fmt":"json"};
+    list.push({name:auth_name,raw:JSON.stringify(auth_raw),protocol:auth_protocol});
+
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
+}
+
+function write_anchor_hide_sample(index,ck){
+    const start=self.stamp();
+    const seed='Alice';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
+
+    const list=[];
+
+    const direct_anchor="hide_me_direct";
+    const direct_raw=[34,2234];
+    const direct_protocol={"type":"data","fmt":"json","hide":[3456,23890]};
+    list.push({name:direct_anchor,raw:direct_raw,protocol:direct_protocol});
+
+    const anchor="hide_me_by_anchor";
+    const raw="This is mock data to test hide function";
+    const protocol={"type":"data","fmt":"json","hide":"hbyanchor"};
+    list.push({name:anchor,raw:raw,protocol:protocol});
+
+    const target_anchor="hbyanchor";
+    const target_raw=[34,2234];
+    const target_protocol={"type":"data","fmt":"json",};
+    list.push({name:target_anchor,raw:target_raw,protocol:target_protocol});
+
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
 }
