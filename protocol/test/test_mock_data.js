@@ -74,16 +74,17 @@ const self={
     },
 };
 
-const list=[
-    //write_app_sample,
-    //write_data_sample,
-    //write_unexcept_data_sample,
-    //write_mock_normal_libs,
-    //write_mock_complex_libs,
-    //write_salt_hide_sample,
+const task=[
+    write_app_sample,
+    write_data_sample,
+    write_unexcept_data_sample,
+    write_mock_normal_libs,
+    write_mock_complex_libs,
+    write_salt_hide_sample,
     write_anchor_hide_sample,
+    write_anchor_auth_sample,
 ];
-self.auto(list);
+self.auto(task);
 
 function write_app_sample(index,ck){
     const start=self.stamp();
@@ -276,6 +277,63 @@ function write_anchor_hide_sample(index,ck){
     const target_protocol={"type":"data","fmt":"json",};
     list.push({name:target_anchor,raw:target_raw,protocol:target_protocol});
 
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
+}
+
+function write_anchor_auth_sample(index,ck){
+    const start=self.stamp();
+    const seed='Bob';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
+
+    const list=[];
+
+    const direct_anchor="auth_me_direct";
+    const direct_raw="fake data for auth direct";
+    const direct_protocol={"type":"data","fmt":"json","auth":{"5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":0}};
+    list.push({name:direct_anchor,raw:direct_raw,protocol:direct_protocol});
+
+    const anchor="auth_me_by_anchor";
+    const raw="This is mock data to test auth function";
+    const protocol={"type":"data","fmt":"json","hide":"abyanchor"};
+    list.push({name:anchor,raw:raw,protocol:protocol});
+
+    const target_anchor="abyanchor";
+    const target_raw={
+        "5DtBERu7U1SwPD1iebf5zHgjRsUnrU3iQgswySXeu6PK7eL4":0,
+        "5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9":38900,
+        "5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":12334,
+        "5CUUuCwJbXo8jVJQW21huCFWtBrg2K61wbZBiyGP3V7ZC4Ko":0,
+    };;
+    const target_protocol={"type":"data","fmt":"json",};
+    list.push({name:target_anchor,raw:target_raw,protocol:target_protocol});
+
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
+}
+
+
+
+
+function framework(index,ck){
+    const start=self.stamp();
+    const seed='Bob';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
+
+    const list=[];
+    
     self.multi(list,()=>{
         const end=self.stamp();
         console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
