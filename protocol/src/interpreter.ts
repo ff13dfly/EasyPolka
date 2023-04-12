@@ -6,8 +6,7 @@ import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
 
-import { Loader,Libs } from "../lib/loader"
-import { anchorJS } from "../lib/anchor";
+import { Loader,Libs } from "../lib/loader";
 
 let API:APIObject=null;
 
@@ -48,8 +47,11 @@ const self={
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
 
-        if(protocol.call){
-            const app_answer=Array.isArray(protocol.call)?protocol.call:[protocol.call,0];
+        if(protocol!==null && protocol.call){
+            const app_answer:[string,number]=[
+                Array.isArray(protocol.call)?protocol.call[0]:protocol.call,
+                Array.isArray(protocol.call)?protocol.call[1]:0
+            ];
             self.getAnchor(app_answer,(answer:any)=>{
                 if(answer.error){
                     cObject.error.push({error:"Failed to load answer anchor"});
@@ -72,13 +74,13 @@ const self={
 
         //1.try to decode and get application
         try {
-            cObject.app = new Function("container","API","args","from","error",data.raw);
+            cObject.app = new Function("container","API","args","from","error",data.raw===null?"":data.raw);
         } catch (error) {
             cObject.error.push({error:"Failed to get function"});
         }
 
         //2.check and get libs
-        if(protocol.lib){
+        if(protocol!==null && protocol.lib){
 
         }
         
@@ -91,7 +93,7 @@ const self={
         const protocol=data.protocol;
 
         //1.check and get libs
-        if(protocol.lib){
+        if(protocol!==null && protocol.lib){
 
         }
     },
@@ -136,11 +138,14 @@ decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
+type dataMap={
+    [index: string]: anchorObject;
+}
+
 const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
-
     let cObject:cAppResult={
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],

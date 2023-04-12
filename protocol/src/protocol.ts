@@ -11,11 +11,25 @@
 //2. [anchor_name,block_number]
 export type anchorLocation=[string,number] | string;
 
+// Easy Protocol keywords list
+export type keywords={
+    "type"?:rawType,
+    "fmt"?:formatType,
+    "call"?:anchorLocation,
+    "push"?:string[],
+    "lib"?:anchorLocation[],
+    "ver"?:string,
+    "hide"?:anchorLocation,
+    "auth"?:anchorLocation,
+    "salt"?:[string,string],
+    "args"?:string,
+};
+
 //anchor data object, input from anchorJS
 export type anchorObject={
     "name":     string;
-	"protocol": string|object|null;
-	"raw":      string|object|null;
+	"protocol": keywords|null;
+	"raw":      string|null;
 	"block":    number;
 	"stamp":    number;
 	"pre":      number;
@@ -153,11 +167,12 @@ export type APIObject={
 /********************************/
 /************ result ************/
 /********************************/
+interface dataMap { [anchor: string]: anchorObject; }
 
 // the decode result, easy protocol target
 export type cAppResult={
     app?:Function|null;          //cApp function, if from the data type anchor, will load target cApp
-    data:object;                //anchor data. 
+    data:dataMap;                //anchor data. 
     location:[string,number];   //anchor location
 
     //FIXME : need new definition object

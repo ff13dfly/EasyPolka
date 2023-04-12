@@ -44,8 +44,11 @@ var self = {
         console.log("Decode data anchor");
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
-        if (protocol.call) {
-            var app_answer_1 = Array.isArray(protocol.call) ? protocol.call : [protocol.call, 0];
+        if (protocol !== null && protocol.call) {
+            var app_answer_1 = [
+                Array.isArray(protocol.call) ? protocol.call[0] : protocol.call,
+                Array.isArray(protocol.call) ? protocol.call[1] : 0
+            ];
             self.getAnchor(app_answer_1, function (answer) {
                 if (answer.error) {
                     cObject.error.push({ error: "Failed to load answer anchor" });
@@ -64,13 +67,13 @@ var self = {
         var protocol = data.protocol;
         //1.try to decode and get application
         try {
-            cObject.app = new Function("container", "API", "args", "from", "error", data.raw);
+            cObject.app = new Function("container", "API", "args", "from", "error", data.raw === null ? "" : data.raw);
         }
         catch (error) {
             cObject.error.push({ error: "Failed to get function" });
         }
         //2.check and get libs
-        if (protocol.lib) {
+        if (protocol !== null && protocol.lib) {
         }
         return ck && ck(cObject);
     },
@@ -79,7 +82,7 @@ var self = {
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
         //1.check and get libs
-        if (protocol.lib) {
+        if (protocol !== null && protocol.lib) {
         }
     },
     getLibs: function (list, ck) {

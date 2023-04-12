@@ -19,6 +19,9 @@
 
         # run the compiled file
         node ${sample}.js
+
+        # types error command
+        npm i --save-dev @types/node
     ```
 
 ### Anchor Link Decode
