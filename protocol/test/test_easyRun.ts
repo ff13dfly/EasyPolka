@@ -40,9 +40,13 @@ const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
     //const linker="anchor://entry_app/?hello=world&me=fuu";
     //const linker="anchor://entry_app/3/?hello=world&me=fuu";
-    const linker="anchor://data_caller";
+    //const linker="anchor://data_caller";
+    //const linker="anchor://auth_me_direct";
+    const linker="anchor://bootstrap";
     easyRun(linker,API,(result:any)=>{
+        console.log(`-----------------result-----------------`)
         console.log(result);
+        console.log(JSON.stringify(result.data));
         //new Function("anchorJS","error",result.raw);
         //new Function("container","API","args","from","error",res.raw);
         if(result.app) result.app("con_id",API,{"hello":"world"});

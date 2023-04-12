@@ -62,6 +62,7 @@ self.prepare(server, function () {
         "anchors://hello/344/",
         "anors://hello/344/",
         "hello",
+        "anchor://hello@anchor",          //network support
     ];
     for (var i = 0; i < anchor_location.length; i++) {
         var row = anchor_location[i];

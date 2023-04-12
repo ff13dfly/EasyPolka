@@ -47,7 +47,7 @@ const self={
                     key:res.name,
                     raw:res.raw,
                     protocol:res.protocol,
-                }
+                };
                 return ck && ck(anchor,dt);
             }
         });
@@ -156,7 +156,6 @@ const self={
         return queue;
     },
     mergeOrder:(order)=>{
-        //console.log(order);
         const complex={};
         const map={};
         const done={};
@@ -239,7 +238,6 @@ const self={
         let error=false;    //标志位输出
 
         const ods=self.mergeOrder(order);
-        //console.log(`Plain lib array: ${JSON.stringify(ods)}`);
         for(let i=0;i<ods.length;i++){
             const row=ods[i];
             if(done[row]) continue;
@@ -259,7 +257,6 @@ const self={
 }
 
 exports.Loader =(list,API,ck)=>{
-    //console.log(`Load list : ${JSON.stringify(list)}`);
     search=API.search;
     target=API.target;
     self.getLibs(list,ck);

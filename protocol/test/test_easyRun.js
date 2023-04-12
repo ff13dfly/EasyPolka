@@ -37,9 +37,13 @@ var server = "ws://127.0.0.1:9944";
 self.prepare(server, function () {
     //const linker="anchor://entry_app/?hello=world&me=fuu";
     //const linker="anchor://entry_app/3/?hello=world&me=fuu";
-    var linker = "anchor://data_caller";
+    //const linker="anchor://data_caller";
+    //const linker="anchor://auth_me_direct";
+    var linker = "anchor://bootstrap";
     (0, interpreter_1.easyRun)(linker, API, function (result) {
+        console.log("-----------------result-----------------");
         console.log(result);
+        console.log(JSON.stringify(result.data));
         //new Function("anchorJS","error",result.raw);
         //new Function("container","API","args","from","error",res.raw);
         if (result.app)

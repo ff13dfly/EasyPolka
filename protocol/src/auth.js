@@ -7,10 +7,18 @@ var md5 = require("md5");
 var creator = function (anchor, ck, isNew) {
 };
 exports.easyAuth = creator;
-var check = function (anchor, salt, cfg, ck, auth) {
-    var dkey = !auth ? (anchor + salt) : auth;
-    console.log(dkey);
-    var hash = md5(dkey);
-    console.log("Check hide anchor:".concat(anchor, ", hash : ").concat(hash));
+var check = function (anchor, protocol, cfg, ck) {
+    console.log(anchor);
+    console.log(protocol);
+    //const dkey=!protocol.auth?(anchor+salt):auth;
+    var data = {
+        "list": null,
+        "anchor": null,
+    };
+    // const dkey=!auth?(anchor+salt):auth;
+    // console.log(dkey);
+    // const hash=md5(dkey);
+    // console.log(`Check hide anchor:${anchor}, hash : ${hash}`);
+    return ck && ck(data);
 };
 exports.checkAuth = check;

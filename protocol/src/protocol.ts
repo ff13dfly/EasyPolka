@@ -155,7 +155,12 @@ export type cAppResult={
     app:Function|null;          //cApp function, if from the data type anchor, will load target cApp
     data:object;                //anchor data. 
     location:[string,number];   //anchor location
-    
+
+    //FIXME : need new definition object
+    auth:object;                //authority information
+    hide:object;                //hide list
+    libs:Object[];              //lib list
+
     parameter?:string[];        //running parameters, from anchor link parameter
     error?:errorObject[];       //errors when loading cApp
     from?:anchorObject;         //if the cApp is called from a data anchor
