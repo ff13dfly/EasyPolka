@@ -65,6 +65,10 @@ export enum codeType{
     NONE  = "",
 }
 
+export enum keysApp{
+
+}
+
 //data type object
 //TODO: auth is not fully logical now. Need to confirm the calling address
 //TODO: there are two ways.
@@ -152,21 +156,21 @@ export type APIObject={
 
 // the decode result, easy protocol target
 export type cAppResult={
-    app:Function|null;          //cApp function, if from the data type anchor, will load target cApp
+    app?:Function|null;          //cApp function, if from the data type anchor, will load target cApp
     data:object;                //anchor data. 
     location:[string,number];   //anchor location
 
     //FIXME : need new definition object
-    auth:object;                //authority information
-    hide:object;                //hide list
-    libs:Object[];              //lib list
+    auth?:object;                //authority information
+    hide?:object;                //hide list
+    libs?:Object[];              //lib list
 
     parameter?:string[];        //running parameters, from anchor link parameter
-    error?:errorObject[];       //errors when loading cApp
-    from?:anchorObject;         //if the cApp is called from a data anchor
+    error:errorObject[];       //errors when loading cApp
+    from?:anchorLocation;         //if the cApp is called from a data anchor
     more?:object;               //extra parameters
     //parameters from launcher
     //API:APIObject;            //APIs can be sent to cApp
-    nodeJS:boolean;             //wether the nodeJS
+    nodeJS?:boolean;             //wether the nodeJS
     back?:string[];             //parameter when callback
 }

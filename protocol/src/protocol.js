@@ -3,7 +3,7 @@
 //!important Easy Protocol is a simple protocol to launch cApp via Anchor network.
 //!important All functions implement, but this implement only support JS with CSS application 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.codeType = exports.formatType = exports.rawType = exports.errorLevel = void 0;
+exports.keysApp = exports.codeType = exports.formatType = exports.rawType = exports.errorLevel = void 0;
 var errorLevel;
 (function (errorLevel) {
     errorLevel["ERROR"] = "error";
@@ -34,3 +34,6 @@ var codeType;
     codeType["HEX"] = "hex";
     codeType["NONE"] = "";
 })(codeType = exports.codeType || (exports.codeType = {}));
+var keysApp;
+(function (keysApp) {
+})(keysApp = exports.keysApp || (exports.keysApp = {}));

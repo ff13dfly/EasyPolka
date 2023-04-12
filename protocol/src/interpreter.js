@@ -8,7 +8,6 @@ var decoder_1 = require("./decoder");
 var auth_1 = require("./auth");
 var hide_1 = require("./hide");
 var loader_1 = require("../lib/loader");
-var anchor_1 = require("../lib/anchor");
 var API = null;
 var self = {
     getAnchor: function (location, ck) {
@@ -41,6 +40,63 @@ var self = {
             return ck && ck({ error: "Not EasyProtocol anchor." });
         return ck && ck(data);
     },
+    decodeData: function (cObject, ck) {
+        console.log("Decode data anchor");
+        var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
+        var protocol = data.protocol;
+        if (protocol.call) {
+            var app_answer_1 = Array.isArray(protocol.call) ? protocol.call : [protocol.call, 0];
+            self.getAnchor(app_answer_1, function (answer) {
+                if (answer.error) {
+                    cObject.error.push({ error: "Failed to load answer anchor" });
+                    return ck && ck(cObject);
+                }
+                cObject.from = cObject.location;
+                cObject.location = [app_answer_1[0], answer.block];
+                if (protocol.args) {
+                }
+            });
+        }
+    },
+    decodeApp: function (cObject, ck) {
+        console.log("Decode app anchor");
+        var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
+        var protocol = data.protocol;
+        //1.try to decode and get application
+        try {
+            cObject.app = new Function("container", "API", "args", "from", "error", data.raw);
+        }
+        catch (error) {
+            cObject.error.push({ error: "Failed to get function" });
+        }
+        //2.check and get libs
+        if (protocol.lib) {
+        }
+        return ck && ck(cObject);
+    },
+    decodeLib: function (cObject, ck) {
+        console.log("Decode lib anchor");
+        var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
+        var protocol = data.protocol;
+        //1.check and get libs
+        if (protocol.lib) {
+        }
+    },
+    getLibs: function (list, ck) {
+        if (API === null)
+            return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
+        console.log("Ready to get libs: ".concat(JSON.stringify(list)));
+        var RPC = {
+            search: API.common.latest,
+            target: API.common.target,
+        };
+        (0, loader_1.Libs)(list, API, ck);
+    },
+    more: function () {
+    },
+    // check running enviment (window or node.js)
+    env: function () {
+    },
     getParams: function (args) {
         var map = {};
         var arr = args.split("&");
@@ -52,34 +108,6 @@ var self = {
             map[kv[0]] = kv[1];
         }
         return map;
-    },
-    decodeData: function (obj, ck) {
-        console.log("Decode data anchor");
-    },
-    decodeApp: function (obj, ck) {
-        console.log("Decode app anchor");
-    },
-    decodeLib: function (obj, ck) {
-        console.log("Decode lib anchor");
-    },
-    getLibs: function (list, ck) {
-        console.log("Ready to get libs: ".concat(JSON.stringify(list)));
-        var API = {
-            search: anchor_1.anchorJS.search,
-            target: anchor_1.anchorJS.target,
-        };
-        //Loader(list,API,ck);
-        (0, loader_1.Libs)(list, API, ck);
-    },
-    more: function () {
-    },
-    // check the authority of anchor if launch from data
-    authorize: function () {
-    },
-    hide: function () {
-    },
-    // check running enviment (window or node.js)
-    env: function () {
     },
 };
 var decoder = {};
@@ -116,79 +144,5 @@ var run = function (linker, inputAPI, ck) {
             });
         });
     });
-    // self.getAnchor(target.location,(res:any)=>{
-    //     if(res.error) return ck && ck(res);
-    //     if(cObject.location[1]===0)cObject.location[1]=res.block;
-    //     cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=res;
-    //     checkAuth(res.name,res.protocol,{},(alist:object|null)=>{
-    //         console.log(alist);
-    //     });
-    //     // checkAuth(target.location[0],'ab',{},()=>{
-    //     // });
-    //     // checkHide(target.location[0],'cc',{},()=>{
-    //     // });
-    //     // self.getLibs(["js_a"],(map:any,order:[])=>{
-    //     //     console.log(map);
-    //     //     console.log(order);
-    //     // });
-    //     // 1.check anchor data
-    //     switch (res.protocol.type) {
-    //         case "app":
-    //             console.log(`App type anchor`);
-    //             try {
-    //                 cObject.app = new Function("container","API","args","from","error",res.raw);
-    //             } catch (error) {
-    //                 cObject.error.push({error:"Failed to get function"});
-    //             }
-    //             if(res.protocol.lib){
-    //                 self.getLibs(res.protocol.lib,(map:any,order:[])=>{
-    //                     //console.log(map);
-    //                     //console.log(order);
-    //                     ck && ck(cObject);
-    //                 })
-    //             }else{
-    //                 ck && ck(cObject);
-    //             }
-    //             break;
-    //         case "data":
-    //             console.log(`Data type anchor`);
-    //             if(res.protocol.call){
-    //                 const app_answer=Array.isArray(res.protocol.call)?res.protocol.call:[res.protocol.call,0];
-    //                 return self.getAnchor(app_answer,(answer:any)=>{
-    //                     if(answer.error || answer.empty){
-    //                         cObject.error.push({error:"Failed to load answer anchor"});
-    //                         return ck && ck(cObject);
-    //                     }
-    //                     if(!answer.protocol || !answer.protocol.type){
-    //                         cObject.error.push({error:"Called Not-EasyProtocol anchor."});
-    //                         return ck && ck(cObject);
-    //                     }
-    //                     cObject.from=cObject.location;
-    //                     cObject.location=[app_answer[0],answer.block];
-    //                     cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=answer;
-    //                     try {
-    //                         cObject.app = new Function("container","API","args","from","error",answer.raw);
-    //                     } catch (error) {
-    //                         cObject.error.push({error:"Failed to get function"});
-    //                     }
-    //                     if(res.protocol.args){
-    //                         const args=self.getParams(res.protocol.args);
-    //                         if(!args.error) cObject.parameter=args;
-    //                         else cObject.error.push(args);
-    //                     }
-    //                     ck && ck(cObject);
-    //                 });
-    //             }
-    //             ck && ck(cObject);
-    //             break;
-    //         case "lib":
-    //             console.log(`Lib type anchor`);
-    //             break;
-    //         default:
-    //             console.log(`Unexcept type anchor`);
-    //             ck && ck(cObject);
-    //             break;
-    //     }
-    // });
 };
 exports.easyRun = run;
