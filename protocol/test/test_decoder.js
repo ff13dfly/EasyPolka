@@ -1,27 +1,23 @@
 "use strict";
-// npm i -D typescript
-// npx tsc index.ts --skipLibCheck
-// node index.js
+// npx tsc test_decoder.ts --skipLibCheck
+// node test_decoder.js
 Object.defineProperty(exports, "__esModule", { value: true });
-// declare var ApiPromise: any; 
-// declare var WsProvider: any;
-// declare var Keyring: any; 
 var api_1 = require("@polkadot/api");
 var api_2 = require("@polkadot/api");
-var anchor_1 = require("../lib/anchor");
+var anchorJS = require("../lib/anchor").anchorJS;
 var decoder_1 = require("../src/decoder");
 var API = {
     "common": {
-        "latest": anchor_1.anchorJS.latest,
-        "target": anchor_1.anchorJS.target,
-        "history": anchor_1.anchorJS.history,
+        "latest": anchorJS.latest,
+        "target": anchorJS.target,
+        "history": anchorJS.history,
         "lib": function (list, ck) {
             var res = [];
             console.log(list);
             return ck && ck(res);
         },
-        "owner": anchor_1.anchorJS.owner,
-        "subcribe": anchor_1.anchorJS.subcribe,
+        "owner": anchorJS.owner,
+        "subcribe": anchorJS.subcribe,
     },
 };
 var self = {
@@ -30,10 +26,10 @@ var self = {
             console.log({ node: node });
             var provider = new api_1.WsProvider(node);
             api_1.ApiPromise.create({ provider: provider }).then(function (api) {
-                if (!anchor_1.anchorJS.set(api)) {
+                if (!anchorJS.set(api)) {
                     console.log('Error anchor node.');
                 }
-                anchor_1.anchorJS.setKeyring(api_2.Keyring);
+                anchorJS.setKeyring(api_2.Keyring);
                 return ck && ck();
             });
         }
@@ -62,7 +58,6 @@ self.prepare(server, function () {
         "anchors://hello/344/",
         "anors://hello/344/",
         "hello",
-        "anchor://hello@anchor",          //network support
     ];
     for (var i = 0; i < anchor_location.length; i++) {
         var row = anchor_location[i];

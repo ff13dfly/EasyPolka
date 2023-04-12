@@ -6,7 +6,8 @@ import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
 
-import { Loader,Libs } from "../lib/loader";
+
+const {Loader,Libs} = require("../lib/loader");
 
 let API:APIObject=null;
 
@@ -105,10 +106,24 @@ const self={
             search:API.common.latest,
             target:API.common.target,
         }
-
         Libs(list,API,ck);
     },
 
+    merge:(anchor:string,protocol:object,cfg:object,ck:Function)=>{
+        if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
+        const result={};
+        const funs={
+            "latest":API.common.latest,
+            "history":API.common.history,
+        }
+        
+        checkAuth(anchor,protocol,funs,{},(authObject:object|null)=>{
+            checkHide(anchor,protocol,{},(hideObject:object|null)=>{
+
+                return ck && ck(result);
+            });
+        });
+    },
     more:()=>{
 
     },
@@ -164,13 +179,9 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         const type:string=data.protocol.type;
         if(!decoder[type]) return ck && ck(data);
 
-        checkAuth(data.name,data.protocol,{},(authObject:object|null)=>{
+        self.merge(data.name,data.protocol,{},(res:any)=>{
 
-            //if(authObject!==null) cObject.hide=authObject;
-            checkHide(data.name,data.protocol,{},(hideObject:object|null)=>{
-
-                return decoder[type](cObject,ck);
-            });
+            return decoder[type](cObject,ck);
         });
     });
 };

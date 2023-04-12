@@ -129,7 +129,7 @@ export type libProtocol={
 //only the auth between anchors.
 //Sample:{"hello":32345} 
 // the number is expired block number of the auth, if 0, it is unlimited.
-interface authMap { [anchor: string]: number; }
+export interface authMap { [anchor: string]: number; }
 
 //hide map of target anchor
 //the history of the hide anchor is meanful.

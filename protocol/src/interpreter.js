@@ -7,7 +7,7 @@ var protocol_1 = require("./protocol");
 var decoder_1 = require("./decoder");
 var auth_1 = require("./auth");
 var hide_1 = require("./hide");
-var loader_1 = require("../lib/loader");
+var _a = require("../lib/loader"), Loader = _a.Loader, Libs = _a.Libs;
 var API = null;
 var self = {
     getAnchor: function (location, ck) {
@@ -93,7 +93,21 @@ var self = {
             search: API.common.latest,
             target: API.common.target,
         };
-        (0, loader_1.Libs)(list, API, ck);
+        Libs(list, API, ck);
+    },
+    merge: function (anchor, protocol, cfg, ck) {
+        if (API === null)
+            return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
+        var result = {};
+        var funs = {
+            "latest": API.common.latest,
+            "history": API.common.history,
+        };
+        (0, auth_1.checkAuth)(anchor, protocol, funs, {}, function (authObject) {
+            (0, hide_1.checkHide)(anchor, protocol, {}, function (hideObject) {
+                return ck && ck(result);
+            });
+        });
     },
     more: function () {
     },
@@ -140,11 +154,8 @@ var run = function (linker, inputAPI, ck) {
         var type = data.protocol.type;
         if (!decoder[type])
             return ck && ck(data);
-        (0, auth_1.checkAuth)(data.name, data.protocol, {}, function (authObject) {
-            //if(authObject!==null) cObject.hide=authObject;
-            (0, hide_1.checkHide)(data.name, data.protocol, {}, function (hideObject) {
-                return decoder[type](cObject, ck);
-            });
+        self.merge(data.name, data.protocol, {}, function (res) {
+            return decoder[type](cObject, ck);
         });
     });
 };

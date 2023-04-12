@@ -3,8 +3,7 @@
 
 import { ApiPromise, WsProvider,Keyring } from '@polkadot/api';
 
-import { anchorJS } from "../lib/anchor";
-//import { anchorLocation } from "../src/protocol";
+const {anchorJS} =require("../lib/anchor");
 
 import { easyRun } from "../src/interpreter";
 
@@ -42,7 +41,7 @@ self.prepare(server,()=>{
     //const linker="anchor://entry_app/3/?hello=world&me=fuu";
     //const linker="anchor://data_caller";
     //const linker="anchor://auth_me_direct";
-    const linker="anchor://bootstrap";
+    const linker="anchor://auth_me_by_anchor";
     easyRun(linker,API,(result:any)=>{
         console.log(`-----------------result-----------------`)
         console.log(result);

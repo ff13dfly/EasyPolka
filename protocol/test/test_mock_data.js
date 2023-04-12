@@ -301,7 +301,7 @@ function write_anchor_auth_sample(index,ck){
 
     const anchor="auth_me_by_anchor";
     const raw="This is mock data to test auth function";
-    const protocol={"type":"data","fmt":"json","hide":"abyanchor"};
+    const protocol={"type":"data","fmt":"json","auth":"abyanchor"};
     list.push({name:anchor,raw:raw,protocol:protocol});
 
     const target_anchor="abyanchor";

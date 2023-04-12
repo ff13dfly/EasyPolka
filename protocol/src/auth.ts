@@ -1,6 +1,6 @@
 //!important This is the library for creating auth data
 
-import { anchorObject} from "./protocol";
+import { anchorObject,authMap} from "./protocol";
 const md5 =require("md5");
 
 // create the anchor hiddeing default data
@@ -16,19 +16,27 @@ type cfgAuth={
 }
 
 type result={
-    'list':object|null;
+    'list':authMap[]|null;
     'anchor':anchorObject|null;
 };
 
-const check=(anchor:string,protocol:object,cfg:cfgAuth,ck:Function)=>{
+type APIs={
+    "latest"?:Function;
+    "histor"?:Function;
+}
+
+const check=(anchor:string,protocol:object,funs:APIs,cfg:cfgAuth,ck:Function)=>{
     console.log(anchor);
     console.log(protocol);
+    console.log(funs);
     //const dkey=!protocol.auth?(anchor+salt):auth;
 
     const data:result={
         "list":null,
         "anchor":null,
     }
+
+    console.log(md5("hello"))
 
     // const dkey=!auth?(anchor+salt):auth;
     // console.log(dkey);

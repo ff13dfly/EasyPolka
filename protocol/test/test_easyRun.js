@@ -3,16 +3,15 @@
 // node test_easyRun.js
 Object.defineProperty(exports, "__esModule", { value: true });
 var api_1 = require("@polkadot/api");
-var anchor_1 = require("../lib/anchor");
-//import { anchorLocation } from "../src/protocol";
+var anchorJS = require("../lib/anchor").anchorJS;
 var interpreter_1 = require("../src/interpreter");
 var API = {
     "common": {
-        "latest": anchor_1.anchorJS.latest,
-        "target": anchor_1.anchorJS.target,
-        "history": anchor_1.anchorJS.history,
-        "owner": anchor_1.anchorJS.owner,
-        "subcribe": anchor_1.anchorJS.subcribe,
+        "latest": anchorJS.latest,
+        "target": anchorJS.target,
+        "history": anchorJS.history,
+        "owner": anchorJS.owner,
+        "subcribe": anchorJS.subcribe,
     },
 };
 var self = {
@@ -21,10 +20,10 @@ var self = {
             //console.log({node});
             var provider = new api_1.WsProvider(node);
             api_1.ApiPromise.create({ provider: provider }).then(function (api) {
-                if (!anchor_1.anchorJS.set(api)) {
+                if (!anchorJS.set(api)) {
                     console.log('Error anchor node.');
                 }
-                anchor_1.anchorJS.setKeyring(api_1.Keyring);
+                anchorJS.setKeyring(api_1.Keyring);
                 return ck && ck();
             });
         }
@@ -39,7 +38,7 @@ self.prepare(server, function () {
     //const linker="anchor://entry_app/3/?hello=world&me=fuu";
     //const linker="anchor://data_caller";
     //const linker="anchor://auth_me_direct";
-    var linker = "anchor://bootstrap";
+    var linker = "anchor://auth_me_by_anchor";
     (0, interpreter_1.easyRun)(linker, API, function (result) {
         console.log("-----------------result-----------------");
         console.log(result);

@@ -4,7 +4,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/api';
 
-import { anchorJS } from "../lib/anchor";
+const {anchorJS} =require("../lib/anchor");
 import { anchorLocation } from "../src/protocol";
 import { linkDecoder } from "../src/decoder";
 
