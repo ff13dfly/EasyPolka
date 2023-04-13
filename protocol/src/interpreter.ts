@@ -1,7 +1,7 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult} from "./protocol";
+import { anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult,keywords} from "./protocol";
 import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
@@ -109,17 +109,18 @@ const self={
         Libs(list,API,ck);
     },
 
-    merge:(anchor:string,protocol:object,cfg:object,ck:Function)=>{
+    merge:(anchor:string,protocol:keywords,cfg:object,ck:Function)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const result={};
-        const funs={
-            "latest":API.common.latest,
-            "history":API.common.history,
-        }
-        
-        checkAuth(anchor,protocol,funs,{},(authObject:object|null)=>{
-            checkHide(anchor,protocol,{},(hideObject:object|null)=>{
+        // const funs={
+        //     "latest":API.common.latest,
+        //     "history":API.common.history,
+        // }
 
+        checkAuth(anchor,protocol,{},(authObject:object|null)=>{
+            console.log(authObject);
+            checkHide(anchor,protocol,{},(hideObject:object|null)=>{
+                console.log(hideObject);
                 return ck && ck(result);
             });
         });

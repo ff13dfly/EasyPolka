@@ -1,6 +1,6 @@
 //!important This is the library for creating auth data
 
-import { anchorObject,authMap} from "./protocol";
+import { anchorLocation, anchorObject,authMap,keywords} from "./protocol";
 const md5 =require("md5");
 
 // create the anchor hiddeing default data
@@ -17,7 +17,7 @@ type cfgAuth={
 
 type result={
     'list':authMap[]|null;
-    'anchor':anchorObject|null;
+    'anchor':anchorLocation|null;
 };
 
 type APIs={
@@ -25,23 +25,26 @@ type APIs={
     "histor"?:Function;
 }
 
-const check=(anchor:string,protocol:object,funs:APIs,cfg:cfgAuth,ck:Function)=>{
-    console.log(anchor);
-    console.log(protocol);
-    console.log(funs);
-    //const dkey=!protocol.auth?(anchor+salt):auth;
-
+const check=(anchor:string,protocol:keywords,cfg:cfgAuth,ck:Function)=>{
     const data:result={
         "list":null,
         "anchor":null,
     }
+    
+    if(protocol.auth){
+        //1.check wether target anchor 
+        if(typeof protocol.auth==="string" || Array.isArray(protocol.auth)){
+            data.anchor=protocol.auth;
+        }else{
+            data.list=protocol.auth;
+        }
+    }else{
+        //2.check default anchor
+        if(protocol.salt){
+            data.anchor=md5(anchor+protocol.salt[0])
+        }
+    }
 
-    console.log(md5("hello"))
-
-    // const dkey=!auth?(anchor+salt):auth;
-    // console.log(dkey);
-    // const hash=md5(dkey);
-    // console.log(`Check hide anchor:${anchor}, hash : ${hash}`);
     return ck && ck(data);
 };
 

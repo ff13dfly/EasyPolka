@@ -99,12 +99,14 @@ var self = {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
         var result = {};
-        var funs = {
-            "latest": API.common.latest,
-            "history": API.common.history,
-        };
-        (0, auth_1.checkAuth)(anchor, protocol, funs, {}, function (authObject) {
+        // const funs={
+        //     "latest":API.common.latest,
+        //     "history":API.common.history,
+        // }
+        (0, auth_1.checkAuth)(anchor, protocol, {}, function (authObject) {
+            console.log(authObject);
             (0, hide_1.checkHide)(anchor, protocol, {}, function (hideObject) {
+                console.log(hideObject);
                 return ck && ck(result);
             });
         });

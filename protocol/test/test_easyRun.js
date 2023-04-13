@@ -38,7 +38,7 @@ self.prepare(server, function () {
     //const linker="anchor://entry_app/3/?hello=world&me=fuu";
     //const linker="anchor://data_caller";
     //const linker="anchor://auth_me_direct";
-    var linker = "anchor://auth_me_by_anchor";
+    var linker = "anchor://hideme";
     (0, interpreter_1.easyRun)(linker, API, function (result) {
         console.log("-----------------result-----------------");
         console.log(result);

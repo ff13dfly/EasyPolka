@@ -41,7 +41,7 @@ self.prepare(server,()=>{
     //const linker="anchor://entry_app/3/?hello=world&me=fuu";
     //const linker="anchor://data_caller";
     //const linker="anchor://auth_me_direct";
-    const linker="anchor://auth_me_by_anchor";
+    const linker="anchor://hideme";
     easyRun(linker,API,(result:any)=>{
         console.log(`-----------------result-----------------`)
         console.log(result);
