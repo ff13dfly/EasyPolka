@@ -150,6 +150,7 @@ export type APIObject={
         "latest":(anchor:string,ck:Function) => anchorObject|errorObject;
         "history":(anchor:string,ck:Function) => anchorObject[]|errorObject;
         "owner":(anchor:string,ck:Function) => any;
+        "multi"?:(list:anchorLocation[],ck:Function)=>any|errorObject;
         "lib"?:(list:anchorLocation[],ck:Function) => any|errorObject;
         "subcribe":(ck:Function,cfg:any) => anchorObject[];
     };

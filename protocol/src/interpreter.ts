@@ -1,7 +1,7 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult,keywords} from "./protocol";
+import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult,keywords,authMap} from "./protocol";
 import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
@@ -10,6 +10,16 @@ import { checkHide } from "./hide";
 const {Loader,Libs} = require("../lib/loader");
 
 let API:APIObject=null;
+
+type authResult={
+    'list':authMap[]|null;
+    'anchor':anchorLocation|null;
+};
+
+type hideResult={
+    'list':number[]|null;
+    'anchor':anchorLocation|null;
+};
 
 const self={
     getAnchor:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
@@ -108,30 +118,52 @@ const self={
         }
         Libs(list,API,ck);
     },
-
-    merge:(anchor:string,protocol:keywords,cfg:object,ck:Function)=>{
+    getHistory:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
-        const result={};
-        // const funs={
-        //     "latest":API.common.latest,
-        //     "history":API.common.history,
-        // }
-
-        checkAuth(anchor,protocol,{},(authObject:object|null)=>{
-            console.log(authObject);
-            checkHide(anchor,protocol,{},(hideObject:object|null)=>{
-                console.log(hideObject);
-                return ck && ck(result);
-            });
+        const [anchor,block]=location;
+        API.common.history(anchor,(list:[])=>{
+            //self.filterAnchor(data,ck); 
         });
     },
-    more:()=>{
 
-    },
+    //combine the hide and auth list to result
+    merge:(anchor:string,protocol:keywords,cfg:object,ck:Function)=>{
+        if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
+        const arr:number[]=[];
+        const result={
+            "hide":arr,
+            "auth":{},
+        };
 
-    // check running enviment (window or node.js)
-    env:()=>{
+        const mlist:anchorLocation[]=[];
+        checkAuth(anchor,protocol,(authObject:authResult)=>{
+            checkHide(anchor,protocol,(hideObject:hideResult)=>{
 
+                if(authObject.anchor===null && hideObject.anchor===null){
+                    if(authObject.list) result.auth=authObject.list;
+                    if(hideObject.list) result.hide=hideObject.list;
+                    return ck && ck(result);
+                }else if(authObject.anchor===null && hideObject.anchor!==null){
+                    const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
+                    self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
+
+                    });
+                }else if(authObject.anchor!==null && hideObject.anchor===null){
+                    const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];
+                    self.getHistory(auth_anchor,(adata:anchorObject|errorObject)=>{
+
+                    });
+                }else if(authObject.anchor!==null && hideObject.anchor!==null){
+                    const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
+                    const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];    
+                    self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
+                        self.getHistory(auth_anchor,(adata:anchorObject|errorObject)=>{
+    
+                        });
+                    });
+                }
+            });
+        });
     },
     getParams:(args:string)=>{
         let map:any={};
@@ -181,7 +213,6 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         if(!decoder[type]) return ck && ck(data);
 
         self.merge(data.name,data.protocol,{},(res:any)=>{
-
             return decoder[type](cObject,ck);
         });
     });

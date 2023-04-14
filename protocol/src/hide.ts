@@ -7,17 +7,13 @@ const creator=(anchor:string)=>{
 };
 export {creator as easyHide};
 
-type cfgAuth={
-    "history"?:boolean;     //wether using the history data as auth list
-}
-
 type result={
-    'list':object|null;
+    'list':number[]|null;
     'anchor':anchorObject|null;
 };
 
 // check anchor to get hide list
-const check=(anchor:string,protocol:object,cfg:cfgAuth,ck:Function)=>{
+const check=(anchor:string,protocol:object,ck:Function)=>{
     // const dkey=!hide?(anchor+salt):hide;
     // const hash=md5(dkey);
     // console.log(`Check hide anchor:${anchor}, hash : ${hash}`);

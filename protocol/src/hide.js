@@ -6,7 +6,7 @@ var creator = function (anchor) {
 };
 exports.easyHide = creator;
 // check anchor to get hide list
-var check = function (anchor, protocol, cfg, ck) {
+var check = function (anchor, protocol, ck) {
     // const dkey=!hide?(anchor+salt):hide;
     // const hash=md5(dkey);
     // console.log(`Check hide anchor:${anchor}, hash : ${hash}`);

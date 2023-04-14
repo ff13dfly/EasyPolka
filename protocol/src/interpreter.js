@@ -95,26 +95,53 @@ var self = {
         };
         Libs(list, API, ck);
     },
+    getHistory: function (location, ck) {
+        if (API === null)
+            return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
+        var anchor = location[0], block = location[1];
+        API.common.history(anchor, function (list) {
+            //self.filterAnchor(data,ck); 
+        });
+    },
+    //combine the hide and auth list to result
     merge: function (anchor, protocol, cfg, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
-        var result = {};
-        // const funs={
-        //     "latest":API.common.latest,
-        //     "history":API.common.history,
-        // }
-        (0, auth_1.checkAuth)(anchor, protocol, {}, function (authObject) {
-            console.log(authObject);
-            (0, hide_1.checkHide)(anchor, protocol, {}, function (hideObject) {
-                console.log(hideObject);
-                return ck && ck(result);
+        var arr = [];
+        var result = {
+            "hide": arr,
+            "auth": {},
+        };
+        var mlist = [];
+        (0, auth_1.checkAuth)(anchor, protocol, function (authObject) {
+            (0, hide_1.checkHide)(anchor, protocol, function (hideObject) {
+                if (authObject.anchor === null && hideObject.anchor === null) {
+                    if (authObject.list)
+                        result.auth = authObject.list;
+                    if (hideObject.list)
+                        result.hide = hideObject.list;
+                    return ck && ck(result);
+                }
+                else if (authObject.anchor === null && hideObject.anchor !== null) {
+                    var hide_anchor = typeof hideObject.anchor === "string" ? [hideObject.anchor, 0] : [hideObject.anchor[0], hideObject.anchor[1]];
+                    self.getAnchor(hide_anchor, function (hdata) {
+                    });
+                }
+                else if (authObject.anchor !== null && hideObject.anchor === null) {
+                    var auth_anchor = typeof authObject.anchor === "string" ? [authObject.anchor, 0] : [authObject.anchor[0], authObject.anchor[1]];
+                    self.getHistory(auth_anchor, function (adata) {
+                    });
+                }
+                else if (authObject.anchor !== null && hideObject.anchor !== null) {
+                    var hide_anchor = typeof hideObject.anchor === "string" ? [hideObject.anchor, 0] : [hideObject.anchor[0], hideObject.anchor[1]];
+                    var auth_anchor_1 = typeof authObject.anchor === "string" ? [authObject.anchor, 0] : [authObject.anchor[0], authObject.anchor[1]];
+                    self.getAnchor(hide_anchor, function (hdata) {
+                        self.getHistory(auth_anchor_1, function (adata) {
+                        });
+                    });
+                }
             });
         });
-    },
-    more: function () {
-    },
-    // check running enviment (window or node.js)
-    env: function () {
     },
     getParams: function (args) {
         var map = {};

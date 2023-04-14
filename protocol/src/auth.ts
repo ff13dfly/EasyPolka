@@ -10,31 +10,26 @@ const creator=(anchor:string,ck:Function,isNew?:boolean)=>{
 export {creator as easyAuth};
 
 // check anchor to get auth list. 
-// if the anchor exsist, as white list
-type cfgAuth={
-    "history"?:boolean;     //wether using the history data as auth list
-}
-
 type result={
     'list':authMap[]|null;
     'anchor':anchorLocation|null;
 };
 
-type APIs={
-    "latest"?:Function;
-    "histor"?:Function;
-}
+// type APIs={
+//     "latest"?:Function;
+//     "history"?:Function;
+// }
 
-const check=(anchor:string,protocol:keywords,cfg:cfgAuth,ck:Function)=>{
+const check=(anchor:string,protocol:keywords,ck:Function)=>{
     const data:result={
-        "list":null,
-        "anchor":null,
+        "list":null,      //direct result from protocol
+        "anchor":null,    //target anchor to get result
     }
     
     if(protocol.auth){
         //1.check wether target anchor 
         if(typeof protocol.auth==="string" || Array.isArray(protocol.auth)){
-            data.anchor=protocol.auth;
+            data.anchor = protocol.auth;
         }else{
             data.list=protocol.auth;
         }
