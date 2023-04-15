@@ -60,6 +60,9 @@ var self = {
                 }
             });
         }
+        else {
+            return ck && ck(cObject);
+        }
     },
     decodeApp: function (cObject, ck) {
         console.log("Decode app anchor");
@@ -107,14 +110,17 @@ var self = {
     merge: function (anchor, protocol, cfg, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
-        var arr = [];
         var result = {
-            "hide": arr,
-            "auth": {},
+            "hide": [],
+            "auth": null,
+            "error": [],
+            "index": [null, null],
+            "map": {}, //map anchor data here
         };
         var mlist = [];
         (0, auth_1.checkAuth)(anchor, protocol, function (authObject) {
             (0, hide_1.checkHide)(anchor, protocol, function (hideObject) {
+                console.log(hideObject);
                 if (authObject.anchor === null && hideObject.anchor === null) {
                     if (authObject.list)
                         result.auth = authObject.list;
@@ -123,13 +129,30 @@ var self = {
                     return ck && ck(result);
                 }
                 else if (authObject.anchor === null && hideObject.anchor !== null) {
-                    var hide_anchor = typeof hideObject.anchor === "string" ? [hideObject.anchor, 0] : [hideObject.anchor[0], hideObject.anchor[1]];
-                    self.getAnchor(hide_anchor, function (hdata) {
+                    var hide_anchor_1 = typeof hideObject.anchor === "string" ? [hideObject.anchor, 0] : [hideObject.anchor[0], hideObject.anchor[1]];
+                    self.getAnchor(hide_anchor_1, function (hdata) {
+                        if (hdata.error) {
+                            result.error.push({ error: hdata.error });
+                        }
+                        //if(hdata.error) return ck && ck(hdata);
+                        var data = hdata;
+                        result.map["".concat(hide_anchor_1[protocol_1.relatedIndex.NAME], "_").concat(data.block)] = hdata;
+                        result.index[protocol_1.relatedIndex.HIDE] = [hide_anchor_1[protocol_1.relatedIndex.NAME], data.block];
+                        var dhide = self.decodeHideAnchor(hdata);
+                        if (!Array.isArray(dhide)) {
+                            result.error.push(dhide);
+                        }
+                        else {
+                            result.hide = dhide;
+                        }
+                        return ck && ck(result);
                     });
                 }
                 else if (authObject.anchor !== null && hideObject.anchor === null) {
                     var auth_anchor = typeof authObject.anchor === "string" ? [authObject.anchor, 0] : [authObject.anchor[0], authObject.anchor[1]];
                     self.getHistory(auth_anchor, function (adata) {
+                        //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
+                        return ck && ck(result);
                     });
                 }
                 else if (authObject.anchor !== null && hideObject.anchor !== null) {
@@ -137,11 +160,38 @@ var self = {
                     var auth_anchor_1 = typeof authObject.anchor === "string" ? [authObject.anchor, 0] : [authObject.anchor[0], authObject.anchor[1]];
                     self.getAnchor(hide_anchor, function (hdata) {
                         self.getHistory(auth_anchor_1, function (adata) {
+                            //result.hide=self.decodeHideAnchor(<anchorObject>hdata);
+                            //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
+                            return ck && ck(result);
                         });
                     });
                 }
             });
         });
+    },
+    decodeHideAnchor: function (obj) {
+        var list = [];
+        var protocol = obj.protocol;
+        if ((protocol === null || protocol === void 0 ? void 0 : protocol.fmt) === 'json') {
+            try {
+                var raw = JSON.parse(obj.raw);
+                if (Array.isArray(raw)) {
+                    for (var i = 0; i < raw.length; i++) {
+                        var n = parseInt(raw[i]);
+                        if (!isNaN(n))
+                            list.push(n);
+                    }
+                }
+            }
+            catch (error) {
+                return { error: 'failed to parse JSON' };
+            }
+        }
+        return list;
+    },
+    decodeAuthAnchor: function (list) {
+        var map = {};
+        return map;
     },
     getParams: function (args) {
         var map = {};
@@ -183,7 +233,14 @@ var run = function (linker, inputAPI, ck) {
         var type = data.protocol.type;
         if (!decoder[type])
             return ck && ck(data);
-        self.merge(data.name, data.protocol, {}, function (res) {
+        self.merge(data.name, data.protocol, {}, function (mergeResult) {
+            console.log(mergeResult);
+            if (mergeResult.auth !== null)
+                cObject.auth = mergeResult.auth;
+            if (mergeResult.hide.length !== 0)
+                cObject.hide = mergeResult.hide;
+            if (mergeResult.error.length !== 0) {
+            }
             return decoder[type](cObject, ck);
         });
     });

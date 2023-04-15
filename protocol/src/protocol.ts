@@ -83,6 +83,13 @@ export enum keysApp{
 
 }
 
+export enum relatedIndex{
+    AUTH = 0,
+    HIDE = 1,
+    NAME = 0,
+    BLOCK= 1,
+}
+
 //data type object
 //TODO: auth is not fully logical now. Need to confirm the calling address
 //TODO: there are two ways.
@@ -130,6 +137,8 @@ export type libProtocol={
 //Sample:{"hello":32345} 
 // the number is expired block number of the auth, if 0, it is unlimited.
 export interface authMap { [anchor: string]: number; }
+
+export interface anchorMap { [anchor: string]: anchorObject; }
 
 //hide map of target anchor
 //the history of the hide anchor is meanful.
@@ -179,6 +188,7 @@ export type cAppResult={
     //FIXME : need new definition object
     auth?:object;                //authority information
     hide?:object;                //hide list
+    index?:anchorLocation[];     //auth and hide related anchor location
     libs?:Object[];              //lib list
 
     parameter?:string[];        //running parameters, from anchor link parameter

@@ -2,7 +2,7 @@
 
 ## Overview
 
-* `Easy Protocol` is a protocol to load Chain Application ( `cApp` in short ). It is a JSON based protocol, now `version 1.0`, should follow the [JSON format standard](http://json.org).
+* `Easy Protocol` is a protocol to load Chain Application ( `cApp` in short ). It is a JSON based protocol, now `version 1.0`, follow the [JSON format standard](http://json.org).
 
 * `Easy Protocol` solve the relationship between on-chain data. Follow this, on-chain data can call `cApp` to decode it. Then the blockchain network which support `Easy Protocol` is a bootstrap system, can be accessed fully by a single entry.
 
@@ -25,19 +25,24 @@
             protocol:{      //Easy Protocol content
                 ...
             }
-            pre:0,          //linked list
+            pre:0,          //block number of previouse anchor data
         }
     ```
 
-* Unique Anchor name.
+* Ownership. Anchor must be owned to single one account. Only the owner can modify the Anchor, and every modification must be storaged.Ownership can be transfered, but the history data must be linked to the owner when data was updating.
+
+* Unique Anchor name. Like Domain Name, Anchor Name is unique on blockchain network.
 
 * On-chain Linked List.
 
-* Ownership. Anchor must be owned to single one account. Only the owner can modify the Anchor, and every modification must be storaged.Ownership can be transfered, but the history data must be linked to the owner when data was updating.
-
 ### Anchor Link
 
-* Anchor Link is a text to locate the blockchain network data. It can be easy read and load `cApp` properly.
+* Anchor Link is a text to locate the blockchain network data. It can be easy read and load `cApp` properly. Samples as follow:
+
+    ```TEXT
+        anchor://hello/
+        
+    ```
 
 * Charactor `?` is reversed, the name which including `?` is not supported by `Easy Protocol`.
 

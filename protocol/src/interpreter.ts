@@ -1,7 +1,7 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult,keywords,authMap} from "./protocol";
+import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult,keywords,authMap,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
@@ -12,7 +12,7 @@ const {Loader,Libs} = require("../lib/loader");
 let API:APIObject=null;
 
 type authResult={
-    'list':authMap[]|null;
+    'list':authMap|null;
     'anchor':anchorLocation|null;
 };
 
@@ -75,6 +75,8 @@ const self={
             
                 }
             });
+        }else{
+            return ck && ck(cObject);
         }
     },
 
@@ -129,16 +131,18 @@ const self={
     //combine the hide and auth list to result
     merge:(anchor:string,protocol:keywords,cfg:object,ck:Function)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
-        const arr:number[]=[];
         const result={
-            "hide":arr,
-            "auth":{},
+            "hide":<number[]|null>[],       //if hide data, merge to here.
+            "auth":<object|null>null,       //if auth data, merge to here.
+            "error":<errorObject[]>[],      //collect errors here
+            "index":[<anchorLocation|null>null,<anchorLocation|null>null],    //collect anchor locations here
+            "map":<anchorMap>{},            //map anchor data here
         };
 
         const mlist:anchorLocation[]=[];
         checkAuth(anchor,protocol,(authObject:authResult)=>{
             checkHide(anchor,protocol,(hideObject:hideResult)=>{
-
+                console.log(hideObject);
                 if(authObject.anchor===null && hideObject.anchor===null){
                     if(authObject.list) result.auth=authObject.list;
                     if(hideObject.list) result.hide=hideObject.list;
@@ -146,25 +150,73 @@ const self={
                 }else if(authObject.anchor===null && hideObject.anchor!==null){
                     const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
                     self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
+                        if(hdata.error){
+                            result.error.push({error:hdata.error});
+                        }
+                        //if(hdata.error) return ck && ck(hdata);
+                        const data=<anchorObject>hdata;
+                        result.map[`${hide_anchor[relatedIndex.NAME]}_${data.block}`]=<anchorObject>hdata;
+                        result.index[relatedIndex.HIDE]=[hide_anchor[relatedIndex.NAME],data.block];
 
+                        const dhide=self.decodeHideAnchor(<anchorObject>hdata);
+                        if(!Array.isArray(dhide)){
+                            result.error.push(dhide);
+                        }else{
+                            result.hide=dhide;
+                        }
+
+                        return ck && ck(result);
                     });
                 }else if(authObject.anchor!==null && hideObject.anchor===null){
                     const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];
                     self.getHistory(auth_anchor,(adata:anchorObject|errorObject)=>{
+                        //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
 
+                        return ck && ck(result);
                     });
                 }else if(authObject.anchor!==null && hideObject.anchor!==null){
                     const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
                     const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];    
                     self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
                         self.getHistory(auth_anchor,(adata:anchorObject|errorObject)=>{
-    
+                            //result.hide=self.decodeHideAnchor(<anchorObject>hdata);
+                            //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
+
+                            return ck && ck(result);
+
                         });
                     });
                 }
             });
         });
     },
+
+    decodeHideAnchor:(obj:anchorObject):number[]|errorObject=>{
+        const list:number[]=[];
+        const protocol=obj.protocol;
+
+        if(protocol?.fmt==='json'){
+            try {
+                const raw=JSON.parse(<string>obj.raw);
+                if(Array.isArray(raw)){
+                    for(let i=0;i<raw.length;i++){
+                        const n=parseInt(raw[i]);
+                        if(!isNaN(n)) list.push(n);
+                    }
+                }
+            } catch (error) {
+                return {error:'failed to parse JSON'};
+            }
+        }
+        return list;
+    },
+
+    decodeAuthAnchor:(list:anchorObject[]):authMap=>{
+        const map:authMap={};
+
+        return map;
+    },
+
     getParams:(args:string)=>{
         let map:any={};
         const arr=args.split("&");
@@ -212,7 +264,15 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         const type:string=data.protocol.type;
         if(!decoder[type]) return ck && ck(data);
 
-        self.merge(data.name,data.protocol,{},(res:any)=>{
+        self.merge(data.name,data.protocol,{},(mergeResult:any)=>{
+            console.log(mergeResult);
+
+            if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
+            if(mergeResult.hide.length!==0) cObject.hide=mergeResult.hide;
+            if(mergeResult.error.length!==0){
+
+            }
+
             return decoder[type](cObject,ck);
         });
     });

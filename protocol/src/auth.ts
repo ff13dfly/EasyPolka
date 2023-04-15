@@ -1,6 +1,6 @@
 //!important This is the library for creating auth data
 
-import { anchorLocation, anchorObject,authMap,keywords} from "./protocol";
+import { anchorLocation,authMap,keywords} from "./protocol";
 const md5 =require("md5");
 
 // create the anchor hiddeing default data

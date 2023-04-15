@@ -1,5 +1,5 @@
 //!important This is the library for creating auth data
-import { anchorObject} from "./protocol";
+import { anchorLocation,authMap,keywords} from "./protocol";
 const md5 =require("md5");
 
 const creator=(anchor:string)=>{
@@ -8,22 +8,30 @@ const creator=(anchor:string)=>{
 export {creator as easyHide};
 
 type result={
-    'list':number[]|null;
-    'anchor':anchorObject|null;
+    'list':authMap[]|null;
+    'anchor':anchorLocation|null;
 };
-
 // check anchor to get hide list
-const check=(anchor:string,protocol:object,ck:Function)=>{
-    // const dkey=!hide?(anchor+salt):hide;
-    // const hash=md5(dkey);
-    // console.log(`Check hide anchor:${anchor}, hash : ${hash}`);
-    
-    console.log(anchor);
-    console.log(protocol);
+const check=(anchor:string,protocol:keywords,ck:Function)=>{
     const data:result={
-        "list":null,
-        "anchor":null,
+        "list":null,      //direct result from protocol
+        "anchor":null,    //target anchor to get result
     }
-    return ck && ck(data);
+    
+    if(protocol.hide){
+        //1.check wether target anchor 
+        if(typeof protocol.hide==="string" || Array.isArray(protocol.hide)){
+            data.anchor = protocol.hide;
+        }else{
+            data.list=protocol.hide;
+        }
+    }else{
+        //2.check default anchor
+        if(protocol.salt){
+            data.anchor=md5(anchor+protocol.salt[1])
+        }
+    }
+
+    return ck && ck(data); 
 };
 export {check as checkHide};
