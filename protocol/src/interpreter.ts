@@ -39,16 +39,19 @@ const self={
         }
     },
 
-    filterAnchor:(data:anchorObject,ck:Function)=>{
+    filterAnchor:(data:anchorObject|errorObject,ck:Function)=>{
         if(!data) return ck && ck({error:"No such anchor.",level:errorLevel.ERROR});
-        if(data.error) return ck && ck({error:data.error,level:errorLevel.ERROR});
-        if(data.empty) return ck && ck({error:"Empty anchor.",level:errorLevel.ERROR});
-        if(!data.protocol) return ck && ck({error:"No-protocol anchor."});
+        const err=<errorObject>data;
+        if(err.error) return ck && ck({error:err.error,level:errorLevel.ERROR});
 
-        const protocol:any=data.protocol;
+        const anchor=<anchorObject>data;
+        if(anchor.empty) return ck && ck({error:"Empty anchor.",level:errorLevel.ERROR});
+        if(!anchor.protocol) return ck && ck({error:"No-protocol anchor."});
+
+        const protocol:keywords=anchor.protocol;
         if(!protocol.type) return ck && ck({error:"Not EasyProtocol anchor."});
 
-        return ck && ck(data);
+        return ck && ck(anchor);
     },
 
     
@@ -120,10 +123,11 @@ const self={
         }
         Libs(list,API,ck);
     },
-    getHistory:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
+    getHistory:(location:[string,number],ck:(res: anchorObject[] | errorObject) => void)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const [anchor,block]=location;
-        API.common.history(anchor,(list:[])=>{
+        API.common.history(anchor,(list:anchorObject[]|errorObject)=>{
+            console.log(list);
             //self.filterAnchor(data,ck); 
         });
     },
@@ -150,8 +154,9 @@ const self={
                 }else if(authObject.anchor===null && hideObject.anchor!==null){
                     const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
                     self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
-                        if(hdata.error){
-                            result.error.push({error:hdata.error});
+                        const err=<errorObject>hdata;
+                        if(err.error){
+                            result.error.push({error:err.error});
                         }
                         //if(hdata.error) return ck && ck(hdata);
                         const data=<anchorObject>hdata;
@@ -169,8 +174,14 @@ const self={
                     });
                 }else if(authObject.anchor!==null && hideObject.anchor===null){
                     const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];
-                    self.getHistory(auth_anchor,(adata:anchorObject|errorObject)=>{
+                    self.getHistory(auth_anchor,(alist:anchorObject[]|errorObject)=>{
                         //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
+                        // if(<errorObject>alist.error){
+                        //     result.error.push({error:alist.error});
+                        // }
+                        self.decodeAuthAnchor(<anchorObject[]>alist,()=>{
+
+                        });
 
                         return ck && ck(result);
                     });
@@ -178,7 +189,7 @@ const self={
                     const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
                     const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];    
                     self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
-                        self.getHistory(auth_anchor,(adata:anchorObject|errorObject)=>{
+                        self.getHistory(auth_anchor,(adata:anchorObject[]|errorObject)=>{
                             //result.hide=self.decodeHideAnchor(<anchorObject>hdata);
                             //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
 
@@ -211,12 +222,16 @@ const self={
         return list;
     },
 
-    decodeAuthAnchor:(list:anchorObject[]):authMap=>{
+    //!important, by using the history of anchor, `hide` keyword is still support
+    //!important, checking the latest anchor data, using the `hide` feild to get data.
+
+    decodeAuthAnchor:(list:anchorObject[],ck:Function):authMap=>{
         const map:authMap={};
 
         return map;
     },
 
+    //get params from string such as `key_a=val&key_b=val&key_c=val`
     getParams:(args:string)=>{
         let map:any={};
         const arr=args.split("&");
@@ -238,9 +253,9 @@ decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
-type dataMap={
-    [index: string]: anchorObject;
-}
+// type dataMap={
+//     [index: string]: anchorObject;
+// }
 
 const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
@@ -250,6 +265,7 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],
         data:{},
+        index:[<anchorLocation|null>null,<anchorLocation|null>null],
     }
     if(target.param) cObject.parameter=target.param;
 
@@ -271,6 +287,16 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
             if(mergeResult.hide.length!==0) cObject.hide=mergeResult.hide;
             if(mergeResult.error.length!==0){
 
+            }
+            for(let k in mergeResult.map){
+                cObject.data[k]= mergeResult.map[k];
+            }
+            if(mergeResult.index[relatedIndex.AUTH]!==null && cObject.index){
+                cObject.index[relatedIndex.AUTH]=mergeResult.index[relatedIndex.AUTH];
+            }
+
+            if(mergeResult.index[relatedIndex.HIDE]!==null && cObject.index){
+                cObject.index[relatedIndex.HIDE]=mergeResult.index[relatedIndex.HIDE];
             }
 
             return decoder[type](cObject,ck);

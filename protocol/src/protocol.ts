@@ -39,7 +39,6 @@ export type anchorObject={
 	"sell":     boolean;
 	"cost":     number;
 	"target":   string;
-    "error"?:   string;             //error message
 };
 
 //error Object
@@ -188,7 +187,7 @@ export type cAppResult={
     //FIXME : need new definition object
     auth?:object;                //authority information
     hide?:object;                //hide list
-    index?:anchorLocation[];     //auth and hide related anchor location
+    index?:[anchorLocation|null,anchorLocation|null];     //auth and hide related anchor location
     libs?:Object[];              //lib list
 
     parameter?:string[];        //running parameters, from anchor link parameter
@@ -197,6 +196,6 @@ export type cAppResult={
     more?:object;               //extra parameters
     //parameters from launcher
     //API:APIObject;            //APIs can be sent to cApp
-    nodeJS?:boolean;             //wether the nodeJS
-    back?:string[];             //parameter when callback
+    //nodeJS?:boolean;             //wether the nodeJS
+    //back?:string[];             //parameter when callback
 }
