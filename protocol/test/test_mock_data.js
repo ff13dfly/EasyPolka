@@ -75,14 +75,15 @@ const self={
 };
 
 const task=[
-    write_app_sample,
-    write_data_sample,
-    write_unexcept_data_sample,
-    write_mock_normal_libs,
-    write_mock_complex_libs,
-    write_salt_hide_sample,
-    write_anchor_hide_sample,
-    write_anchor_auth_sample,
+    // write_app_sample,
+    // write_data_sample,
+    // write_unexcept_data_sample,
+    // write_mock_normal_libs,
+    // write_mock_complex_libs,
+    // write_salt_hide_sample,
+    // write_anchor_hide_sample,
+    // write_anchor_auth_sample,
+    write_anchor_auth_and_hide_sample,
 ];
 self.auto(task);
 
@@ -321,12 +322,67 @@ function write_anchor_auth_sample(index,ck){
     },index,pair);
 }
 
+function write_anchor_auth_and_hide_sample(index,ck){
+    const start=self.stamp();
+    const seed='Bob';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
 
+    console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
+
+    const list=[];
+    const baisc_anchor="complex_anchor";
+    const baisc_raw={"tips":"This is a complex anchor"};
+    const baisc_protocol={"type":"data","fmt":"json","auth":"cpx_auth","hide":"cpx_hide"};
+    list.push({name:baisc_anchor,raw:baisc_raw,protocol:baisc_protocol});
+
+    const auth_anchor="cpx_auth";
+    const auth_raw={
+        "5DtBERu7U1SwPD1iebf5zHgjRsUnrU3iQgswySXeu6PK7eL4":0,
+        "5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9":38900,
+        "5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":12334,
+        "5CUUuCwJbXo8jVJQW21huCFWtBrg2K61wbZBiyGP3V7ZC4Ko":0,
+    };
+    const auth_protocol={"type":"data","fmt":"json"};
+    list.push({name:auth_anchor,raw:auth_raw,protocol:auth_protocol});
+
+    //const auth_anchor_2="cpx_auth";
+    const auth_raw_2={
+        "5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":0,
+    };
+    const auth_protocol_2={"type":"data","fmt":"json"};
+    list.push({name:auth_anchor,raw:auth_raw_2,protocol:auth_protocol_2});
+
+
+    const hide_anchor="cpx_hide";
+    const hide_raw=[33,44];
+    const hide_protocol={"type":"data","fmt":"json"};
+    list.push({name:hide_anchor,raw:hide_raw,protocol:hide_protocol});
+
+    
+    self.multi(list,()=>{
+        anchorJS.owner(auth_anchor,(owner,block)=>{
+            const alist=[];
+
+            const hide_anchor="cpx_hide";
+            const hide_raw=[block];
+            const hide_protocol={"type":"data","fmt":"json"};
+            alist.push({name:hide_anchor,raw:hide_raw,protocol:hide_protocol});
+
+            self.multi(alist,()=>{
+                const end=self.stamp();
+                console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+                return ck && ck();
+            },index,pair);
+        });
+        
+    },index,pair);
+}
 
 
 function framework(index,ck){
     const start=self.stamp();
-    const seed='Bob';
+    const seed='Charlie';
     const ks = new Keyring({ type: 'sr25519' });
     const pair= ks.addFromUri(`//${seed}`);
 
