@@ -10,20 +10,10 @@ const creator=(anchor:string,ck:Function,isNew?:boolean)=>{
 export {creator as easyAuth};
 
 // check anchor to get auth list. 
-type result={
-    'list':authMap|null;
-    'anchor':anchorLocation|null;
-};
-
-// type APIs={
-//     "latest"?:Function;
-//     "history"?:Function;
-// }
-
 const check=(anchor:string,protocol:keywords,ck:Function)=>{
-    const data:result={
-        "list":null,      //direct result from protocol
-        "anchor":null,    //target anchor to get result
+    const data={
+        "list":<authMap|null>null,      //direct result from protocol
+        "anchor":<anchorLocation|null>null,    //target anchor to get result
     }
     
     if(protocol.auth){

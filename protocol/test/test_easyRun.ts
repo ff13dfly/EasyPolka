@@ -46,10 +46,10 @@ self.prepare(server,()=>{
     
     easyRun(linker,API,(result:any)=>{
         console.log(`-----------------result-----------------`)
-        console.log(result);
-        console.log(JSON.stringify(result.data));
+        //console.log(result);
+        console.log(JSON.stringify(result));
         //new Function("anchorJS","error",result.raw);
         //new Function("container","API","args","from","error",res.raw);
-        if(result.app) result.app("con_id",API,{"hello":"world"});
+        //if(result.app) result.app("con_id",API,{"hello":"world"});
     });
 });

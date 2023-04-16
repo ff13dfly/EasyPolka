@@ -7,10 +7,7 @@ var md5 = require("md5");
 var creator = function (anchor, ck, isNew) {
 };
 exports.easyAuth = creator;
-// type APIs={
-//     "latest"?:Function;
-//     "history"?:Function;
-// }
+// check anchor to get auth list. 
 var check = function (anchor, protocol, ck) {
     var data = {
         "list": null,

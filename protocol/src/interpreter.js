@@ -102,17 +102,26 @@ var self = {
         Libs(list, API, ck);
     },
     getHistory: function (location, ck) {
-        if (API === null)
-            return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
+        var list = [];
+        var errs = [];
+        if (API === null) {
+            errs.push({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
+            return ck && ck(list, errs);
+        }
+        //if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         var anchor = location[0], block = location[1];
         API.common.history(anchor, function (res) {
             var err = res;
-            if (err.error)
-                return ck && ck({ error: err.error });
-            var list = res;
-            if (list.length === 0)
-                return ck && ck({ error: "Empty history" });
-            return ck && ck(list);
+            if (err.error) {
+                errs.push(err);
+                return ck && ck(list, errs);
+            }
+            var alist = res;
+            if (alist.length === 0) {
+                errs.push({ error: "Empty history" });
+                return ck && ck(list, errs);
+            }
+            return ck && ck(alist, errs);
         });
     },
     //combine the hide and auth list to result
@@ -124,14 +133,11 @@ var self = {
             "auth": null,
             "error": [],
             "index": [null, null],
-            "map": {}, //map anchor data here
+            "map": {},
         };
         var mlist = [];
         (0, auth_1.checkAuth)(anchor, protocol, function (resAuth) {
             (0, hide_1.checkHide)(anchor, protocol, function (resHide) {
-                console.log("Merge result:");
-                console.log(resHide);
-                console.log(resAuth);
                 if (resAuth.anchor === null && resHide.anchor === null) {
                     if (resAuth.list)
                         result.auth = resAuth.list;
@@ -140,101 +146,75 @@ var self = {
                     return ck && ck(result);
                 }
                 else if (resAuth.anchor === null && resHide.anchor !== null) {
-                    var hide_anchor_1 = typeof resHide.anchor === "string" ? [resHide.anchor, 0] : [resHide.anchor[0], resHide.anchor[1]];
-                    self.getAnchor(hide_anchor_1, function (res) {
+                    var hide_anchor = typeof resHide.anchor === "string" ? [resHide.anchor, 0] : [resHide.anchor[0], resHide.anchor[1]];
+                    self.getAnchor(hide_anchor, function (res) {
+                        var errs = [];
                         var err = res;
-                        if (err.error) {
-                            result.error.push({ error: err.error });
-                            return ck && ck(result);
-                        }
-                        else {
-                            var data = res;
-                            result.map["".concat(hide_anchor_1[protocol_2.relatedIndex.NAME], "_").concat(data.block)] = data;
-                            result.index[protocol_2.relatedIndex.HIDE] = [hide_anchor_1[protocol_2.relatedIndex.NAME], data.block];
-                            var dhide = self.decodeHideAnchor(data);
-                            if (!Array.isArray(dhide)) {
-                                result.error.push(dhide);
-                            }
-                            else {
-                                result.hide = dhide;
-                            }
-                            return ck && ck(result);
-                        }
+                        if (err.error)
+                            errs.push({ error: err.error });
+                        var data = res;
+                        self.combineHide(result, data, errs, ck);
                     });
                 }
                 else if (resAuth.anchor !== null && resHide.anchor === null) {
                     var auth_anchor = typeof resAuth.anchor === "string" ? [resAuth.anchor, 0] : [resAuth.anchor[0], resAuth.anchor[1]];
-                    self.getHistory(auth_anchor, function (res) {
-                        var err = res;
-                        if (err.error) {
-                            result.error.push(err);
-                            return ck && ck(result);
-                        }
-                        else {
-                            var alist = res;
-                            var last_1 = alist[0];
-                            self.decodeAuthAnchor(alist, function (map) {
-                                var errA = map;
-                                if (err.error) {
-                                    result.error.push(errA);
-                                    return ck && ck(result);
-                                }
-                                else {
-                                    result.index[protocol_2.relatedIndex.AUTH] = [last_1.name, last_1.block];
-                                    result.auth = map;
-                                    return ck && ck(result);
-                                }
-                            });
-                        }
-                        //return ck && ck(result);
+                    self.getHistory(auth_anchor, function (alist, errsA) {
+                        self.combineAuth(result, alist, errsA, ck);
                     });
                 }
                 else if (resAuth.anchor !== null && resHide.anchor !== null) {
-                    var hide_anchor_2 = typeof resHide.anchor === "string" ? [resHide.anchor, 0] : [resHide.anchor[0], resHide.anchor[1]];
+                    var hide_anchor = typeof resHide.anchor === "string" ? [resHide.anchor, 0] : [resHide.anchor[0], resHide.anchor[1]];
                     var auth_anchor_1 = typeof resAuth.anchor === "string" ? [resAuth.anchor, 0] : [resAuth.anchor[0], resAuth.anchor[1]];
-                    self.getAnchor(hide_anchor_2, function (res) {
+                    self.getAnchor(hide_anchor, function (res) {
+                        var errs = [];
                         var err = res;
-                        if (err.error) {
-                            result.error.push({ error: err.error });
-                        }
-                        else {
-                            var data = res;
-                            result.map["".concat(hide_anchor_2[protocol_2.relatedIndex.NAME], "_").concat(data.block)] = data;
-                            result.index[protocol_2.relatedIndex.HIDE] = [hide_anchor_2[protocol_2.relatedIndex.NAME], data.block];
-                            var dhide = self.decodeHideAnchor(data);
-                            if (!Array.isArray(dhide)) {
-                                result.error.push(dhide);
-                            }
-                            else {
-                                result.hide = dhide;
-                            }
-                        }
-                        self.getHistory(auth_anchor_1, function (res) {
-                            var err = res;
-                            if (err.error) {
-                                result.error.push(err);
-                                return ck && ck(result);
-                            }
-                            else {
-                                var alist = res;
-                                var last_2 = alist[0];
-                                self.decodeAuthAnchor(alist, function (map) {
-                                    var errA = map;
-                                    if (err.error) {
-                                        result.error.push(errA);
-                                        return ck && ck(result);
-                                    }
-                                    else {
-                                        result.index[protocol_2.relatedIndex.AUTH] = [last_2.name, last_2.block];
-                                        result.auth = map;
-                                        return ck && ck(result);
-                                    }
-                                });
-                            }
+                        if (err.error)
+                            errs.push({ error: err.error });
+                        var data = res;
+                        self.combineHide(result, data, errs, function (chResult) {
+                            self.getHistory(auth_anchor_1, function (alist, errsA) {
+                                self.combineAuth(chResult, alist, errsA, ck);
+                            });
                         });
                     });
                 }
             });
+        });
+    },
+    combineHide: function (result, anchor, errs, ck) {
+        if (errs.length !== 0) {
+            for (var i = 0; i < errs.length; i++)
+                result.error.push(errs[i]);
+        }
+        result.map["".concat(anchor.name, "_").concat(anchor.block)] = anchor;
+        result.index[protocol_2.relatedIndex.HIDE] = [anchor.name, anchor.block];
+        var dhide = self.decodeHideAnchor(anchor);
+        if (!Array.isArray(dhide)) {
+            result.error.push(dhide);
+        }
+        else {
+            result.hide = dhide;
+        }
+        return ck && ck(result);
+    },
+    combineAuth: function (result, list, errs, ck) {
+        if (errs.length !== 0) {
+            for (var i = 0; i < errs.length; i++)
+                result.error.push(errs[i]);
+        }
+        for (var i = 0; i < list.length; i++) {
+            var row = list[i];
+            result.map["".concat(row.name, "_").concat(row.block)] = row;
+        }
+        var last = list[0];
+        self.decodeAuthAnchor(list, function (map, amap, errs) {
+            for (var k in amap)
+                result.map[k] = amap[k]; //if hide anchor data, merge to result
+            for (var i = 0; i < errs.length; i++)
+                result.error.push(errs[i]);
+            result.index[protocol_2.relatedIndex.AUTH] = [last.name, 0];
+            result.auth = map;
+            return ck && ck(result);
         });
     },
     decodeHideAnchor: function (obj) {
@@ -261,12 +241,16 @@ var self = {
     //!important, checking the latest anchor data, using the `hide` feild to get data.
     decodeAuthAnchor: function (list, ck) {
         var map = {};
+        var amap = {};
+        var errs = [];
         var last = list[0];
-        if (last.protocol === null)
-            return ck && ck({ error: "Not valid anchor" });
+        if (last.protocol === null) {
+            errs.push({ error: "Not valid anchor" });
+            return ck && ck(map, amap, errs);
+        }
         var protocol = last.protocol;
-        self.authHideList(protocol, function (hlist) {
-            console.log({ hlist: hlist });
+        self.authHideList(protocol, function (hlist, resMap, herrs) {
+            console.log({ resMap: resMap, herrs: herrs, hlist: hlist });
             var hmap = {};
             for (var i = 0; i < hlist.length; i++) {
                 hmap[hlist[i].toString()] = true;
@@ -283,33 +267,37 @@ var self = {
                         map[k] = tmap[k];
                 }
                 catch (error) {
-                    console.log(error);
+                    //console.log(error);
+                    errs.push({ error: error });
                 }
             }
-            return ck && ck(map);
+            return ck && ck(map, amap, errs);
         });
     },
+    //check auth hide list
     authHideList: function (protocol, ck) {
-        if (protocol === null || protocol === void 0 ? void 0 : protocol.hide) {
-            if (Array.isArray(protocol.hide)) {
-                return ck && ck(protocol.hide);
+        var map = {};
+        var errs = [];
+        var list = [];
+        if (!protocol.hide)
+            return ck && ck(list, map, errs);
+        if (Array.isArray(protocol.hide))
+            return ck && ck(protocol.hide, map, errs);
+        self.getAnchor([protocol.hide, 0], function (anchorH) {
+            var err = anchorH;
+            if (err.error) {
+                errs.push(err);
+                return ck && ck(list, map, errs);
             }
-            else {
-                self.getAnchor([protocol.hide, 0], function (anchorH) {
-                    var hlist = self.decodeHideAnchor(anchorH);
-                    var errH = hlist;
-                    if (errH.error) {
-                        return ck && ck([]);
-                    }
-                    else {
-                        return ck && ck(hlist);
-                    }
-                });
-            }
-        }
-        else {
-            return ck && ck([]);
-        }
+            var hlist = self.decodeHideAnchor(anchorH);
+            var errH = hlist;
+            if (errH.error)
+                errs.push(errH);
+            var anchor = anchorH;
+            console.log(anchor);
+            map["".concat(anchor.name, "_").concat(anchor.block)] = anchor;
+            return ck && ck(hlist, map, errs);
+        });
     },
     //get params from string such as `key_a=val&key_b=val&key_c=val`
     getParams: function (args) {
@@ -329,9 +317,6 @@ var decoder = {};
 decoder[protocol_1.rawType.APP] = self.decodeApp;
 decoder[protocol_1.rawType.DATA] = self.decodeData;
 decoder[protocol_1.rawType.LIB] = self.decodeLib;
-// type dataMap={
-//     [index: string]: anchorObject;
-// }
 var run = function (linker, inputAPI, ck) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
@@ -364,14 +349,14 @@ var run = function (linker, inputAPI, ck) {
                 cObject.hide = mergeResult.hide;
             if (mergeResult.error.length !== 0) {
             }
-            for (var k in mergeResult.map) {
-                cObject.data[k] = mergeResult.map[k];
-            }
             if (mergeResult.index[protocol_2.relatedIndex.AUTH] !== null && cObject.index) {
                 cObject.index[protocol_2.relatedIndex.AUTH] = mergeResult.index[protocol_2.relatedIndex.AUTH];
             }
             if (mergeResult.index[protocol_2.relatedIndex.HIDE] !== null && cObject.index) {
                 cObject.index[protocol_2.relatedIndex.HIDE] = mergeResult.index[protocol_2.relatedIndex.HIDE];
+            }
+            for (var k in mergeResult.map) {
+                cObject.data[k] = mergeResult.map[k];
             }
             return decoder[type](cObject, ck);
         });

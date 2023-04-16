@@ -7,15 +7,11 @@ const creator=(anchor:string)=>{
 };
 export {creator as easyHide};
 
-type result={
-    'list':number[]|null;
-    'anchor':anchorLocation|null;
-};
 // check anchor to get hide list
 const check=(anchor:string,protocol:keywords,ck:Function)=>{
-    const data:result={
-        "list":null,      //direct result from protocol
-        "anchor":null,    //target anchor to get result
+    const data={
+        "list":<number[]|null>null,      //direct result from protocol
+        "anchor":<anchorLocation|null>null,    //target anchor to get result
     }
     
     //FIXME need to fix the checking

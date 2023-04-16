@@ -1,7 +1,7 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult, formatType} from "./protocol";
+import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,easyResult, formatType} from "./protocol";
 import { keywords,dataProtocol,authMap,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
@@ -12,7 +12,7 @@ const {Loader,Libs} = require("../lib/loader");
 
 let API:APIObject=null;
 
-type resAuthult={
+type authResult={
     'list':authMap|null;
     'anchor':anchorLocation|null;
 };
@@ -21,6 +21,14 @@ type hideResult={
     'list':number[]|null;
     'anchor':anchorLocation|null;
 };
+type mergeResult={
+    "hide":number[]|null,       //if hide data, merge to here.
+    "auth":authMap|null,       //if auth data, merge to here.
+    "error":errorObject[],      //collect errors here
+    "index":[anchorLocation|null,anchorLocation|null],    //collect anchor locations here
+    "map":anchorMap,            //map anchor data here
+};
+
 
 const self={
     getAnchor:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
@@ -57,7 +65,7 @@ const self={
 
     
 
-    decodeData:(cObject:cAppResult,ck:Function)=>{
+    decodeData:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode data anchor`);
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
@@ -84,7 +92,7 @@ const self={
         }
     },
 
-    decodeApp:(cObject:cAppResult,ck:Function)=>{
+    decodeApp:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode app anchor`);
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
@@ -103,7 +111,7 @@ const self={
         
         return ck && ck(cObject);
     },
-    decodeLib:(cObject:cAppResult,ck:Function)=>{
+    decodeLib:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode lib anchor`);
 
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
@@ -124,37 +132,45 @@ const self={
         }
         Libs(list,API,ck);
     },
-    getHistory:(location:[string,number],ck:(res: anchorObject[] | errorObject) => void)=>{
-        if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
+    getHistory:(location:[string,number],ck:(list: anchorObject[],errs:errorObject[]) => void)=>{
+        const list:anchorObject[]=[];
+        const errs:errorObject[]=[];
+        if(API===null){
+            errs.push({error:"No API to get data.",level:errorLevel.ERROR});
+            return ck && ck(list,errs);
+        }
+        //if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const [anchor,block]=location;
         API.common.history(anchor,(res:anchorObject[]|errorObject)=>{
             const err=<errorObject>res;
-            if(err.error) return ck && ck({error:err.error});
+            if(err.error){
+                errs.push(err);
+                return ck && ck(list,errs);
+            } 
 
-            const list=<anchorObject[]>res;
-            if(list.length===0) return ck && ck({error:"Empty history"});
-
-            return ck && ck(list);
+            const alist=<anchorObject[]>res;
+            if(alist.length===0){
+                errs.push({error:"Empty history"});
+                return ck && ck(list,errs);
+            }
+            return ck && ck(alist,errs);
         });
     },
 
     //combine the hide and auth list to result
     merge:(anchor:string,protocol:keywords,cfg:object,ck:Function)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
-        const result={
-            "hide":<number[]|null>[],       //if hide data, merge to here.
-            "auth":<authMap|null>null,       //if auth data, merge to here.
-            "error":<errorObject[]>[],      //collect errors here
-            "index":[<anchorLocation|null>null,<anchorLocation|null>null],    //collect anchor locations here
-            "map":<anchorMap>{},            //map anchor data here
+        const result:mergeResult={
+            "hide":[], 
+            "auth":null,
+            "error":[],
+            "index":[null,null],
+            "map":{},
         };
 
         const mlist:anchorLocation[]=[];
-        checkAuth(anchor,protocol,(resAuth:resAuthult)=>{
+        checkAuth(anchor,protocol,(resAuth:authResult)=>{
             checkHide(anchor,protocol,(resHide:hideResult)=>{
-                console.log(`Merge result:`);
-                console.log(resHide);
-                console.log(resAuth);
                 if(resAuth.anchor===null && resHide.anchor===null){
                     if(resAuth.list) result.auth=resAuth.list;
                     if(resHide.list) result.hide=resHide.list;
@@ -162,92 +178,73 @@ const self={
                 }else if(resAuth.anchor===null && resHide.anchor!==null){
                     const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
                     self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
+                        const errs:errorObject[]=[];
                         const err=<errorObject>res;
-                        if(err.error){
-                            result.error.push({error:err.error});
-                            return ck && ck(result);
-                        }else{
-                            const data=<anchorObject>res;
-                            result.map[`${hide_anchor[relatedIndex.NAME]}_${data.block}`]=data;
-                            result.index[relatedIndex.HIDE]=[hide_anchor[relatedIndex.NAME],data.block];
+                        if(err.error) errs.push({error:err.error});
+                        const data:anchorObject=<anchorObject>res;
 
-                            const dhide=self.decodeHideAnchor(data);
-                            if(!Array.isArray(dhide)){
-                                result.error.push(dhide);
-                            }else{
-                                result.hide=dhide;
-                            }
-                            return ck && ck(result);
-                        }
+                        self.combineHide(result,data,errs,ck);
                     });
                 }else if(resAuth.anchor!==null && resHide.anchor===null){
                     const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];
-                    self.getHistory(auth_anchor,(res:anchorObject[]|errorObject)=>{
-                        const err=<errorObject>res;
-                        if(err.error){
-                            result.error.push(err);
-                            return ck && ck(result);
-                        }else{
-                            const alist=<anchorObject[]>res;
-                            const last:anchorObject=alist[0];
-                            self.decodeAuthAnchor(<anchorObject[]>alist,(map:authMap|errorObject)=>{
-                                const errA=<errorObject>map;
-                                if(err.error){
-                                    result.error.push(errA);
-                                    return ck && ck(result);
-                                }else{
-                                    result.index[relatedIndex.AUTH]=[last.name,last.block];
-                                    result.auth=<authMap>map;
-                                    return ck && ck(result);
-                                }
-                            });
-                        }
-                        //return ck && ck(result);
+                    self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
+                        self.combineAuth(result,alist,errsA,ck);
                     });
                 }else if(resAuth.anchor!==null && resHide.anchor!==null){
                     const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
                     const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];    
                     self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
+                        const errs:errorObject[]=[];
                         const err=<errorObject>res;
-                        if(err.error){
-                            result.error.push({error:err.error});
-                        }else{
-                            const data=<anchorObject>res;
-                            result.map[`${hide_anchor[relatedIndex.NAME]}_${data.block}`]=data;
-                            result.index[relatedIndex.HIDE]=[hide_anchor[relatedIndex.NAME],data.block];
+                        if(err.error) errs.push({error:err.error});
+                        const data:anchorObject=<anchorObject>res;
 
-                            const dhide=self.decodeHideAnchor(data);
-                            if(!Array.isArray(dhide)){
-                                result.error.push(dhide);
-                            }else{
-                                result.hide=dhide;
-                            }
-                        }
-                        
-                        self.getHistory(auth_anchor,(res:anchorObject[]|errorObject)=>{
-                            const err=<errorObject>res;
-                            if(err.error){
-                                result.error.push(err);
-                                return ck && ck(result);
-                            }else{
-                                const alist=<anchorObject[]>res;
-                                const last:anchorObject=alist[0];
-                                self.decodeAuthAnchor(<anchorObject[]>alist,(map:authMap|errorObject)=>{
-                                    const errA=<errorObject>map;
-                                    if(err.error){
-                                        result.error.push(errA);
-                                        return ck && ck(result);
-                                    }else{
-                                        result.index[relatedIndex.AUTH]=[last.name,last.block];
-                                        result.auth=<authMap>map;
-                                        return ck && ck(result);
-                                    }
-                                });
-                            }
+                        self.combineHide(result,data,errs,(chResult)=>{
+                            self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
+                                self.combineAuth(chResult,alist,errsA,ck);
+                            });
                         });
                     });
                 }
             });
+        });
+    },
+
+    combineHide:(result:mergeResult,anchor:anchorObject,errs:errorObject[],ck:Function)=>{
+        if(errs.length!==0){
+            for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
+        }
+        
+        result.map[`${anchor.name}_${anchor.block}`]=anchor;
+        result.index[relatedIndex.HIDE]=[anchor.name,anchor.block];
+
+        const dhide=self.decodeHideAnchor(anchor);
+        if(!Array.isArray(dhide)){
+            result.error.push(dhide);
+        }else{
+            result.hide=dhide;
+        }
+        return ck && ck(result);
+    },
+
+    combineAuth:(result:mergeResult,list:anchorObject[],errs:errorObject[],ck:Function)=>{
+        if(errs.length!==0){
+            for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
+        }
+
+        for(let i=0;i<list.length;i++){
+            const row:anchorObject=list[i];
+            result.map[`${row.name}_${row.block}`]=row;
+        }
+            
+        const last:anchorObject=list[0];
+        self.decodeAuthAnchor(<anchorObject[]>list,(map:authMap,amap:anchorMap,errs:errorObject[])=>{
+            for(let k in amap) result.map[k]=amap[k];  //if hide anchor data, merge to result
+            for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
+
+            result.index[relatedIndex.AUTH]=[last.name,0];
+            result.auth=<authMap>map;
+            return ck && ck(result);
         });
     },
 
@@ -273,14 +270,21 @@ const self={
 
     //!important, by using the history of anchor, `hide` keyword is still support
     //!important, checking the latest anchor data, using the `hide` feild to get data.
-    decodeAuthAnchor:(list:anchorObject[],ck:(res: authMap|errorObject)=>void)=>{
+    decodeAuthAnchor:(list:anchorObject[],ck:(res: authMap,amap:anchorMap,errs:errorObject[])=>void)=>{
         const map:authMap={};
+        const amap:anchorMap={};
+        const errs:errorObject[]=[];
         const last:anchorObject=list[0];
-        if(last.protocol===null) return ck && ck({error:"Not valid anchor"});
+
+        if(last.protocol===null){
+            errs.push({error:"Not valid anchor"});
+            return ck && ck(map,amap,errs);
+        }
 
         const protocol=<keywords>last.protocol;
-        self.authHideList(protocol,(hlist:number[])=>{
-            console.log({hlist});
+        self.authHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
+            console.log({resMap,herrs,hlist});
+
             let hmap:any={};
             for(let i=0;i<hlist.length;i++){
                 hmap[hlist[i].toString()]=true;
@@ -295,31 +299,38 @@ const self={
                     const tmap=JSON.parse(row.raw);
                     for(let k in tmap) map[k]=tmap[k];
                 } catch (error) {
-                    console.log(error);
+                    //console.log(error);
+                    errs.push(<errorObject>{error:error});
                 }
             }
-            return ck && ck(map);
+            return ck && ck(map,amap,errs);
         });
     },
 
-    authHideList:(protocol:keywords,ck:(res: number[])=>void)=>{
-        if(protocol?.hide){
-            if(Array.isArray(protocol.hide)){
-                return ck && ck(<number[]>protocol.hide);
-            }else{
-                self.getAnchor([<string>protocol.hide,0],(anchorH:anchorObject|errorObject)=>{
-                    const hlist=self.decodeHideAnchor(<anchorObject>anchorH);
-                    const errH=<errorObject>hlist;
-                    if(errH.error){
-                        return ck && ck([]);
-                    }else{
-                        return ck && ck(<number[]>hlist);
-                    }
-                });
+    //check auth hide list
+    authHideList:(protocol:keywords,ck:(res: number[],map:anchorMap,error:errorObject[])=>void)=>{
+        const map:anchorMap={};
+        const errs:errorObject[]=[];
+        const list:number[]=[];
+        if(!protocol.hide) return ck && ck(list,map,errs);
+
+        if(Array.isArray(protocol.hide)) return ck && ck(<number[]>protocol.hide,map,errs);
+        
+        self.getAnchor([<string>protocol.hide,0],(anchorH:anchorObject|errorObject)=>{
+            const err=<errorObject>anchorH;
+            if(err.error){
+                errs.push(err);
+                return ck && ck(list,map,errs);
             }
-        }else{
-            return ck && ck([]);
-        }
+            const hlist=self.decodeHideAnchor(<anchorObject>anchorH);
+            const errH=<errorObject>hlist;
+            if(errH.error)errs.push(errH);
+
+            const anchor=<anchorObject>anchorH;
+            console.log(anchor);
+            map[`${anchor.name}_${anchor.block}`]=<anchorObject>anchor;
+            return ck && ck(<number[]>hlist,map,errs);
+        });
     },
 
     //get params from string such as `key_a=val&key_b=val&key_c=val`
@@ -344,15 +355,11 @@ decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
-// type dataMap={
-//     [index: string]: anchorObject;
-// }
-
 const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
-    let cObject:cAppResult={
+    let cObject:easyResult={
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],
         data:{},
@@ -379,15 +386,17 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
             if(mergeResult.error.length!==0){
 
             }
-            for(let k in mergeResult.map){
-                cObject.data[k]= mergeResult.map[k];
-            }
+            
             if(mergeResult.index[relatedIndex.AUTH]!==null && cObject.index){
                 cObject.index[relatedIndex.AUTH]=mergeResult.index[relatedIndex.AUTH];
             }
 
             if(mergeResult.index[relatedIndex.HIDE]!==null && cObject.index){
                 cObject.index[relatedIndex.HIDE]=mergeResult.index[relatedIndex.HIDE];
+            }
+
+            for(let k in mergeResult.map){
+                cObject.data[k]= mergeResult.map[k];
             }
 
             return decoder[type](cObject,ck);

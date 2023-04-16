@@ -179,14 +179,14 @@ export type APIObject={
 interface dataMap { [anchor: string]: anchorObject; }
 
 // the decode result, easy protocol target
-export type cAppResult={
+export type easyResult={
     app?:Function|null;          //cApp function, if from the data type anchor, will load target cApp
     data:dataMap;                //anchor data. 
     location:[string,number];   //anchor location
 
     //FIXME : need new definition object
-    auth?:object;                //authority information
-    hide?:object;                //hide list
+    auth?:authMap;                //authority information
+    hide?:hideMap;                //hide list
     index?:[anchorLocation|null,anchorLocation|null];     //auth and hide related anchor location
     libs?:Object[];              //lib list
 

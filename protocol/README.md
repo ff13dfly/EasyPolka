@@ -48,7 +48,7 @@
         );
 
         //definition to check
-        export type cAppResult={
+        export type easyResult={
             app:Function|null;      //cApp function, if from the data type anchor, will load target cApp
             raw:String|null;        //if cApp is not JS, leave the raw data here.
             parameter:string[];     //running parameters, from anchor link parameter
