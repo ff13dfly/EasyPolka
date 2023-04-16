@@ -36,3 +36,20 @@ const aaa:testFun=(a:string)=>{
 
 const res=aaa("hello");
 console.log(res);
+
+//TODO error test await way to code
+//await testing
+try {
+    const awaitResult=await mock_a();
+    console.log(awaitResult);
+} catch (error) {
+    console.log(error);
+}
+
+function mock_a(){
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve('mock_A');
+        }, 500);
+    });
+}

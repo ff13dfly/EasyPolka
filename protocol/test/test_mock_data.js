@@ -75,14 +75,14 @@ const self={
 };
 
 const task=[
-    // write_app_sample,
-    // write_data_sample,
-    // write_unexcept_data_sample,
-    // write_mock_normal_libs,
-    // write_mock_complex_libs,
-    // write_salt_hide_sample,
-    // write_anchor_hide_sample,
-    // write_anchor_auth_sample,
+    write_app_sample,
+    write_data_sample,
+    write_unexcept_data_sample,
+    write_mock_normal_libs,
+    write_mock_complex_libs,
+    write_salt_hide_sample,
+    write_anchor_hide_sample,
+    write_anchor_auth_sample,
     write_anchor_auth_and_hide_sample,
 ];
 self.auto(task);

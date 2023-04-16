@@ -1,7 +1,8 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult,keywords,authMap,anchorMap,relatedIndex} from "./protocol";
+import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,cAppResult, formatType} from "./protocol";
+import { keywords,dataProtocol,authMap,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
@@ -11,7 +12,7 @@ const {Loader,Libs} = require("../lib/loader");
 
 let API:APIObject=null;
 
-type authResult={
+type resAuthult={
     'list':authMap|null;
     'anchor':anchorLocation|null;
 };
@@ -126,9 +127,14 @@ const self={
     getHistory:(location:[string,number],ck:(res: anchorObject[] | errorObject) => void)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const [anchor,block]=location;
-        API.common.history(anchor,(list:anchorObject[]|errorObject)=>{
-            console.log(list);
-            //self.filterAnchor(data,ck); 
+        API.common.history(anchor,(res:anchorObject[]|errorObject)=>{
+            const err=<errorObject>res;
+            if(err.error) return ck && ck({error:err.error});
+
+            const list=<anchorObject[]>res;
+            if(list.length===0) return ck && ck({error:"Empty history"});
+
+            return ck && ck(list);
         });
     },
 
@@ -137,64 +143,107 @@ const self={
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const result={
             "hide":<number[]|null>[],       //if hide data, merge to here.
-            "auth":<object|null>null,       //if auth data, merge to here.
+            "auth":<authMap|null>null,       //if auth data, merge to here.
             "error":<errorObject[]>[],      //collect errors here
             "index":[<anchorLocation|null>null,<anchorLocation|null>null],    //collect anchor locations here
             "map":<anchorMap>{},            //map anchor data here
         };
 
         const mlist:anchorLocation[]=[];
-        checkAuth(anchor,protocol,(authObject:authResult)=>{
-            checkHide(anchor,protocol,(hideObject:hideResult)=>{
-                console.log(hideObject);
-                if(authObject.anchor===null && hideObject.anchor===null){
-                    if(authObject.list) result.auth=authObject.list;
-                    if(hideObject.list) result.hide=hideObject.list;
+        checkAuth(anchor,protocol,(resAuth:resAuthult)=>{
+            checkHide(anchor,protocol,(resHide:hideResult)=>{
+                console.log(`Merge result:`);
+                console.log(resHide);
+                console.log(resAuth);
+                if(resAuth.anchor===null && resHide.anchor===null){
+                    if(resAuth.list) result.auth=resAuth.list;
+                    if(resHide.list) result.hide=resHide.list;
                     return ck && ck(result);
-                }else if(authObject.anchor===null && hideObject.anchor!==null){
-                    const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
-                    self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
-                        const err=<errorObject>hdata;
+                }else if(resAuth.anchor===null && resHide.anchor!==null){
+                    const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
+                    self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
+                        const err=<errorObject>res;
                         if(err.error){
                             result.error.push({error:err.error});
-                        }
-                        //if(hdata.error) return ck && ck(hdata);
-                        const data=<anchorObject>hdata;
-                        result.map[`${hide_anchor[relatedIndex.NAME]}_${data.block}`]=<anchorObject>hdata;
-                        result.index[relatedIndex.HIDE]=[hide_anchor[relatedIndex.NAME],data.block];
-
-                        const dhide=self.decodeHideAnchor(<anchorObject>hdata);
-                        if(!Array.isArray(dhide)){
-                            result.error.push(dhide);
-                        }else{
-                            result.hide=dhide;
-                        }
-
-                        return ck && ck(result);
-                    });
-                }else if(authObject.anchor!==null && hideObject.anchor===null){
-                    const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];
-                    self.getHistory(auth_anchor,(alist:anchorObject[]|errorObject)=>{
-                        //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
-                        // if(<errorObject>alist.error){
-                        //     result.error.push({error:alist.error});
-                        // }
-                        self.decodeAuthAnchor(<anchorObject[]>alist,()=>{
-
-                        });
-
-                        return ck && ck(result);
-                    });
-                }else if(authObject.anchor!==null && hideObject.anchor!==null){
-                    const hide_anchor:[string,number]=typeof hideObject.anchor==="string"?[hideObject.anchor,0]:[hideObject.anchor[0],hideObject.anchor[1]];
-                    const auth_anchor:[string,number]=typeof authObject.anchor==="string"?[authObject.anchor,0]:[authObject.anchor[0],authObject.anchor[1]];    
-                    self.getAnchor(hide_anchor,(hdata:anchorObject|errorObject)=>{
-                        self.getHistory(auth_anchor,(adata:anchorObject[]|errorObject)=>{
-                            //result.hide=self.decodeHideAnchor(<anchorObject>hdata);
-                            //result.auth=self.decodeAuthAnchor(<anchorObject[]>adata);
-
                             return ck && ck(result);
+                        }else{
+                            const data=<anchorObject>res;
+                            result.map[`${hide_anchor[relatedIndex.NAME]}_${data.block}`]=data;
+                            result.index[relatedIndex.HIDE]=[hide_anchor[relatedIndex.NAME],data.block];
 
+                            const dhide=self.decodeHideAnchor(data);
+                            if(!Array.isArray(dhide)){
+                                result.error.push(dhide);
+                            }else{
+                                result.hide=dhide;
+                            }
+                            return ck && ck(result);
+                        }
+                    });
+                }else if(resAuth.anchor!==null && resHide.anchor===null){
+                    const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];
+                    self.getHistory(auth_anchor,(res:anchorObject[]|errorObject)=>{
+                        const err=<errorObject>res;
+                        if(err.error){
+                            result.error.push(err);
+                            return ck && ck(result);
+                        }else{
+                            const alist=<anchorObject[]>res;
+                            const last:anchorObject=alist[0];
+                            self.decodeAuthAnchor(<anchorObject[]>alist,(map:authMap|errorObject)=>{
+                                const errA=<errorObject>map;
+                                if(err.error){
+                                    result.error.push(errA);
+                                    return ck && ck(result);
+                                }else{
+                                    result.index[relatedIndex.AUTH]=[last.name,last.block];
+                                    result.auth=<authMap>map;
+                                    return ck && ck(result);
+                                }
+                            });
+                        }
+                        //return ck && ck(result);
+                    });
+                }else if(resAuth.anchor!==null && resHide.anchor!==null){
+                    const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
+                    const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];    
+                    self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
+                        const err=<errorObject>res;
+                        if(err.error){
+                            result.error.push({error:err.error});
+                        }else{
+                            const data=<anchorObject>res;
+                            result.map[`${hide_anchor[relatedIndex.NAME]}_${data.block}`]=data;
+                            result.index[relatedIndex.HIDE]=[hide_anchor[relatedIndex.NAME],data.block];
+
+                            const dhide=self.decodeHideAnchor(data);
+                            if(!Array.isArray(dhide)){
+                                result.error.push(dhide);
+                            }else{
+                                result.hide=dhide;
+                            }
+                        }
+                        
+                        self.getHistory(auth_anchor,(res:anchorObject[]|errorObject)=>{
+                            const err=<errorObject>res;
+                            if(err.error){
+                                result.error.push(err);
+                                return ck && ck(result);
+                            }else{
+                                const alist=<anchorObject[]>res;
+                                const last:anchorObject=alist[0];
+                                self.decodeAuthAnchor(<anchorObject[]>alist,(map:authMap|errorObject)=>{
+                                    const errA=<errorObject>map;
+                                    if(err.error){
+                                        result.error.push(errA);
+                                        return ck && ck(result);
+                                    }else{
+                                        result.index[relatedIndex.AUTH]=[last.name,last.block];
+                                        result.auth=<authMap>map;
+                                        return ck && ck(result);
+                                    }
+                                });
+                            }
                         });
                     });
                 }
@@ -224,11 +273,53 @@ const self={
 
     //!important, by using the history of anchor, `hide` keyword is still support
     //!important, checking the latest anchor data, using the `hide` feild to get data.
-
-    decodeAuthAnchor:(list:anchorObject[],ck:Function):authMap=>{
+    decodeAuthAnchor:(list:anchorObject[],ck:(res: authMap|errorObject)=>void)=>{
         const map:authMap={};
+        const last:anchorObject=list[0];
+        if(last.protocol===null) return ck && ck({error:"Not valid anchor"});
 
-        return map;
+        const protocol=<keywords>last.protocol;
+        self.authHideList(protocol,(hlist:number[])=>{
+            console.log({hlist});
+            let hmap:any={};
+            for(let i=0;i<hlist.length;i++){
+                hmap[hlist[i].toString()]=true;
+            }
+
+            for(let i=0;i<list.length;i++){
+                const row:anchorObject=list[i];
+                if(hmap[row.block.toString()]) continue;
+                if(!row.protocol || row.protocol.fmt!==formatType.JSON || row.raw===null) continue;
+
+                try {
+                    const tmap=JSON.parse(row.raw);
+                    for(let k in tmap) map[k]=tmap[k];
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            return ck && ck(map);
+        });
+    },
+
+    authHideList:(protocol:keywords,ck:(res: number[])=>void)=>{
+        if(protocol?.hide){
+            if(Array.isArray(protocol.hide)){
+                return ck && ck(<number[]>protocol.hide);
+            }else{
+                self.getAnchor([<string>protocol.hide,0],(anchorH:anchorObject|errorObject)=>{
+                    const hlist=self.decodeHideAnchor(<anchorObject>anchorH);
+                    const errH=<errorObject>hlist;
+                    if(errH.error){
+                        return ck && ck([]);
+                    }else{
+                        return ck && ck(<number[]>hlist);
+                    }
+                });
+            }
+        }else{
+            return ck && ck([]);
+        }
     },
 
     //get params from string such as `key_a=val&key_b=val&key_c=val`

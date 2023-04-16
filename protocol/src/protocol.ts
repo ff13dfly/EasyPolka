@@ -19,8 +19,8 @@ export type keywords={
     "push"?:string[],
     "lib"?:anchorLocation[],
     "ver"?:string,
-    "hide"?:anchorLocation,
-    "auth"?:anchorLocation,
+    "hide"?:hideMap|anchorLocation,
+    "auth"?:authMap|anchorLocation,
     "salt"?:[string,string],
     "args"?:string,
 };
@@ -141,7 +141,7 @@ export interface anchorMap { [anchor: string]: anchorObject; }
 
 //hide map of target anchor
 //the history of the hide anchor is meanful.
-interface hideMap { [anchor: string]: number; }
+interface hideMap { [anchor: string]: number;}
 
 interface argumentMap {[key:string]:string;}
 

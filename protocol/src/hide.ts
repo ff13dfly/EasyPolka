@@ -1,5 +1,5 @@
 //!important This is the library for creating auth data
-import { anchorLocation,authMap,keywords} from "./protocol";
+import { anchorLocation,keywords} from "./protocol";
 const md5 =require("md5");
 
 const creator=(anchor:string)=>{
@@ -8,7 +8,7 @@ const creator=(anchor:string)=>{
 export {creator as easyHide};
 
 type result={
-    'list':authMap[]|null;
+    'list':number[]|null;
     'anchor':anchorLocation|null;
 };
 // check anchor to get hide list
@@ -18,12 +18,15 @@ const check=(anchor:string,protocol:keywords,ck:Function)=>{
         "anchor":null,    //target anchor to get result
     }
     
+    //FIXME need to fix the checking
     if(protocol.hide){
         //1.check wether target anchor 
-        if(typeof protocol.hide==="string" || Array.isArray(protocol.hide)){
+        if(typeof protocol.hide==="string"){
             data.anchor = protocol.hide;
+        }else if(Array.isArray(protocol.hide)){
+            data.list=<number[]>protocol.hide;
         }else{
-            data.list=protocol.hide;
+            //data.list=protocol.hide;
         }
     }else{
         //2.check default anchor

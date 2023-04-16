@@ -25,3 +25,24 @@ var self = {
 };
 var obj = __assign(__assign({}, define_1.defaultValue.anchorObject), { age: null, intro: "good to join" });
 self.check(123, obj);
+var aaa = function (a) {
+    return [a, a, a];
+};
+var res = aaa("hello");
+console.log(res);
+//TODO error test await way to code
+//await testing
+try {
+    var awaitResult = await mock_a();
+    console.log(awaitResult);
+}
+catch (error) {
+    console.log(error);
+}
+function mock_a() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve('mock_A');
+        }, 500);
+    });
+}

@@ -67,8 +67,8 @@ const decoder=(link:string,cfg?:any)=>{
     body=arr[0];
 
     //3. decode anchor location
-    const ls=body.split("/");
-    const last=[];
+    const ls:string[]=body.split("/");
+    const last:string[]=[];
     for(let i=0;i<ls.length;i++){
         if(ls[i]!=='') last.push(ls[i]);
     }

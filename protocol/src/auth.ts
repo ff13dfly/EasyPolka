@@ -11,7 +11,7 @@ export {creator as easyAuth};
 
 // check anchor to get auth list. 
 type result={
-    'list':authMap[]|null;
+    'list':authMap|null;
     'anchor':anchorLocation|null;
 };
 
@@ -31,7 +31,7 @@ const check=(anchor:string,protocol:keywords,ck:Function)=>{
         if(typeof protocol.auth==="string" || Array.isArray(protocol.auth)){
             data.anchor = protocol.auth;
         }else{
-            data.list=protocol.auth;
+            data.list=<authMap>protocol.auth;
         }
     }else{
         //2.check default anchor

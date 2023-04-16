@@ -11,13 +11,17 @@ var check = function (anchor, protocol, ck) {
         "list": null,
         "anchor": null, //target anchor to get result
     };
+    //FIXME need to fix the checking
     if (protocol.hide) {
         //1.check wether target anchor 
-        if (typeof protocol.hide === "string" || Array.isArray(protocol.hide)) {
+        if (typeof protocol.hide === "string") {
             data.anchor = protocol.hide;
         }
-        else {
+        else if (Array.isArray(protocol.hide)) {
             data.list = protocol.hide;
+        }
+        else {
+            //data.list=protocol.hide;
         }
     }
     else {
