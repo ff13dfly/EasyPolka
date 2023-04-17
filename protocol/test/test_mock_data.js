@@ -83,16 +83,16 @@ const self={
 };
 
 const task=[
-    write_app_sample,
-    write_data_sample,
-    write_unexcept_data_sample,
-    write_mock_normal_libs,
-    write_mock_complex_libs,
-    write_salt_hide_sample,
-    write_anchor_hide_sample,
-    write_anchor_auth_sample,
-    write_anchor_auth_and_hide_sample,
-    write_full_parameters_anchor_sample,
+    // write_app_sample,
+    // write_data_sample,
+    // write_unexcept_data_sample,
+    // write_mock_normal_libs,
+    // write_mock_complex_libs,
+    // write_salt_hide_sample,
+    // write_anchor_hide_sample,
+    // write_anchor_auth_sample,
+    // write_anchor_auth_and_hide_sample,
+    // write_full_parameters_anchor_sample,
     write_full_parameters_caller_sample,
 ];
 self.auto(task);
@@ -395,7 +395,7 @@ function write_anchor_auth_and_hide_sample(index,ck){
 
 function write_full_parameters_anchor_sample(index,ck){
     const start=self.stamp();
-    const seed='Charlie';
+    const seed='Dave';
     const ks = new Keyring({ type: 'sr25519' });
     const pair= ks.addFromUri(`//${seed}`);
 
@@ -403,10 +403,13 @@ function write_full_parameters_anchor_sample(index,ck){
 
     const list=[];
 
+    //logical
     //1.write `full_app` twice
-    //2.hide anchor `full_hide` to hide the latest `full_app`
+    //2.hide anchor `full_hide` to hide the latest `full_app`, ver '1.0.8' will be loaded.
     //3.auth anchor `full_auth` write three times, and set hide anchor `auth_hide` to hide the second `full_auth`
     //4.complex lib ref.
+
+    //1.write app twice
     const anchor="full_app";
     const raw="This is a complex cApp anchor "+self.randomData();
     const protocol={
@@ -419,10 +422,62 @@ function write_full_parameters_anchor_sample(index,ck){
     };
     list.push({name:anchor,raw:raw,protocol:protocol});
 
+    const protocol_2={
+        "type":"app",
+        "fmt":"js",
+        "auth":"full_auth",
+        "hide":"full_hide",
+        "lib":["js_a","jquery"],
+        "ver":"1.1.0",
+    };
+    list.push({name:anchor,raw:raw,protocol:protocol_2});
+
+    //2.write auth anchor three times.
+    const auth_anchor="full_auth";
+    const auth_protocol={"type":"data","fmt":"json"};
+    const auth_raw_1={
+        "5DtBERu7U1SwPD1iebf5zHgjRsUnrU3iQgswySXeu6PK7eL4":0,
+    };
+    const auth_raw_2={
+        "5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":0,
+        "5CUUuCwJbXo8jVJQW21huCFWtBrg2K61wbZBiyGP3V7ZC4Ko":0,
+    };
+    const auth_raw_3={
+        "5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9":0,
+    };
+    list.push({name:auth_anchor,raw:auth_raw_1,protocol:auth_protocol});
+    list.push({name:auth_anchor,raw:auth_raw_2,protocol:auth_protocol});
+    const auth_protocol_1={"type":"data","fmt":"json","hide":"auth_hide"};
+    list.push({name:auth_anchor,raw:auth_raw_3,protocol:auth_protocol_1});
+
+
     self.multi(list,()=>{
-        const end=self.stamp();
-        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
-        return ck && ck();
+        anchorJS.history(auth_anchor,(history_auth)=>{
+            anchorJS.history(anchor,(history_app)=>{
+                const alist=[];
+
+                //3.hide the latest app anchor
+                const block=history_app[0].block;
+                const hide_anchor="full_hide";
+                const hide_raw=[block];
+                const hide_protocol={"type":"data","fmt":"json"};
+                alist.push({name:hide_anchor,raw:hide_raw,protocol:hide_protocol});
+
+                //4.hide the second auth anchor
+                const auth_block=history_auth[1].block;
+                const h_anchor="auth_hide";
+                const h_raw=[auth_block];
+                const h_protocol={"type":"data","fmt":"json"};
+                alist.push({name:h_anchor,raw:h_raw,protocol:h_protocol});
+
+
+                self.multi(alist,()=>{
+                    const end=self.stamp();
+                    console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+                    return ck && ck();
+                },index,pair);
+            });
+        });
     },index,pair);
 }
 
@@ -436,10 +491,12 @@ function write_full_parameters_caller_sample(index,ck){
 
     const list=[];
 
-    //1.write `full_caller` twice
-    //2.hide anchor `call_hide` to hide the latest `full_caller`
+    //1.write `full_caller` three times
+    //2.hide anchor `call_hide` to hide the latest and second `full_caller` 
     //3.auth anchor `call_auth` write three times, and set hide anchor `call_auth_hide` to hide the second `call_auth`
     //4.call the complex cApp `full_anchor`
+
+    //1.
     const anchor="full_caller";
     const raw="This is a complex data anchor call `full_anchor` "+self.randomData();
     const protocol={
@@ -447,18 +504,60 @@ function write_full_parameters_caller_sample(index,ck){
         "fmt":"json",
         "auth":"call_auth",
         "hide":"call_hide",
-        "call":"full_anchor",
+        "call":"full_app",
         "args":"page=3&cat=6&tpl=dark",
-        //"salt":["","abc"],
     };
     list.push({name:anchor,raw:raw,protocol:protocol});
+    list.push({name:anchor,raw:raw,protocol:protocol});
+    list.push({name:anchor,raw:raw,protocol:protocol});
 
-
+    const auth_anchor="call_auth";
+    const auth_protocol={"type":"data","fmt":"json"};
+    const auth_raw_1={
+        "5CUUuCwJbXo8jVJQW21huCFWtBrg2K61wbZBiyGP3V7ZC4Ko":34567,
+        "5DtBERu7U1SwPD1iebf5zHgjRsUnrU3iQgswySXeu6PK7eL4":34568,
+    };
+    const auth_raw_2={
+        "5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":0,
+        "5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9":3456,
+    };
+    const auth_raw_3={
+        "5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9":0,
+        "5CUUuCwJbXo8jVJQW21huCFWtBrg2K61wbZBiyGP3V7ZC4Ko":0,
+        "5DtBERu7U1SwPD1iebf5zHgjRsUnrU3iQgswySXeu6PK7eL4":0,
+    };
+    list.push({name:auth_anchor,raw:auth_raw_1,protocol:auth_protocol});
+    list.push({name:auth_anchor,raw:auth_raw_2,protocol:auth_protocol});
+    const auth_protocol_1={"type":"data","fmt":"json","hide":"call_auth_hide"};
+    list.push({name:auth_anchor,raw:auth_raw_3,protocol:auth_protocol_1});
 
     self.multi(list,()=>{
-        const end=self.stamp();
-        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
-        return ck && ck();
+        anchorJS.history(auth_anchor,(history_auth)=>{
+            anchorJS.history(anchor,(history_app)=>{
+                const alist=[];
+
+                //3.hide the latest app anchor
+                const block_1=history_app[0].block;
+                const block_2=history_app[1].block;
+                const hide_anchor="call_hide";
+                const hide_raw=[block_1,block_2];
+                const hide_protocol={"type":"data","fmt":"json"};
+                alist.push({name:hide_anchor,raw:hide_raw,protocol:hide_protocol});
+
+                //4.hide the second auth anchor
+                const auth_block=history_auth[1].block;
+                const h_anchor="call_auth_hide";
+                const h_raw=[auth_block];
+                const h_protocol={"type":"data","fmt":"json"};
+                alist.push({name:h_anchor,raw:h_raw,protocol:h_protocol});
+
+                self.multi(alist,()=>{
+                    const end=self.stamp();
+                    console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+                    return ck && ck();
+                },index,pair);
+            });
+        });
     },index,pair);
 }
 
