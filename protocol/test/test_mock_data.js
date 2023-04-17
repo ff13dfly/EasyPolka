@@ -72,6 +72,14 @@ const self={
     stamp:()=>{
         return new Date().getTime();
     },
+    randomData:(len)=>{
+        let str='';
+        const max=len===undefined?4:len;
+        for(let i=0;i<max;i++){
+            str+=Math.ceil(Math.random() * 10)-1;
+        }
+        return str;
+    },
 };
 
 const task=[
@@ -84,6 +92,8 @@ const task=[
     write_anchor_hide_sample,
     write_anchor_auth_sample,
     write_anchor_auth_and_hide_sample,
+    write_full_parameters_anchor_sample,
+    write_full_parameters_caller_sample,
 ];
 self.auto(task);
 
@@ -113,7 +123,7 @@ function write_data_sample(index,ck){
 
     const anchor="data_caller";
     const raw={
-        "content":"this is from key raw",
+        "content":"this is from key raw "+self.randomData(),
         "footer":"foot content",
     };
     const protocol={
@@ -140,8 +150,8 @@ function write_unexcept_data_sample(index,ck){
 
     const anchor="error_caller";
     const raw={
-        "content":"This is a test to call an unexsist anchor",
-        "footer":"foot content",
+        "content":"This is a test to call an unexsist anchor "+self.randomData(),
+        "footer":"foot content "+self.randomData(),
     };
     const protocol={"type":"data","fmt":"json","call":"entry_none"};
 
@@ -161,7 +171,7 @@ function write_mock_normal_libs(index,ck){
     const pair= ks.addFromUri('//Alice');
 
     const anchor="jquery";
-    const raw="This is mock JQuery library";
+    const raw="This is mock JQuery library "+self.randomData();
     const protocol={
         "type":"lib",
         "fmt":"js",
@@ -190,7 +200,7 @@ function write_mock_complex_libs(index,ck){
     const pair= ks.addFromUri('//Alice');
 
     const anchor="jquery";
-    const raw="This is mock JQuery library";
+    const raw="This is mock JQuery library "+self.randomData();
     const protocol={
         "type":"lib",
         "fmt":"js",
@@ -227,7 +237,7 @@ function write_salt_hide_sample(index,ck){
 
     const list=[];
     const anchor="hideme";
-    const raw="This is mock data to test hide function";
+    const raw="This is mock data to test hide function "+self.randomData();
     const protocol={"type":"data","fmt":"json","call":"entry_app","salt":["authacc","cda"]};
     list.push({name:anchor,raw:raw,protocol:protocol});
 
@@ -269,12 +279,12 @@ function write_anchor_hide_sample(index,ck){
     list.push({name:direct_anchor,raw:direct_raw,protocol:direct_protocol});
 
     const anchor="hide_me_by_anchor";
-    const raw="This is mock data to test hide function";
+    const raw="This is mock data to test hide function "+self.randomData();
     const protocol={"type":"data","fmt":"json","hide":"hbyanchor"};
     list.push({name:anchor,raw:raw,protocol:protocol});
 
     const target_anchor="hbyanchor";
-    const target_raw=[34,2234];
+    const target_raw=[22,5666];
     const target_protocol={"type":"data","fmt":"json",};
     list.push({name:target_anchor,raw:target_raw,protocol:target_protocol});
 
@@ -296,12 +306,12 @@ function write_anchor_auth_sample(index,ck){
     const list=[];
 
     const direct_anchor="auth_me_direct";
-    const direct_raw="fake data for auth direct";
+    const direct_raw="fake data for auth direct "+self.randomData();
     const direct_protocol={"type":"data","fmt":"json","auth":{"5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":0}};
     list.push({name:direct_anchor,raw:direct_raw,protocol:direct_protocol});
 
     const anchor="auth_me_by_anchor";
-    const raw="This is mock data to test auth function";
+    const raw="This is mock data to test auth function "+self.randomData();
     const protocol={"type":"data","fmt":"json","auth":"abyanchor"};
     list.push({name:anchor,raw:raw,protocol:protocol});
 
@@ -331,10 +341,13 @@ function write_anchor_auth_and_hide_sample(index,ck){
     console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
 
     const list=[];
-    const baisc_anchor="complex_anchor";
-    const baisc_raw={"tips":"This is a complex anchor"};
-    const baisc_protocol={"type":"data","fmt":"json","auth":"cpx_auth","hide":"cpx_hide"};
-    list.push({name:baisc_anchor,raw:baisc_raw,protocol:baisc_protocol});
+    const txt="This is a complex anchor";
+    const basic_anchor="complex_anchor";
+    const basic_raw={"tips":txt+self.stamp()};
+    const basic_protocol={"type":"data","fmt":"json","auth":"cpx_auth","hide":"cpx_hide"};
+    list.push({name:basic_anchor,raw:basic_raw,protocol:basic_protocol});
+    // basic_raw.tips=txt+" last one";
+    // list.push({name:basic_anchor,raw:basic_raw,protocol:basic_protocol});
 
     const auth_anchor="cpx_auth";
     const auth_raw={
@@ -361,7 +374,7 @@ function write_anchor_auth_and_hide_sample(index,ck){
 
     
     self.multi(list,()=>{
-        anchorJS.owner(auth_anchor,(owner,block)=>{
+        anchorJS.owner(basic_anchor,(owner,block)=>{
             const alist=[];
 
             const hide_anchor="cpx_hide";
@@ -380,6 +393,75 @@ function write_anchor_auth_and_hide_sample(index,ck){
 }
 
 
+function write_full_parameters_anchor_sample(index,ck){
+    const start=self.stamp();
+    const seed='Charlie';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
+
+    const list=[];
+
+    //1.write `full_app` twice
+    //2.hide anchor `full_hide` to hide the latest `full_app`
+    //3.auth anchor `full_auth` write three times, and set hide anchor `auth_hide` to hide the second `full_auth`
+    //4.complex lib ref.
+    const anchor="full_app";
+    const raw="This is a complex cApp anchor "+self.randomData();
+    const protocol={
+        "type":"app",
+        "fmt":"js",
+        "auth":"full_auth",
+        "hide":"full_hide",
+        "lib":["js_a","jquery"],
+        "ver":"1.0.8",
+    };
+    list.push({name:anchor,raw:raw,protocol:protocol});
+
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
+}
+
+function write_full_parameters_caller_sample(index,ck){
+    const start=self.stamp();
+    const seed='Charlie';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
+
+    const list=[];
+
+    //1.write `full_caller` twice
+    //2.hide anchor `call_hide` to hide the latest `full_caller`
+    //3.auth anchor `call_auth` write three times, and set hide anchor `call_auth_hide` to hide the second `call_auth`
+    //4.call the complex cApp `full_anchor`
+    const anchor="full_caller";
+    const raw="This is a complex data anchor call `full_anchor` "+self.randomData();
+    const protocol={
+        "type":"data",
+        "fmt":"json",
+        "auth":"call_auth",
+        "hide":"call_hide",
+        "call":"full_anchor",
+        "args":"page=3&cat=6&tpl=dark",
+        //"salt":["","abc"],
+    };
+    list.push({name:anchor,raw:raw,protocol:protocol});
+
+
+
+    self.multi(list,()=>{
+        const end=self.stamp();
+        console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+        return ck && ck();
+    },index,pair);
+}
+
 function framework(index,ck){
     const start=self.stamp();
     const seed='Charlie';
@@ -389,7 +471,11 @@ function framework(index,ck){
     console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
 
     const list=[];
-    
+    const direct_anchor="full_param";
+    const direct_raw="This is the complext cApp anchor "+self.randomData();
+    const direct_protocol={"type":"app","fmt":"json","auth":{"5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm":0}};
+    list.push({name:direct_anchor,raw:direct_raw,protocol:direct_protocol});
+
     self.multi(list,()=>{
         const end=self.stamp();
         console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
