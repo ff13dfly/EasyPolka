@@ -72,7 +72,7 @@ const self={
 
     decodeData:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode data anchor`);
-
+        //console.log(cObject);
         cObject.type=rawType.DATA;
 
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
@@ -285,8 +285,6 @@ const self={
         }
 
         const protocol=<keywords>last.protocol;
-        //console.log({last});
-        //console.log({protocol});
         self.authHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
             errs.push(...herrs);
             for(let k in resMap){
@@ -341,7 +339,8 @@ const self={
     },
 
     //check wether current anchor is in the hide list
-    isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function)=>{
+    isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function,params:Object)=>{
+        console.log(params);
         const errs:errorObject[]=[];
         const cur=data.block;
         let overload:boolean=false;
@@ -355,7 +354,7 @@ const self={
                         return ck && ck(null,errs,overload);
                     }
 
-                    const new_link=linkCreator([data.name,data.pre]);
+                    const new_link=linkCreator([data.name,data.pre],params);
                     return ck && ck(new_link,errs,overload);
                 }
             }
@@ -377,7 +376,7 @@ const self={
                             return ck && ck(null,errs,overload);
                         }
 
-                        const new_link=linkCreator([data.name,data.pre]);
+                        const new_link=linkCreator([data.name,data.pre],params);
                         return ck && ck(new_link,errs,overload);
                     }
                 }
@@ -460,14 +459,9 @@ decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
 //Exposed method `run` as `easyRun`
+// @param   fence     boolean   //if true, treat the run result as cApp.
 const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:boolean)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
-
-    // let un:any=null;
-    // un=API?.common.block((block:number,hash:string)=>{
-    //     if(un!==null) un();
-    //     console.log(`[${block}]:${hash}`);
-    // });
 
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
@@ -479,6 +473,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
         index:[<anchorLocation|null>null,<anchorLocation|null>null],
     }
     if(target.param) cObject.parameter=target.param;
+    console.log(target);
 
     self.getAnchor(target.location,(resAnchor:anchorObject|errorObject)=>{
         const err=<errorObject>resAnchor;
@@ -511,7 +506,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
                 if(overload) return ck && ck(cObject);
                 if(validLink!==null) return run(validLink,API,ck);
                 return getResult(type);
-            });
+            },cObject.parameter===undefined?{}:cObject.parameter);
         }else{
             return getResult(type);
         }
@@ -541,7 +536,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
     
                 return decoder[type](cObject,(resFirst:easyResult)=>{
                     if(resFirst.call && !fence){
-                        const app_link=linkCreator(resFirst.call);
+                        const app_link=linkCreator(resFirst.call,resFirst.parameter===undefined?{}:resFirst.parameter);
                         run(app_link,API,(resApp:easyResult)=>{
                             return self.checkAuthority(resFirst,resApp,ck);
                         },true);

@@ -47,6 +47,7 @@ var self = {
     },
     decodeData: function (cObject, ck) {
         console.log("Decode data anchor");
+        //console.log(cObject);
         cObject.type = protocol_1.rawType.DATA;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
@@ -250,8 +251,6 @@ var self = {
             return ck && ck(map, amap, errs);
         }
         var protocol = last.protocol;
-        //console.log({last});
-        //console.log({protocol});
         self.authHideList(protocol, function (hlist, resMap, herrs) {
             errs.push.apply(errs, herrs);
             for (var k in resMap) {
@@ -305,7 +304,8 @@ var self = {
         });
     },
     //check wether current anchor is in the hide list
-    isValidAnchor: function (hide, data, ck) {
+    isValidAnchor: function (hide, data, ck, params) {
+        console.log(params);
         var errs = [];
         var cur = data.block;
         var overload = false;
@@ -318,7 +318,7 @@ var self = {
                         overload = true;
                         return ck && ck(null, errs, overload);
                     }
-                    var new_link = (0, decoder_1.linkCreator)([data.name, data.pre]);
+                    var new_link = (0, decoder_1.linkCreator)([data.name, data.pre], params);
                     return ck && ck(new_link, errs, overload);
                 }
             }
@@ -339,7 +339,7 @@ var self = {
                             overload = true;
                             return ck && ck(null, errs, overload);
                         }
-                        var new_link = (0, decoder_1.linkCreator)([data.name, data.pre]);
+                        var new_link = (0, decoder_1.linkCreator)([data.name, data.pre], params);
                         return ck && ck(new_link, errs, overload);
                     }
                 }
@@ -419,14 +419,10 @@ decoder[protocol_1.rawType.APP] = self.decodeApp;
 decoder[protocol_1.rawType.DATA] = self.decodeData;
 decoder[protocol_1.rawType.LIB] = self.decodeLib;
 //Exposed method `run` as `easyRun`
+// @param   fence     boolean   //if true, treat the run result as cApp.
 var run = function (linker, inputAPI, ck, fence) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
-    // let un:any=null;
-    // un=API?.common.block((block:number,hash:string)=>{
-    //     if(un!==null) un();
-    //     console.log(`[${block}]:${hash}`);
-    // });
     var target = (0, decoder_1.linkDecoder)(linker);
     if (target.error)
         return ck && ck(target);
@@ -439,6 +435,7 @@ var run = function (linker, inputAPI, ck, fence) {
     };
     if (target.param)
         cObject.parameter = target.param;
+    console.log(target);
     self.getAnchor(target.location, function (resAnchor) {
         var err = resAnchor;
         //1.return error if anchor is not support Easy Protocol
@@ -470,7 +467,7 @@ var run = function (linker, inputAPI, ck, fence) {
                 if (validLink !== null)
                     return run(validLink, API, ck);
                 return getResult(type);
-            });
+            }, cObject.parameter === undefined ? {} : cObject.parameter);
         }
         else {
             return getResult(type);
@@ -498,7 +495,7 @@ var run = function (linker, inputAPI, ck, fence) {
                 }
                 return decoder[type](cObject, function (resFirst) {
                     if (resFirst.call && !fence) {
-                        var app_link = (0, decoder_1.linkCreator)(resFirst.call);
+                        var app_link = (0, decoder_1.linkCreator)(resFirst.call, resFirst.parameter === undefined ? {} : resFirst.parameter);
                         run(app_link, API, function (resApp) {
                             return self.checkAuthority(resFirst, resApp, ck);
                         }, true);

@@ -20,18 +20,30 @@ var self = {
         }
         return map;
     },
+    combineParams: function (obj) {
+        if (!obj)
+            return "";
+        var list = [];
+        for (var k in obj) {
+            list.push("".concat(k, "=").concat(obj[k]));
+        }
+        if (list.length === 0)
+            return '';
+        return list.join("&");
+    },
 };
-var creator = function (local) {
+var creator = function (local, params) {
+    var str = self.combineParams(params);
     if (Array.isArray(local)) {
         if (local[1] !== 0) {
-            return "".concat(setting.pre).concat(local[0], "/").concat(local[1]);
+            return "".concat(setting.pre).concat(local[0], "/").concat(local[1]).concat(!str ? str : "?" + str);
         }
         else {
-            return "".concat(setting.pre).concat(local[0]);
+            return "".concat(setting.pre).concat(local[0]).concat(!str ? str : "?" + str);
         }
     }
     else {
-        return "".concat(setting.pre).concat(local);
+        return "".concat(setting.pre).concat(local).concat(!str ? str : "?" + str);
     }
 };
 exports.linkCreator = creator;

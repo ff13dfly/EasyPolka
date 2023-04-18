@@ -36,17 +36,27 @@ const self={
         }
         return map;
     },
+    combineParams:(obj:any)=>{
+        if(!obj) return "";
+        const list=[];
+        for(var k in obj){
+            list.push(`${k}=${obj[k]}`);
+        }
+        if(list.length===0) return '';
+        return list.join("&");
+    },
 }
 
-const creator=(local:anchorLocation)=>{
+const creator=(local:anchorLocation,params:Object)=>{
+    const str=self.combineParams(params);
     if(Array.isArray(local)){
         if(local[1]!==0){
-            return `${setting.pre}${local[0]}/${local[1]}`;
+            return `${setting.pre}${local[0]}/${local[1]}${!str?str:"?"+str}`;
         }else{
-            return `${setting.pre}${local[0]}`;
+            return `${setting.pre}${local[0]}${!str?str:"?"+str}`;
         }
     }else{
-        return `${setting.pre}${local}`;
+        return `${setting.pre}${local}${!str?str:"?"+str}`;
     }
 }
 export {creator as linkCreator};

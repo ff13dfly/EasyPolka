@@ -192,6 +192,6 @@ export type easyResult={
     hide?:number[];              //hide list
     index?:[anchorLocation|null,anchorLocation|null];     //[ auth,hide ] related anchor location
     
-    parameter?:string[];        //running parameters, from anchor link parameter
+    parameter?:Object;        //running parameters, from anchor link parameter
     error:errorObject[];       //errors when loading cApp
 }
