@@ -7,7 +7,7 @@
 
 //follow the URL way to solve the sepecial characters.
 
-import { anchorLocation, errorObject }from "./protocol";
+import { anchorLocation }from "./protocol";
 
 type decoderResult={
     location:[string,number];

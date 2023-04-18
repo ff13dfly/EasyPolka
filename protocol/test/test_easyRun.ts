@@ -12,6 +12,7 @@ const API={
         "history":anchorJS.history,
         "owner":anchorJS.owner,
         "subcribe":anchorJS.subcribe,
+        "block":anchorJS.block,
     },
 }
 

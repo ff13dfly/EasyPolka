@@ -1,6 +1,7 @@
 let wsAPI = null;
 let keyRing=null;
 let unlistening = null;
+let unblock=null;
 
 const limits={
     key:40,					//Max length of anchor name ( ASCII character )
@@ -78,6 +79,21 @@ const self = {
 			unlistening = null;
 		}
 		return true;
+	},
+
+	block:(ck) => {
+		if (!self.ready()) return ck && ck(false);
+		let unblock=null;
+		wsAPI.rpc.chain.subscribeFinalizedHeads((lastHeader) => {
+			const hash = lastHeader.hash.toHex();
+			const block=lastHeader.number.toJSON();
+			if(unblock!==null) unblock();
+			if(ck){
+				ck(block,hash);
+			} 
+		}).then((fun) => {
+			unblock = fun;
+		});
 	},
 
 	/** 
@@ -658,6 +674,7 @@ exports.anchorJS={
 	setKeyring:self.setKeyring,	//set Keyring to get pair
 	ready:self.ready,			//check the ws is ready
 	subcribe:self.listening,	//subcribe the latest block which including anchor data
+	block:self.block,
 	load:self.load,				//load encry json to create pair	
 	balance:self.balance,		//get the balance details of account
 

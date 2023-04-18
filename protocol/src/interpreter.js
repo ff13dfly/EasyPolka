@@ -10,6 +10,7 @@ var decoder_1 = require("./decoder");
 var auth_1 = require("./auth");
 var hide_1 = require("./hide");
 var _a = require("../lib/loader"), Loader = _a.Loader, Libs = _a.Libs;
+//const {anchorJS} =require("../lib/anchor");
 var API = null;
 var self = {
     getAnchor: function (location, ck) {
@@ -346,7 +347,8 @@ var self = {
             });
         }
     },
-    getResult: function () {
+    //check the authority between anchors
+    checkAuthority: function (from, to) {
     },
     //get params from string such as `key_a=val&key_b=val&key_c=val`
     getParams: function (args) {
@@ -361,14 +363,26 @@ var self = {
         }
         return map;
     },
+    empty: function (obj) {
+        for (var k in obj) {
+            return false;
+        }
+        return true;
+    },
 };
 var decoder = {};
 decoder[protocol_1.rawType.APP] = self.decodeApp;
 decoder[protocol_1.rawType.DATA] = self.decodeData;
 decoder[protocol_1.rawType.LIB] = self.decodeLib;
-var run = function (linker, inputAPI, ck, hide) {
+//Exposed method `run` as `easyRun`
+var run = function (linker, inputAPI, ck, fence) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
+    // let un:any=null;
+    // un=API?.common.block((block:number,hash:string)=>{
+    //     if(un!==null) un();
+    //     console.log(`[${block}]:${hash}`);
+    // });
     var target = (0, decoder_1.linkDecoder)(linker);
     if (target.error)
         return ck && ck(target);
@@ -392,6 +406,7 @@ var run = function (linker, inputAPI, ck, hide) {
         if (cObject.location[1] === 0)
             cObject.location[1] = data.block;
         cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = data;
+        //2.check protocol
         if (data.protocol === null) {
             cObject.error.push({ error: "No valid protocol" });
             return ck && ck(cObject);
@@ -437,13 +452,55 @@ var run = function (linker, inputAPI, ck, hide) {
                     cObject.data[k] = mergeResult.map[k];
                 }
                 return decoder[type](cObject, function (resFirst) {
-                    //if there is a caller, get the target cApp data
-                    if (resFirst.call) {
+                    if (resFirst.call && !fence) {
                         var app_link = (0, decoder_1.linkCreator)(resFirst.call);
                         run(app_link, API, function (resApp) {
-                            resFirst.app = resApp;
-                            return ck && ck(resFirst);
-                        });
+                            //x.1.check the called anchor type.
+                            if (resApp.type !== protocol_1.rawType.APP) {
+                                resFirst.error.push({ error: "Answer is not cApp." });
+                                return ck && ck(resFirst);
+                            }
+                            //x.2.check the authority
+                            var from = resFirst.data["".concat(resFirst.location[0], "_").concat(resFirst.location[1])];
+                            var signer = from.signer;
+                            var auths = resApp.auth;
+                            if (auths === undefined) {
+                                resFirst.app = resApp;
+                                return ck && ck(resFirst);
+                            }
+                            else {
+                                if (self.empty(auths)) {
+                                    resFirst.app = resApp;
+                                    return ck && ck(resFirst);
+                                }
+                                else {
+                                    if (auths[signer] === undefined) {
+                                        resFirst.error.push({ error: "No authority of caller." });
+                                        return ck && ck(resFirst);
+                                    }
+                                    else {
+                                        if (auths[signer] === 0) {
+                                            resFirst.app = resApp;
+                                            return ck && ck(resFirst);
+                                        }
+                                        else {
+                                            console.log(auths[signer]);
+                                            API === null || API === void 0 ? void 0 : API.common.block(function (block, hash) {
+                                                console.log(block);
+                                                if (block > auths[signer]) {
+                                                    resFirst.error.push({ error: "Authority out of time." });
+                                                    return ck && ck(resFirst);
+                                                }
+                                                else {
+                                                    resFirst.app = resApp;
+                                                    return ck && ck(resFirst);
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }, true);
                     }
                     else {
                         return ck && ck(resFirst);

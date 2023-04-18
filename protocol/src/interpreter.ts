@@ -10,6 +10,7 @@ import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
 
 const {Loader,Libs} = require("../lib/loader");
+//const {anchorJS} =require("../lib/anchor");
 
 let API:APIObject=null;
 
@@ -55,6 +56,7 @@ const self={
 
     filterAnchor:(data:anchorObject|errorObject,ck:Function)=>{
         if(!data) return ck && ck({error:"No such anchor.",level:errorLevel.ERROR});
+
         const err=<errorObject>data;
         if(err.error) return ck && ck({error:err.error,level:errorLevel.ERROR});
 
@@ -67,8 +69,6 @@ const self={
 
         return ck && ck(anchor);
     },
-
-    
 
     decodeData:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode data anchor`);
@@ -386,7 +386,8 @@ const self={
         }
     },
 
-    getResult:()=>{
+    //check the authority between anchors
+    checkAuthority:(from:easyResult,to:easyResult)=>{
 
     },
 
@@ -402,8 +403,15 @@ const self={
         }
         return map;
     },
+    empty:(obj:any):boolean=>{
+        for(let k in obj){
+            return false;
+        }
+        return true;
+    },
 }
 
+//Deocode map definition.
 type decoderMap = {
     [index: string]: Function;
 };
@@ -412,8 +420,15 @@ decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
-const run=(linker:string,inputAPI:APIObject,ck:Function,hide?:number[])=>{
+//Exposed method `run` as `easyRun`
+const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:boolean)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
+
+    // let un:any=null;
+    // un=API?.common.block((block:number,hash:string)=>{
+    //     if(un!==null) un();
+    //     console.log(`[${block}]:${hash}`);
+    // });
 
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
@@ -438,6 +453,7 @@ const run=(linker:string,inputAPI:APIObject,ck:Function,hide?:number[])=>{
         if(cObject.location[1]===0)cObject.location[1]=data.block;
         cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=data;
 
+        //2.check protocol
         if(data.protocol===null){
             cObject.error.push({error:"No valid protocol"});
             return ck && ck(cObject);
@@ -486,14 +502,53 @@ const run=(linker:string,inputAPI:APIObject,ck:Function,hide?:number[])=>{
                 }
     
                 return decoder[type](cObject,(resFirst:easyResult)=>{
-                    //if there is a caller, get the target cApp data
-                    if(resFirst.call){
+                    if(resFirst.call && !fence){
                         const app_link=linkCreator(resFirst.call);
                         run(app_link,API,(resApp:easyResult)=>{
-                            resFirst.app=resApp;
-                            return ck && ck(resFirst);
-                        });
+                            //x.1.check the called anchor type.
+                            if(resApp.type!==rawType.APP){
+                                resFirst.error.push({error:`Answer is not cApp.`});
+                                return ck && ck(resFirst);
+                            }
+                            
+                            //x.2.check the authority
+                            const from=resFirst.data[`${resFirst.location[0]}_${resFirst.location[1]}`];
+                            const signer=from.signer;
+                            const auths=resApp.auth;
+                            if(auths===undefined){
+                                resFirst.app=resApp;
+                                return ck && ck(resFirst);
+                            }else{
+                                if(self.empty(auths)){
+                                    resFirst.app=resApp;
+                                    return ck && ck(resFirst);
+                                }else{
+                                    if(auths[signer]===undefined){
+                                        resFirst.error.push({error:`No authority of caller.`});
+                                        return ck && ck(resFirst);
+                                    }else{
+                                        if(auths[signer]===0){
+                                            resFirst.app=resApp;
+                                            return ck && ck(resFirst);
+                                        }else{
+                                            console.log(auths[signer]);
+                                            API?.common.block((block:number,hash:string)=>{
+                                                console.log(block);
+                                                if(block>auths[signer]){
+                                                    resFirst.error.push({error:`Authority out of time.`});
+                                                    return ck && ck(resFirst);
+                                                }else{
+                                                    resFirst.app=resApp;
+                                                    return ck && ck(resFirst);
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        },true);
                     }else{
+
                         return ck && ck(resFirst);
                     }
                 });

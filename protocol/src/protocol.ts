@@ -161,6 +161,7 @@ export type APIObject={
         "multi"?:(list:anchorLocation[],ck:Function)=>any|errorObject;
         "lib"?:(list:anchorLocation[],ck:Function) => any|errorObject;
         "subcribe":(ck:Function,cfg:any) => anchorObject[];
+        "block":(ck:Function) => void;
     };
     //polkadot functions needed
     "polka"?:{
