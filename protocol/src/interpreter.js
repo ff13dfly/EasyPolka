@@ -45,51 +45,32 @@ var self = {
     },
     decodeData: function (cObject, ck) {
         console.log("Decode data anchor");
+        cObject.type = protocol_1.rawType.DATA;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
         if (protocol !== null && protocol.call) {
-            var app_answer_1 = [
-                Array.isArray(protocol.call) ? protocol.call[0] : protocol.call,
-                Array.isArray(protocol.call) ? protocol.call[1] : 0
-            ];
-            self.getAnchor(app_answer_1, function (answer) {
-                if (answer.error) {
-                    cObject.error.push({ error: "Failed to load answer anchor" });
-                    return ck && ck(cObject);
-                }
-                cObject.from = cObject.location;
-                cObject.location = [app_answer_1[0], answer.block];
-                if (protocol.args) {
-                }
-            });
+            cObject.call = protocol.call;
         }
-        else {
-            return ck && ck(cObject);
-        }
+        return ck && ck(cObject);
     },
     decodeApp: function (cObject, ck) {
         console.log("Decode app anchor");
+        cObject.type = protocol_1.rawType.APP;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
-        //1.try to decode and get application
-        try {
-            cObject.app = new Function("container", "API", "args", "from", "error", data.raw === null ? "" : data.raw);
-        }
-        catch (error) {
-            cObject.error.push({ error: "Failed to get function" });
-        }
-        //2.check and get libs
         if (protocol !== null && protocol.lib) {
         }
         return ck && ck(cObject);
     },
     decodeLib: function (cObject, ck) {
         console.log("Decode lib anchor");
+        cObject.type = protocol_1.rawType.LIB;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
         //1.check and get libs
         if (protocol !== null && protocol.lib) {
         }
+        return ck && ck(cObject);
     },
     getLibs: function (list, ck) {
         if (API === null)
@@ -207,7 +188,8 @@ var self = {
             result.map["".concat(row.name, "_").concat(row.block)] = row;
         }
         var last = list[0];
-        self.decodeAuthAnchor(list, function (map, amap, errs) {
+        var hlist = []; //get latest auth anchor hide list.
+        self.decodeAuthAnchor(list, hlist, function (map, amap, errs) {
             for (var k in amap)
                 result.map[k] = amap[k]; //if hide anchor data, merge to result
             for (var i = 0; i < errs.length; i++)
@@ -239,18 +221,21 @@ var self = {
     },
     //!important, by using the history of anchor, `hide` keyword is still support
     //!important, checking the latest anchor data, using the `hide` feild to get data.
-    decodeAuthAnchor: function (list, ck) {
+    decodeAuthAnchor: function (list, hlist, ck) {
         var map = {};
         var amap = {};
         var errs = [];
+        //FIXME, if the latest auth anchor is hidden,need to check next one.
         var last = list[0];
         if (last.protocol === null) {
             errs.push({ error: "Not valid anchor" });
             return ck && ck(map, amap, errs);
         }
         var protocol = last.protocol;
+        //console.log({last});
+        //console.log({protocol});
         self.authHideList(protocol, function (hlist, resMap, herrs) {
-            console.log({ resMap: resMap, herrs: herrs, hlist: hlist });
+            //console.log({resMap,herrs,hlist});
             var hmap = {};
             for (var i = 0; i < hlist.length; i++) {
                 hmap[hlist[i].toString()] = true;
@@ -267,14 +252,13 @@ var self = {
                         map[k] = tmap[k];
                 }
                 catch (error) {
-                    //console.log(error);
                     errs.push({ error: error });
                 }
             }
             return ck && ck(map, amap, errs);
         });
     },
-    //check auth hide list
+    //check auth anchor's hide list
     authHideList: function (protocol, ck) {
         var map = {};
         var errs = [];
@@ -294,7 +278,7 @@ var self = {
             if (errH.error)
                 errs.push(errH);
             var anchor = anchorH;
-            console.log(anchor);
+            //console.log(anchor);
             map["".concat(anchor.name, "_").concat(anchor.block)] = anchor;
             return ck && ck(hlist, map, errs);
         });
@@ -324,6 +308,7 @@ var run = function (linker, inputAPI, ck) {
     if (target.error)
         return ck && ck(target);
     var cObject = {
+        type: protocol_1.rawType.DATA,
         location: [target.location[0], target.location[1] !== 0 ? target.location[1] : 0],
         error: [],
         data: {},
@@ -342,7 +327,6 @@ var run = function (linker, inputAPI, ck) {
         if (!decoder[type])
             return ck && ck(data);
         self.merge(data.name, data.protocol, {}, function (mergeResult) {
-            console.log(mergeResult);
             if (mergeResult.auth !== null)
                 cObject.auth = mergeResult.auth;
             if (mergeResult.hide.length !== 0)
@@ -358,7 +342,18 @@ var run = function (linker, inputAPI, ck) {
             for (var k in mergeResult.map) {
                 cObject.data[k] = mergeResult.map[k];
             }
-            return decoder[type](cObject, ck);
+            return decoder[type](cObject, function (resFirst) {
+                if (resFirst.call) {
+                    var app_link = (0, decoder_1.linkCreator)(resFirst.call);
+                    run(app_link, API, function (resApp) {
+                        resFirst.app = resApp;
+                        return ck && ck(resFirst);
+                    });
+                }
+                else {
+                    return ck && ck(resFirst);
+                }
+            });
         });
     });
 };

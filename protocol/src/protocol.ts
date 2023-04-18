@@ -180,9 +180,12 @@ interface dataMap { [anchor: string]: anchorObject; }
 
 // the decode result, easy protocol target
 export type easyResult={
-    app?:Function|null;          //cApp function, if from the data type anchor, will load target cApp
-    data:dataMap;                //anchor data. 
+    type:rawType;               //anchor type
+    data:dataMap;               //anchor raw data map. 
     location:[string,number];   //anchor location
+
+    app?:easyResult;            //cApp data,
+    call?:anchorLocation;       //call the cApp
 
     //FIXME : need new definition object
     auth?:authMap;                //authority information
@@ -192,8 +195,9 @@ export type easyResult={
 
     parameter?:string[];        //running parameters, from anchor link parameter
     error:errorObject[];       //errors when loading cApp
-    from?:anchorLocation;         //if the cApp is called from a data anchor
-    more?:object;               //extra parameters
+    
+    //from?:anchorLocation;         //if the cApp is called from a data anchor
+    //more?:object;               //extra parameters
     //parameters from launcher
     //API:APIObject;            //APIs can be sent to cApp
     //nodeJS?:boolean;             //wether the nodeJS

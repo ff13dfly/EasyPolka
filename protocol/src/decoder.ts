@@ -15,7 +15,7 @@ type decoderResult={
 };
 
 interface params {
-    [anchor: string]: any;
+    [anchor: string]: string;
 }
 
 const setting={
@@ -37,6 +37,20 @@ const self={
         return map;
     },
 }
+
+const creator=(local:anchorLocation)=>{
+    if(Array.isArray(local)){
+        if(local[1]!==0){
+            return `${setting.pre}${local[0]}/${local[1]}`;
+        }else{
+            return `${setting.pre}${local[0]}`;
+        }
+    }else{
+        return `${setting.pre}${local}`;
+    }
+}
+export {creator as linkCreator};
+
 
 const decoder=(link:string,cfg?:any)=>{
     let res:decoderResult={

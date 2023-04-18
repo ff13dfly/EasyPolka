@@ -1,9 +1,10 @@
 //!important This is the library for Esay Protocol
 //!important Can run cApp from `Anchor linker`
 
-import { anchorLocation,anchorObject,errorObject,APIObject,errorLevel,rawType,easyResult, formatType} from "./protocol";
-import { keywords,dataProtocol,authMap,anchorMap,relatedIndex} from "./protocol";
-import { linkDecoder } from "./decoder";
+import { anchorLocation,anchorObject,errorObject,APIObject,easyResult } from "./protocol";
+import {rawType,formatType,errorLevel} from "./protocol";
+import { keywords,authMap,anchorMap,relatedIndex} from "./protocol";
+import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
 
@@ -67,44 +68,25 @@ const self={
 
     decodeData:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode data anchor`);
+
+        cObject.type=rawType.DATA;
+
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
-
         if(protocol!==null && protocol.call){
-            const app_answer:[string,number]=[
-                Array.isArray(protocol.call)?protocol.call[0]:protocol.call,
-                Array.isArray(protocol.call)?protocol.call[1]:0
-            ];
-            self.getAnchor(app_answer,(answer:any)=>{
-                if(answer.error){
-                    cObject.error.push({error:"Failed to load answer anchor"});
-                    return ck && ck(cObject);
-                }
-                cObject.from=cObject.location;
-                cObject.location=[app_answer[0],answer.block];
-
-                if(protocol.args){
-            
-                }
-            });
-        }else{
-            return ck && ck(cObject);
+            cObject.call=protocol.call;
         }
+        
+        return ck && ck(cObject);
     },
 
     decodeApp:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode app anchor`);
+
+        cObject.type=rawType.APP;
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
 
-        //1.try to decode and get application
-        try {
-            cObject.app = new Function("container","API","args","from","error",data.raw===null?"":data.raw);
-        } catch (error) {
-            cObject.error.push({error:"Failed to get function"});
-        }
-
-        //2.check and get libs
         if(protocol!==null && protocol.lib){
 
         }
@@ -113,6 +95,7 @@ const self={
     },
     decodeLib:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode lib anchor`);
+        cObject.type=rawType.LIB;
 
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
@@ -121,6 +104,7 @@ const self={
         if(protocol!==null && protocol.lib){
 
         }
+        return ck && ck(cObject);
     },
 
     getLibs:(list:[string],ck:Function)=>{
@@ -199,7 +183,7 @@ const self={
                         if(err.error) errs.push({error:err.error});
                         const data:anchorObject=<anchorObject>res;
 
-                        self.combineHide(result,data,errs,(chResult)=>{
+                        self.combineHide(result,data,errs,(chResult:mergeResult)=>{
                             self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
                                 self.combineAuth(chResult,alist,errsA,ck);
                             });
@@ -238,7 +222,9 @@ const self={
         }
             
         const last:anchorObject=list[0];
-        self.decodeAuthAnchor(<anchorObject[]>list,(map:authMap,amap:anchorMap,errs:errorObject[])=>{
+        const hlist:number[]=[];            //get latest auth anchor hide list.
+        
+        self.decodeAuthAnchor(<anchorObject[]>list,hlist,(map:authMap,amap:anchorMap,errs:errorObject[])=>{
             for(let k in amap) result.map[k]=amap[k];  //if hide anchor data, merge to result
             for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
 
@@ -270,10 +256,12 @@ const self={
 
     //!important, by using the history of anchor, `hide` keyword is still support
     //!important, checking the latest anchor data, using the `hide` feild to get data.
-    decodeAuthAnchor:(list:anchorObject[],ck:(res: authMap,amap:anchorMap,errs:errorObject[])=>void)=>{
+    decodeAuthAnchor:(list:anchorObject[],hlist:number[],ck:(res: authMap,amap:anchorMap,errs:errorObject[])=>void)=>{
         const map:authMap={};
         const amap:anchorMap={};
         const errs:errorObject[]=[];
+
+        //FIXME, if the latest auth anchor is hidden,need to check next one.
         const last:anchorObject=list[0];
 
         if(last.protocol===null){
@@ -282,8 +270,10 @@ const self={
         }
 
         const protocol=<keywords>last.protocol;
+        //console.log({last});
+        //console.log({protocol});
         self.authHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
-            console.log({resMap,herrs,hlist});
+            //console.log({resMap,herrs,hlist});
 
             let hmap:any={};
             for(let i=0;i<hlist.length;i++){
@@ -299,7 +289,6 @@ const self={
                     const tmap=JSON.parse(row.raw);
                     for(let k in tmap) map[k]=tmap[k];
                 } catch (error) {
-                    //console.log(error);
                     errs.push(<errorObject>{error:error});
                 }
             }
@@ -307,7 +296,7 @@ const self={
         });
     },
 
-    //check auth hide list
+    //check auth anchor's hide list
     authHideList:(protocol:keywords,ck:(res: number[],map:anchorMap,error:errorObject[])=>void)=>{
         const map:anchorMap={};
         const errs:errorObject[]=[];
@@ -327,7 +316,7 @@ const self={
             if(errH.error)errs.push(errH);
 
             const anchor=<anchorObject>anchorH;
-            console.log(anchor);
+            //console.log(anchor);
             map[`${anchor.name}_${anchor.block}`]=<anchorObject>anchor;
             return ck && ck(<number[]>hlist,map,errs);
         });
@@ -360,6 +349,7 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
     let cObject:easyResult={
+        type:rawType.DATA,
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],
         data:{},
@@ -379,8 +369,6 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
         if(!decoder[type]) return ck && ck(data);
 
         self.merge(data.name,data.protocol,{},(mergeResult:any)=>{
-            console.log(mergeResult);
-
             if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
             if(mergeResult.hide.length!==0) cObject.hide=mergeResult.hide;
             if(mergeResult.error.length!==0){
@@ -399,7 +387,17 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
                 cObject.data[k]= mergeResult.map[k];
             }
 
-            return decoder[type](cObject,ck);
+            return decoder[type](cObject,(resFirst:easyResult)=>{
+                if(resFirst.call){
+                    const app_link=linkCreator(resFirst.call);
+                    run(app_link,API,(resApp:easyResult)=>{
+                        resFirst.app=resApp;
+                        return ck && ck(resFirst);
+                    });
+                }else{
+                    return ck && ck(resFirst);
+                }
+            });
         });
     });
 };

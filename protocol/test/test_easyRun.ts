@@ -37,14 +37,17 @@ const self={
 
 const server="ws://127.0.0.1:9944";
 self.prepare(server,()=>{
-    //const linker="anchor://entry_app/?hello=world&me=fuu";
-    //const linker="anchor://entry_app/3/?hello=world&me=fuu";
-    //const linker="anchor://data_caller";
-    //const linker="anchor://auth_me_direct";
-    //const linker="anchor://hide_me_by_anchor";
-    const linker="anchor://complex_anchor/";
+    const linker_params="anchor://entry_app/?hello=world&me=fuu";
+    const linker_target="anchor://entry_app/3/?hello=world&me=fuu";
+    const linker_data_caller="anchor://data_caller";
+    const linker_auth_me_direct="anchor://auth_me_direct";
+    const linker_hide_me_by_anchor="anchor://hide_me_by_anchor";
+    const linker_complex_anchor="anchor://complex_anchor/";
+    const linker_full_app="anchor://full_app/";
+    const linker_full_caller="anchor://full_caller/";
+    const linker_lib_caller="anchor://js_a/";
     
-    easyRun(linker,API,(result:any)=>{
+    easyRun(linker_lib_caller,API,(result:any)=>{
         console.log(`-----------------result-----------------`)
         //console.log(result);
         console.log(JSON.stringify(result));

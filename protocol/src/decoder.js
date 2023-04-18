@@ -1,7 +1,7 @@
 "use strict";
 //!important This is the library for decoding anchor link
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkDecoder = void 0;
+exports.linkDecoder = exports.linkCreator = void 0;
 var setting = {
     "check": false,
     "utf8": true,
@@ -21,6 +21,20 @@ var self = {
         return map;
     },
 };
+var creator = function (local) {
+    if (Array.isArray(local)) {
+        if (local[1] !== 0) {
+            return "".concat(setting.pre).concat(local[0], "/").concat(local[1]);
+        }
+        else {
+            return "".concat(setting.pre).concat(local[0]);
+        }
+    }
+    else {
+        return "".concat(setting.pre).concat(local);
+    }
+};
+exports.linkCreator = creator;
 var decoder = function (link, cfg) {
     var res = {
         location: ["", 0],

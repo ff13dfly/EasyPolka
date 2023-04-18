@@ -34,13 +34,16 @@ var self = {
 };
 var server = "ws://127.0.0.1:9944";
 self.prepare(server, function () {
-    //const linker="anchor://entry_app/?hello=world&me=fuu";
-    //const linker="anchor://entry_app/3/?hello=world&me=fuu";
-    //const linker="anchor://data_caller";
-    //const linker="anchor://auth_me_direct";
-    //const linker="anchor://hide_me_by_anchor";
-    var linker = "anchor://complex_anchor/";
-    (0, interpreter_1.easyRun)(linker, API, function (result) {
+    var linker_params = "anchor://entry_app/?hello=world&me=fuu";
+    var linker_target = "anchor://entry_app/3/?hello=world&me=fuu";
+    var linker_data_caller = "anchor://data_caller";
+    var linker_auth_me_direct = "anchor://auth_me_direct";
+    var linker_hide_me_by_anchor = "anchor://hide_me_by_anchor";
+    var linker_complex_anchor = "anchor://complex_anchor/";
+    var linker_full_app = "anchor://full_app/";
+    var linker_full_caller = "anchor://full_caller/";
+    var linker_lib_caller = "anchor://js_a/";
+    (0, interpreter_1.easyRun)(linker_lib_caller, API, function (result) {
         console.log("-----------------result-----------------");
         //console.log(result);
         console.log(JSON.stringify(result));

@@ -83,16 +83,16 @@ const self={
 };
 
 const task=[
-    // write_app_sample,
-    // write_data_sample,
-    // write_unexcept_data_sample,
-    // write_mock_normal_libs,
-    // write_mock_complex_libs,
-    // write_salt_hide_sample,
-    // write_anchor_hide_sample,
-    // write_anchor_auth_sample,
-    // write_anchor_auth_and_hide_sample,
-    // write_full_parameters_anchor_sample,
+    write_app_sample,
+    write_data_sample,
+    write_unexcept_data_sample,
+    write_mock_normal_libs,
+    write_mock_complex_libs,
+    write_salt_hide_sample,
+    write_anchor_hide_sample,
+    write_anchor_auth_sample,
+    write_anchor_auth_and_hide_sample,
+    write_full_parameters_anchor_sample,
     write_full_parameters_caller_sample,
 ];
 self.auto(task);
@@ -496,9 +496,9 @@ function write_full_parameters_caller_sample(index,ck){
     //3.auth anchor `call_auth` write three times, and set hide anchor `call_auth_hide` to hide the second `call_auth`
     //4.call the complex cApp `full_anchor`
 
-    //1.
+    //1.write `full_caller` three times
     const anchor="full_caller";
-    const raw="This is a complex data anchor call `full_anchor` "+self.randomData();
+    const txt="This is a complex data anchor call `full_anchor` ";
     const protocol={
         "type":"data",
         "fmt":"json",
@@ -507,9 +507,9 @@ function write_full_parameters_caller_sample(index,ck){
         "call":"full_app",
         "args":"page=3&cat=6&tpl=dark",
     };
-    list.push({name:anchor,raw:raw,protocol:protocol});
-    list.push({name:anchor,raw:raw,protocol:protocol});
-    list.push({name:anchor,raw:raw,protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
 
     const auth_anchor="call_auth";
     const auth_protocol={"type":"data","fmt":"json"};
