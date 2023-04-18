@@ -348,7 +348,51 @@ var self = {
         }
     },
     //check the authority between anchors
-    checkAuthority: function (from, to) {
+    checkAuthority: function (caller, app, ck) {
+        //x.1.check the called anchor type.
+        if (app.type !== protocol_1.rawType.APP) {
+            caller.error.push({ error: "Answer is not cApp." });
+            return ck && ck(caller);
+        }
+        //x.2.check the authority
+        var from = caller.data["".concat(caller.location[0], "_").concat(caller.location[1])];
+        var signer = from.signer;
+        var auths = app.auth;
+        if (auths === undefined) {
+            caller.app = app;
+            return ck && ck(caller);
+        }
+        else {
+            if (self.empty(auths)) {
+                caller.app = app;
+                return ck && ck(caller);
+            }
+            else {
+                if (auths[signer] === undefined) {
+                    caller.error.push({ error: "No authority of caller." });
+                    return ck && ck(caller);
+                }
+                else {
+                    if (auths[signer] === 0) {
+                        caller.app = app;
+                        return ck && ck(caller);
+                    }
+                    else {
+                        API === null || API === void 0 ? void 0 : API.common.block(function (block, hash) {
+                            console.log(block);
+                            if (block > auths[signer]) {
+                                caller.error.push({ error: "Authority out of time." });
+                                return ck && ck(caller);
+                            }
+                            else {
+                                caller.app = app;
+                                return ck && ck(caller);
+                            }
+                        });
+                    }
+                }
+            }
+        }
     },
     //get params from string such as `key_a=val&key_b=val&key_c=val`
     getParams: function (args) {
@@ -431,6 +475,7 @@ var run = function (linker, inputAPI, ck, fence) {
         else {
             return getResult(type);
         }
+        //closure function to avoid the same code.
         function getResult(type) {
             self.merge(data.name, data.protocol, {}, function (mergeResult) {
                 var _a;
@@ -455,51 +500,7 @@ var run = function (linker, inputAPI, ck, fence) {
                     if (resFirst.call && !fence) {
                         var app_link = (0, decoder_1.linkCreator)(resFirst.call);
                         run(app_link, API, function (resApp) {
-                            //x.1.check the called anchor type.
-                            if (resApp.type !== protocol_1.rawType.APP) {
-                                resFirst.error.push({ error: "Answer is not cApp." });
-                                return ck && ck(resFirst);
-                            }
-                            //x.2.check the authority
-                            var from = resFirst.data["".concat(resFirst.location[0], "_").concat(resFirst.location[1])];
-                            var signer = from.signer;
-                            var auths = resApp.auth;
-                            if (auths === undefined) {
-                                resFirst.app = resApp;
-                                return ck && ck(resFirst);
-                            }
-                            else {
-                                if (self.empty(auths)) {
-                                    resFirst.app = resApp;
-                                    return ck && ck(resFirst);
-                                }
-                                else {
-                                    if (auths[signer] === undefined) {
-                                        resFirst.error.push({ error: "No authority of caller." });
-                                        return ck && ck(resFirst);
-                                    }
-                                    else {
-                                        if (auths[signer] === 0) {
-                                            resFirst.app = resApp;
-                                            return ck && ck(resFirst);
-                                        }
-                                        else {
-                                            console.log(auths[signer]);
-                                            API === null || API === void 0 ? void 0 : API.common.block(function (block, hash) {
-                                                console.log(block);
-                                                if (block > auths[signer]) {
-                                                    resFirst.error.push({ error: "Authority out of time." });
-                                                    return ck && ck(resFirst);
-                                                }
-                                                else {
-                                                    resFirst.app = resApp;
-                                                    return ck && ck(resFirst);
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            }
+                            return self.checkAuthority(resFirst, resApp, ck);
                         }, true);
                     }
                     else {

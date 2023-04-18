@@ -387,8 +387,47 @@ const self={
     },
 
     //check the authority between anchors
-    checkAuthority:(from:easyResult,to:easyResult)=>{
-
+    checkAuthority:(caller:easyResult,app:easyResult,ck:Function)=>{
+        //x.1.check the called anchor type.
+        if(app.type!==rawType.APP){
+            caller.error.push({error:`Answer is not cApp.`});
+            return ck && ck(caller);
+        }
+            
+        //x.2.check the authority
+        const from=caller.data[`${caller.location[0]}_${caller.location[1]}`];
+        const signer=from.signer;
+        const auths=app.auth;
+        if(auths===undefined){
+            caller.app=app;
+            return ck && ck(caller);
+        }else{
+            if(self.empty(auths)){
+                caller.app=app;
+                return ck && ck(caller);
+            }else{
+                if(auths[signer]===undefined){
+                    caller.error.push({error:`No authority of caller.`});
+                    return ck && ck(caller);
+                }else{
+                    if(auths[signer]===0){
+                        caller.app=app;
+                        return ck && ck(caller);
+                    }else{
+                         API?.common.block((block:number,hash:string)=>{
+                            console.log(block);
+                            if(block>auths[signer]){
+                                caller.error.push({error:`Authority out of time.`});
+                                return ck && ck(caller);
+                            }else{
+                                caller.app=app;
+                                return ck && ck(caller);
+                            }
+                        });
+                    }
+                }
+            }
+        }
     },
 
     //get params from string such as `key_a=val&key_b=val&key_c=val`
@@ -477,10 +516,9 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
             return getResult(type);
         }
         
-
+        //closure function to avoid the same code.
         function getResult(type:string){
             self.merge(data.name,<keywords>data.protocol,{},(mergeResult:mergeResult)=>{
-
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
                 if(mergeResult.hide!=null && mergeResult.hide.length!==0){
                     cObject.hide=mergeResult.hide;
@@ -505,50 +543,9 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
                     if(resFirst.call && !fence){
                         const app_link=linkCreator(resFirst.call);
                         run(app_link,API,(resApp:easyResult)=>{
-                            //x.1.check the called anchor type.
-                            if(resApp.type!==rawType.APP){
-                                resFirst.error.push({error:`Answer is not cApp.`});
-                                return ck && ck(resFirst);
-                            }
-                            
-                            //x.2.check the authority
-                            const from=resFirst.data[`${resFirst.location[0]}_${resFirst.location[1]}`];
-                            const signer=from.signer;
-                            const auths=resApp.auth;
-                            if(auths===undefined){
-                                resFirst.app=resApp;
-                                return ck && ck(resFirst);
-                            }else{
-                                if(self.empty(auths)){
-                                    resFirst.app=resApp;
-                                    return ck && ck(resFirst);
-                                }else{
-                                    if(auths[signer]===undefined){
-                                        resFirst.error.push({error:`No authority of caller.`});
-                                        return ck && ck(resFirst);
-                                    }else{
-                                        if(auths[signer]===0){
-                                            resFirst.app=resApp;
-                                            return ck && ck(resFirst);
-                                        }else{
-                                            console.log(auths[signer]);
-                                            API?.common.block((block:number,hash:string)=>{
-                                                console.log(block);
-                                                if(block>auths[signer]){
-                                                    resFirst.error.push({error:`Authority out of time.`});
-                                                    return ck && ck(resFirst);
-                                                }else{
-                                                    resFirst.app=resApp;
-                                                    return ck && ck(resFirst);
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            }
+                            return self.checkAuthority(resFirst,resApp,ck);
                         },true);
                     }else{
-
                         return ck && ck(resFirst);
                     }
                 });
