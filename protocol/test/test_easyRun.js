@@ -43,7 +43,7 @@ self.prepare(server, function () {
     var linker_full_app = "anchor://full_app/";
     var linker_full_caller = "anchor://full_caller/";
     var linker_lib_caller = "anchor://js_a/";
-    (0, interpreter_1.easyRun)(linker_lib_caller, API, function (result) {
+    (0, interpreter_1.easyRun)(linker_full_caller, API, function (result) {
         console.log("-----------------result-----------------");
         //console.log(result);
         console.log(JSON.stringify(result));

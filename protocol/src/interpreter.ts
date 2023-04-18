@@ -86,12 +86,16 @@ const self={
         cObject.type=rawType.APP;
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
+        cObject.code=data.raw;
 
         if(protocol!==null && protocol.lib){
-
+            self.getLibs(protocol.lib,(code:any)=>{
+                cObject.libs=code;
+                return ck && ck(cObject);
+            });
+        }else{
+            return ck && ck(cObject);
         }
-        
-        return ck && ck(cObject);
     },
     decodeLib:(cObject:easyResult,ck:Function)=>{
         console.log(`Decode lib anchor`);
@@ -102,19 +106,24 @@ const self={
 
         //1.check and get libs
         if(protocol!==null && protocol.lib){
-
+            self.getLibs(protocol.lib,(code:any)=>{
+                //console.log(code);
+                cObject.libs=code;
+                return ck && ck(cObject);
+            });
+        }else{
+            return ck && ck(cObject);
         }
-        return ck && ck(cObject);
     },
 
-    getLibs:(list:[string],ck:Function)=>{
+    getLibs:(list:anchorLocation[],ck:Function)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         console.log(`Ready to get libs: ${JSON.stringify(list)}`);
         const RPC={
             search:API.common.latest,
             target:API.common.target,
         }
-        Libs(list,API,ck);
+        Libs(list,RPC,ck);
     },
     getHistory:(location:[string,number],ck:(list: anchorObject[],errs:errorObject[]) => void)=>{
         const list:anchorObject[]=[];

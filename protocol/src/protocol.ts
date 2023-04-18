@@ -185,21 +185,16 @@ export type easyResult={
     location:[string,number];   //anchor location
 
     app?:easyResult;            //cApp data,
+    code?:string|null;          //cApp code,
     call?:anchorLocation;       //call the cApp
+    libs?:Object;               //lib list
 
     //FIXME : need new definition object
     auth?:authMap;                //authority information
     hide?:hideMap;                //hide list
     index?:[anchorLocation|null,anchorLocation|null];     //auth and hide related anchor location
-    libs?:Object[];              //lib list
+    
 
     parameter?:string[];        //running parameters, from anchor link parameter
     error:errorObject[];       //errors when loading cApp
-    
-    //from?:anchorLocation;         //if the cApp is called from a data anchor
-    //more?:object;               //extra parameters
-    //parameters from launcher
-    //API:APIObject;            //APIs can be sent to cApp
-    //nodeJS?:boolean;             //wether the nodeJS
-    //back?:string[];             //parameter when callback
 }

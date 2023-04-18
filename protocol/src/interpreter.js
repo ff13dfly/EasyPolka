@@ -58,9 +58,16 @@ var self = {
         cObject.type = protocol_1.rawType.APP;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
+        cObject.code = data.raw;
         if (protocol !== null && protocol.lib) {
+            self.getLibs(protocol.lib, function (code) {
+                cObject.libs = code;
+                return ck && ck(cObject);
+            });
         }
-        return ck && ck(cObject);
+        else {
+            return ck && ck(cObject);
+        }
     },
     decodeLib: function (cObject, ck) {
         console.log("Decode lib anchor");
@@ -69,8 +76,15 @@ var self = {
         var protocol = data.protocol;
         //1.check and get libs
         if (protocol !== null && protocol.lib) {
+            self.getLibs(protocol.lib, function (code) {
+                //console.log(code);
+                cObject.libs = code;
+                return ck && ck(cObject);
+            });
         }
-        return ck && ck(cObject);
+        else {
+            return ck && ck(cObject);
+        }
     },
     getLibs: function (list, ck) {
         if (API === null)
@@ -80,7 +94,7 @@ var self = {
             search: API.common.latest,
             target: API.common.target,
         };
-        Libs(list, API, ck);
+        Libs(list, RPC, ck);
     },
     getHistory: function (location, ck) {
         var list = [];

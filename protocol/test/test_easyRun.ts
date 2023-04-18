@@ -47,7 +47,7 @@ self.prepare(server,()=>{
     const linker_full_caller="anchor://full_caller/";
     const linker_lib_caller="anchor://js_a/";
     
-    easyRun(linker_lib_caller,API,(result:any)=>{
+    easyRun(linker_full_caller,API,(result:any)=>{
         console.log(`-----------------result-----------------`)
         //console.log(result);
         console.log(JSON.stringify(result));
