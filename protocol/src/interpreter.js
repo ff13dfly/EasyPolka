@@ -61,7 +61,9 @@ var self = {
         var protocol = data.protocol;
         cObject.code = data.raw;
         if (protocol !== null && protocol.lib) {
+            //FIXME code should be defined clearly
             self.getLibs(protocol.lib, function (code) {
+                //console.log(code);
                 cObject.libs = code;
                 return ck && ck(cObject);
             });
@@ -250,7 +252,10 @@ var self = {
         //console.log({last});
         //console.log({protocol});
         self.authHideList(protocol, function (hlist, resMap, herrs) {
-            //console.log({resMap,herrs,hlist});
+            errs.push.apply(errs, herrs);
+            for (var k in resMap) {
+                amap[k] = resMap[k];
+            }
             var hmap = {};
             for (var i = 0; i < hlist.length; i++) {
                 hmap[hlist[i].toString()] = true;
@@ -416,8 +421,9 @@ var run = function (linker, inputAPI, ck, hide) {
                 var _a;
                 if (mergeResult.auth !== null)
                     cObject.auth = mergeResult.auth;
-                if (mergeResult.hide.length !== 0)
+                if (mergeResult.hide != null && mergeResult.hide.length !== 0) {
                     cObject.hide = mergeResult.hide;
+                }
                 if (mergeResult.error.length !== 0) {
                     (_a = cObject.error).push.apply(_a, mergeResult.error);
                 }

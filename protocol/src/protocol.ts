@@ -19,7 +19,7 @@ export type keywords={
     "push"?:string[],
     "lib"?:anchorLocation[],
     "ver"?:string,
-    "hide"?:hideMap|anchorLocation,
+    "hide"?:number[]|anchorLocation,
     "auth"?:authMap|anchorLocation,
     "salt"?:[string,string],
     "args"?:string,
@@ -131,7 +131,6 @@ export type libProtocol={
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
-
 //auth anchor data format
 //only the auth between anchors.
 //Sample:{"hello":32345} 
@@ -177,12 +176,10 @@ export type APIObject={
 /********************************/
 /************ result ************/
 /********************************/
-interface dataMap { [anchor: string]: anchorObject; }
 
-// the decode result, easy protocol target
 export type easyResult={
     type:rawType;               //anchor type
-    data:dataMap;               //anchor raw data map. 
+    data:anchorMap;               //anchor raw data map. 
     location:[string,number];   //anchor location
 
     app?:easyResult;            //cApp data,
@@ -190,12 +187,10 @@ export type easyResult={
     call?:anchorLocation;       //call the cApp
     libs?:Object;               //lib list
 
-    //FIXME : need new definition object
-    auth?:authMap;                //authority information
-    hide?:hideMap;                //hide list
-    index?:[anchorLocation|null,anchorLocation|null];     //auth and hide related anchor location
+    auth?:authMap;              //authority information
+    hide?:number[];              //hide list
+    index?:[anchorLocation|null,anchorLocation|null];     //[ auth,hide ] related anchor location
     
-
     parameter?:string[];        //running parameters, from anchor link parameter
     error:errorObject[];       //errors when loading cApp
 }

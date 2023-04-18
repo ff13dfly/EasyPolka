@@ -4,7 +4,7 @@
 
 import { anchorLocation,anchorObject,errorObject,APIObject,easyResult } from "./protocol";
 import {rawType,formatType,errorLevel} from "./protocol";
-import { keywords,authMap,anchorMap,relatedIndex,hideMap} from "./protocol";
+import { keywords,authMap,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
@@ -24,10 +24,15 @@ type hideResult={
 };
 type mergeResult={
     "hide":number[]|null,       //if hide data, merge to here.
-    "auth":authMap|null,       //if auth data, merge to here.
+    "auth":authMap|null,        //if auth data, merge to here.
     "error":errorObject[],      //collect errors here
     "index":[anchorLocation|null,anchorLocation|null],    //collect anchor locations here
     "map":anchorMap,            //map anchor data here
+};
+
+//FIXME define code result here
+type codeResult={
+
 };
 
 const self={
@@ -38,11 +43,11 @@ const self={
 
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if(block!==0){
-            API.common.target(anchor,block,(data:any)=>{
+            API.common.target(anchor,block,(data:anchorObject|errorObject)=>{
                 self.filterAnchor(data,ck); 
             });
         }else{
-            API.common.latest(anchor,(data:any)=>{
+            API.common.latest(anchor,(data:anchorObject|errorObject)=>{
                 self.filterAnchor(data,ck);
             });
         }
@@ -88,7 +93,9 @@ const self={
         cObject.code=data.raw;
 
         if(protocol!==null && protocol.lib){
+            //FIXME code should be defined clearly
             self.getLibs(protocol.lib,(code:any)=>{
+                //console.log(code);
                 cObject.libs=code;
                 return ck && ck(cObject);
             });
@@ -281,8 +288,11 @@ const self={
         //console.log({last});
         //console.log({protocol});
         self.authHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
-            //console.log({resMap,herrs,hlist});
-
+            errs.push(...herrs);
+            for(let k in resMap){
+                amap[k]=resMap[k]
+            }
+            
             let hmap:any={};
             for(let i=0;i<hlist.length;i++){
                 hmap[hlist[i].toString()]=true;
@@ -331,7 +341,7 @@ const self={
     },
 
     //check wether current anchor is in the hide list
-    isValidAnchor:(hide:anchorLocation|hideMap,data:anchorObject,ck:Function)=>{
+    isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function)=>{
         const errs:errorObject[]=[];
         const cur=data.block;
         let overload:boolean=false;
@@ -453,10 +463,12 @@ const run=(linker:string,inputAPI:APIObject,ck:Function,hide?:number[])=>{
         
 
         function getResult(type:string){
-            self.merge(data.name,<keywords>data.protocol,{},(mergeResult:any)=>{
+            self.merge(data.name,<keywords>data.protocol,{},(mergeResult:mergeResult)=>{
 
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
-                if(mergeResult.hide.length!==0) cObject.hide=mergeResult.hide;
+                if(mergeResult.hide!=null && mergeResult.hide.length!==0){
+                    cObject.hide=mergeResult.hide;
+                } 
                 if(mergeResult.error.length!==0){
                     cObject.error.push(...mergeResult.error);
                 }
