@@ -61,6 +61,7 @@ export enum rawType{
     DATA = "data",      //data, can call cApp to run
     APP  = "app",       //cApp code, can run directly
     LIB  = "lib",       //code can not be run directly
+    NONE = "unknow",    //unknow type
 }
 
 export enum formatType{
@@ -141,7 +142,7 @@ export interface anchorMap { [anchor: string]: anchorObject; }
 
 //hide map of target anchor
 //the history of the hide anchor is meanful.
-interface hideMap { [anchor: string]: number;}
+export interface hideMap { [anchor: string]: number;}
 
 interface argumentMap {[key:string]:string;}
 

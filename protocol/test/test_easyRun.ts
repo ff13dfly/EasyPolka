@@ -2,10 +2,8 @@
 // node test_easyRun.js
 
 import { ApiPromise, WsProvider,Keyring } from '@polkadot/api';
-
-const {anchorJS} =require("../lib/anchor");
-
 import { easyRun } from "../src/interpreter";
+const {anchorJS} =require("../lib/anchor");
 
 const API={
     "common":{
@@ -33,6 +31,20 @@ const self={
             return ck && ck(error);
           }
     },
+    auto:(list:Function[])=>{
+        // ApiPromise.create({ provider: new WsProvider(config.endpoint) }).then((api) => {
+        //     console.log('Linker to substrate node created...');
+        //     websocket=api;
+
+        //     anchorJS.set(api);
+        //     anchorJS.setKeyring(Keyring);
+        //     self.prework(()=>{
+        //         test_start=self.stamp();
+        //         console.log(`\n********************Start of Writing Mock Data********************\n`);
+        //         self.run(list,list.length);
+        //     });
+        // });
+    },
 }
 
 const server="ws://127.0.0.1:9944";
@@ -44,15 +56,17 @@ self.prepare(server,()=>{
     const linker_hide_me_by_anchor="anchor://hide_me_by_anchor";
     const linker_complex_anchor="anchor://complex_anchor/";
     const linker_full_app="anchor://full_app/";
-    const linker_full_caller="anchor://full_caller/";
+    const linker_full_caller="anchor://full_caller/?hello=world&me=fuu";
     const linker_lib_caller="anchor://js_a/";
     
     easyRun(linker_full_caller,API,(result:any)=>{
-        console.log(`-----------------result-----------------`)
-        //console.log(result);
+        console.log(`-----------------result-----------------`);
         console.log(JSON.stringify(result));
-        //new Function("anchorJS","error",result.raw);
-        //new Function("container","API","args","from","error",res.raw);
-        //if(result.app) result.app("con_id",API,{"hello":"world"});
     });
 });
+
+const task:Function[]=[
+
+];
+self.auto(task);
+

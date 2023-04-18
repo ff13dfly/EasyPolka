@@ -18,6 +18,7 @@ var rawType;
     rawType["DATA"] = "data";
     rawType["APP"] = "app";
     rawType["LIB"] = "lib";
+    rawType["NONE"] = "unknow";
 })(rawType = exports.rawType || (exports.rawType = {}));
 var formatType;
 (function (formatType) {

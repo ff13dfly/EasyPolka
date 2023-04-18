@@ -1,6 +1,7 @@
 "use strict";
-//!important This is the library for Esay Protocol
-//!important Can run cApp from `Anchor linker`
+//!important This is the library for Esay Protocol v1.0
+//!important All data come from `Anchor Link`
+//!important This implement extend `auth` and `hide` by salt way to load data
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.easyRun = void 0;
 var protocol_1 = require("./protocol");
@@ -148,13 +149,13 @@ var self = {
                         if (err.error)
                             errs.push({ error: err.error });
                         var data = res;
-                        self.combineHide(result, data, errs, ck);
+                        return self.combineHide(result, data, errs, ck);
                     });
                 }
                 else if (resAuth.anchor !== null && resHide.anchor === null) {
                     var auth_anchor = typeof resAuth.anchor === "string" ? [resAuth.anchor, 0] : [resAuth.anchor[0], resAuth.anchor[1]];
                     self.getHistory(auth_anchor, function (alist, errsA) {
-                        self.combineAuth(result, alist, errsA, ck);
+                        return self.combineAuth(result, alist, errsA, ck);
                     });
                 }
                 else if (resAuth.anchor !== null && resHide.anchor !== null) {
@@ -166,7 +167,7 @@ var self = {
                         if (err.error)
                             errs.push({ error: err.error });
                         var data = res;
-                        self.combineHide(result, data, errs, function (chResult) {
+                        return self.combineHide(result, data, errs, function (chResult) {
                             self.getHistory(auth_anchor_1, function (alist, errsA) {
                                 self.combineAuth(chResult, alist, errsA, ck);
                             });
@@ -297,6 +298,51 @@ var self = {
             return ck && ck(hlist, map, errs);
         });
     },
+    //check wether current anchor is in the hide list
+    isValidAnchor: function (hide, data, ck) {
+        var errs = [];
+        var cur = data.block;
+        var overload = false;
+        if (Array.isArray(hide)) {
+            var hlist = hide;
+            for (var i = 0; i < hlist.length; i++) {
+                if (cur === hlist[i]) {
+                    if (data.pre === 0) {
+                        errs.push({ error: "Out of ".concat(data.name, " limited") });
+                        overload = true;
+                        return ck && ck(null, errs, overload);
+                    }
+                    var new_link = (0, decoder_1.linkCreator)([data.name, data.pre]);
+                    return ck && ck(new_link, errs, overload);
+                }
+            }
+            return ck && ck(null, errs);
+        }
+        else {
+            var h_location = [hide, 0];
+            self.getAnchor(h_location, function (hdata) {
+                var res = self.decodeHideAnchor(hdata);
+                var err = res;
+                if (err.error)
+                    errs.push(err);
+                var hlist = res;
+                for (var i = 0; i < hlist.length; i++) {
+                    if (cur === hlist[i]) {
+                        if (data.pre === 0) {
+                            errs.push({ error: "Out of ".concat(data.name, " limited") });
+                            overload = true;
+                            return ck && ck(null, errs, overload);
+                        }
+                        var new_link = (0, decoder_1.linkCreator)([data.name, data.pre]);
+                        return ck && ck(new_link, errs, overload);
+                    }
+                }
+                return ck && ck(null, errs, overload);
+            });
+        }
+    },
+    getResult: function () {
+    },
     //get params from string such as `key_a=val&key_b=val&key_c=val`
     getParams: function (args) {
         var map = {};
@@ -315,14 +361,14 @@ var decoder = {};
 decoder[protocol_1.rawType.APP] = self.decodeApp;
 decoder[protocol_1.rawType.DATA] = self.decodeData;
 decoder[protocol_1.rawType.LIB] = self.decodeLib;
-var run = function (linker, inputAPI, ck) {
+var run = function (linker, inputAPI, ck, hide) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
     var target = (0, decoder_1.linkDecoder)(linker);
     if (target.error)
         return ck && ck(target);
     var cObject = {
-        type: protocol_1.rawType.DATA,
+        type: protocol_1.rawType.NONE,
         location: [target.location[0], target.location[1] !== 0 ? target.location[1] : 0],
         error: [],
         data: {},
@@ -330,45 +376,75 @@ var run = function (linker, inputAPI, ck) {
     };
     if (target.param)
         cObject.parameter = target.param;
-    self.getAnchor(target.location, function (data) {
+    self.getAnchor(target.location, function (resAnchor) {
+        var err = resAnchor;
         //1.return error if anchor is not support Easy Protocol
-        if (data.error)
-            return ck && ck(data);
+        if (err.error) {
+            cObject.error.push(err);
+            return ck && ck(cObject);
+        }
+        var data = resAnchor;
         if (cObject.location[1] === 0)
             cObject.location[1] = data.block;
         cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = data;
-        var type = data.protocol.type;
-        if (!decoder[type])
-            return ck && ck(data);
-        self.merge(data.name, data.protocol, {}, function (mergeResult) {
-            if (mergeResult.auth !== null)
-                cObject.auth = mergeResult.auth;
-            if (mergeResult.hide.length !== 0)
-                cObject.hide = mergeResult.hide;
-            if (mergeResult.error.length !== 0) {
-            }
-            if (mergeResult.index[protocol_2.relatedIndex.AUTH] !== null && cObject.index) {
-                cObject.index[protocol_2.relatedIndex.AUTH] = mergeResult.index[protocol_2.relatedIndex.AUTH];
-            }
-            if (mergeResult.index[protocol_2.relatedIndex.HIDE] !== null && cObject.index) {
-                cObject.index[protocol_2.relatedIndex.HIDE] = mergeResult.index[protocol_2.relatedIndex.HIDE];
-            }
-            for (var k in mergeResult.map) {
-                cObject.data[k] = mergeResult.map[k];
-            }
-            return decoder[type](cObject, function (resFirst) {
-                if (resFirst.call) {
-                    var app_link = (0, decoder_1.linkCreator)(resFirst.call);
-                    run(app_link, API, function (resApp) {
-                        resFirst.app = resApp;
-                        return ck && ck(resFirst);
-                    });
-                }
-                else {
-                    return ck && ck(resFirst);
-                }
+        if (data.protocol === null) {
+            cObject.error.push({ error: "No valid protocol" });
+            return ck && ck(cObject);
+        }
+        var type = !data.protocol.type ? "" : data.protocol.type;
+        if (!decoder[type]) {
+            cObject.error.push({ error: "Not easy protocol type" });
+            return ck && ck(cObject);
+        }
+        //1. data combined, check hide status.
+        if (data.protocol && data.protocol.hide !== undefined) {
+            self.isValidAnchor(data.protocol.hide, data, function (validLink, errs, overload) {
+                var _a;
+                (_a = cObject.error).push.apply(_a, errs);
+                if (overload)
+                    return ck && ck(cObject);
+                if (validLink !== null)
+                    return run(validLink, API, ck);
+                return getResult(type);
             });
-        });
+        }
+        else {
+            return getResult(type);
+        }
+        function getResult(type) {
+            self.merge(data.name, data.protocol, {}, function (mergeResult) {
+                var _a;
+                if (mergeResult.auth !== null)
+                    cObject.auth = mergeResult.auth;
+                if (mergeResult.hide.length !== 0)
+                    cObject.hide = mergeResult.hide;
+                if (mergeResult.error.length !== 0) {
+                    (_a = cObject.error).push.apply(_a, mergeResult.error);
+                }
+                if (mergeResult.index[protocol_2.relatedIndex.AUTH] !== null && cObject.index) {
+                    cObject.index[protocol_2.relatedIndex.AUTH] = mergeResult.index[protocol_2.relatedIndex.AUTH];
+                }
+                if (mergeResult.index[protocol_2.relatedIndex.HIDE] !== null && cObject.index) {
+                    cObject.index[protocol_2.relatedIndex.HIDE] = mergeResult.index[protocol_2.relatedIndex.HIDE];
+                }
+                for (var k in mergeResult.map) {
+                    cObject.data[k] = mergeResult.map[k];
+                }
+                return decoder[type](cObject, function (resFirst) {
+                    //if there is a caller, get the target cApp data
+                    if (resFirst.call) {
+                        var app_link = (0, decoder_1.linkCreator)(resFirst.call);
+                        run(app_link, API, function (resApp) {
+                            resFirst.app = resApp;
+                            return ck && ck(resFirst);
+                        });
+                    }
+                    else {
+                        return ck && ck(resFirst);
+                    }
+                });
+            });
+        }
     });
 };
 exports.easyRun = run;

@@ -1,13 +1,13 @@
-//!important This is the library for Esay Protocol
-//!important Can run cApp from `Anchor linker`
+//!important This is the library for Esay Protocol v1.0
+//!important All data come from `Anchor Link`
+//!important This implement extend `auth` and `hide` by salt way to load data
 
 import { anchorLocation,anchorObject,errorObject,APIObject,easyResult } from "./protocol";
 import {rawType,formatType,errorLevel} from "./protocol";
-import { keywords,authMap,anchorMap,relatedIndex} from "./protocol";
+import { keywords,authMap,anchorMap,relatedIndex,hideMap} from "./protocol";
 import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
-
 
 const {Loader,Libs} = require("../lib/loader");
 
@@ -29,7 +29,6 @@ type mergeResult={
     "index":[anchorLocation|null,anchorLocation|null],    //collect anchor locations here
     "map":anchorMap,            //map anchor data here
 };
-
 
 const self={
     getAnchor:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
@@ -176,12 +175,12 @@ const self={
                         if(err.error) errs.push({error:err.error});
                         const data:anchorObject=<anchorObject>res;
 
-                        self.combineHide(result,data,errs,ck);
+                        return self.combineHide(result,data,errs,ck);
                     });
                 }else if(resAuth.anchor!==null && resHide.anchor===null){
                     const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];
                     self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
-                        self.combineAuth(result,alist,errsA,ck);
+                        return self.combineAuth(result,alist,errsA,ck);
                     });
                 }else if(resAuth.anchor!==null && resHide.anchor!==null){
                     const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
@@ -192,7 +191,7 @@ const self={
                         if(err.error) errs.push({error:err.error});
                         const data:anchorObject=<anchorObject>res;
 
-                        self.combineHide(result,data,errs,(chResult:mergeResult)=>{
+                        return self.combineHide(result,data,errs,(chResult:mergeResult)=>{
                             self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
                                 self.combineAuth(chResult,alist,errsA,ck);
                             });
@@ -331,6 +330,56 @@ const self={
         });
     },
 
+    //check wether current anchor is in the hide list
+    isValidAnchor:(hide:anchorLocation|hideMap,data:anchorObject,ck:Function)=>{
+        const errs:errorObject[]=[];
+        const cur=data.block;
+        let overload:boolean=false;
+        if(Array.isArray(hide)){
+            const hlist=hide;
+            for(let i=0;i<hlist.length;i++){
+                if(cur===hlist[i]){
+                    if(data.pre===0){
+                        errs.push({error:`Out of ${data.name} limited`});
+                        overload=true;
+                        return ck && ck(null,errs,overload);
+                    }
+
+                    const new_link=linkCreator([data.name,data.pre]);
+                    return ck && ck(new_link,errs,overload);
+                }
+            }
+            return ck && ck(null,errs);
+        }else{
+            const h_location:[string,number]=[<string>hide,0];
+            self.getAnchor(h_location,(hdata:anchorObject|errorObject)=>{
+                const res:number[]|errorObject=self.decodeHideAnchor(<anchorObject>hdata); 
+                const err=<errorObject>res;
+                if(err.error) errs.push(err);
+
+                const hlist=<number[]>res;
+                
+                for(let i=0;i<hlist.length;i++){
+                    if(cur===hlist[i]){
+                        if(data.pre===0){
+                            errs.push({error:`Out of ${data.name} limited`});
+                            overload=true;
+                            return ck && ck(null,errs,overload);
+                        }
+
+                        const new_link=linkCreator([data.name,data.pre]);
+                        return ck && ck(new_link,errs,overload);
+                    }
+                }
+                return ck && ck(null,errs,overload);
+            });
+        }
+    },
+
+    getResult:()=>{
+
+    },
+
     //get params from string such as `key_a=val&key_b=val&key_c=val`
     getParams:(args:string)=>{
         let map:any={};
@@ -353,12 +402,13 @@ decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
-const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
+const run=(linker:string,inputAPI:APIObject,ck:Function,hide?:number[])=>{
     if(API===null && inputAPI!==null) API=inputAPI;
+
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
     let cObject:easyResult={
-        type:rawType.DATA,
+        type:rawType.NONE,
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],
         data:{},
@@ -366,48 +416,77 @@ const run=(linker:string,inputAPI:APIObject,ck:Function)=>{
     }
     if(target.param) cObject.parameter=target.param;
 
-    self.getAnchor(target.location,(data:any)=>{
-
+    self.getAnchor(target.location,(resAnchor:anchorObject|errorObject)=>{
+        const err=<errorObject>resAnchor;
         //1.return error if anchor is not support Easy Protocol
-        if(data.error) return ck && ck(data);
+        if(err.error){
+            cObject.error.push(err);
+            return ck && ck(cObject);
+        }
 
+        const data=<anchorObject>resAnchor;
         if(cObject.location[1]===0)cObject.location[1]=data.block;
         cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=data;
 
-        const type:string=data.protocol.type;
-        if(!decoder[type]) return ck && ck(data);
+        if(data.protocol===null){
+            cObject.error.push({error:"No valid protocol"});
+            return ck && ck(cObject);
+        }
 
-        self.merge(data.name,data.protocol,{},(mergeResult:any)=>{
-            if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
-            if(mergeResult.hide.length!==0) cObject.hide=mergeResult.hide;
-            if(mergeResult.error.length!==0){
+        const type:string=!data.protocol.type?"":data.protocol.type;
+        if(!decoder[type]){
+            cObject.error.push({error:"Not easy protocol type"});
+            return ck && ck(cObject);
+        }
 
-            }
-            
-            if(mergeResult.index[relatedIndex.AUTH]!==null && cObject.index){
-                cObject.index[relatedIndex.AUTH]=mergeResult.index[relatedIndex.AUTH];
-            }
-
-            if(mergeResult.index[relatedIndex.HIDE]!==null && cObject.index){
-                cObject.index[relatedIndex.HIDE]=mergeResult.index[relatedIndex.HIDE];
-            }
-
-            for(let k in mergeResult.map){
-                cObject.data[k]= mergeResult.map[k];
-            }
-
-            return decoder[type](cObject,(resFirst:easyResult)=>{
-                if(resFirst.call){
-                    const app_link=linkCreator(resFirst.call);
-                    run(app_link,API,(resApp:easyResult)=>{
-                        resFirst.app=resApp;
-                        return ck && ck(resFirst);
-                    });
-                }else{
-                    return ck && ck(resFirst);
-                }
+        //1. data combined, check hide status.
+        if(data.protocol && data.protocol.hide!==undefined){
+            self.isValidAnchor(data.protocol.hide,data,(validLink:string|null,errs:errorObject[],overload?:boolean)=>{
+                cObject.error.push(...errs);
+                if(overload) return ck && ck(cObject);
+                if(validLink!==null) return run(validLink,API,ck);
+                return getResult(type);
             });
-        });
+        }else{
+            return getResult(type);
+        }
+        
+
+        function getResult(type:string){
+            self.merge(data.name,<keywords>data.protocol,{},(mergeResult:any)=>{
+
+                if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
+                if(mergeResult.hide.length!==0) cObject.hide=mergeResult.hide;
+                if(mergeResult.error.length!==0){
+                    cObject.error.push(...mergeResult.error);
+                }
+                
+                if(mergeResult.index[relatedIndex.AUTH]!==null && cObject.index){
+                    cObject.index[relatedIndex.AUTH]=mergeResult.index[relatedIndex.AUTH];
+                }
+    
+                if(mergeResult.index[relatedIndex.HIDE]!==null && cObject.index){
+                    cObject.index[relatedIndex.HIDE]=mergeResult.index[relatedIndex.HIDE];
+                }
+    
+                for(let k in mergeResult.map){
+                    cObject.data[k]= mergeResult.map[k];
+                }
+    
+                return decoder[type](cObject,(resFirst:easyResult)=>{
+                    //if there is a caller, get the target cApp data
+                    if(resFirst.call){
+                        const app_link=linkCreator(resFirst.call);
+                        run(app_link,API,(resApp:easyResult)=>{
+                            resFirst.app=resApp;
+                            return ck && ck(resFirst);
+                        });
+                    }else{
+                        return ck && ck(resFirst);
+                    }
+                });
+            });
+        }
     });
 };
 export {run as easyRun};
