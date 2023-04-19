@@ -2,13 +2,13 @@
 
 ## Overview
 
-* `Easy Protocol` is teh recommend `cApp` ( Chain Application ) protocol. It is a JSON based protocol, now `version 1.0`.
+- `Easy Protocol` is teh recommend `cApp` ( Chain Application ) protocol. It is a JSON based protocol, now `version 1.0`.
 
-* You can get all details via the [Easy Protocol](Easy_Protocol_v1.0.md).
+- You can get all details via the [Easy Protocol](Easy_Protocol_v1.0.md).
 
 ## Test
 
-* TS file need to compile to JS file, then run via Node.js.
+- TS file need to compile to JS file, then run via Node.js.
 
     ```SHELL
         # install TS support
@@ -24,7 +24,20 @@
         npm i --save-dev @types/node
     ```
 
-### Anchor Link Decode
+### Anchor Link Decoder
+
+- Anchor Link format, two parts **location** and **parameter**
+
+    ```TEXT
+        anchor://{name}
+        anchor://{name}/
+        anchor://{name}/{block}
+        anchor://{name}/{block}/
+        anchor://{name}?key_1=val_1&key_2=val_2
+        anchor://{name}/?key_1=val_1&key_2=val_2
+        anchor://{name}/{block}?key_1=val_1&key_2=val_2
+        anchor://{name}/{block}/?key_1=val_1&key_2=val_2
+    ```
 
 ### Chain Application Launch
 
@@ -35,7 +48,7 @@
 
 ### Sample
 
-* Basic cApp code
+- Basic cApp code
 
     ```JAVASCRIPT
         new Function(
@@ -62,7 +75,7 @@
         }
     ```
 
-* Demo cApp code.
+- Demo cApp code.
 
     ```JSON
         {
@@ -76,7 +89,7 @@
         }
     ```
 
-* Launch from `data` type anchor.
+- Launch from `data` type anchor.
 
     ```JSON
         {
