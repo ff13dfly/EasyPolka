@@ -1,7 +1,10 @@
 {
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "typescript": "^5.0.2"
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.79.0",
+    "webpack-cli": "^5.0.1"
   },
   "dependencies": {
     "@polkadot/api": "^10.2.2",

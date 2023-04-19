@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "strict":true,
+        "forceConsistentCasingInFileNames":true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "module": "AMD",
+        "lib": ["es5", "es6", "dom"],
+        "rootDir": "./src",
+        "outFile": "./build/build.js",
+    },
+    "exclude": [
+        "node_modules",
+        "./node_modules",
+        "./node_modules/*",
+        "./node_modules/@types/node/index.d.ts",
+        "./sample",
+        "./test",
+    ]
+}

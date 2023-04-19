@@ -28,9 +28,9 @@ const self={
                 anchorJS.setKeyring(Keyring);
                 return ck && ck();
             });
-          } catch (error) {
+        } catch (error) {
             return ck && ck(error);
-          }
+        }
     },
     auto:(list:Function[])=>{
         // ApiPromise.create({ provider: new WsProvider(config.endpoint) }).then((api) => {

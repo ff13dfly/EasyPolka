@@ -14,7 +14,7 @@ const check=(anchor:string,protocol:keywords,ck:Function)=>{
         "anchor":<anchorLocation|null>null,    //target anchor to get result
     }
     
-    //FIXME need to fix the checking
+    //TODO, auto MD5 anchor function is not tested yet.
     if(protocol.hide){
         //1.check wether target anchor 
         if(typeof protocol.hide==="string"){
