@@ -415,6 +415,7 @@ var self = {
     },
 };
 var decoder = {};
+//console.log(rawType);
 decoder[protocol_1.rawType.APP] = self.decodeApp;
 decoder[protocol_1.rawType.DATA] = self.decodeData;
 decoder[protocol_1.rawType.LIB] = self.decodeLib;

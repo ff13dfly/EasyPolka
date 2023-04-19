@@ -59,6 +59,14 @@
 
 - The max Anchor Raw data length is 4MB max.
 
+### Authority
+
+- Follow the latest anchor data to confirm the authority.
+
+### Hide Anchor
+
+- Follow the latest anchor data to confirm the hidden list.
+
 ## Processing Details
 
 ### How To Launch

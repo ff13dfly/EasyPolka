@@ -13,6 +13,7 @@ var check = function (anchor, protocol, ck) {
         "list": null,
         "anchor": null, //target anchor to get result
     };
+    //TODO, auto MD5 anchor function is not tested yet.
     if (protocol.auth) {
         //1.check wether target anchor 
         if (typeof protocol.auth === "string" || Array.isArray(protocol.auth)) {

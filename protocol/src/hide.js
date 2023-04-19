@@ -11,7 +11,7 @@ var check = function (anchor, protocol, ck) {
         "list": null,
         "anchor": null, //target anchor to get result
     };
-    //FIXME need to fix the checking
+    //TODO, auto MD5 anchor function is not tested yet.
     if (protocol.hide) {
         //1.check wether target anchor 
         if (typeof protocol.hide === "string") {

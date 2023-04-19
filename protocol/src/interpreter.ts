@@ -3,7 +3,7 @@
 //!important This implement extend `auth` and `hide` by salt way to load data
 
 import { anchorLocation,anchorObject,errorObject,APIObject,easyResult } from "./protocol";
-import {rawType,formatType,errorLevel} from "./protocol";
+import { rawType,formatType,errorLevel} from "./protocol";
 import { keywords,authMap,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth } from "./auth";
@@ -453,7 +453,8 @@ const self={
 type decoderMap = {
     [index: string]: Function;
 };
-const decoder:decoderMap={}
+const decoder:decoderMap={};
+//console.log(rawType);
 decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;

@@ -143,7 +143,7 @@ export interface anchorMap { [anchor: string]: anchorObject; }
 //the history of the hide anchor is meanful.
 export interface hideMap { [anchor: string]: number;}
 
-interface argumentMap {[key:string]:string;}
+export interface argumentMap {[key:string]:string;}
 
 /********************************/
 /************API part************/
