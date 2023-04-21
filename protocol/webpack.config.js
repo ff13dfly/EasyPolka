@@ -1,5 +1,7 @@
 const path = require('path');
 
+// libraryTarget:"commonjs2",
+//https://stackoverflow.com/questions/50658387/cant-import-es6-modules-from-webpack-bundle
 module.exports = {
   mode: "development",
   devtool: "inline-source-map",
@@ -8,7 +10,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    libraryTarget:"commonjs2",
+    libraryTarget:"commonjs2",  // important,can be import properly
     filename: "easy.js" // <--- Will be compiled to this single file
   },
   resolve: {

@@ -46,7 +46,7 @@ var self = {
         return ck && ck(anchor);
     },
     decodeData: function (cObject, ck) {
-        console.log("Decode data anchor");
+        //console.log(`Decode data anchor`);
         //console.log(cObject);
         cObject.type = protocol_1.rawType.DATA;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
@@ -57,7 +57,7 @@ var self = {
         return ck && ck(cObject);
     },
     decodeApp: function (cObject, ck) {
-        console.log("Decode app anchor");
+        //console.log(`Decode app anchor`);
         cObject.type = protocol_1.rawType.APP;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
@@ -75,7 +75,7 @@ var self = {
         }
     },
     decodeLib: function (cObject, ck) {
-        console.log("Decode lib anchor");
+        //console.log(`Decode lib anchor`);
         cObject.type = protocol_1.rawType.LIB;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
@@ -94,7 +94,7 @@ var self = {
     getLibs: function (list, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
-        console.log("Ready to get libs: ".concat(JSON.stringify(list)));
+        //console.log(`Ready to get libs: ${JSON.stringify(list)}`);
         var RPC = {
             search: API.common.latest,
             target: API.common.target,
@@ -305,7 +305,7 @@ var self = {
     },
     //check wether current anchor is in the hide list
     isValidAnchor: function (hide, data, ck, params) {
-        console.log(params);
+        //console.log(params);
         var errs = [];
         var cur = data.block;
         var overload = false;
@@ -436,7 +436,7 @@ var run = function (linker, inputAPI, ck, fence) {
     };
     if (target.param)
         cObject.parameter = target.param;
-    console.log(target);
+    //console.log(target);
     self.getAnchor(target.location, function (resAnchor) {
         var err = resAnchor;
         //1.return error if anchor is not support Easy Protocol

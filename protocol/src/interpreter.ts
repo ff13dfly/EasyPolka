@@ -71,7 +71,7 @@ const self={
     },
 
     decodeData:(cObject:easyResult,ck:Function)=>{
-        console.log(`Decode data anchor`);
+        //console.log(`Decode data anchor`);
         //console.log(cObject);
         cObject.type=rawType.DATA;
 
@@ -85,7 +85,7 @@ const self={
     },
 
     decodeApp:(cObject:easyResult,ck:Function)=>{
-        console.log(`Decode app anchor`);
+        //console.log(`Decode app anchor`);
 
         cObject.type=rawType.APP;
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
@@ -104,7 +104,7 @@ const self={
         }
     },
     decodeLib:(cObject:easyResult,ck:Function)=>{
-        console.log(`Decode lib anchor`);
+        //console.log(`Decode lib anchor`);
         cObject.type=rawType.LIB;
 
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
@@ -124,7 +124,7 @@ const self={
 
     getLibs:(list:anchorLocation[],ck:Function)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
-        console.log(`Ready to get libs: ${JSON.stringify(list)}`);
+        //console.log(`Ready to get libs: ${JSON.stringify(list)}`);
         const RPC={
             search:API.common.latest,
             target:API.common.target,
@@ -340,7 +340,7 @@ const self={
 
     //check wether current anchor is in the hide list
     isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function,params:Object)=>{
-        console.log(params);
+        //console.log(params);
         const errs:errorObject[]=[];
         const cur=data.block;
         let overload:boolean=false;
@@ -474,7 +474,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
         index:[<anchorLocation|null>null,<anchorLocation|null>null],
     }
     if(target.param) cObject.parameter=target.param;
-    console.log(target);
+    //console.log(target);
 
     self.getAnchor(target.location,(resAnchor:anchorObject|errorObject)=>{
         const err=<errorObject>resAnchor;
