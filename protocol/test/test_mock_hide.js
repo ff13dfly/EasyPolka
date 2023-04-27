@@ -95,7 +95,7 @@ const API={
 };
 
 const task=[
-    hide_by_protocol,
+    //hide_by_protocol,
     hide_by_anchor,
 ];
 self.auto(task);
@@ -111,7 +111,7 @@ function hide_by_protocol(index,ck){
 
     const list=[];
 
-    const anchor="hide_direct"+self.randomData();
+    const anchor="hide_direct_"+self.randomData();
     const txt=`This mock data to test hide function. Anchor: ${anchor}, Random: `;
     const protocol={"type":"data","fmt":"json"};
 
@@ -155,6 +155,39 @@ function hide_by_anchor(index,ck){
 
     const list=[];
 
+    const random=self.randomData();
+    const anchor="hide_last_"+random;
+    const anchor_hide="hide_me_"+random;
+    const txt=`This mock data to test hide function. Anchor: ${anchor}, Random: `;
+    const protocol={"type":"data","fmt":"json","hide":anchor_hide};
+
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+
+    self.multi(list,()=>{
+        anchorJS.history(anchor,(history)=>{
+            const alist=[];
+            const block=history[3].block;
+            const hlist=[history[3].block,history[2].block,history[1].block,history[0].block,];
+            const protocol={"type":"data","fmt":"json"};
+            alist.push({name:anchor_hide,raw:JSON.stringify(hlist),protocol:protocol});
+
+            self.multi(alist,()=>{
+                const linker=`anchor://${anchor}/${block}`;
+
+                easyRun(linker,API,(result)=>{
+                    console.log(`-----------------result-----------------`);
+                    console.log(JSON.stringify(result));
+
+                    const end=self.stamp();
+                    console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+                    return ck && ck();
+                });
+            },index,pair);
+        });
+    },index,pair);
 }
 
 
