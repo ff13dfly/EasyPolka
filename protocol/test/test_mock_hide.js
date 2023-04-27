@@ -96,19 +96,9 @@ const API={
 
 const task=[
     hide_by_protocol,
+    hide_by_anchor,
 ];
 self.auto(task);
-
-// function sample(index,ck){
-//     eProtocol.easyRun(linker,API,(result)=>{
-//         console.log(`-----------------result-----------------`);
-//         console.log(JSON.stringify(result));
-
-//         const end=self.stamp();
-//         console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
-//         return ck && ck();
-//     });
-// }
 
 //hide by anchor protocol directly. So the first one can not been hidden.
 function hide_by_protocol(index,ck){
@@ -153,3 +143,29 @@ function hide_by_protocol(index,ck){
         });
     },index,pair);
 }
+
+
+function hide_by_anchor(index,ck){
+    const start=self.stamp();
+    const seed='Alice';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Hide by protocol directly ${seed}`);
+
+    const list=[];
+
+}
+
+
+
+// function sample(index,ck){
+//     eProtocol.easyRun(linker,API,(result)=>{
+//         console.log(`-----------------result-----------------`);
+//         console.log(JSON.stringify(result));
+
+//         const end=self.stamp();
+//         console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+//         return ck && ck();
+//     });
+// }

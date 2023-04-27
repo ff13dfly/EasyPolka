@@ -20,7 +20,7 @@ export type keywords={
     "lib"?:anchorLocation[],
     "ver"?:string,
     "hide"?:number[]|anchorLocation,
-    "auth"?:authMap|anchorLocation,
+    "auth"?:authAddress|anchorLocation,
     "salt"?:[string,string],
     "args"?:string,
 };
@@ -103,7 +103,7 @@ export type dataProtocol={
     "push"?:string[];                   // list of push to target cApp name. This name is not anchor name
     "args"?:argumentMap;                // arguments will sent to calling cApp
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
-    "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "auth"?:authAddress|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
@@ -114,7 +114,7 @@ export type appProtocol={
     "ver":string;                       // the cApp version, need incremnet when update
     "lib"?:anchorLocation[];            // the list of required anchor list
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
-    "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "auth"?:authAddress|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
@@ -127,7 +127,7 @@ export type libProtocol={
     "lib"?:anchorLocation[];            // the list of required anchor list
     "ext"?:anchorLocation[];            // extend list of library
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
-    "auth"?:authMap|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "auth"?:authAddress|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
@@ -135,7 +135,11 @@ export type libProtocol={
 //only the auth between anchors.
 //Sample:{"hello":32345} 
 // the number is expired block number of the auth, if 0, it is unlimited.
-export interface authMap { [anchor: string]: number; }
+
+export interface authAnchor{ [anchor: string]: number; }
+
+//Sample:{"ss58_address":32345} 
+export interface authAddress { [address: string]: number; }
 
 export interface anchorMap { [anchor: string]: anchorObject; }
 
@@ -180,7 +184,7 @@ export type APIObject={
 
 export type easyResult={
     type:rawType;               //anchor type
-    data:anchorMap;               //anchor raw data map. 
+    data:anchorMap;             //anchor raw data map. 
     location:[string,number];   //anchor location
 
     app?:easyResult;            //cApp data,
@@ -188,10 +192,13 @@ export type easyResult={
     call?:anchorLocation;       //call the cApp
     libs?:Object;               //lib list
 
-    auth?:authMap;              //authority information
-    hide?:number[];              //hide list
+    auth?:authAddress;          //authority information
+    hide?:number[];             //hide list
     index?:[anchorLocation|null,anchorLocation|null];     //[ auth,hide ] related anchor location
     
-    parameter?:Object;        //running parameters, from anchor link parameter
-    error:errorObject[];       //errors when loading cApp
+    parameter?:Object;          //running parameters, from anchor link parameter
+    error:errorObject[];        //errors when loading cApp
+
+    //FIXME need to define the structure
+    env?:object;                //runtime envirment
 }

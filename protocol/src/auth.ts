@@ -1,6 +1,6 @@
 //!important This is the library for creating auth data
 
-import { anchorLocation,authMap,keywords} from "./protocol";
+import { anchorLocation,authAddress,keywords} from "./protocol";
 const md5 =require("md5");
 
 // create the anchor hiddeing default data
@@ -12,7 +12,7 @@ export {creator as easyAuth};
 // check anchor to get auth list. 
 const check=(anchor:string,protocol:keywords,ck:Function)=>{
     const data={
-        "list":<authMap|null>null,      //direct result from protocol
+        "list":<authAddress|null>null,      //direct result from protocol
         "anchor":<anchorLocation|null>null,    //target anchor to get result
     }
     
@@ -22,7 +22,7 @@ const check=(anchor:string,protocol:keywords,ck:Function)=>{
         if(typeof protocol.auth==="string" || Array.isArray(protocol.auth)){
             data.anchor = protocol.auth;
         }else{
-            data.list=<authMap>protocol.auth;
+            data.list=<authAddress>protocol.auth;
         }
     }else{
         //2.check default anchor

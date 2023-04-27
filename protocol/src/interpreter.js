@@ -303,12 +303,20 @@ var self = {
             return ck && ck(hlist, map, errs);
         });
     },
+    checkLast: function (name, block, ck) {
+        if (API === null)
+            return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
+        API.common.owner(name, function (owner, last) {
+            return ck && ck(block === last ? true : false);
+        });
+    },
     //check wether current anchor is in the hide list
+    //check wether last
     isValidAnchor: function (hide, data, ck, params) {
         //console.log(params);
         var errs = [];
         var cur = data.block;
-        var overload = false;
+        var overload = false; //wether redirect to right anchor
         if (Array.isArray(hide)) {
             var hlist = hide;
             for (var i = 0; i < hlist.length; i++) {
@@ -325,6 +333,7 @@ var self = {
             return ck && ck(null, errs);
         }
         else {
+            //FIXME here to check the latest anchor data to confirm the hidden list.
             var h_location = [hide, 0];
             self.getAnchor(h_location, function (hdata) {
                 var res = self.decodeHideAnchor(hdata);
@@ -415,15 +424,20 @@ var self = {
     },
 };
 var decoder = {};
-//console.log(rawType);
 decoder[protocol_1.rawType.APP] = self.decodeApp;
 decoder[protocol_1.rawType.DATA] = self.decodeData;
 decoder[protocol_1.rawType.LIB] = self.decodeLib;
-//Exposed method `run` as `easyRun`
-// @param   fence     boolean   //if true, treat the run result as cApp.
+/**
+ * Exposed method of Easy Protocol implement
+ * @param {string}      linker	    //Anchor linker, such as `anchor://hello/`
+ * @param {object}      inputAPI    //the API needed to access Anchor network, `anchorJS` mainly
+ * @param {function}    ck          //callback, will return the decoded result
+ * @param {boolean}     [fence]     //if true, treat the run result as cApp. Then end of the loop.
+ * */
 var run = function (linker, inputAPI, ck, fence) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
+    //1.decode the `Anchor Link`, prepare the result object.
     var target = (0, decoder_1.linkDecoder)(linker);
     if (target.error)
         return ck && ck(target);
@@ -436,10 +450,10 @@ var run = function (linker, inputAPI, ck, fence) {
     };
     if (target.param)
         cObject.parameter = target.param;
-    //console.log(target);
+    //2.Try to get the target `Anchor` data.
     self.getAnchor(target.location, function (resAnchor) {
+        //2.1.error handle.
         var err = resAnchor;
-        //1.return error if anchor is not support Easy Protocol
         if (err.error) {
             cObject.error.push(err);
             return ck && ck(cObject);
@@ -448,17 +462,25 @@ var run = function (linker, inputAPI, ck, fence) {
         if (cObject.location[1] === 0)
             cObject.location[1] = data.block;
         cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])] = data;
-        //2.check protocol
+        //2.2.Wether JSON protocol
         if (data.protocol === null) {
             cObject.error.push({ error: "No valid protocol" });
             return ck && ck(cObject);
         }
+        //2.3.Wether Easy Protocol
         var type = !data.protocol.type ? "" : data.protocol.type;
         if (!decoder[type]) {
             cObject.error.push({ error: "Not easy protocol type" });
             return ck && ck(cObject);
         }
-        //1. data combined, check hide status.
+        //3. check wether the latest anchor. If not, need to get latest hide data.
+        if (target.location[1] !== 0) {
+            console.log("Need to check the latest hidden data");
+        }
+        else {
+            console.log("It is the latest anchor");
+        }
+        //4. data combined, check hide status.
         if (data.protocol && data.protocol.hide !== undefined) {
             self.isValidAnchor(data.protocol.hide, data, function (validLink, errs, overload) {
                 var _a;

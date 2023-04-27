@@ -4,7 +4,7 @@
 
 import { anchorLocation,anchorObject,errorObject,APIObject,easyResult } from "./protocol";
 import { rawType,formatType,errorLevel} from "./protocol";
-import { keywords,authMap,anchorMap,relatedIndex} from "./protocol";
+import { keywords,authAddress,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
@@ -15,7 +15,7 @@ const {Loader,Libs} = require("../lib/loader");
 let API:APIObject=null;
 
 type authResult={
-    'list':authMap|null;
+    'list':authAddress|null;
     'anchor':anchorLocation|null;
 };
 
@@ -25,7 +25,7 @@ type hideResult={
 };
 type mergeResult={
     "hide":number[]|null,       //if hide data, merge to here.
-    "auth":authMap|null,        //if auth data, merge to here.
+    "auth":authAddress|null,        //if auth data, merge to here.
     "error":errorObject[],      //collect errors here
     "index":[anchorLocation|null,anchorLocation|null],    //collect anchor locations here
     "map":anchorMap,            //map anchor data here
@@ -239,12 +239,12 @@ const self={
         const last:anchorObject=list[0];
         const hlist:number[]=[];            //get latest auth anchor hide list.
         
-        self.decodeAuthAnchor(<anchorObject[]>list,hlist,(map:authMap,amap:anchorMap,errs:errorObject[])=>{
+        self.decodeAuthAnchor(<anchorObject[]>list,hlist,(map:authAddress,amap:anchorMap,errs:errorObject[])=>{
             for(let k in amap) result.map[k]=amap[k];  //if hide anchor data, merge to result
             for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
 
             result.index[relatedIndex.AUTH]=[last.name,0];
-            result.auth=<authMap>map;
+            result.auth=<authAddress>map;
             return ck && ck(result);
         });
     },
@@ -271,8 +271,8 @@ const self={
 
     //!important, by using the history of anchor, `hide` keyword is still support
     //!important, checking the latest anchor data, using the `hide` feild to get data.
-    decodeAuthAnchor:(list:anchorObject[],hlist:number[],ck:(res: authMap,amap:anchorMap,errs:errorObject[])=>void)=>{
-        const map:authMap={};
+    decodeAuthAnchor:(list:anchorObject[],hlist:number[],ck:(res: authAddress,amap:anchorMap,errs:errorObject[])=>void)=>{
+        const map:authAddress={};
         const amap:anchorMap={};
         const errs:errorObject[]=[];
 
@@ -338,12 +338,20 @@ const self={
         });
     },
 
+    checkLast:(name:string,block:number,ck:Function)=>{
+        if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
+        API.common.owner(name,(owner:string,last:number)=>{
+            return ck && ck(block===last?true:false);
+        });
+    },
     //check wether current anchor is in the hide list
+
+    //check wether last
     isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function,params:Object)=>{
         //console.log(params);
         const errs:errorObject[]=[];
         const cur=data.block;
-        let overload:boolean=false;
+        let overload:boolean=false;     //wether to the end of `Anchor` history
         if(Array.isArray(hide)){
             const hlist=hide;
             for(let i=0;i<hlist.length;i++){
@@ -360,6 +368,8 @@ const self={
             }
             return ck && ck(null,errs);
         }else{
+
+            //FIXME here to check the latest anchor data to confirm the hidden list.
             const h_location:[string,number]=[<string>hide,0];
             self.getAnchor(h_location,(hdata:anchorObject|errorObject)=>{
                 const res:number[]|errorObject=self.decodeHideAnchor(<anchorObject>hdata); 
@@ -449,21 +459,30 @@ const self={
     },
 }
 
-//Deocode map definition.
+/**
+ * Deocode map definition.
+ * APP,DATA and LIB supported
+ */
+
 type decoderMap = {
     [index: string]: Function;
 };
 const decoder:decoderMap={};
-//console.log(rawType);
 decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
-//Exposed method `run` as `easyRun`
-// @param   fence     boolean   //if true, treat the run result as cApp.
+/** 
+ * Exposed method of Easy Protocol implement
+ * @param {string}      linker	    //Anchor linker, such as `anchor://hello/`
+ * @param {object}      inputAPI    //the API needed to access Anchor network, `anchorJS` mainly
+ * @param {function}    ck          //callback, will return the decoded result
+ * @param {boolean}     [fence]     //if true, treat the run result as cApp. Then end of the loop.
+ * */
 const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:boolean)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
 
+    //1.decode the `Anchor Link`, prepare the result object.
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
     let cObject:easyResult={
@@ -474,11 +493,11 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
         index:[<anchorLocation|null>null,<anchorLocation|null>null],
     }
     if(target.param) cObject.parameter=target.param;
-    //console.log(target);
 
+    //2.Try to get the target `Anchor` data.
     self.getAnchor(target.location,(resAnchor:anchorObject|errorObject)=>{
+        //2.1.error handle.
         const err=<errorObject>resAnchor;
-        //1.return error if anchor is not support Easy Protocol
         if(err.error){
             cObject.error.push(err);
             return ck && ck(cObject);
@@ -488,19 +507,28 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
         if(cObject.location[1]===0)cObject.location[1]=data.block;
         cObject.data[`${cObject.location[0]}_${cObject.location[1]}`]=data;
 
-        //2.check protocol
+        //2.2.Wether JSON protocol
         if(data.protocol===null){
             cObject.error.push({error:"No valid protocol"});
             return ck && ck(cObject);
         }
 
+        //2.3.Wether Easy Protocol
         const type:string=!data.protocol.type?"":data.protocol.type;
         if(!decoder[type]){
             cObject.error.push({error:"Not easy protocol type"});
             return ck && ck(cObject);
         }
 
-        //1. data combined, check hide status.
+        //3. check wether the latest anchor. If not, need to get latest hide data.
+        if(target.location[1]!==0){
+            console.log(`Need to check the latest hidden data`);
+            console.log(`Get the list and sent it to "isValidAnchor"`);
+        }else{
+            console.log(`It is the latest anchor`);
+        }
+
+        //4. data combined, check hide status.
         if(data.protocol && data.protocol.hide!==undefined){
             self.isValidAnchor(data.protocol.hide,data,(validLink:string|null,errs:errorObject[],overload?:boolean)=>{
                 cObject.error.push(...errs);

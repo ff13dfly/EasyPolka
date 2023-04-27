@@ -4,6 +4,8 @@
 
 - An easy way to develop blockchain , base on Polkadot/Substrate. Totally on chain application solution.
 
+- Bootstrap for Web3.0 world.
+
 Structure of EasyPolka is here.
 
 ![EasyPolka Structure](./images/structure.png)
