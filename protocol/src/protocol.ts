@@ -199,6 +199,6 @@ export type easyResult={
     parameter?:Object;          //running parameters, from anchor link parameter
     error:errorObject[];        //errors when loading cApp
 
-    //FIXME need to define the structure
+    //FIXME need to define the structure, including `back?`,``......
     env?:object;                //runtime envirment
 }

@@ -156,7 +156,13 @@ const self={
         });
     },
 
-    //combine the hide and auth list to result
+    /** 
+     * combine the hide and auth list to result
+     * @param {string}      anchor	    //`Anchor` name
+     * @param {object}      protocol    //Easy Protocol
+     * @param {object}      cfg         //reversed config parameter
+     * @param {function}    ck          //callback, will return the merge result, including the related `anchor`
+     * */
     merge:(anchor:string,protocol:keywords,cfg:object,ck:Function)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const result:mergeResult={
@@ -168,8 +174,10 @@ const self={
         };
 
         const mlist:anchorLocation[]=[];
+        //1. check `declared hidden` and `authority` just by protocol data.
         checkAuth(anchor,protocol,(resAuth:authResult)=>{
             checkHide(anchor,protocol,(resHide:hideResult)=>{
+
                 if(resAuth.anchor===null && resHide.anchor===null){
                     if(resAuth.list) result.auth=resAuth.list;
                     if(resHide.list) result.hide=resHide.list;
@@ -211,6 +219,7 @@ const self={
 
     combineHide:(result:mergeResult,anchor:anchorObject,errs:errorObject[],ck:Function)=>{
         if(errs.length!==0){
+            //FIXME change to simple way to combine the errors.
             for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
         }
         
@@ -339,8 +348,7 @@ const self={
     },
 
     checkLast:(name:string,block:number,ck:Function)=>{
-        if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
-        API.common.owner(name,(owner:string,last:number)=>{
+        API?.common.owner(name,(owner:string,last:number)=>{
             return ck && ck(block===last?true:false);
         });
     },
@@ -439,8 +447,11 @@ const self={
         }
     },
 
-    //get params from string such as `key_a=val&key_b=val&key_c=val`
-    getParams:(args:string)=>{
+    /** 
+     * get params from string
+     * @param {string}      args	    //String such as `key_a=val&key_b=val&key_c=val`
+     * */
+    getParams:(args:string):Object|errorObject=>{
         let map:any={};
         const arr=args.split("&");
         for(let i=0;i<arr.length;i++){
@@ -451,10 +462,12 @@ const self={
         }
         return map;
     },
+    /** 
+     * check wether object empty
+     * @param {object}      obj	    //normal object
+     * */
     empty:(obj:any):boolean=>{
-        for(let k in obj){
-            return false;
-        }
+        for(let k in obj) return false;
         return true;
     },
 }
@@ -472,6 +485,7 @@ decoder[rawType.APP]=self.decodeApp;
 decoder[rawType.DATA]=self.decodeData;
 decoder[rawType.LIB]=self.decodeLib;
 
+//!important, as support `declared hidden`, this function may redirect many times, be careful.
 /** 
  * Exposed method of Easy Protocol implement
  * @param {string}      linker	    //Anchor linker, such as `anchor://hello/`
@@ -540,7 +554,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
             return getResult(type);
         }
         
-        //closure function to avoid the same code.
+        //inline function to avoid the repetitive code.
         function getResult(type:string){
             self.merge(data.name,<keywords>data.protocol,{},(mergeResult:mergeResult)=>{
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;

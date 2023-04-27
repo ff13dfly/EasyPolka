@@ -304,9 +304,7 @@ var self = {
         });
     },
     checkLast: function (name, block, ck) {
-        if (API === null)
-            return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
-        API.common.owner(name, function (owner, last) {
+        API === null || API === void 0 ? void 0 : API.common.owner(name, function (owner, last) {
             return ck && ck(block === last ? true : false);
         });
     },
@@ -316,7 +314,7 @@ var self = {
         //console.log(params);
         var errs = [];
         var cur = data.block;
-        var overload = false; //wether redirect to right anchor
+        var overload = false; //wether to the end of `Anchor` history
         if (Array.isArray(hide)) {
             var hlist = hide;
             for (var i = 0; i < hlist.length; i++) {
@@ -403,7 +401,10 @@ var self = {
             }
         }
     },
-    //get params from string such as `key_a=val&key_b=val&key_c=val`
+    /**
+     * get params from string
+     * @param {string}      args	    //String such as `key_a=val&key_b=val&key_c=val`
+     * */
     getParams: function (args) {
         var map = {};
         var arr = args.split("&");
@@ -416,10 +417,13 @@ var self = {
         }
         return map;
     },
+    /**
+     * check wether object empty
+     * @param {object}      obj	    //normal object
+     * */
     empty: function (obj) {
-        for (var k in obj) {
+        for (var k in obj)
             return false;
-        }
         return true;
     },
 };
@@ -476,6 +480,7 @@ var run = function (linker, inputAPI, ck, fence) {
         //3. check wether the latest anchor. If not, need to get latest hide data.
         if (target.location[1] !== 0) {
             console.log("Need to check the latest hidden data");
+            console.log("Get the list and sent it to \"isValidAnchor\"");
         }
         else {
             console.log("It is the latest anchor");
