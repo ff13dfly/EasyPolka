@@ -57,10 +57,18 @@ self.prepare(server, function () {
     var linker_full_app = "anchor://full_app/";
     var linker_full_caller = "anchor://full_caller/?hello=world&me=fuu";
     var linker_lib_caller = "anchor://js_a/";
-    var linker_declared_hide = "anchor://hide_last_9964/20522/";
+    var linker_declared_hide = "anchor://hide_last_9627/"; //right result is block 20682
+    var linker_declared_hide_complex = "anchor://hide_last_9627/20685/";
+    console.log("\n");
     (0, interpreter_1.easyRun)(linker_declared_hide, API, function (result) {
-        console.log("-----------------result-----------------");
+        console.log("\n-----------------result of ".concat(linker_declared_hide, "-----------------"));
         console.log(JSON.stringify(result));
+        console.log("\n\n");
+        (0, interpreter_1.easyRun)(linker_declared_hide_complex, API, function (result) {
+            console.log("\n-----------------result of ".concat(linker_declared_hide_complex, "-----------------"));
+            console.log(JSON.stringify(result));
+            console.log("\n\n");
+        });
     });
 });
 var task = [];

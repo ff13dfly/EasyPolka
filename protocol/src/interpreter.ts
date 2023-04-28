@@ -447,6 +447,37 @@ const self={
         }
     },
 
+    //get the latest decared hide anchor list.
+    getLatestDeclaredHidden:(location:anchorLocation,ck:Function)=>{
+        self.getAnchor([location[0],0],(resLatest:anchorObject|errorObject)=>{
+            //1. failde to get the hide anchor.
+            const err=<errorObject>resLatest;
+            //if(err.error) return ck && ck(err);
+            if(err.error) return ck && ck([]);
+
+            const data=<anchorObject>resLatest;
+            const protocol=data.protocol;
+
+            if(protocol===null || !protocol.hide) return ck && ck([]);
+            if(Array.isArray(protocol.hide)) return ck && ck(protocol.hide);
+
+            self.getAnchor([protocol.hide,0],(resHide:anchorObject|errorObject)=>{
+                const err=<errorObject>resLatest;
+                //if(err.error) return ck && ck(err);
+                if(err.error) return ck && ck([]);
+
+                const data=<anchorObject>resHide;
+                if(data===null || !data.raw)  return ck && ck([]);
+                try {
+                    const list=JSON.parse(data.raw);
+                    return ck && ck(list);
+                } catch (error) {
+                    return ck && ck({error:error});
+                }
+            });
+        });
+    },
+
     /** 
      * get params from string
      * @param {string}      args	    //String such as `key_a=val&key_b=val&key_c=val`
@@ -493,18 +524,43 @@ decoder[rawType.LIB]=self.decodeLib;
  * @param {function}    ck          //callback, will return the decoded result
  * @param {boolean}     [fence]     //if true, treat the run result as cApp. Then end of the loop.
  * */
-const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:boolean)=>{
+const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:number[],fence?:boolean)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
 
-    //1.decode the `Anchor Link`, prepare the result object.
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
+
+    //0.get the latest declared hidden list
+    if(hlist===undefined){
+        return self.getLatestDeclaredHidden(target.location,(lastHide:number[]|errorObject)=>{
+            let cObject:easyResult={
+                type:rawType.NONE,
+                location:[target.location[0],target.location[1]!==0?target.location[1]:0],
+                error:[],
+                data:{},
+                index:[<anchorLocation|null>null,<anchorLocation|null>null],
+            }
+
+            const res=<errorObject>lastHide;
+            if(res.error){
+                cObject.error.push(res);
+                return ck && ck(cObject);
+            } 
+        
+            const hResult=<number[]>lastHide;
+            return run(linker,API,ck,hResult);
+        });
+    }
+
+    //1.decode the `Anchor Link`, prepare the result object.
+    
     let cObject:easyResult={
         type:rawType.NONE,
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],
         data:{},
         index:[<anchorLocation|null>null,<anchorLocation|null>null],
+        hide:hlist,
     }
     if(target.param) cObject.parameter=target.param;
 
@@ -535,19 +591,11 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
         }
 
         //3. check wether the latest anchor. If not, need to get latest hide data.
-        if(target.location[1]!==0){
-            console.log(`Need to check the latest hidden data`);
-            console.log(`Get the list and sent it to "isValidAnchor"`);
-        }else{
-            console.log(`It is the latest anchor`);
-        }
-
-        //4. data combined, check hide status.
-        if(data.protocol && data.protocol.hide!==undefined){
-            self.isValidAnchor(data.protocol.hide,data,(validLink:string|null,errs:errorObject[],overload?:boolean)=>{
+        if(data.protocol){
+            self.isValidAnchor(hlist,data,(validLink:string|null,errs:errorObject[],overload?:boolean)=>{
                 cObject.error.push(...errs);
                 if(overload) return ck && ck(cObject);
-                if(validLink!==null) return run(validLink,API,ck);
+                if(validLink!==null) return run(validLink,API,ck,hlist);
                 return getResult(type);
             },cObject.parameter===undefined?{}:cObject.parameter);
         }else{
@@ -580,9 +628,9 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,fence?:b
                 return decoder[type](cObject,(resFirst:easyResult)=>{
                     if(resFirst.call && !fence){
                         const app_link=linkCreator(resFirst.call,resFirst.parameter===undefined?{}:resFirst.parameter);
-                        run(app_link,API,(resApp:easyResult)=>{
+                        return run(app_link,API,(resApp:easyResult)=>{
                             return self.checkAuthority(resFirst,resApp,ck);
-                        },true);
+                        },hlist,true);
                     }else{
                         return ck && ck(resFirst);
                     }

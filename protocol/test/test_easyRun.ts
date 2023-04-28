@@ -59,11 +59,20 @@ self.prepare(server,()=>{
     const linker_full_app="anchor://full_app/";
     const linker_full_caller="anchor://full_caller/?hello=world&me=fuu";
     const linker_lib_caller="anchor://js_a/";
-    const linker_declared_hide="anchor://hide_last_9964/20522/"
-    
+    const linker_declared_hide="anchor://hide_last_9627/"   //right result is block 20682
+    const linker_declared_hide_complex="anchor://hide_last_9627/20685/"
+
+    console.log(`\n`);
     easyRun(linker_declared_hide,API,(result:any)=>{
-        console.log(`-----------------result-----------------`);
+        console.log(`\n-----------------result of ${linker_declared_hide}-----------------`);
         console.log(JSON.stringify(result));
+        console.log(`\n\n`);
+
+        easyRun(linker_declared_hide_complex,API,(result:any)=>{
+            console.log(`\n-----------------result of ${linker_declared_hide_complex}-----------------`);
+            console.log(JSON.stringify(result));
+            console.log(`\n\n`);
+        });
     });
 });
 
