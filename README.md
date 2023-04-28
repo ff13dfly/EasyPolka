@@ -8,7 +8,7 @@
 
 Structure of EasyPolka is here.
 
-![EasyPolka Structure](./images/structure.png)
+![EasyPolka Structure](./images/EasyPolka_structure.png)
 
 ## Components
 

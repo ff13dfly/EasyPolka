@@ -62,7 +62,7 @@ const creator=(local:anchorLocation,params:Object)=>{
 export {creator as linkCreator};
 
 
-const decoder=(link:string,cfg?:any)=>{
+const decoder=(link:string)=>{
     let res:decoderResult={
         location:["",0],
     };

@@ -169,8 +169,8 @@ function hide_by_anchor(index,ck){
     self.multi(list,()=>{
         anchorJS.history(anchor,(history)=>{
             const alist=[];
-            const block=history[3].block;
-            const hlist=[history[3].block,history[2].block,history[1].block,history[0].block,];
+            const block=history[0].block;   //latest anchor 
+            const hlist=[history[1].block,block];
             const protocol={"type":"data","fmt":"json"};
             alist.push({name:anchor_hide,raw:JSON.stringify(hlist),protocol:protocol});
 
