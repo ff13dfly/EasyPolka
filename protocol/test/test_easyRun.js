@@ -57,7 +57,8 @@ self.prepare(server, function () {
     var linker_full_app = "anchor://full_app/";
     var linker_full_caller = "anchor://full_caller/?hello=world&me=fuu";
     var linker_lib_caller = "anchor://js_a/";
-    (0, interpreter_1.easyRun)(linker_full_caller, API, function (result) {
+    var linker_declared_hide = "anchor://hide_last_9964/20522/";
+    (0, interpreter_1.easyRun)(linker_declared_hide, API, function (result) {
         console.log("-----------------result-----------------");
         console.log(JSON.stringify(result));
     });

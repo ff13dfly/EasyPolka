@@ -47,7 +47,7 @@ var creator = function (local, params) {
     }
 };
 exports.linkCreator = creator;
-var decoder = function (link, cfg) {
+var decoder = function (link) {
     var res = {
         location: ["", 0],
     };

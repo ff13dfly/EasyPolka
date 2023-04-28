@@ -159,12 +159,14 @@ function hide_by_anchor(index,ck){
     const anchor="hide_last_"+random;
     const anchor_hide="hide_me_"+random;
     const txt=`This mock data to test hide function. Anchor: ${anchor}, Random: `;
-    const protocol={"type":"data","fmt":"json","hide":anchor_hide};
+    const protocol={"type":"data","fmt":"json"};
 
     list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
     list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
     list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
-    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+
+    const protocol_last={"type":"data","fmt":"json","hide":anchor_hide};
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol_last});
 
     self.multi(list,()=>{
         anchorJS.history(anchor,(history)=>{

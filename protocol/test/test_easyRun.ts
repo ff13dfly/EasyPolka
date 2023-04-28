@@ -59,7 +59,7 @@ self.prepare(server,()=>{
     const linker_full_app="anchor://full_app/";
     const linker_full_caller="anchor://full_caller/?hello=world&me=fuu";
     const linker_lib_caller="anchor://js_a/";
-    const linker_declared_hide="anchor://hide_last_5935/"
+    const linker_declared_hide="anchor://hide_last_9964/20522/"
     
     easyRun(linker_declared_hide,API,(result:any)=>{
         console.log(`-----------------result-----------------`);

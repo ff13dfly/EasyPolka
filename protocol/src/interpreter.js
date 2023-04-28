@@ -124,7 +124,13 @@ var self = {
             return ck && ck(alist, errs);
         });
     },
-    //combine the hide and auth list to result
+    /**
+     * combine the hide and auth list to result
+     * @param {string}      anchor	    //`Anchor` name
+     * @param {object}      protocol    //Easy Protocol
+     * @param {object}      cfg         //reversed config parameter
+     * @param {function}    ck          //callback, will return the merge result, including the related `anchor`
+     * */
     merge: function (anchor, protocol, cfg, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
@@ -136,6 +142,7 @@ var self = {
             "map": {},
         };
         var mlist = [];
+        //1. check `declared hidden` and `authority` just by protocol data.
         (0, auth_1.checkAuth)(anchor, protocol, function (resAuth) {
             (0, hide_1.checkHide)(anchor, protocol, function (resHide) {
                 if (resAuth.anchor === null && resHide.anchor === null) {
@@ -183,6 +190,7 @@ var self = {
     },
     combineHide: function (result, anchor, errs, ck) {
         if (errs.length !== 0) {
+            //FIXME change to simple way to combine the errors.
             for (var i = 0; i < errs.length; i++)
                 result.error.push(errs[i]);
         }
@@ -431,6 +439,7 @@ var decoder = {};
 decoder[protocol_1.rawType.APP] = self.decodeApp;
 decoder[protocol_1.rawType.DATA] = self.decodeData;
 decoder[protocol_1.rawType.LIB] = self.decodeLib;
+//!important, as support `declared hidden`, this function may redirect many times, be careful.
 /**
  * Exposed method of Easy Protocol implement
  * @param {string}      linker	    //Anchor linker, such as `anchor://hello/`
@@ -500,7 +509,7 @@ var run = function (linker, inputAPI, ck, fence) {
         else {
             return getResult(type);
         }
-        //closure function to avoid the same code.
+        //inline function to avoid the repetitive code.
         function getResult(type) {
             self.merge(data.name, data.protocol, {}, function (mergeResult) {
                 var _a;
