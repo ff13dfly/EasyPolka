@@ -21,7 +21,8 @@ export type keywords={
     "ver"?:string,
     "hide"?:number[]|anchorLocation,
     "auth"?:authAddress|anchorLocation,
-    "salt"?:[string,string],
+    "trust"?:string[],
+    "salt"?:[string,string,string],
     "args"?:string,
 };
 
@@ -65,11 +66,12 @@ export enum rawType{
 }
 
 export enum formatType{
-    JAVASCRIPT  = "js",
-    CSS         = "css",
-    MARKDOWN    = "md",
-    JSON        = "json",
-    NONE        = "",
+    JAVASCRIPT  =   "js",        //Javascript code
+    CSS         =   "css",       //CSS code
+    MARKDOWN    =   "md",        //Markdown document
+    JSON        =   "json",      //JSON format data
+    MIX         =   "mix",       //mixed code, such as React package
+    NONE        =   "",
 }
 
 export enum codeType{
@@ -84,10 +86,11 @@ export enum keysApp{
 }
 
 export enum relatedIndex{
-    AUTH = 0,
-    HIDE = 1,
-    NAME = 0,
-    BLOCK= 1,
+    AUTH    = 0,
+    HIDE    = 1,
+    TRUST   = 2,
+    NAME    = 0,
+    BLOCK   = 1,
 }
 
 //data type object
@@ -101,10 +104,11 @@ export type dataProtocol={
     "code"?:codeType;                   // data code
     "call"?:anchorLocation;             // call target anchor
     "push"?:string[];                   // list of push to target cApp name. This name is not anchor name
-    "args"?:argumentMap;                // arguments will sent to calling cApp
+    "args"?:argumentMap;                // arguments will sent to calling cApp. Fix args from data Anchor
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
-    "auth"?:authAddress|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
-    "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
+    "auth"?:authAddress|anchorLocation; // the list of auth anchor;when anchorLocation, map storage there.
+    "trust"?:string[];                  // trust anchor list
+    "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3),trust[3]]
 }
 
 //cApp type object
@@ -114,7 +118,8 @@ export type appProtocol={
     "ver":string;                       // the cApp version, need incremnet when update
     "lib"?:anchorLocation[];            // the list of required anchor list
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
-    "auth"?:authAddress|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "auth"?:authAddress|anchorLocation; // the list of auth anchor;when anchorLocation, map storage there.
+    "trust"?:string[];                  // trust anchor list
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
@@ -127,7 +132,8 @@ export type libProtocol={
     "lib"?:anchorLocation[];            // the list of required anchor list
     "ext"?:anchorLocation[];            // extend list of library
     "hide"?:hideMap|anchorLocation;     // anchor which storage the hide list defined by hideMap
-    "auth"?:authAddress|anchorLocation;     // the list of auth anchor;when anchorLocation, map storage there.
+    "auth"?:authAddress|anchorLocation; // the list of auth anchor;when anchorLocation, map storage there.
+    "trust"?:string[];                  // trust anchor list
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
 }
 
@@ -193,6 +199,7 @@ export type easyResult={
     libs?:Object;               //lib list
 
     auth?:authAddress;          //authority information
+    trust?:string[];            //trust anchor list
     hide?:number[];             //hide list
     index?:[anchorLocation|null,anchorLocation|null];     //[ auth,hide ] related anchor location
     
