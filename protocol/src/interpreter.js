@@ -15,6 +15,7 @@ var API = null;
 //debug data to improve the development
 var debug = {
     disable: false,
+    cache: false,
     search: [],
     start: 0,
     end: 0,
@@ -22,21 +23,44 @@ var debug = {
         return new Date().getTime();
     },
 };
+//anchor cache to avoid duplicate request.
+var cache = {
+    data: {},
+    set: function (k, b, v) {
+        cache.data["".concat(k, "_").concat(b)] = v;
+        return true;
+    },
+    get: function (k, b) {
+        return cache.data["".concat(k, "_").concat(b)];
+    },
+    clear: function () {
+        cache.data = {};
+    },
+};
+//before: 500~700ms
 var self = {
     getAnchor: function (location, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
         var anchor = location[0], block = location[1];
-        if (!debug.disable)
-            debug.search.push(location); //debug information 
+        //debug hook
+        if (!debug.cache) {
+            var cData = cache.get(anchor, block);
+            if (cData !== undefined)
+                return ck && ck(cData);
+        }
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if (block !== 0) {
             API.common.target(anchor, block, function (data) {
+                if (!debug.cache)
+                    cache.set(anchor, block, data); //debug hook
                 self.filterAnchor(data, ck);
             });
         }
         else {
             API.common.latest(anchor, function (data) {
+                if (!debug.cache)
+                    cache.set(anchor, block, data); //debug hook
                 self.filterAnchor(data, ck);
             });
         }
@@ -48,6 +72,8 @@ var self = {
         if (err.error)
             return ck && ck({ error: err.error, level: protocol_1.errorLevel.ERROR });
         var anchor = data;
+        if (!debug.disable)
+            debug.search.push([anchor.name, anchor.block]); //debug hook 
         if (anchor.empty)
             return ck && ck({ error: "Empty anchor.", level: protocol_1.errorLevel.ERROR });
         if (!anchor.protocol)
@@ -607,11 +633,13 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
 };
 //Debug part to get more details of process.
 var debug_run = function (linker, inputAPI, ck) {
+    debug.search = [];
     debug.start = debug.stamp();
     run(linker, inputAPI, function (resRun) {
         if (!debug.disable)
             resRun.debug = debug; //add debug information
         debug.end = debug.stamp();
+        cache.clear();
         return ck && ck(resRun);
     });
 };

@@ -37,9 +37,11 @@ type codeResult={
 
 };
 
+/*************************debug part****************************/
 //debug data to improve the development
 const debug:any={
-    disable:false,      //是否关闭disable开关
+    disable:false,      //disable debug information
+    cache:false,         //enable cache
     search:[],
     start:0,
     end:0,
@@ -48,21 +50,45 @@ const debug:any={
 	},
 }
 
+//anchor cache to avoid duplicate request.
+const cache:any={
+    data:{},
+    set:(k:string,b:number,v:any)=>{
+        cache.data[`${k}_${b}`]=v;
+        return true;
+    },
+    get:(k:string,b:number)=>{
+        return cache.data[`${k}_${b}`];
+    },
+    clear:()=>{
+        cache.data={};
+    },
+}
+//before: 500~700ms
+/*************************debug part****************************/
+
+
 const self={
     getAnchor:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
         
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const [anchor,block]=location;
 
-        if(!debug.disable) debug.search.push(location);    //debug information 
-
+        //debug hook
+        if(!debug.cache){
+            const cData=cache.get(anchor,block);
+            if(cData!==undefined) return ck && ck(cData);
+        }
+        
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if(block!==0){
             API.common.target(anchor,block,(data:anchorObject|errorObject)=>{
+                if(!debug.cache) cache.set(anchor,block,data);    //debug hook
                 self.filterAnchor(data,ck); 
             });
         }else{
             API.common.latest(anchor,(data:anchorObject|errorObject)=>{
+                if(!debug.cache) cache.set(anchor,block,data);    //debug hook
                 self.filterAnchor(data,ck);
             });
         }
@@ -75,6 +101,7 @@ const self={
         if(err.error) return ck && ck({error:err.error,level:errorLevel.ERROR});
 
         const anchor=<anchorObject>data;
+        if(!debug.disable) debug.search.push([anchor.name,anchor.block]);    //debug hook 
         if(anchor.empty) return ck && ck({error:"Empty anchor.",level:errorLevel.ERROR});
         if(!anchor.protocol) return ck && ck({error:"No-protocol anchor."});
 
@@ -662,13 +689,14 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
 
 //Debug part to get more details of process.
 const debug_run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void)=>{
+    debug.search=[];
     debug.start=debug.stamp();
     run(linker,inputAPI,(resRun)=>{
         if(!debug.disable) resRun.debug=debug;  //add debug information
         debug.end=debug.stamp();
+        cache.clear();
         return ck && ck(resRun);
     });
 };
 const final_run=(debug.disable?run:debug_run);
-
 export { final_run as easyRun};
