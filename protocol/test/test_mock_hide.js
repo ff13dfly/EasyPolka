@@ -97,6 +97,7 @@ const API={
 const task=[
     //hide_by_protocol,
     hide_by_anchor,
+    hide_called_capp,
 ];
 self.auto(task);
 
@@ -192,6 +193,57 @@ function hide_by_anchor(index,ck){
     },index,pair);
 }
 
+function hide_called_capp(index,ck){
+    const start=self.stamp();
+    const seed='Charlie';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair= ks.addFromUri(`//${seed}`);
+
+    console.log(config.color,`[${index}] ${start} Write the target hide data by ${seed}`);
+
+    const list=[];
+
+    //1.write `full_caller` three times
+    //2.hide anchor `call_hide` to hide the latest and second `full_caller` 
+    //3.auth anchor `call_auth` write three times, and set hide anchor `call_auth_hide` to hide the second `call_auth`
+    //4.call the complex cApp `full_anchor`
+
+    //1.write `full_caller` three times
+    const anchor="full_caller";
+    const txt="This is a complex data anchor call `full_anchor` ";
+    const protocol={
+        "type":"data",
+        "fmt":"json",
+        "hide":"call_hide",
+        "call":"full_app",
+        "args":"page=3&cat=6&tpl=dark",
+    };
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+    list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
+
+    self.multi(list,()=>{
+        anchorJS.history(auth_anchor,(history_auth)=>{
+            anchorJS.history(anchor,(history_app)=>{
+                const alist=[];
+
+                //3.hide the latest app anchor
+                const block_1=history_app[0].block;
+                const block_2=history_app[1].block;
+                const hide_anchor="call_hide";
+                const hide_raw=[block_1,block_2];
+                const hide_protocol={"type":"data","fmt":"json"};
+                alist.push({name:hide_anchor,raw:hide_raw,protocol:hide_protocol});
+
+                self.multi(alist,()=>{
+                    const end=self.stamp();
+                    console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+                    return ck && ck();
+                },index,pair);
+            });
+        });
+    },index,pair);
+}
 
 
 // function sample(index,ck){

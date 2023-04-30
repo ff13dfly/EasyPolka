@@ -8,6 +8,7 @@ import { keywords,authAddress,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth } from "./auth";
 import { checkHide } from "./hide";
+import { time } from "console";
 
 const {Loader,Libs} = require("../lib/loader");
 //const {anchorJS} =require("../lib/anchor");
@@ -36,11 +37,24 @@ type codeResult={
 
 };
 
+//debug data to improve the development
+const debug:any={
+    disable:false,      //是否关闭disable开关
+    search:[],
+    start:0,
+    end:0,
+    stamp:()=>{
+		return new Date().getTime();
+	},
+}
+
 const self={
     getAnchor:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
         
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
         const [anchor,block]=location;
+
+        if(!debug.disable) debug.search.push(location);    //debug information 
 
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if(block!==0){
@@ -352,15 +366,15 @@ const self={
             return ck && ck(block===last?true:false);
         });
     },
-    //check wether current anchor is in the hide list
 
-    //check wether last
+    //check wether current anchor is in the hide list
     isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function,params:Object)=>{
         //console.log(params);
         const errs:errorObject[]=[];
         const cur=data.block;
         let overload:boolean=false;     //wether to the end of `Anchor` history
         if(Array.isArray(hide)){
+            //1.if the hide is array, check directly
             const hlist=hide;
             for(let i=0;i<hlist.length;i++){
                 if(cur===hlist[i]){
@@ -376,8 +390,7 @@ const self={
             }
             return ck && ck(null,errs);
         }else{
-
-            //FIXME here to check the latest anchor data to confirm the hidden list.
+            //2.get the latest hide anchor data
             const h_location:[string,number]=[<string>hide,0];
             self.getAnchor(h_location,(hdata:anchorObject|errorObject)=>{
                 const res:number[]|errorObject=self.decodeHideAnchor(<anchorObject>hdata); 
@@ -404,17 +417,23 @@ const self={
     },
 
     //check the authority between anchors
+    checkTrust:(caller:easyResult,app:easyResult,ck:Function)=>{
+
+    },
+
+    //check the authority to account address
     checkAuthority:(caller:easyResult,app:easyResult,ck:Function)=>{
-        //x.1.check the called anchor type.
+        //1.check the called anchor type.
         if(app.type!==rawType.APP){
             caller.error.push({error:`Answer is not cApp.`});
             return ck && ck(caller);
         }
             
-        //x.2.check the authority
+        //2.check the authority
         const from=caller.data[`${caller.location[0]}_${caller.location[1]}`];
         const signer=from.signer;
         const auths=app.auth;
+        //2.1. no authority data, can 
         if(auths===undefined){
             caller.app=app;
             return ck && ck(caller);
@@ -639,4 +658,17 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         }
     });
 };
-export {run as easyRun};
+
+
+//Debug part to get more details of process.
+const debug_run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void)=>{
+    debug.start=debug.stamp();
+    run(linker,inputAPI,(resRun)=>{
+        if(!debug.disable) resRun.debug=debug;  //add debug information
+        debug.end=debug.stamp();
+        return ck && ck(resRun);
+    });
+};
+const final_run=(debug.disable?run:debug_run);
+
+export { final_run as easyRun};

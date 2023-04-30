@@ -12,11 +12,23 @@ var hide_1 = require("./hide");
 var _a = require("../lib/loader"), Loader = _a.Loader, Libs = _a.Libs;
 //const {anchorJS} =require("../lib/anchor");
 var API = null;
+//debug data to improve the development
+var debug = {
+    disable: false,
+    search: [],
+    start: 0,
+    end: 0,
+    stamp: function () {
+        return new Date().getTime();
+    },
+};
 var self = {
     getAnchor: function (location, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
         var anchor = location[0], block = location[1];
+        if (!debug.disable)
+            debug.search.push(location); //debug information 
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if (block !== 0) {
             API.common.target(anchor, block, function (data) {
@@ -317,13 +329,13 @@ var self = {
         });
     },
     //check wether current anchor is in the hide list
-    //check wether last
     isValidAnchor: function (hide, data, ck, params) {
         //console.log(params);
         var errs = [];
         var cur = data.block;
         var overload = false; //wether to the end of `Anchor` history
         if (Array.isArray(hide)) {
+            //1.if the hide is array, check directly
             var hlist = hide;
             for (var i = 0; i < hlist.length; i++) {
                 if (cur === hlist[i]) {
@@ -339,7 +351,7 @@ var self = {
             return ck && ck(null, errs);
         }
         else {
-            //FIXME here to check the latest anchor data to confirm the hidden list.
+            //2.get the latest hide anchor data
             var h_location = [hide, 0];
             self.getAnchor(h_location, function (hdata) {
                 var res = self.decodeHideAnchor(hdata);
@@ -363,16 +375,20 @@ var self = {
         }
     },
     //check the authority between anchors
+    checkTrust: function (caller, app, ck) {
+    },
+    //check the authority to account address
     checkAuthority: function (caller, app, ck) {
-        //x.1.check the called anchor type.
+        //1.check the called anchor type.
         if (app.type !== protocol_1.rawType.APP) {
             caller.error.push({ error: "Answer is not cApp." });
             return ck && ck(caller);
         }
-        //x.2.check the authority
+        //2.check the authority
         var from = caller.data["".concat(caller.location[0], "_").concat(caller.location[1])];
         var signer = from.signer;
         var auths = app.auth;
+        //2.1. no authority data, can 
         if (auths === undefined) {
             caller.app = app;
             return ck && ck(caller);
@@ -589,4 +605,15 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
         }
     });
 };
-exports.easyRun = run;
+//Debug part to get more details of process.
+var debug_run = function (linker, inputAPI, ck) {
+    debug.start = debug.stamp();
+    run(linker, inputAPI, function (resRun) {
+        if (!debug.disable)
+            resRun.debug = debug; //add debug information
+        debug.end = debug.stamp();
+        return ck && ck(resRun);
+    });
+};
+var final_run = (debug.disable ? run : debug_run);
+exports.easyRun = final_run;

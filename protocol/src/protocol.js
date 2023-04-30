@@ -26,6 +26,7 @@ var formatType;
     formatType["CSS"] = "css";
     formatType["MARKDOWN"] = "md";
     formatType["JSON"] = "json";
+    formatType["MIX"] = "mix";
     formatType["NONE"] = "";
 })(formatType = exports.formatType || (exports.formatType = {}));
 var codeType;
@@ -42,6 +43,7 @@ var relatedIndex;
 (function (relatedIndex) {
     relatedIndex[relatedIndex["AUTH"] = 0] = "AUTH";
     relatedIndex[relatedIndex["HIDE"] = 1] = "HIDE";
+    relatedIndex[relatedIndex["TRUST"] = 2] = "TRUST";
     relatedIndex[relatedIndex["NAME"] = 0] = "NAME";
     relatedIndex[relatedIndex["BLOCK"] = 1] = "BLOCK";
 })(relatedIndex = exports.relatedIndex || (exports.relatedIndex = {}));

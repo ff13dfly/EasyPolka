@@ -208,4 +208,5 @@ export type easyResult={
 
     //FIXME need to define the structure, including `back?`,``......
     env?:object;                //runtime envirment
+    debug?:object;              //debug information
 }
