@@ -37,3 +37,30 @@ const check=(anchor:string,protocol:keywords,ck:Function)=>{
 export {check as checkAuth};
 
 
+const trust_check=(anchor:string,protocol:keywords,ck:Function)=>{
+    const data={
+        "list":<authAddress|null>null,      //direct result from protocol
+        "anchor":<anchorLocation|null>null,    //target anchor to get result
+    }
+    
+    //TODO, auto MD5 anchor function is not tested yet.
+    if(protocol.trust){
+        //1.check wether target anchor 
+        if(typeof protocol.trust==="string" || Array.isArray(protocol.trust)){
+            data.anchor = protocol.trust;
+        }else{
+            data.list=<authAddress>protocol.trust;
+        }
+    }else{
+        //2.check default anchor
+        if(protocol.salt){
+            data.anchor=md5(anchor+protocol.salt[0])
+        }
+    }
+
+    return ck && ck(data);
+};
+
+export {trust_check as checkTrust};
+
+

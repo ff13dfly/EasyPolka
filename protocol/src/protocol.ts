@@ -21,7 +21,7 @@ export type keywords={
     "ver"?:string,
     "hide"?:number[]|anchorLocation,
     "auth"?:authAddress|anchorLocation,
-    "trust"?:string[],
+    "trust"?:authTrust|anchorLocation,
     "salt"?:[string,string,string],
     "args"?:string,
 };
@@ -149,6 +149,8 @@ export interface authAddress { [address: string]: number; }
 
 export interface anchorMap { [anchor: string]: anchorObject; }
 
+export interface authTrust { [anchor: string]: number; }
+
 //hide map of target anchor
 //the history of the hide anchor is meanful.
 export interface hideMap { [anchor: string]: number;}
@@ -199,9 +201,9 @@ export type easyResult={
     libs?:Object;               //lib list
 
     auth?:authAddress;          //authority information
-    trust?:string[];            //trust anchor list
+    trust?:authTrust;           //trust anchor list
     hide?:number[];             //hide list
-    index?:[anchorLocation|null,anchorLocation|null];     //[ auth,hide ] related anchor location
+    index?:[anchorLocation|null,anchorLocation|null,anchorLocation|null];     //[ auth,hide,trust ] related anchor location
     
     parameter?:Object;          //running parameters, from anchor link parameter
     error:errorObject[];        //errors when loading cApp

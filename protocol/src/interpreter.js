@@ -12,6 +12,7 @@ var hide_1 = require("./hide");
 var _a = require("../lib/loader"), Loader = _a.Loader, Libs = _a.Libs;
 //const {anchorJS} =require("../lib/anchor");
 var API = null;
+/*************************debug part****************************/
 //debug data to improve the development
 var debug = {
     disable: false,
@@ -38,6 +39,7 @@ var cache = {
     },
 };
 //before: 500~700ms
+/*************************debug part****************************/
 var self = {
     getAnchor: function (location, ck) {
         if (API === null)
@@ -175,8 +177,9 @@ var self = {
         var result = {
             "hide": [],
             "auth": null,
+            "trust": null,
             "error": [],
-            "index": [null, null],
+            "index": [null, null, null],
             "map": {},
         };
         var mlist = [];
@@ -535,7 +538,7 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                 location: [target.location[0], target.location[1] !== 0 ? target.location[1] : 0],
                 error: [],
                 data: {},
-                index: [null, null],
+                index: [null, null, null],
             };
             var res = lastHide;
             if (res.error) {
@@ -552,7 +555,7 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
         location: [target.location[0], target.location[1] !== 0 ? target.location[1] : 0],
         error: [],
         data: {},
-        index: [null, null],
+        index: [null, null, null],
         hide: hlist,
     };
     if (target.param)
@@ -612,6 +615,9 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                 }
                 if (mergeResult.index[protocol_2.relatedIndex.HIDE] !== null && cObject.index) {
                     cObject.index[protocol_2.relatedIndex.HIDE] = mergeResult.index[protocol_2.relatedIndex.HIDE];
+                }
+                if (mergeResult.index[protocol_2.relatedIndex.TRUST] !== null && cObject.index) {
+                    cObject.index[protocol_2.relatedIndex.TRUST] = mergeResult.index[protocol_2.relatedIndex.TRUST];
                 }
                 for (var k in mergeResult.map) {
                     cObject.data[k] = mergeResult.map[k];

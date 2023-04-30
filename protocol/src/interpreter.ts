@@ -4,11 +4,10 @@
 
 import { anchorLocation,anchorObject,errorObject,APIObject,easyResult } from "./protocol";
 import { rawType,formatType,errorLevel} from "./protocol";
-import { keywords,authAddress,anchorMap,relatedIndex} from "./protocol";
+import { keywords,authAddress,authTrust,anchorMap,relatedIndex} from "./protocol";
 import { linkDecoder,linkCreator } from "./decoder";
-import { checkAuth } from "./auth";
+import { checkAuth,checkTrust } from "./auth";
 import { checkHide } from "./hide";
-import { time } from "console";
 
 const {Loader,Libs} = require("../lib/loader");
 //const {anchorJS} =require("../lib/anchor");
@@ -27,8 +26,9 @@ type hideResult={
 type mergeResult={
     "hide":number[]|null,       //if hide data, merge to here.
     "auth":authAddress|null,        //if auth data, merge to here.
+    "trust":authTrust|null,
     "error":errorObject[],      //collect errors here
-    "index":[anchorLocation|null,anchorLocation|null],    //collect anchor locations here
+    "index":[anchorLocation|null,anchorLocation|null,anchorLocation|null],    //collect anchor locations here
     "map":anchorMap,            //map anchor data here
 };
 
@@ -209,8 +209,9 @@ const self={
         const result:mergeResult={
             "hide":[], 
             "auth":null,
+            "trust":null,
             "error":[],
-            "index":[null,null],
+            "index":[null,null,null],
             "map":{},
         };
 
@@ -584,7 +585,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                 location:[target.location[0],target.location[1]!==0?target.location[1]:0],
                 error:[],
                 data:{},
-                index:[<anchorLocation|null>null,<anchorLocation|null>null],
+                index:[<anchorLocation|null>null,<anchorLocation|null>null,<anchorLocation|null>null],
             }
 
             const res=<errorObject>lastHide;
@@ -605,7 +606,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
         error:[],
         data:{},
-        index:[<anchorLocation|null>null,<anchorLocation|null>null],
+        index:[<anchorLocation|null>null,<anchorLocation|null>null,<anchorLocation|null>null],
         hide:hlist,
     }
     if(target.param) cObject.parameter=target.param;
@@ -665,6 +666,10 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
     
                 if(mergeResult.index[relatedIndex.HIDE]!==null && cObject.index){
                     cObject.index[relatedIndex.HIDE]=mergeResult.index[relatedIndex.HIDE];
+                }
+
+                if(mergeResult.index[relatedIndex.TRUST]!==null && cObject.index){
+                    cObject.index[relatedIndex.TRUST]=mergeResult.index[relatedIndex.TRUST];
                 }
     
                 for(let k in mergeResult.map){
