@@ -69,6 +69,9 @@ const cache:any={
 
 
 const self={
+    /**************************************************************************/
+    /*************************Anchor data functions****************************/
+    /**************************************************************************/
     getAnchor:(location:[string,number],ck:(res: anchorObject | errorObject) => void)=>{
         
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});
@@ -110,6 +113,10 @@ const self={
 
         return ck && ck(anchor);
     },
+
+    /**************************************************************************/
+    /************************Decode Result functions***************************/
+    /**************************************************************************/
 
     decodeData:(cObject:easyResult,ck:Function)=>{
         //console.log(`Decode data anchor`);
@@ -196,6 +203,10 @@ const self={
             return ck && ck(alist,errs);
         });
     },
+
+    /**************************************************************************/
+    /*************************Merge related anchors****************************/
+    /**************************************************************************/
 
     /** 
      * combine the hide and auth list to result
@@ -296,7 +307,16 @@ const self={
 
             result.index[relatedIndex.AUTH]=[last.name,0];
             result.auth=<authAddress>map;
-            return ck && ck(result);
+
+            //TODO, add trust decoder entry
+            self.decodeTrustAnchor(<anchorObject[]>list,hlist,(map:authTrust,amap:anchorMap,errs:errorObject[])=>{
+                console.log(`Got the trust result`);
+
+                result.index[relatedIndex.TRUST]=["good",112233];
+                result.trust=<authAddress>map;
+                return ck && ck(result);
+            });
+            
         });
     },
 
@@ -336,7 +356,7 @@ const self={
         }
 
         const protocol=<keywords>last.protocol;
-        self.authHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
+        self.declaredHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
             errs.push(...herrs);
             for(let k in resMap){
                 amap[k]=resMap[k]
@@ -363,8 +383,21 @@ const self={
         });
     },
 
+    //TODO, decode trust data here
+    decodeTrustAnchor:(list:anchorObject[],hlist:number[],ck:(res: authTrust,amap:anchorMap,errs:errorObject[])=>void)=>{
+        const map:authTrust={};
+        const amap:anchorMap={};
+        const errs:errorObject[]=[];
+
+        map["good"]=0;
+        map["world"]=455667
+
+        return ck && ck(map,amap,errs);
+    },
+
     //check auth anchor's hide list
-    authHideList:(protocol:keywords,ck:(res: number[],map:anchorMap,error:errorObject[])=>void)=>{
+    //check trust anchor's hide list.
+    declaredHideList:(protocol:keywords,ck:(res: number[],map:anchorMap,error:errorObject[])=>void)=>{
         const map:anchorMap={};
         const errs:errorObject[]=[];
         const list:number[]=[];
@@ -393,55 +426,6 @@ const self={
         API?.common.owner(name,(owner:string,last:number)=>{
             return ck && ck(block===last?true:false);
         });
-    },
-
-    //check wether current anchor is in the hide list
-    isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function,params:Object)=>{
-        //console.log(params);
-        const errs:errorObject[]=[];
-        const cur=data.block;
-        let overload:boolean=false;     //wether to the end of `Anchor` history
-        if(Array.isArray(hide)){
-            //1.if the hide is array, check directly
-            const hlist=hide;
-            for(let i=0;i<hlist.length;i++){
-                if(cur===hlist[i]){
-                    if(data.pre===0){
-                        errs.push({error:`Out of ${data.name} limited`});
-                        overload=true;
-                        return ck && ck(null,errs,overload);
-                    }
-
-                    const new_link=linkCreator([data.name,data.pre],params);
-                    return ck && ck(new_link,errs,overload);
-                }
-            }
-            return ck && ck(null,errs);
-        }else{
-            //2.get the latest hide anchor data
-            const h_location:[string,number]=[<string>hide,0];
-            self.getAnchor(h_location,(hdata:anchorObject|errorObject)=>{
-                const res:number[]|errorObject=self.decodeHideAnchor(<anchorObject>hdata); 
-                const err=<errorObject>res;
-                if(err.error) errs.push(err);
-
-                const hlist=<number[]>res;
-                
-                for(let i=0;i<hlist.length;i++){
-                    if(cur===hlist[i]){
-                        if(data.pre===0){
-                            errs.push({error:`Out of ${data.name} limited`});
-                            overload=true;
-                            return ck && ck(null,errs,overload);
-                        }
-
-                        const new_link=linkCreator([data.name,data.pre],params);
-                        return ck && ck(new_link,errs,overload);
-                    }
-                }
-                return ck && ck(null,errs,overload);
-            });
-        }
     },
 
     //check the authority between anchors
@@ -524,6 +508,63 @@ const self={
             });
         });
     },
+
+    /**************************************************************************/
+    /*************************Declared anchor check****************************/
+    /**************************************************************************/ 
+
+    //check wether current anchor is in the hide list
+    isValidAnchor:(hide:anchorLocation|number[],data:anchorObject,ck:Function,params:Object)=>{
+        //console.log(params);
+        const errs:errorObject[]=[];
+        const cur=data.block;
+        let overload:boolean=false;     //wether to the end of `Anchor` history
+        if(Array.isArray(hide)){
+            //1.if the hide is array, check directly
+            const hlist=hide;
+            for(let i=0;i<hlist.length;i++){
+                if(cur===hlist[i]){
+                    if(data.pre===0){
+                        errs.push({error:`Out of ${data.name} limited`});
+                        overload=true;
+                        return ck && ck(null,errs,overload);
+                    }
+
+                    const new_link=linkCreator([data.name,data.pre],params);
+                    return ck && ck(new_link,errs,overload);
+                }
+            }
+            return ck && ck(null,errs);
+        }else{
+            //2.get the latest hide anchor data
+            const h_location:[string,number]=[<string>hide,0];
+            self.getAnchor(h_location,(hdata:anchorObject|errorObject)=>{
+                const res:number[]|errorObject=self.decodeHideAnchor(<anchorObject>hdata); 
+                const err=<errorObject>res;
+                if(err.error) errs.push(err);
+
+                const hlist=<number[]>res;
+                
+                for(let i=0;i<hlist.length;i++){
+                    if(cur===hlist[i]){
+                        if(data.pre===0){
+                            errs.push({error:`Out of ${data.name} limited`});
+                            overload=true;
+                            return ck && ck(null,errs,overload);
+                        }
+
+                        const new_link=linkCreator([data.name,data.pre],params);
+                        return ck && ck(new_link,errs,overload);
+                    }
+                }
+                return ck && ck(null,errs,overload);
+            });
+        }
+    },
+
+    /**************************************************************************/
+    /****************************Basic functions*******************************/
+    /**************************************************************************/ 
 
     /** 
      * get params from string
@@ -608,6 +649,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         data:{},
         index:[<anchorLocation|null>null,<anchorLocation|null>null,<anchorLocation|null>null],
         hide:hlist,
+        //trust:{},
     }
     if(target.param) cObject.parameter=target.param;
 
@@ -653,6 +695,8 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         function getResult(type:string){
             self.merge(data.name,<keywords>data.protocol,{},(mergeResult:mergeResult)=>{
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
+                if(mergeResult.trust!==null) cObject.trust=mergeResult.trust;
+
                 if(mergeResult.hide!=null && mergeResult.hide.length!==0){
                     cObject.hide=mergeResult.hide;
                 } 

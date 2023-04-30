@@ -63,16 +63,17 @@ self.prepare(server,()=>{
     const linker_declared_hide_complex="anchor://hide_last_9627/20685/"
 
     console.log(`\n`);
-    easyRun(linker_declared_hide,API,(result:any)=>{
+    easyRun(linker_full_caller,API,(result:any)=>{
         console.log(`\n-----------------result of ${linker_declared_hide}-----------------`);
+        console.log(result);
         console.log(JSON.stringify(result));
         console.log(`\n\n`);
 
-        easyRun(linker_declared_hide_complex,API,(result:any)=>{
-            console.log(`\n-----------------result of ${linker_declared_hide_complex}-----------------`);
-            console.log(JSON.stringify(result));
-            console.log(`\n\n`);
-        });
+        // easyRun(linker_declared_hide_complex,API,(result:any)=>{
+        //     console.log(`\n-----------------result of ${linker_declared_hide_complex}-----------------`);
+        //     console.log(JSON.stringify(result));
+        //     console.log(`\n\n`);
+        // });
     });
 });
 

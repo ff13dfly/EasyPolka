@@ -41,6 +41,9 @@ var cache = {
 //before: 500~700ms
 /*************************debug part****************************/
 var self = {
+    /**************************************************************************/
+    /*************************Anchor data functions****************************/
+    /**************************************************************************/
     getAnchor: function (location, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
@@ -85,6 +88,9 @@ var self = {
             return ck && ck({ error: "Not EasyProtocol anchor." });
         return ck && ck(anchor);
     },
+    /**************************************************************************/
+    /************************Decode Result functions***************************/
+    /**************************************************************************/
     decodeData: function (cObject, ck) {
         //console.log(`Decode data anchor`);
         //console.log(cObject);
@@ -164,6 +170,9 @@ var self = {
             return ck && ck(alist, errs);
         });
     },
+    /**************************************************************************/
+    /*************************Merge related anchors****************************/
+    /**************************************************************************/
     /**
      * combine the hide and auth list to result
      * @param {string}      anchor	    //`Anchor` name
@@ -264,7 +273,13 @@ var self = {
                 result.error.push(errs[i]);
             result.index[protocol_2.relatedIndex.AUTH] = [last.name, 0];
             result.auth = map;
-            return ck && ck(result);
+            //TODO, add trust decoder entry
+            self.decodeTrustAnchor(list, hlist, function (map, amap, errs) {
+                console.log("Got the trust result");
+                result.index[protocol_2.relatedIndex.TRUST] = ["good", 112233];
+                result.trust = map;
+                return ck && ck(result);
+            });
         });
     },
     decodeHideAnchor: function (obj) {
@@ -300,7 +315,7 @@ var self = {
             return ck && ck(map, amap, errs);
         }
         var protocol = last.protocol;
-        self.authHideList(protocol, function (hlist, resMap, herrs) {
+        self.declaredHideList(protocol, function (hlist, resMap, herrs) {
             errs.push.apply(errs, herrs);
             for (var k in resMap) {
                 amap[k] = resMap[k];
@@ -327,8 +342,18 @@ var self = {
             return ck && ck(map, amap, errs);
         });
     },
+    //TODO, decode trust data here
+    decodeTrustAnchor: function (list, hlist, ck) {
+        var map = {};
+        var amap = {};
+        var errs = [];
+        map["good"] = 0;
+        map["world"] = 455667;
+        return ck && ck(map, amap, errs);
+    },
     //check auth anchor's hide list
-    authHideList: function (protocol, ck) {
+    //check trust anchor's hide list.
+    declaredHideList: function (protocol, ck) {
         var map = {};
         var errs = [];
         var list = [];
@@ -356,52 +381,6 @@ var self = {
         API === null || API === void 0 ? void 0 : API.common.owner(name, function (owner, last) {
             return ck && ck(block === last ? true : false);
         });
-    },
-    //check wether current anchor is in the hide list
-    isValidAnchor: function (hide, data, ck, params) {
-        //console.log(params);
-        var errs = [];
-        var cur = data.block;
-        var overload = false; //wether to the end of `Anchor` history
-        if (Array.isArray(hide)) {
-            //1.if the hide is array, check directly
-            var hlist = hide;
-            for (var i = 0; i < hlist.length; i++) {
-                if (cur === hlist[i]) {
-                    if (data.pre === 0) {
-                        errs.push({ error: "Out of ".concat(data.name, " limited") });
-                        overload = true;
-                        return ck && ck(null, errs, overload);
-                    }
-                    var new_link = (0, decoder_1.linkCreator)([data.name, data.pre], params);
-                    return ck && ck(new_link, errs, overload);
-                }
-            }
-            return ck && ck(null, errs);
-        }
-        else {
-            //2.get the latest hide anchor data
-            var h_location = [hide, 0];
-            self.getAnchor(h_location, function (hdata) {
-                var res = self.decodeHideAnchor(hdata);
-                var err = res;
-                if (err.error)
-                    errs.push(err);
-                var hlist = res;
-                for (var i = 0; i < hlist.length; i++) {
-                    if (cur === hlist[i]) {
-                        if (data.pre === 0) {
-                            errs.push({ error: "Out of ".concat(data.name, " limited") });
-                            overload = true;
-                            return ck && ck(null, errs, overload);
-                        }
-                        var new_link = (0, decoder_1.linkCreator)([data.name, data.pre], params);
-                        return ck && ck(new_link, errs, overload);
-                    }
-                }
-                return ck && ck(null, errs, overload);
-            });
-        }
     },
     //check the authority between anchors
     checkTrust: function (caller, app, ck) {
@@ -486,6 +465,58 @@ var self = {
             });
         });
     },
+    /**************************************************************************/
+    /*************************Declared anchor check****************************/
+    /**************************************************************************/
+    //check wether current anchor is in the hide list
+    isValidAnchor: function (hide, data, ck, params) {
+        //console.log(params);
+        var errs = [];
+        var cur = data.block;
+        var overload = false; //wether to the end of `Anchor` history
+        if (Array.isArray(hide)) {
+            //1.if the hide is array, check directly
+            var hlist = hide;
+            for (var i = 0; i < hlist.length; i++) {
+                if (cur === hlist[i]) {
+                    if (data.pre === 0) {
+                        errs.push({ error: "Out of ".concat(data.name, " limited") });
+                        overload = true;
+                        return ck && ck(null, errs, overload);
+                    }
+                    var new_link = (0, decoder_1.linkCreator)([data.name, data.pre], params);
+                    return ck && ck(new_link, errs, overload);
+                }
+            }
+            return ck && ck(null, errs);
+        }
+        else {
+            //2.get the latest hide anchor data
+            var h_location = [hide, 0];
+            self.getAnchor(h_location, function (hdata) {
+                var res = self.decodeHideAnchor(hdata);
+                var err = res;
+                if (err.error)
+                    errs.push(err);
+                var hlist = res;
+                for (var i = 0; i < hlist.length; i++) {
+                    if (cur === hlist[i]) {
+                        if (data.pre === 0) {
+                            errs.push({ error: "Out of ".concat(data.name, " limited") });
+                            overload = true;
+                            return ck && ck(null, errs, overload);
+                        }
+                        var new_link = (0, decoder_1.linkCreator)([data.name, data.pre], params);
+                        return ck && ck(new_link, errs, overload);
+                    }
+                }
+                return ck && ck(null, errs, overload);
+            });
+        }
+    },
+    /**************************************************************************/
+    /****************************Basic functions*******************************/
+    /**************************************************************************/
     /**
      * get params from string
      * @param {string}      args	    //String such as `key_a=val&key_b=val&key_c=val`
@@ -557,6 +588,7 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
         data: {},
         index: [null, null, null],
         hide: hlist,
+        //trust:{},
     };
     if (target.param)
         cObject.parameter = target.param;
@@ -604,6 +636,8 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                 var _a;
                 if (mergeResult.auth !== null)
                     cObject.auth = mergeResult.auth;
+                if (mergeResult.trust !== null)
+                    cObject.trust = mergeResult.trust;
                 if (mergeResult.hide != null && mergeResult.hide.length !== 0) {
                     cObject.hide = mergeResult.hide;
                 }
