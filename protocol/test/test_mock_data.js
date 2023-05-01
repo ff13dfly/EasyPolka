@@ -504,6 +504,7 @@ function write_full_parameters_caller_sample(index,ck){
         "fmt":"json",
         "auth":"call_auth",
         "hide":"call_hide",
+        "trust":"call_trust",
         "call":"full_app",
         "args":"page=3&cat=6&tpl=dark",
     };
@@ -530,6 +531,15 @@ function write_full_parameters_caller_sample(index,ck){
     list.push({name:auth_anchor,raw:auth_raw_2,protocol:auth_protocol});
     const auth_protocol_1={"type":"data","fmt":"json","hide":"call_auth_hide"};
     list.push({name:auth_anchor,raw:auth_raw_3,protocol:auth_protocol_1});
+
+    const trust_anchor="trust_auth";
+    const trust_raw={
+        "hello":0,
+        "world":355667,
+        "cycle":678776,
+    };
+    const trust_protocol={"type":"data","fmt":"json"};
+    list.push({name:trust_anchor,raw:trust_raw,protocol:trust_protocol});
 
     self.multi(list,()=>{
         anchorJS.history(auth_anchor,(history_auth)=>{

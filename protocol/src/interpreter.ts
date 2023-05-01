@@ -19,6 +19,11 @@ type authResult={
     'anchor':anchorLocation|null;
 };
 
+type trustResult={
+    'list':authTrust|null;
+    'anchor':anchorLocation|null;
+};
+
 type hideResult={
     'list':number[]|null;
     'anchor':anchorLocation|null;
@@ -41,7 +46,7 @@ type codeResult={
 //debug data to improve the development
 const debug:any={
     disable:false,      //disable debug information
-    cache:false,         //enable cache
+    cache:true,         //enable cache
     search:[],
     start:0,
     end:0,
@@ -86,12 +91,10 @@ const self={
         //console.log(`Checking : ${JSON.stringify(location)} via ${address}`);
         if(block!==0){
             API.common.target(anchor,block,(data:anchorObject|errorObject)=>{
-                if(!debug.cache) cache.set(anchor,block,data);    //debug hook
                 self.filterAnchor(data,ck); 
             });
         }else{
             API.common.latest(anchor,(data:anchorObject|errorObject)=>{
-                if(!debug.cache) cache.set(anchor,block,data);    //debug hook
                 self.filterAnchor(data,ck);
             });
         }
@@ -105,6 +108,7 @@ const self={
 
         const anchor=<anchorObject>data;
         if(!debug.disable) debug.search.push([anchor.name,anchor.block]);    //debug hook 
+        if(!debug.cache) cache.set(anchor.name,anchor.block,anchor);    //debug hook
         if(anchor.empty) return ck && ck({error:"Empty anchor.",level:errorLevel.ERROR});
         if(!anchor.protocol) return ck && ck({error:"No-protocol anchor."});
 
@@ -226,99 +230,218 @@ const self={
             "map":{},
         };
 
-        const mlist:anchorLocation[]=[];
-        //1. check `declared hidden` and `authority` just by protocol data.
-        checkAuth(anchor,protocol,(resAuth:authResult)=>{
-            checkHide(anchor,protocol,(resHide:hideResult)=>{
+        //1.get hide related data and merge to result
+        self.singleRule(anchor,protocol,relatedIndex.HIDE,(res: any,map:anchorMap,local:anchorLocation|null,errs:errorObject[])=>{
+            if(local!==null) result.index[relatedIndex.HIDE]=local;
+            for(let k in map) result.map[k]=map[k];
+            if(errs.length!==0) result.error.push(...errs);
+            result.hide=res;
 
-                if(resAuth.anchor===null && resHide.anchor===null){
-                    if(resAuth.list) result.auth=resAuth.list;
-                    if(resHide.list) result.hide=resHide.list;
+            //2.get auth related data and merge to result
+            self.singleRule(anchor,protocol,relatedIndex.AUTH,(res: any,map:anchorMap,local:anchorLocation|null,errs:errorObject[])=>{
+                if(local!==null) result.index[relatedIndex.AUTH]=local;
+                for(let k in map) result.map[k]=map[k];
+                if(errs.length!==0) result.error.push(...errs);
+                result.auth=res;
+
+                //3.get trust related data and merge to result
+                self.singleRule(anchor,protocol,relatedIndex.TRUST,(res: any,map:anchorMap,local:anchorLocation|null,errs:errorObject[])=>{
+                    if(local!==null) result.index[relatedIndex.TRUST]=local;
+                    for(let k in map) result.map[k]=map[k];
+                    if(errs.length!==0) result.error.push(...errs);
+                    result.trust=res;
+
                     return ck && ck(result);
-                }else if(resAuth.anchor===null && resHide.anchor!==null){
-                    const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
-                    self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
-                        const errs:errorObject[]=[];
-                        const err=<errorObject>res;
-                        if(err.error) errs.push({error:err.error});
-                        const data:anchorObject=<anchorObject>res;
 
-                        return self.combineHide(result,data,errs,ck);
-                    });
-                }else if(resAuth.anchor!==null && resHide.anchor===null){
-                    const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];
-                    self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
-                        return self.combineAuth(result,alist,errsA,ck);
-                    });
-                }else if(resAuth.anchor!==null && resHide.anchor!==null){
-                    const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
-                    const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];    
-                    self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
-                        const errs:errorObject[]=[];
-                        const err=<errorObject>res;
-                        if(err.error) errs.push({error:err.error});
-                        const data:anchorObject=<anchorObject>res;
+                });
+            });
+        });
 
-                        return self.combineHide(result,data,errs,(chResult:mergeResult)=>{
-                            self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
-                                self.combineAuth(chResult,alist,errsA,ck);
-                            });
+        //const mlist:anchorLocation[]=[];
+        //1. check `declared hidden` and `authority` just by protocol data.
+        // checkAuth(anchor,protocol,(resAuth:authResult)=>{
+        //     checkHide(anchor,protocol,(resHide:hideResult)=>{
+
+        //         if(resAuth.anchor===null && resHide.anchor===null){
+        //             if(resAuth.list) result.auth=resAuth.list;
+        //             if(resHide.list) result.hide=resHide.list;
+        //             return ck && ck(result);
+        //         }else if(resAuth.anchor===null && resHide.anchor!==null){
+        //             const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
+        //             self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
+        //                 const errs:errorObject[]=[];
+        //                 const err=<errorObject>res;
+        //                 if(err.error) errs.push({error:err.error});
+        //                 const data:anchorObject=<anchorObject>res;
+
+        //                 return self.combineHide(result,data,errs,ck);
+        //             });
+        //         }else if(resAuth.anchor!==null && resHide.anchor===null){
+        //             const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];
+        //             self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
+        //                 return self.combineAuth(result,alist,errsA,ck);
+        //             });
+        //         }else if(resAuth.anchor!==null && resHide.anchor!==null){
+        //             const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
+        //             const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];    
+        //             self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
+        //                 const errs:errorObject[]=[];
+        //                 const err=<errorObject>res;
+        //                 if(err.error) errs.push({error:err.error});
+        //                 const data:anchorObject=<anchorObject>res;
+
+        //                 return self.combineHide(result,data,errs,(chResult:mergeResult)=>{
+        //                     self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
+        //                         self.combineAuth(chResult,alist,errsA,ck);
+        //                     });
+        //                 });
+        //             });
+        //         }
+        //     });
+        // });
+    },
+
+    //get whole related data by protocol
+    singleRule:(anchor:string,protocol:keywords,tag:relatedIndex,
+        ck:(res: any,map:anchorMap,location:anchorLocation|null,errs:errorObject[])=>void)=>{
+        let result:any=null;
+        const map:anchorMap={};
+        const location:anchorLocation|null=null
+        const errs:errorObject[]=[];
+
+        //1.decode protocol to check wether get more data
+        switch (tag) {
+            case relatedIndex.HIDE:
+                checkHide(anchor,protocol,(resHide:hideResult)=>{
+                    if(resHide.anchor===null && resHide.list!==null){
+                        result=resHide.list;
+                        return ck && ck(result,map,location,errs);
+                    }else if(resHide.anchor!==null && resHide.list===null){
+                        self.singleExtend(resHide.anchor,false,()=>{
+
+                            return ck && ck(result,map,location,errs);
                         });
-                    });
-                }
-            });
-        });
-    },
-
-    combineHide:(result:mergeResult,anchor:anchorObject,errs:errorObject[],ck:Function)=>{
-        if(errs.length!==0){
-            //FIXME change to simple way to combine the errors.
-            for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
-        }
+                    }else if(resHide.anchor!==null && resHide.list!==null){
+                        errs.push({error:"Format error."});
+                        return ck && ck(result,map,location,errs);
+                    }else{
+                        return ck && ck(result,map,location,errs);
+                    }
+                });
+                break;
         
-        result.map[`${anchor.name}_${anchor.block}`]=anchor;
-        result.index[relatedIndex.HIDE]=[anchor.name,anchor.block];
+            case relatedIndex.AUTH:
+                checkAuth(anchor,protocol,(resAuth:authResult)=>{
+                    if(resAuth.anchor===null && resAuth.list!==null){
+                        result=resAuth.list;
+                        return ck && ck(result,map,location,errs);
 
-        const dhide=self.decodeHideAnchor(anchor);
-        if(!Array.isArray(dhide)){
-            result.error.push(dhide);
-        }else{
-            result.hide=dhide;
+                    }else if(resAuth.anchor!==null && resAuth.list===null){
+                        self.singleExtend(resAuth.anchor,true,()=>{
+                            return ck && ck(result,map,location,errs);
+                        });
+                    }else if(resAuth.anchor!==null && resAuth.list!==null){
+                        errs.push({error:"Format error."});
+                        return ck && ck(result,map,location,errs);
+                    }else{
+                        return ck && ck(result,map,location,errs);
+                    }
+                });
+                break;
+            case relatedIndex.TRUST:
+                checkTrust(anchor,protocol,(resTrust:trustResult)=>{
+                    if(resTrust.anchor===null && resTrust.list!==null){
+                        result=resTrust.list;
+                        return ck && ck(result,map,location,errs);
+                    }else if(resTrust.anchor!==null && resTrust.list===null){
+                        self.singleExtend(resTrust.anchor,true,()=>{
+                            return ck && ck(result,map,location,errs);
+                        });
+                    }else if(resTrust.anchor!==null && resTrust.list!==null){
+                        errs.push({error:"Format error."});
+                        return ck && ck(result,map,location,errs);
+                    }else{
+                        return ck && ck(result,map,location,errs);
+                    }
+                });
+                
+                break;
+            default:
+                errs.push({error:"unknow related index."});
+                ck && ck(result,map,location,errs);
+                break;
         }
-        return ck && ck(result);
     },
 
-    combineAuth:(result:mergeResult,list:anchorObject[],errs:errorObject[],ck:Function)=>{
-        if(errs.length!==0){
-            for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
-        }
+    //get anchor extend data, two parts: 1.extend anchor itself; 2.declared hidden anchor
+    singleExtend:(name:anchorLocation,history:boolean,
+        ck:(res: any,map:anchorMap,errs:errorObject[])=>void,hlist?:number[])=>{
 
-        for(let i=0;i<list.length;i++){
-            const row:anchorObject=list[i];
-            result.map[`${row.name}_${row.block}`]=row;
-        }
-            
-        const last:anchorObject=list[0];
-        const hlist:number[]=[];            //get latest auth anchor hide list.
+        console.log(`${name}:${history}`);
         
-        self.decodeAuthAnchor(<anchorObject[]>list,hlist,(map:authAddress,amap:anchorMap,errs:errorObject[])=>{
-            for(let k in amap) result.map[k]=amap[k];  //if hide anchor data, merge to result
-            for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
+        //1.get the latest extend anchor;
+        if(hlist===undefined){
 
-            result.index[relatedIndex.AUTH]=[last.name,0];
-            result.auth=<authAddress>map;
+        }
 
-            //TODO, add trust decoder entry
-            self.decodeTrustAnchor(<anchorObject[]>list,hlist,(map:authTrust,amap:anchorMap,errs:errorObject[])=>{
-                console.log(`Got the trust result`);
+        //2.get the hidden list if there is. then recall function itself
 
-                result.index[relatedIndex.TRUST]=["good",112233];
-                result.trust=<authAddress>map;
-                return ck && ck(result);
-            });
-            
-        });
+        //3.combine different way data
+
     },
+
+    // combineHide:(result:mergeResult,anchor:anchorObject,errs:errorObject[],ck:Function)=>{
+    //     if(errs.length!==0){
+    //         //FIXME change to simple way to combine the errors.
+    //         for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
+    //     }
+        
+    //     result.map[`${anchor.name}_${anchor.block}`]=anchor;
+    //     result.index[relatedIndex.HIDE]=[anchor.name,anchor.block];
+
+    //     const dhide=self.decodeHideAnchor(anchor);
+    //     if(!Array.isArray(dhide)){
+    //         result.error.push(dhide);
+    //     }else{
+    //         result.hide=dhide;
+    //     }
+    //     return ck && ck(result);
+    // },
+
+    // combineAuth:(result:mergeResult,list:anchorObject[],errs:errorObject[],ck:Function)=>{
+    //     if(errs.length!==0){
+    //         for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
+    //     }
+
+    //     for(let i=0;i<list.length;i++){
+    //         const row:anchorObject=list[i];
+    //         result.map[`${row.name}_${row.block}`]=row;
+    //     }
+            
+    //     const last:anchorObject=list[0];
+    //     const hlist:number[]=[];            //get latest auth anchor hide list.
+        
+    //     self.decodeAuthAnchor(<anchorObject[]>list,hlist,(map:authAddress,tmap:authTrust,amap:anchorMap,errs:errorObject[])=>{
+    //         for(let k in amap) result.map[k]=amap[k];  //if hide anchor data, merge to result
+    //         for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
+
+    //         result.index[relatedIndex.AUTH]=[last.name,0];
+    //         result.auth=<authAddress>map;
+
+    //         result.index[relatedIndex.TRUST]=["good",112233];
+    //         result.trust=<authAddress>map;
+
+    //         //TODO, add trust decoder entry
+    //         self.decodeTrustAnchor(<anchorObject[]>list,hlist,(map:authTrust,amap:anchorMap,errs:errorObject[])=>{
+    //             console.log(`Got the trust result`);
+
+    //             result.index[relatedIndex.TRUST]=["good",112233];
+    //             result.trust=<authAddress>map;
+    //             return ck && ck(result);
+    //         });
+            
+    //     });
+    // },
 
     decodeHideAnchor:(obj:anchorObject):number[]|errorObject=>{
         const list:number[]=[];
@@ -340,98 +463,99 @@ const self={
         return list;
     },
 
-    //!important, by using the history of anchor, `hide` keyword is still support
-    //!important, checking the latest anchor data, using the `hide` feild to get data.
-    decodeAuthAnchor:(list:anchorObject[],hlist:number[],ck:(res: authAddress,amap:anchorMap,errs:errorObject[])=>void)=>{
-        const map:authAddress={};
-        const amap:anchorMap={};
-        const errs:errorObject[]=[];
+    // //!important, by using the history of anchor, `hide` keyword is still support
+    // //!important, checking the latest anchor data, using the `hide` feild to get data.
+    // decodeAuthAnchor:(list:anchorObject[],hlist:number[],ck:(res: authAddress,tmap:authTrust,amap:anchorMap,errs:errorObject[])=>void)=>{
+    //     const map:authAddress={};
+    //     const tmap:authTrust={};
+    //     const amap:anchorMap={};
+    //     const errs:errorObject[]=[];
 
-        //FIXME, if the latest auth anchor is hidden,need to check next one.
-        const last:anchorObject=list[0];
+    //     //FIXME, if the latest auth anchor is hidden,need to check next one.
+    //     const last:anchorObject=list[0];
 
-        if(last.protocol===null){
-            errs.push({error:"Not valid anchor"});
-            return ck && ck(map,amap,errs);
-        }
+    //     if(last.protocol===null){
+    //         errs.push({error:"Not valid anchor"});
+    //         return ck && ck(map,tmap,amap,errs);
+    //     }
 
-        const protocol=<keywords>last.protocol;
-        self.declaredHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
-            errs.push(...herrs);
-            for(let k in resMap){
-                amap[k]=resMap[k]
-            }
+    //     const protocol=<keywords>last.protocol;
+    //     self.declaredHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
+    //         errs.push(...herrs);
+    //         for(let k in resMap){
+    //             amap[k]=resMap[k]
+    //         }
             
-            let hmap:any={};
-            for(let i=0;i<hlist.length;i++){
-                hmap[hlist[i].toString()]=true;
-            }
+    //         let hmap:any={};
+    //         for(let i=0;i<hlist.length;i++){
+    //             hmap[hlist[i].toString()]=true;
+    //         }
 
-            for(let i=0;i<list.length;i++){
-                const row:anchorObject=list[i];
-                if(hmap[row.block.toString()]) continue;
-                if(!row.protocol || row.protocol.fmt!==formatType.JSON || row.raw===null) continue;
+    //         for(let i=0;i<list.length;i++){
+    //             const row:anchorObject=list[i];
+    //             if(hmap[row.block.toString()]) continue;
+    //             if(!row.protocol || row.protocol.fmt!==formatType.JSON || row.raw===null) continue;
 
-                try {
-                    const tmap=JSON.parse(row.raw);
-                    for(let k in tmap) map[k]=tmap[k];
-                } catch (error) {
-                    errs.push(<errorObject>{error:error});
-                }
-            }
-            return ck && ck(map,amap,errs);
-        });
-    },
+    //             try {
+    //                 const tmap=JSON.parse(row.raw);
+    //                 for(let k in tmap) map[k]=tmap[k];
+    //             } catch (error) {
+    //                 errs.push(<errorObject>{error:error});
+    //             }
+    //         }
+    //         return ck && ck(map,tmap,amap,errs);
+    //     });
+    // },
 
-    //TODO, decode trust data here
-    decodeTrustAnchor:(list:anchorObject[],hlist:number[],ck:(res: authTrust,amap:anchorMap,errs:errorObject[])=>void)=>{
-        const map:authTrust={};
-        const amap:anchorMap={};
-        const errs:errorObject[]=[];
+    // //TODO, decode trust data here
+    // decodeTrustAnchor:(list:anchorObject[],hlist:number[],ck:(res: authTrust,amap:anchorMap,errs:errorObject[])=>void)=>{
+    //     const map:authTrust={};
+    //     const amap:anchorMap={};
+    //     const errs:errorObject[]=[];
 
-        map["good"]=0;
-        map["world"]=455667
+    //     map["good"]=0;
+    //     map["world"]=455667
 
-        return ck && ck(map,amap,errs);
-    },
+    //     return ck && ck(map,amap,errs);
+    // },
 
     //check auth anchor's hide list
     //check trust anchor's hide list.
-    declaredHideList:(protocol:keywords,ck:(res: number[],map:anchorMap,error:errorObject[])=>void)=>{
-        const map:anchorMap={};
-        const errs:errorObject[]=[];
-        const list:number[]=[];
-        if(!protocol.hide) return ck && ck(list,map,errs);
+    // declaredHideList:(protocol:keywords,ck:(res: number[],map:anchorMap,error:errorObject[])=>void)=>{
+    //     const map:anchorMap={};
+    //     const errs:errorObject[]=[];
+    //     const list:number[]=[];
+    //     if(!protocol.hide) return ck && ck(list,map,errs);
 
-        if(Array.isArray(protocol.hide)) return ck && ck(<number[]>protocol.hide,map,errs);
+    //     if(Array.isArray(protocol.hide)) return ck && ck(<number[]>protocol.hide,map,errs);
         
-        self.getAnchor([<string>protocol.hide,0],(anchorH:anchorObject|errorObject)=>{
-            const err=<errorObject>anchorH;
-            if(err.error){
-                errs.push(err);
-                return ck && ck(list,map,errs);
-            }
-            const hlist=self.decodeHideAnchor(<anchorObject>anchorH);
-            const errH=<errorObject>hlist;
-            if(errH.error)errs.push(errH);
+    //     self.getAnchor([<string>protocol.hide,0],(anchorH:anchorObject|errorObject)=>{
+    //         const err=<errorObject>anchorH;
+    //         if(err.error){
+    //             errs.push(err);
+    //             return ck && ck(list,map,errs);
+    //         }
+    //         const hlist=self.decodeHideAnchor(<anchorObject>anchorH);
+    //         const errH=<errorObject>hlist;
+    //         if(errH.error)errs.push(errH);
 
-            const anchor=<anchorObject>anchorH;
-            //console.log(anchor);
-            map[`${anchor.name}_${anchor.block}`]=<anchorObject>anchor;
-            return ck && ck(<number[]>hlist,map,errs);
-        });
-    },
+    //         const anchor=<anchorObject>anchorH;
+    //         //console.log(anchor);
+    //         map[`${anchor.name}_${anchor.block}`]=<anchorObject>anchor;
+    //         return ck && ck(<number[]>hlist,map,errs);
+    //     });
+    // },
 
-    checkLast:(name:string,block:number,ck:Function)=>{
-        API?.common.owner(name,(owner:string,last:number)=>{
-            return ck && ck(block===last?true:false);
-        });
-    },
+    // checkLast:(name:string,block:number,ck:Function)=>{
+    //     API?.common.owner(name,(owner:string,last:number)=>{
+    //         return ck && ck(block===last?true:false);
+    //     });
+    // },
 
     //check the authority between anchors
-    checkTrust:(caller:easyResult,app:easyResult,ck:Function)=>{
+    // checkTrust:(caller:easyResult,app:easyResult,ck:Function)=>{
 
-    },
+    // },
 
     //check the authority to account address
     checkAuthority:(caller:easyResult,app:easyResult,ck:Function)=>{
@@ -694,12 +818,13 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         //inline function to avoid the repetitive code.
         function getResult(type:string){
             self.merge(data.name,<keywords>data.protocol,{},(mergeResult:mergeResult)=>{
+
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
                 if(mergeResult.trust!==null) cObject.trust=mergeResult.trust;
-
                 if(mergeResult.hide!=null && mergeResult.hide.length!==0){
                     cObject.hide=mergeResult.hide;
                 } 
+
                 if(mergeResult.error.length!==0){
                     cObject.error.push(...mergeResult.error);
                 }
@@ -707,11 +832,9 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                 if(mergeResult.index[relatedIndex.AUTH]!==null && cObject.index){
                     cObject.index[relatedIndex.AUTH]=mergeResult.index[relatedIndex.AUTH];
                 }
-    
                 if(mergeResult.index[relatedIndex.HIDE]!==null && cObject.index){
                     cObject.index[relatedIndex.HIDE]=mergeResult.index[relatedIndex.HIDE];
                 }
-
                 if(mergeResult.index[relatedIndex.TRUST]!==null && cObject.index){
                     cObject.index[relatedIndex.TRUST]=mergeResult.index[relatedIndex.TRUST];
                 }
@@ -734,7 +857,6 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         }
     });
 };
-
 
 //Debug part to get more details of process.
 const debug_run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void)=>{
