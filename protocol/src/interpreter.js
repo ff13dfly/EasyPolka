@@ -178,7 +178,7 @@ var self = {
      * @param {object}      cfg         //reversed config parameter
      * @param {function}    ck          //callback, will return the merge result, including the related `anchor`
      * */
-    merge: function (anchor, protocol, cfg, ck) {
+    merge: function (anchor, protocol, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });
         var result = {
@@ -189,9 +189,11 @@ var self = {
             "index": [null, null, null],
             "map": {},
         };
+        console.log("Merging function ready to go...");
         //1.get hide related data and merge to result
         self.singleRule(anchor, protocol, protocol_2.relatedIndex.HIDE, function (res, map, local, errs) {
             var _a;
+            console.log("singleRule 1 ready");
             if (local !== null)
                 result.index[protocol_2.relatedIndex.HIDE] = local;
             for (var k in map)
@@ -202,6 +204,7 @@ var self = {
             //2.get auth related data and merge to result
             self.singleRule(anchor, protocol, protocol_2.relatedIndex.AUTH, function (res, map, local, errs) {
                 var _a;
+                console.log("singleRule 2 ready");
                 if (local !== null)
                     result.index[protocol_2.relatedIndex.AUTH] = local;
                 for (var k in map)
@@ -212,6 +215,7 @@ var self = {
                 //3.get trust related data and merge to result
                 self.singleRule(anchor, protocol, protocol_2.relatedIndex.TRUST, function (res, map, local, errs) {
                     var _a;
+                    console.log("singleRule 3 ready");
                     if (local !== null)
                         result.index[protocol_2.relatedIndex.TRUST] = local;
                     for (var k in map)
@@ -223,45 +227,6 @@ var self = {
                 });
             });
         });
-        //const mlist:anchorLocation[]=[];
-        //1. check `declared hidden` and `authority` just by protocol data.
-        // checkAuth(anchor,protocol,(resAuth:authResult)=>{
-        //     checkHide(anchor,protocol,(resHide:hideResult)=>{
-        //         if(resAuth.anchor===null && resHide.anchor===null){
-        //             if(resAuth.list) result.auth=resAuth.list;
-        //             if(resHide.list) result.hide=resHide.list;
-        //             return ck && ck(result);
-        //         }else if(resAuth.anchor===null && resHide.anchor!==null){
-        //             const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
-        //             self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
-        //                 const errs:errorObject[]=[];
-        //                 const err=<errorObject>res;
-        //                 if(err.error) errs.push({error:err.error});
-        //                 const data:anchorObject=<anchorObject>res;
-        //                 return self.combineHide(result,data,errs,ck);
-        //             });
-        //         }else if(resAuth.anchor!==null && resHide.anchor===null){
-        //             const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];
-        //             self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
-        //                 return self.combineAuth(result,alist,errsA,ck);
-        //             });
-        //         }else if(resAuth.anchor!==null && resHide.anchor!==null){
-        //             const hide_anchor:[string,number]=typeof resHide.anchor==="string"?[resHide.anchor,0]:[resHide.anchor[0],resHide.anchor[1]];
-        //             const auth_anchor:[string,number]=typeof resAuth.anchor==="string"?[resAuth.anchor,0]:[resAuth.anchor[0],resAuth.anchor[1]];    
-        //             self.getAnchor(hide_anchor,(res:anchorObject|errorObject)=>{
-        //                 const errs:errorObject[]=[];
-        //                 const err=<errorObject>res;
-        //                 if(err.error) errs.push({error:err.error});
-        //                 const data:anchorObject=<anchorObject>res;
-        //                 return self.combineHide(result,data,errs,(chResult:mergeResult)=>{
-        //                     self.getHistory(auth_anchor,(alist:anchorObject[],errsA:errorObject[])=>{
-        //                         self.combineAuth(chResult,alist,errsA,ck);
-        //                     });
-        //                 });
-        //             });
-        //         }
-        //     });
-        // });
     },
     //get whole related data by protocol
     singleRule: function (anchor, protocol, tag, ck) {
@@ -269,6 +234,7 @@ var self = {
         var map = {};
         var location = null;
         var errs = [];
+        console.log("singleRule ".concat(anchor, ", tag : ").concat(tag, ", protocol : ").concat(JSON.stringify(protocol)));
         //1.decode protocol to check wether get more data
         switch (tag) {
             case protocol_2.relatedIndex.HIDE:
@@ -278,7 +244,7 @@ var self = {
                         return ck && ck(result, map, location, errs);
                     }
                     else if (resHide.anchor !== null && resHide.list === null) {
-                        self.singleExtend(resHide.anchor, false, function () {
+                        self.singleExtend(resHide.anchor, false, function (resSingle, mapSingle, errsSingle) {
                             return ck && ck(result, map, location, errs);
                         });
                     }
@@ -292,13 +258,18 @@ var self = {
                 });
                 break;
             case protocol_2.relatedIndex.AUTH:
+                console.log("Auth athority check...");
                 (0, auth_1.checkAuth)(anchor, protocol, function (resAuth) {
                     if (resAuth.anchor === null && resAuth.list !== null) {
                         result = resAuth.list;
                         return ck && ck(result, map, location, errs);
                     }
                     else if (resAuth.anchor !== null && resAuth.list === null) {
-                        self.singleExtend(resAuth.anchor, true, function () {
+                        console.log("This way...");
+                        self.singleExtend(resAuth.anchor, true, function (resSingle, mapSingle, errsSingle) {
+                            console.log(resSingle);
+                            console.log(mapSingle);
+                            console.log(errsSingle);
                             return ck && ck(result, map, location, errs);
                         });
                     }
@@ -318,7 +289,7 @@ var self = {
                         return ck && ck(result, map, location, errs);
                     }
                     else if (resTrust.anchor !== null && resTrust.list === null) {
-                        self.singleExtend(resTrust.anchor, true, function () {
+                        self.singleExtend(resTrust.anchor, true, function (resSingle, mapSingle, errsSingle) {
                             return ck && ck(result, map, location, errs);
                         });
                     }
@@ -338,55 +309,83 @@ var self = {
         }
     },
     //get anchor extend data, two parts: 1.extend anchor itself; 2.declared hidden anchor
-    singleExtend: function (name, history, ck, hlist) {
-        console.log("".concat(name, ":").concat(history));
-        //1.get the latest extend anchor;
-        if (hlist === undefined) {
+    singleExtend: function (name, history, ck) {
+        //console.log(`${name}:${history}`);
+        var result = null;
+        var map = {};
+        var errs = [];
+        var last = Array.isArray(name) ? [name[0], 0] : [name, 0];
+        if (history) {
+            //1.get the latest declared hidden list.
+            self.getLatestDeclaredHidden(last, function (resHidden, resAnchor) {
+                var err = resHidden;
+                if (err !== undefined && err.error)
+                    errs.push(err);
+                if (resAnchor !== undefined) {
+                    map["".concat(resAnchor.name, "_").concat(resAnchor.block)] = resAnchor;
+                }
+                //console.log(resHidden);
+                //console.log(resAnchor);
+                //1.1.set hidden history map
+                var lastHidden = resHidden;
+                var hmap = {};
+                if (Array.isArray(lastHidden))
+                    for (var i = 0; i < lastHidden.length; i++)
+                        hmap[lastHidden[i]] = true;
+                self.getHistory([Array.isArray(name) ? name[0] : name, 0], function (listHistory, errsHistory) {
+                    if (errsHistory !== undefined)
+                        errs.push.apply(errs, errsHistory);
+                    //console.log(listHistory);
+                    for (var i = 0; i < listHistory.length; i++) {
+                        var data = listHistory[i];
+                        map["".concat(data.name, "_").concat(data.block)] = data;
+                        if (hmap[data.block])
+                            continue;
+                        if (!data.protocol || !data.raw || data.protocol.type !== protocol_1.rawType.DATA) {
+                            errs.push({ error: "Not valid anchor. ".concat(data.name, ":").concat(data.block) });
+                            continue;
+                        }
+                        try {
+                            var target = JSON.parse(data.raw);
+                            if (result === null)
+                                result = {};
+                            for (var k in target) {
+                                result[k] = target[k];
+                            }
+                        }
+                        catch (error) {
+                            errs.push({ error: "JSON format failed. ".concat(data.name, ":").concat(data.block) });
+                            continue;
+                        }
+                    }
+                    return ck && ck(result, map, errs);
+                });
+            });
         }
-        //2.get the hidden list if there is. then recall function itself
-        //3.combine different way data
+        else {
+            self.getAnchor(Array.isArray(name) ? name : [name, 0], function (resSingle) {
+                var err = resSingle;
+                if (err !== undefined && err.error) {
+                    errs.push(err);
+                    return ck && ck(result, map, errs);
+                }
+                var data = resSingle;
+                map["".concat(data.name, "_").concat(data.block)] = data;
+                if (!data.protocol || !data.raw || data.protocol.type !== protocol_1.rawType.DATA) {
+                    errs.push({ error: "Not valid anchor." });
+                    return ck && ck(result, map, errs);
+                }
+                try {
+                    result = JSON.parse(data.raw);
+                    return ck && ck(result, map, errs);
+                }
+                catch (error) {
+                    errs.push({ error: JSON.stringify(error) });
+                    return ck && ck(result, map, errs);
+                }
+            });
+        }
     },
-    // combineHide:(result:mergeResult,anchor:anchorObject,errs:errorObject[],ck:Function)=>{
-    //     if(errs.length!==0){
-    //         //FIXME change to simple way to combine the errors.
-    //         for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
-    //     }
-    //     result.map[`${anchor.name}_${anchor.block}`]=anchor;
-    //     result.index[relatedIndex.HIDE]=[anchor.name,anchor.block];
-    //     const dhide=self.decodeHideAnchor(anchor);
-    //     if(!Array.isArray(dhide)){
-    //         result.error.push(dhide);
-    //     }else{
-    //         result.hide=dhide;
-    //     }
-    //     return ck && ck(result);
-    // },
-    // combineAuth:(result:mergeResult,list:anchorObject[],errs:errorObject[],ck:Function)=>{
-    //     if(errs.length!==0){
-    //         for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
-    //     }
-    //     for(let i=0;i<list.length;i++){
-    //         const row:anchorObject=list[i];
-    //         result.map[`${row.name}_${row.block}`]=row;
-    //     }
-    //     const last:anchorObject=list[0];
-    //     const hlist:number[]=[];            //get latest auth anchor hide list.
-    //     self.decodeAuthAnchor(<anchorObject[]>list,hlist,(map:authAddress,tmap:authTrust,amap:anchorMap,errs:errorObject[])=>{
-    //         for(let k in amap) result.map[k]=amap[k];  //if hide anchor data, merge to result
-    //         for(let i=0;i<errs.length;i++) result.error.push(errs[i]);
-    //         result.index[relatedIndex.AUTH]=[last.name,0];
-    //         result.auth=<authAddress>map;
-    //         result.index[relatedIndex.TRUST]=["good",112233];
-    //         result.trust=<authAddress>map;
-    //         //TODO, add trust decoder entry
-    //         self.decodeTrustAnchor(<anchorObject[]>list,hlist,(map:authTrust,amap:anchorMap,errs:errorObject[])=>{
-    //             console.log(`Got the trust result`);
-    //             result.index[relatedIndex.TRUST]=["good",112233];
-    //             result.trust=<authAddress>map;
-    //             return ck && ck(result);
-    //         });
-    //     });
-    // },
     decodeHideAnchor: function (obj) {
         var list = [];
         var protocol = obj.protocol;
@@ -407,83 +406,6 @@ var self = {
         }
         return list;
     },
-    // //!important, by using the history of anchor, `hide` keyword is still support
-    // //!important, checking the latest anchor data, using the `hide` feild to get data.
-    // decodeAuthAnchor:(list:anchorObject[],hlist:number[],ck:(res: authAddress,tmap:authTrust,amap:anchorMap,errs:errorObject[])=>void)=>{
-    //     const map:authAddress={};
-    //     const tmap:authTrust={};
-    //     const amap:anchorMap={};
-    //     const errs:errorObject[]=[];
-    //     //FIXME, if the latest auth anchor is hidden,need to check next one.
-    //     const last:anchorObject=list[0];
-    //     if(last.protocol===null){
-    //         errs.push({error:"Not valid anchor"});
-    //         return ck && ck(map,tmap,amap,errs);
-    //     }
-    //     const protocol=<keywords>last.protocol;
-    //     self.declaredHideList(protocol,(hlist:number[],resMap:anchorMap,herrs:errorObject[])=>{
-    //         errs.push(...herrs);
-    //         for(let k in resMap){
-    //             amap[k]=resMap[k]
-    //         }
-    //         let hmap:any={};
-    //         for(let i=0;i<hlist.length;i++){
-    //             hmap[hlist[i].toString()]=true;
-    //         }
-    //         for(let i=0;i<list.length;i++){
-    //             const row:anchorObject=list[i];
-    //             if(hmap[row.block.toString()]) continue;
-    //             if(!row.protocol || row.protocol.fmt!==formatType.JSON || row.raw===null) continue;
-    //             try {
-    //                 const tmap=JSON.parse(row.raw);
-    //                 for(let k in tmap) map[k]=tmap[k];
-    //             } catch (error) {
-    //                 errs.push(<errorObject>{error:error});
-    //             }
-    //         }
-    //         return ck && ck(map,tmap,amap,errs);
-    //     });
-    // },
-    // //TODO, decode trust data here
-    // decodeTrustAnchor:(list:anchorObject[],hlist:number[],ck:(res: authTrust,amap:anchorMap,errs:errorObject[])=>void)=>{
-    //     const map:authTrust={};
-    //     const amap:anchorMap={};
-    //     const errs:errorObject[]=[];
-    //     map["good"]=0;
-    //     map["world"]=455667
-    //     return ck && ck(map,amap,errs);
-    // },
-    //check auth anchor's hide list
-    //check trust anchor's hide list.
-    // declaredHideList:(protocol:keywords,ck:(res: number[],map:anchorMap,error:errorObject[])=>void)=>{
-    //     const map:anchorMap={};
-    //     const errs:errorObject[]=[];
-    //     const list:number[]=[];
-    //     if(!protocol.hide) return ck && ck(list,map,errs);
-    //     if(Array.isArray(protocol.hide)) return ck && ck(<number[]>protocol.hide,map,errs);
-    //     self.getAnchor([<string>protocol.hide,0],(anchorH:anchorObject|errorObject)=>{
-    //         const err=<errorObject>anchorH;
-    //         if(err.error){
-    //             errs.push(err);
-    //             return ck && ck(list,map,errs);
-    //         }
-    //         const hlist=self.decodeHideAnchor(<anchorObject>anchorH);
-    //         const errH=<errorObject>hlist;
-    //         if(errH.error)errs.push(errH);
-    //         const anchor=<anchorObject>anchorH;
-    //         //console.log(anchor);
-    //         map[`${anchor.name}_${anchor.block}`]=<anchorObject>anchor;
-    //         return ck && ck(<number[]>hlist,map,errs);
-    //     });
-    // },
-    // checkLast:(name:string,block:number,ck:Function)=>{
-    //     API?.common.owner(name,(owner:string,last:number)=>{
-    //         return ck && ck(block===last?true:false);
-    //     });
-    // },
-    //check the authority between anchors
-    // checkTrust:(caller:easyResult,app:easyResult,ck:Function)=>{
-    // },
     //check the authority to account address
     checkAuthority: function (caller, app, ck) {
         //1.check the called anchor type.
@@ -517,7 +439,7 @@ var self = {
                     }
                     else {
                         API === null || API === void 0 ? void 0 : API.common.block(function (block, hash) {
-                            console.log(block);
+                            //console.log(block);
                             if (block > auths[signer]) {
                                 caller.error.push({ error: "Authority out of time." });
                                 return ck && ck(caller);
@@ -553,10 +475,10 @@ var self = {
                     return ck && ck([]);
                 var data = resHide;
                 if (data === null || !data.raw)
-                    return ck && ck([]);
+                    return ck && ck([], data);
                 try {
                     var list = JSON.parse(data.raw);
-                    return ck && ck(list);
+                    return ck && ck(list, data);
                 }
                 catch (error) {
                     return ck && ck({ error: error });
@@ -660,9 +582,12 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
     var target = (0, decoder_1.linkDecoder)(linker);
     if (target.error)
         return ck && ck(target);
+    //console.log(`Hidden list checking...`);
+    //console.log(hlist);
     //0.get the latest declared hidden list
     if (hlist === undefined) {
-        return self.getLatestDeclaredHidden(target.location, function (lastHide) {
+        //console.log(`Checking the hide list`);
+        return self.getLatestDeclaredHidden(target.location, function (lastHide, lastAnchor) {
             var cObject = {
                 type: protocol_1.rawType.NONE,
                 location: [target.location[0], target.location[1] !== 0 ? target.location[1] : 0],
@@ -670,12 +595,17 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                 data: {},
                 index: [null, null, null],
             };
+            //console.log(lastHide);
+            //console.log(lastAnchor);
             var res = lastHide;
-            if (res.error) {
+            //console.log(res);
+            if (res !== undefined && res.error) {
                 cObject.error.push(res);
-                return ck && ck(cObject);
+                return run(linker, API, ck, []);
             }
             var hResult = lastHide;
+            //console.log(`Hidden list...`);
+            //console.log(hResult);
             return run(linker, API, ck, hResult);
         });
     }
@@ -691,6 +621,8 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
     };
     if (target.param)
         cObject.parameter = target.param;
+    //console.log(`Continue...`);
+    //console.log(target);
     //2.Try to get the target `Anchor` data.
     self.getAnchor(target.location, function (resAnchor) {
         //2.1.error handle.
@@ -731,8 +663,10 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
         }
         //inline function to avoid the repetitive code.
         function getResult(type) {
-            self.merge(data.name, data.protocol, {}, function (mergeResult) {
+            //console.log(`Getting result...`);
+            self.merge(data.name, data.protocol, function (mergeResult) {
                 var _a;
+                console.log("Merging...");
                 if (mergeResult.auth !== null)
                     cObject.auth = mergeResult.auth;
                 if (mergeResult.trust !== null)

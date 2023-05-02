@@ -61,7 +61,7 @@ self.prepare(server, function () {
     var linker_declared_hide_complex = "anchor://hide_last_9627/20685/";
     console.log("\n");
     (0, interpreter_1.easyRun)(linker_full_caller, API, function (result) {
-        console.log("\n-----------------result of ".concat(linker_declared_hide, "-----------------"));
+        console.log("\n-----------------result of ".concat(linker_full_caller, "-----------------"));
         console.log(result);
         console.log(JSON.stringify(result));
         console.log("\n\n");
