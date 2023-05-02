@@ -83,16 +83,16 @@ const self={
 };
 
 const task=[
-    write_app_sample,
-    write_data_sample,
-    write_unexcept_data_sample,
-    write_mock_normal_libs,
-    write_mock_complex_libs,
-    write_salt_hide_sample,
-    write_anchor_hide_sample,
-    write_anchor_auth_sample,
-    write_anchor_auth_and_hide_sample,
-    write_full_parameters_anchor_sample,
+    //write_app_sample,
+    // write_data_sample,
+    // write_unexcept_data_sample,
+    // write_mock_normal_libs,
+    // write_mock_complex_libs,
+    // write_salt_hide_sample,
+    // write_anchor_hide_sample,
+    // write_anchor_auth_sample,
+    // write_anchor_auth_and_hide_sample,
+    // write_full_parameters_anchor_sample,
     write_full_parameters_caller_sample,
 ];
 self.auto(task);
@@ -532,7 +532,7 @@ function write_full_parameters_caller_sample(index,ck){
     const auth_protocol_1={"type":"data","fmt":"json","hide":"call_auth_hide"};
     list.push({name:auth_anchor,raw:auth_raw_3,protocol:auth_protocol_1});
 
-    const trust_anchor="trust_auth";
+    const trust_anchor="call_trust";
     const trust_raw={
         "hello":0,
         "world":355667,

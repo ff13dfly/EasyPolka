@@ -107,8 +107,8 @@ const self={
         if(err.error) return ck && ck({error:err.error,level:errorLevel.ERROR});
 
         const anchor=<anchorObject>data;
-        if(!debug.disable) debug.search.push([anchor.name,anchor.block]);    //debug hook 
-        if(!debug.cache) cache.set(anchor.name,anchor.block,anchor);    //debug hook
+        if(!debug.disable) debug.search.push([anchor.name,anchor.block]);   //debug hook 
+        if(!debug.cache) cache.set(anchor.name,anchor.block,anchor);        //debug hook
         if(anchor.empty) return ck && ck({error:"Empty anchor.",level:errorLevel.ERROR});
         if(!anchor.protocol) return ck && ck({error:"No-protocol anchor."});
 
@@ -230,11 +230,11 @@ const self={
             "map":{},
         };
 
-        console.log(`Merging function ready to go...`);
+        //console.log(`Merging function ready to go...`);
 
         //1.get hide related data and merge to result
         self.singleRule(anchor,protocol,relatedIndex.HIDE,(res: any,map:anchorMap,local:anchorLocation|null,errs:errorObject[])=>{
-            console.log(`singleRule 1 ready`);
+            //console.log(`singleRule 1 ready`);
             if(local!==null) result.index[relatedIndex.HIDE]=local;
             for(let k in map) result.map[k]=map[k];
             if(errs.length!==0) result.error.push(...errs);
@@ -242,7 +242,7 @@ const self={
 
             //2.get auth related data and merge to result
             self.singleRule(anchor,protocol,relatedIndex.AUTH,(res: any,map:anchorMap,local:anchorLocation|null,errs:errorObject[])=>{
-                console.log(`singleRule 2 ready`);
+                //console.log(`singleRule 2 ready`);
                 if(local!==null) result.index[relatedIndex.AUTH]=local;
                 for(let k in map) result.map[k]=map[k];
                 if(errs.length!==0) result.error.push(...errs);
@@ -250,14 +250,12 @@ const self={
 
                 //3.get trust related data and merge to result
                 self.singleRule(anchor,protocol,relatedIndex.TRUST,(res: any,map:anchorMap,local:anchorLocation|null,errs:errorObject[])=>{
-                    console.log(`singleRule 3 ready`);
-
+                    //console.log(`singleRule 3 ready`);
                     if(local!==null) result.index[relatedIndex.TRUST]=local;
                     for(let k in map) result.map[k]=map[k];
                     if(errs.length!==0) result.error.push(...errs);
                     result.trust=res;
 
-                   
                     return ck && ck(result);
 
                 });
@@ -273,7 +271,7 @@ const self={
         const location:anchorLocation|null=null
         const errs:errorObject[]=[];
 
-        console.log(`singleRule ${anchor}, tag : ${tag}, protocol : ${JSON.stringify(protocol)}`);
+        //console.log(`singleRule ${anchor}, tag : ${tag}, protocol : ${JSON.stringify(protocol)}`);
 
         //1.decode protocol to check wether get more data
         switch (tag) {
@@ -284,7 +282,9 @@ const self={
                         return ck && ck(result,map,location,errs);
                     }else if(resHide.anchor!==null && resHide.list===null){
                         self.singleExtend(resHide.anchor,false,(resSingle,mapSingle,errsSingle)=>{
-
+                            result=resSingle;
+                            for(var k in mapSingle)map[k]=mapSingle[k];
+                            errs.push(...errsSingle);
                             return ck && ck(result,map,location,errs);
                         });
                     }else if(resHide.anchor!==null && resHide.list!==null){
@@ -297,18 +297,18 @@ const self={
                 break;
         
             case relatedIndex.AUTH:
-                console.log(`Auth athority check...`);
+                //console.log(`Auth athority check...`);
                 checkAuth(anchor,protocol,(resAuth:authResult)=>{
                     if(resAuth.anchor===null && resAuth.list!==null){
                         result=resAuth.list;
                         return ck && ck(result,map,location,errs);
 
                     }else if(resAuth.anchor!==null && resAuth.list===null){
-                        console.log(`This way...`);
+                        //console.log(`This way...`);
                         self.singleExtend(resAuth.anchor,true,(resSingle,mapSingle,errsSingle)=>{
-                            console.log(resSingle);
-                            console.log(mapSingle);
-                            console.log(errsSingle);
+                            result=resSingle;
+                            for(var k in mapSingle)map[k]=mapSingle[k];
+                            errs.push(...errsSingle);
 
                             return ck && ck(result,map,location,errs);
                         });
@@ -327,7 +327,9 @@ const self={
                         return ck && ck(result,map,location,errs);
                     }else if(resTrust.anchor!==null && resTrust.list===null){
                         self.singleExtend(resTrust.anchor,true,(resSingle,mapSingle,errsSingle)=>{
-
+                            result=resSingle;
+                            for(var k in mapSingle)map[k]=mapSingle[k];
+                            errs.push(...errsSingle);
                             return ck && ck(result,map,location,errs);
                         });
                     }else if(resTrust.anchor!==null && resTrust.list!==null){
@@ -720,7 +722,8 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
             //console.log(`Getting result...`);
 
             self.merge(data.name,<keywords>data.protocol,(mergeResult:mergeResult)=>{
-                console.log(`Merging...`);
+                //console.log(`Merging...`);
+                console.log(mergeResult);
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
                 if(mergeResult.trust!==null) cObject.trust=mergeResult.trust;
                 if(mergeResult.hide!=null && mergeResult.hide.length!==0){

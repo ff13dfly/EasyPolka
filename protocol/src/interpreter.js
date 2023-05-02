@@ -189,11 +189,11 @@ var self = {
             "index": [null, null, null],
             "map": {},
         };
-        console.log("Merging function ready to go...");
+        //console.log(`Merging function ready to go...`);
         //1.get hide related data and merge to result
         self.singleRule(anchor, protocol, protocol_2.relatedIndex.HIDE, function (res, map, local, errs) {
             var _a;
-            console.log("singleRule 1 ready");
+            //console.log(`singleRule 1 ready`);
             if (local !== null)
                 result.index[protocol_2.relatedIndex.HIDE] = local;
             for (var k in map)
@@ -204,7 +204,7 @@ var self = {
             //2.get auth related data and merge to result
             self.singleRule(anchor, protocol, protocol_2.relatedIndex.AUTH, function (res, map, local, errs) {
                 var _a;
-                console.log("singleRule 2 ready");
+                //console.log(`singleRule 2 ready`);
                 if (local !== null)
                     result.index[protocol_2.relatedIndex.AUTH] = local;
                 for (var k in map)
@@ -215,7 +215,7 @@ var self = {
                 //3.get trust related data and merge to result
                 self.singleRule(anchor, protocol, protocol_2.relatedIndex.TRUST, function (res, map, local, errs) {
                     var _a;
-                    console.log("singleRule 3 ready");
+                    //console.log(`singleRule 3 ready`);
                     if (local !== null)
                         result.index[protocol_2.relatedIndex.TRUST] = local;
                     for (var k in map)
@@ -234,7 +234,7 @@ var self = {
         var map = {};
         var location = null;
         var errs = [];
-        console.log("singleRule ".concat(anchor, ", tag : ").concat(tag, ", protocol : ").concat(JSON.stringify(protocol)));
+        //console.log(`singleRule ${anchor}, tag : ${tag}, protocol : ${JSON.stringify(protocol)}`);
         //1.decode protocol to check wether get more data
         switch (tag) {
             case protocol_2.relatedIndex.HIDE:
@@ -245,6 +245,10 @@ var self = {
                     }
                     else if (resHide.anchor !== null && resHide.list === null) {
                         self.singleExtend(resHide.anchor, false, function (resSingle, mapSingle, errsSingle) {
+                            result = resSingle;
+                            for (var k in mapSingle)
+                                map[k] = mapSingle[k];
+                            errs.push.apply(errs, errsSingle);
                             return ck && ck(result, map, location, errs);
                         });
                     }
@@ -258,18 +262,19 @@ var self = {
                 });
                 break;
             case protocol_2.relatedIndex.AUTH:
-                console.log("Auth athority check...");
+                //console.log(`Auth athority check...`);
                 (0, auth_1.checkAuth)(anchor, protocol, function (resAuth) {
                     if (resAuth.anchor === null && resAuth.list !== null) {
                         result = resAuth.list;
                         return ck && ck(result, map, location, errs);
                     }
                     else if (resAuth.anchor !== null && resAuth.list === null) {
-                        console.log("This way...");
+                        //console.log(`This way...`);
                         self.singleExtend(resAuth.anchor, true, function (resSingle, mapSingle, errsSingle) {
-                            console.log(resSingle);
-                            console.log(mapSingle);
-                            console.log(errsSingle);
+                            result = resSingle;
+                            for (var k in mapSingle)
+                                map[k] = mapSingle[k];
+                            errs.push.apply(errs, errsSingle);
                             return ck && ck(result, map, location, errs);
                         });
                     }
@@ -290,6 +295,10 @@ var self = {
                     }
                     else if (resTrust.anchor !== null && resTrust.list === null) {
                         self.singleExtend(resTrust.anchor, true, function (resSingle, mapSingle, errsSingle) {
+                            result = resSingle;
+                            for (var k in mapSingle)
+                                map[k] = mapSingle[k];
+                            errs.push.apply(errs, errsSingle);
                             return ck && ck(result, map, location, errs);
                         });
                     }
@@ -666,7 +675,8 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
             //console.log(`Getting result...`);
             self.merge(data.name, data.protocol, function (mergeResult) {
                 var _a;
-                console.log("Merging...");
+                //console.log(`Merging...`);
+                console.log(mergeResult);
                 if (mergeResult.auth !== null)
                     cObject.auth = mergeResult.auth;
                 if (mergeResult.trust !== null)

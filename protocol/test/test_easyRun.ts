@@ -65,7 +65,7 @@ self.prepare(server,()=>{
     console.log(`\n`);
     easyRun(linker_full_caller,API,(result:any)=>{
         console.log(`\n-----------------result of ${linker_full_caller}-----------------`);
-        console.log(result);
+        //console.log(result);
         console.log(JSON.stringify(result));
         console.log(`\n\n`);
 
