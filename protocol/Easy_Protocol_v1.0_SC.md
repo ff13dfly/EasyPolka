@@ -62,15 +62,27 @@
 
 - Charactor `?` is reversed, the name which including `?` is not supported by `Easy Protocol`.
 
+- 参数覆盖问题，anchor数据上可以设置参数，而外部也可以穿入参数，如果出现冲突，传入的参数优先。
+
 ### 授权
 
 #### 账户授权
 
 - Follow the latest anchor data to confirm the authority.
 
+- `账号 -> 区块号`的方式来设置，当区块号为0，为无限时授权
+
 #### 链锚授权
 
+- `Anchor -> 区块号`的方式来设置，当区块号为0，为无限时授权
+
 #### 授权时限
+
+- 采用授权到区块号的方式，0为无限时授权。
+
+#### 重复授权处理
+
+- 重复授权是指，对于Anchor，如果未被授权，但是写入Anchor的address确是被授权的。采取账号授权优先的原则。换言之，账号授权的权限是大雨anchor授权的。
 
 ### 申明删除（ Declared Hidden ）
 
@@ -112,15 +124,15 @@
 #### 数据类型 ( data )
 
 - `type`, must be `data`.
-- `fmt`
-- `hide`
-- `auth`
-- `trust`
+- `fmt`,数据格式，默认为`JSON`
+- `hide`,直接的hide数据，或者指向到存储的anchor
+- `auth`,直接的auth数据，或者指向到存储的anchor
+- `trust`,直接的trust数据，或者指向到存储的anchor
 - `salt`
-- `call`
-- `args`
-- `code`
-- `push`
+- `call`,呼叫的cApp,会进行授权检测。当指定到限定的版本时，注意授权的问题 **bug，需要再考虑清楚**
+- `args`,默认传给cApp的参数，用于默认配置。和外部参数冲突时，外部参数权限高
+- `code`,
+- `push`,
 
 #### 程序类型 ( app )
 
@@ -135,7 +147,7 @@
 
 #### 资源类型 ( lib )
 
-- `type`, must be `lib`.
+- `type`, must be `lib`. 资源库的授权需要考虑清楚 **bug，考虑是不是要支持授权，会带来很大的数据检索量，但是对开发者有利**，采用非强制显示方式。调用的时候，不检测权限。
 - `fmt`
 - `hide`
 - `auth`

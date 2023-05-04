@@ -9,7 +9,7 @@ var protocol_2 = require("./protocol");
 var decoder_1 = require("./decoder");
 var auth_1 = require("./auth");
 var hide_1 = require("./hide");
-var _a = require("../lib/loader"), Loader = _a.Loader, Libs = _a.Libs;
+var Libs = require("../lib/loader").Libs;
 //const {anchorJS} =require("../lib/anchor");
 var API = null;
 /*************************debug part****************************/

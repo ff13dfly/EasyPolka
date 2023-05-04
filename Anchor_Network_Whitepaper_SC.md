@@ -2,11 +2,15 @@
 
 - 参考的波卡白皮书：[https://www.cnblogs.com/coderzjz/p/15284943.html](https://www.cnblogs.com/coderzjz/p/15284943.html)
 
+- 智能合约说明，[https://zhuanlan.zhihu.com/p/142585903](https://zhuanlan.zhihu.com/p/142585903)
+
+- 安全性问题的概述，[https://101blockchains.com/web3-risks/](https://101blockchains.com/web3-risks/)
+
 ## 摘要
 
 - Web3.0发展到今天，对于普通用户而言，一个便捷的访问入口呼之欲出。Web3.0需要一个去中心化的启动入口，Anchor Network就是实现这个目的。通过一个小巧的启动器，既可实行随时随地不被监控的接入Web3.0。
 
-- Anchor Network基于Substrate/Polkadot的平行链来实现，区块链网络部分高效稳定。
+- Anchor Network基于Substrate/Polkadot的平行链来实现，区块链网络部分高效稳定。如何使用Web3.0的技术来整合现有的Dapps就变成了一个需求，这比提供替代性的解决方案，更有利于现在的开发者。
 
 ## 前言
 
@@ -64,6 +68,8 @@
 
 - 值得期待的跨链技术。
 
+## 安全问题
+
 ## 不同的参与者
 
 ![不同监管者和组件的关系]()
@@ -116,9 +122,13 @@
 
 ```TEXT
 启动器 -->  加载器  -->  cApp/Data  -->  APIs  -->  Web3.0/Web2.0
-              |             |           |               |
+              |             |           |               
+              | on-chain    | on-chain  | on-chain      
+              |             |           |               
+              V             V           V
 ----------------------------Protocol---------------------------
-              |             |           |               |
+              |             |           |               
+              V             V           V
 -----------------------------Anchor----------------------------
 ----------------------------Polkadot---------------------------
 ```

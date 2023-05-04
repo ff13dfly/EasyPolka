@@ -1,5 +1,5 @@
-//!important This is the file to create the mock cApp data.
-//!important This JS can be run many times, the anchor data will be updated, but still can work
+//!important This is the file to create the mock complex data.
+//!important This JS can be run many times, the anchor data will be updated, but still can work.
 
 //#run this mock.
 //node test_mock_data.js
@@ -261,4 +261,3 @@ function single_full_and_hide(index,ck){
         });
     },index,pair);
 }
-
