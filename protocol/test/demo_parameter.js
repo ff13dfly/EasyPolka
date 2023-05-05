@@ -1,5 +1,4 @@
 //node node_parameter.js one two=three four
-
 //node node_parameter.js anchor://full_app/
 
 var args = process.argv.slice(2);
