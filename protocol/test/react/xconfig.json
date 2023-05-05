@@ -1,0 +1,14 @@
+{  
+    "name":"react_demo",
+    "framework":"frame_react.js",
+    "version":"1.0.2",
+    "related":{
+        "js":"react_js_demo",
+        "css":"react_css_demo",
+        "resource":"react_resource_demo"
+    },
+    "account":{
+
+    },
+    "password":""
+}

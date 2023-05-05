@@ -2,7 +2,18 @@
 //!important, The breif rule is treating it as cache service and can be stopped anytime.
 //!important, Load unkown `node on-chain application` will face security problem.
 
-//node demo_booster.js anchor://node_me/ ws://127.0.0.1:9944
+//node demo_loader.js anchor://node_me/ ws://127.0.0.1:9944
+
+//package command, `esbuild` needed.
+//yarn add esbuild
+//../node_modules/.bin/esbuild demo_loader.js --bundle --minify --outfile=loader.js --platform=node
+//node loader.js anchor://node_me/ ws://127.0.0.1:9944
+
+//basic config for Loader
+const config = {
+    error:      '\x1b[36m%s\x1b[0m',
+    success:    '\x1b[36m%s\x1b[0m',
+};
 
 //arguments
 const args = process.argv.slice(2);
@@ -12,13 +23,6 @@ const server=!args[1]?"ws://127.0.0.1:9944":args[1];
 
 //library needed
 const { anchorJS } = require('../lib/anchor.js');
-
-//basic config for Loader
-const config = {
-    error:      '\x1b[36m%s\x1b[0m',
-    success:    '\x1b[36m%s\x1b[0m',
-    endpoint:   server,
-};
 
 //websocket link to server
 let websocket=null;
@@ -30,8 +34,8 @@ const self={
         const { Keyring } = require('@polkadot/api');
         
 
-        ApiPromise.create({ provider: new WsProvider(config.endpoint) }).then((api) => {
-            console.log(config.success,`Linker to node [${config.endpoint}] created.`);
+        ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
+            console.log(config.success,`Linker to node [${server}] created.`);
 
             websocket = api;
             
