@@ -8,7 +8,3 @@
 /node_modules/
 package-lock.json
 yarn.lock
-/demo/
-/sample/
-/test/react/package/
-/test/plinth/package/

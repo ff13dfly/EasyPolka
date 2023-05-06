@@ -1,0 +1,14 @@
+{  
+    "name":"ppp",
+    "version":"0.1.0",
+    "related":{
+        "js":"p_js",
+        "css":"p_css",
+        "resource":"p_res"
+    },
+    "account":{
+
+    },
+    "password":"",
+    "seed":""
+}

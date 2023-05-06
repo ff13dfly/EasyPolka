@@ -10,5 +10,6 @@
     "account":{
 
     },
-    "password":""
+    "password":"",
+    "seed":""
 }
