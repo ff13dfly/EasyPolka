@@ -33,6 +33,8 @@ const config = {
             "manifest.json":true,
             "logo192.png":true,
             "logo512.png":true,
+            "robots.txt":true,
+            ".DS_Store":true,
         },
         foler:{
             "js":true,
@@ -47,20 +49,18 @@ const args = process.argv.slice(2);
 const cfgFile=!args[0]?config.setting:args[0];
 const folder=!args[1]?config.folder:args[1];
 
-//const folder=!args[2]?config.target:args[2];
-//const server=!args[1]?"ws://127.0.0.1:9944":args[1];
-
 // file reader
 const file={
-    read:(target,ck,toJSON)=>{
+    read:(target,ck,toJSON,toBase64)=>{
         fs.stat(target,(err,stats)=>{
             if (err) return ck && ck({error:err});
             if(!stats.isFile()) return ck && ck(false);
             fs.readFile(target,(err,data)=>{
                 if (err) return ck && ck({error:err});
-                const str=data.toString();
-                if(!toJSON) return ck && ck(str);
+                if(toBase64) return ck && ck(data.toString("base64"));
+                if(!toJSON) return ck && ck(data.toString());
                 try {
+                    const str=data.toString();
                     const json=JSON.parse(str);
                     return ck && ck(json);
                 } catch (error) {
@@ -69,22 +69,6 @@ const file={
             });
         });
     },
-    remove:(path,sub)=>{
-        var files = [];
-        if( fs.existsSync(path) ) {
-            files = fs.readdirSync(path);
-            files.forEach(function(fa,index){
-                var curPath = path + "/" + fa;
-                if(fs.statSync(curPath).isDirectory()) {
-                    file.remove(curPath,true);
-                } else {
-                    fs.unlinkSync(curPath);
-                }
-            });
-            if(sub) fs.rmdirSync(path);
-        }
-    },
-    
 };
 
 const cache={
@@ -94,6 +78,7 @@ const cache={
 }
 
 let websocket=null;
+
 const self={
     getSuffix:(str)=>{
         const arr=str.split(".");
@@ -112,8 +97,80 @@ const self={
     },
     resource:(folder,ck)=>{
         //TODO, here to load all resource, convert to base64 then replace.
+        const todo=[];
+        const igsFiles=config.ignor.files;
+        const igsDirs=config.ignor.foler;
 
-        return ck && ck();
+        //1.get all resource of public folder
+        if( fs.existsSync(folder) ) {
+            const files = fs.readdirSync(folder);
+            for(let i=0;i<files.length;i++){
+                const fa=files[i];
+                if(!igsFiles[fa] && !fs.statSync(`${folder}/${fa}`).isDirectory()){
+                    const tmp=fa.split('.');
+                    const suffix=tmp.pop();
+                    todo.push({file:`${folder}/${fa}`,suffix:suffix,replace:fa});
+                }
+            }
+        }
+
+        //2.get all resource of `static`
+        const sub=`${folder}/static`;
+        if( fs.existsSync(sub) ) {
+            const dirs = fs.readdirSync(sub);
+            for(let i=0;i<dirs.length;i++){
+                const dir=dirs[i];
+                if(!igsDirs[dir]){
+                    const target=`${sub}/${dir}`;
+                    const ts = fs.readdirSync(target);
+                    for(let i=0;i<ts.length;i++){
+                        const row=ts[i];
+                        const tmp=row.split('.');
+                        const suffix=tmp.pop();
+                        todo.push({file:`${sub}/${dir}/${row}`,suffix:suffix,replace:`static/${dir}/${row}`});
+                    }
+                }
+            }
+        }
+        return self.getTodo(todo,ck);
+    },
+    getTodo:(list,ck)=>{
+        //console.log(list);
+        if(list.length===0) return ck && ck();
+        const row=list.pop();
+        console.log(row);
+
+        file.read(row.file,(res)=>{
+            switch (row.suffix) {
+
+                case 'css':
+                    cache.css.push(res);
+                    break;
+    
+                case 'js':
+                    cache.js.push(res);
+                    break;
+    
+                default:
+                    const type=self.getType(row.suffix);
+                    const bs64=`data:${type};base64,${res}`;
+                    cache.resource[row.replace]=bs64;
+                    break;
+            }
+            return self.getTodo(list,ck);
+        },false,true);
+    },
+    getType:(suffix)=>{
+        const check=suffix.toLocaleLowerCase();
+        const img={
+            'jpg':'image/jpg',
+            'jpeg':'image/jpeg',
+            'gif':'image/gif',
+            'png':'image/png',
+            'svg':'image/svg+xml'
+        };
+        if(img[check]) return img[check];
+        return 'application';
     },
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
@@ -148,36 +205,44 @@ const self={
 };
 
 
-
+//1.read xconfig.json to get setting
 file.read(cfgFile,(xcfg)=>{
     if(xcfg.error) return console.log(xcfg.error, `Error: failed to load config file "${cfgFile}".`);
 
+    //2.read React asset file
     const asset="asset-manifest.json";
     const target=`${folder}/${asset}`;
     file.read(target,(react)=>{
         if(react.error) return console.log(`Can not load "${asset}".`);
         
+        //3.get target css and js file
         const entry=react.entrypoints;
         self.load(entry,()=>{
+
+            //4.check the public folder to get resouce and convert to Base64
             self.resource(folder,()=>{
                 console.log(`Resource is transformed.`);
 
-                
-
+                //5.write React project to Anchor Network
                 const list=[];
                 const related=xcfg.related;
                 const ver=xcfg.version;
 
-                //1.write css lib
-                //TODO, replace the resource here.
+                //5.1.write css lib
                 const protocol_css={"type": "lib","fmt": "css","ver":ver}
                 list.push({name:related.css,raw:cache.css.join(" "),protocol:protocol_css});
-
-                //2.write js lib
+                
+                //TODO, replace the resource here, to Base64
+                //5.2.write js lib
                 const protocol_js={"type": "lib","fmt": "js","ver":ver}
-                list.push({name:related.js,raw:cache.js.join(";"),protocol:protocol_js});
+                let code_js=cache.js.join(";");
+                for(var k in cache.resource){
+                    const reg=new RegExp(`${k}`,"g");
+                    code_js=code_js.replace(reg,cache.resource[k]);
+                }
+                list.push({name:related.js,raw:code_js,protocol:protocol_js});
 
-                //3.write app anchor
+                //5.3.write app anchor
                 const protocol={
                     "type": "app",
                     "fmt": "js",

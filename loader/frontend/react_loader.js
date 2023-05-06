@@ -19,14 +19,13 @@ let websocket=null;
 const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
-        console.log(`Ready to link to server ${server}.`);
+        self.html(`Ready to link to server ${server}.`,"more");
         const { ApiPromise, WsProvider } = require('@polkadot/api');
         const { Keyring } = require('@polkadot/api');
         
 
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
-            console.log(config.success,`Linker to node [${server}] created.`);
-
+            self.html(`Linker to node [${server}] created.`,"more");
             websocket = api;
             
             anchorJS.set(api);
@@ -39,20 +38,36 @@ const self={
             anchor:'plinth',                    //default launcher
             server:'ws://127.0.0.1:9944',       //default server
         }
-
+        if(!hash) return result;
         const arr=hash.split('@');
-        result.server=arr.pop();
-        result.anchor=arr[0].substring(1);
-        return result;
+        if(arr.length===1){
+            result.anchor=arr[0].substring(1);
+            return result;
+        }else{
+            result.server=arr.pop();
+            const str=arr.join("@");
+            result.anchor=str.substring(1);
+            return result;
+        }
     },
+    html:(txt,id)=>{
+        const ele=document.getElementById(id);
+        const info=document.createTextNode(txt)
+        ele.innerHTML='';
+        ele.appendChild(info);
+    },
+    hide:(id)=>{
+        const ele=document.getElementById(id);
+        ele.style.display = "none";
+    },  
 }
 const result=self.decoder(location.hash);
-console.log(result);
 const linker=`anchor://${result.anchor}/`;
 const server=result.server;
 
-//load target anchor as application 
-console.log(config.success,`Ready to decode Anchor Link : ${linker} .`);
+self.html(result.anchor,"target");
+
+//console.log(config.success,`Ready to decode Anchor Link : ${linker} .`);
 self.auto(()=>{
     const { easyRun } = require('../lib/easy.js');
     const startAPI = {
@@ -67,7 +82,7 @@ self.auto(()=>{
     };
     
     easyRun(linker,startAPI,(res) => {
-        //console.log(res);
+        //1.need to check the result;
         const js=res.libs.js;
         const css=res.libs.css;
         eval(js);
@@ -77,6 +92,13 @@ self.auto(()=>{
 		const cmap = document.createTextNode(css);
 		style.appendChild(cmap);
 		head.appendChild(style);
-        
+
+        //2.information output
+        const block=res.location[1],name=res.location[0];
+        const key=`${name}_${block}`;
+        const anchor=res.data[key];
+
+        self.html(`${name} on ${block.toLocaleString()}, signed by ${anchor.signer}`,"more");
+        self.hide("info");
     });
 });

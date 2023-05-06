@@ -32,12 +32,13 @@ const file={
 const source='index.html';
 const target='loader.html';
 const source_js='loader.min.js';
-const replace_js='<script src="loader.min.js">';
+const replace_js='<script src="loader.min.js"></script>';
 
 file.read(source,(txt)=>{
+    txt=txt.replace(replace_js,"");
+    txt=txt.replace('</html>',"");
     file.read(source_js,(js)=>{
-        const result=txt.replace(replace_js,'<script>'+js);
-        //console.log(result);
+        const result=`${txt}<script>${js}</script></html>`;
         file.save(target,result,()=>{
             console.log('Done!');
         });
