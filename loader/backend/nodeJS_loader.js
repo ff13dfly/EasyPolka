@@ -22,7 +22,7 @@ const linker=args[0];
 const server=!args[1]?"ws://127.0.0.1:9944":args[1];
 
 //library needed
-const { anchorJS } = require('./lib/anchor.js');
+const { anchorJS } = require('../lib/anchor.js');
 
 //websocket link to server
 let websocket=null;
@@ -49,7 +49,7 @@ const self={
 //load target anchor as application 
 console.log(config.success,`Ready to decode Anchor Link : ${linker} .`);
 self.auto(()=>{
-    const { easyRun } = require('./lib/easy.js');
+    const { easyRun } = require('../lib/easy.js');
     const startAPI = {
         common: {
             "latest": anchorJS.latest,

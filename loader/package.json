@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@polkadot/api": "^10.5.1",
-    "esbuild": "^0.17.18"
+    "esbuild": "^0.17.18",
+    "fs": "^0.0.1-security"
   }
 }
