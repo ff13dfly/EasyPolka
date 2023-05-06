@@ -21,15 +21,14 @@ const self={
         if(websocket!==null) return ck && ck();
         self.html(`Ready to link to server ${server}.`,"more");
         const { ApiPromise, WsProvider } = require('@polkadot/api');
-        const { Keyring } = require('@polkadot/api');
-        
+        //const { Keyring } = require('@polkadot/api');
 
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             self.html(`Linker to node [${server}] created.`,"more");
             websocket = api;
             
             anchorJS.set(api);
-            anchorJS.setKeyring(Keyring);
+            //anchorJS.setKeyring(Keyring);
             return ck && ck();
         });
     },

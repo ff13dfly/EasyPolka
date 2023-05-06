@@ -230,12 +230,15 @@ file.read(cfgFile,(xcfg)=>{
 
                 //5.1.write css lib
                 const protocol_css={"type": "lib","fmt": "css","ver":ver}
-                list.push({name:related.css,raw:cache.css.join(" "),protocol:protocol_css});
+                let code_css=cache.css.join(" ");
+                code_css=code_css.replace("sourceMappingURL=","")
+                list.push({name:related.css,raw:code_css,protocol:protocol_css});
                 
                 //TODO, replace the resource here, to Base64
                 //5.2.write js lib
                 const protocol_js={"type": "lib","fmt": "js","ver":ver}
                 let code_js=cache.js.join(";");
+                code_js=code_js.replace("sourceMappingURL=","")
                 for(var k in cache.resource){
                     const reg=new RegExp(`${k}`,"g");
                     code_js=code_js.replace(reg,cache.resource[k]);
