@@ -1,5 +1,7 @@
 //!important, Package index.html and loader.min.js together
 
+//node react_to_single.js
+
 const fs=require('fs');
 const file={
     read:(target,ck,toJSON)=>{
@@ -27,6 +29,16 @@ const file={
         });
         
     },
+
+    libs:(list,ck,txt)=>{
+        if(list.length===0) return ck && ck(txt);
+        if(!txt) txt=";";
+        const row=list.pop();
+        file.read(row,(js)=>{
+            txt+=js;
+            return file.libs(list,ck,txt);
+        });
+    },
 };
 
 const source='index.html';
@@ -34,13 +46,34 @@ const target='loader.html';
 const source_js='loader.min.js';
 const replace_js='<script src="loader.min.js"></script>';
 
+// const rms={
+//     "anchorJS":'<script src="lib/anchor.min.js"></script>',
+//     "Polkadot":'<script src="lib/polkadot.min.js"></script>',
+// }
+
+const ls={
+    "anchorJS":"lib/anchor.min.js",
+    "Polkadot":"lib/polkadot.min.js",
+}
+
 file.read(source,(txt)=>{
     txt=txt.replace(replace_js,"");
     txt=txt.replace('</html>',"");
-    file.read(source_js,(js)=>{
-        const result=`${txt}<script>${js}</script></html>`;
-        file.save(target,result,()=>{
-            console.log('Done!');
+    for(var k in ls){
+        var row=`<script src="${ls[k]}"></script>`;
+        txt=txt.replace(row,"");
+    }
+    
+    const list=[];
+    for(var k in ls)list.push(ls[k]);
+
+    file.libs(list,(code)=>{
+        file.read(source_js,(js)=>{
+            const result=`${txt}<script>${code}${js}</script></html>`;
+            file.save(target,result,()=>{
+                console.log('Done!');
+            });
         });
     });
+    
 });

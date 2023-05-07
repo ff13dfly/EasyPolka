@@ -1,13 +1,21 @@
 //!important, This is the loader of launcher such as `Plinth`.
 //!important, Need to build, the index.html not support hight version JS
 
-//../node_modules/.bin/esbuild react_loader.js --bundle --minify --outfile=loader.min.js
+// https://esbuild.github.io/api/
+// ../node_modules/.bin/esbuild react_loader.js --bundle --minify --outfile=loader.min.js
+
+
+//node_modules/.bin/esbuild index.js --bundle --minify --outfile=pok.min.js --global-name=Polkadot
+//node_modules/.bin/esbuild anchor.js --bundle --minify --outfile=anchor.min.js --global-name=anchorJS
 
 //Can load from local file.
 //file:///Users/fuzhongqiang/Desktop/loader.html#ppp@ws://127.0.0.1:9944
 
 //library needed
-const { anchorJS } = require('../lib/anchor.js');
+//console.log(anchorJS);
+//console.log(Polkadot);
+
+//const { anchorJS } = require('../lib/anchor.js');
 
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
@@ -20,15 +28,16 @@ const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
         self.html(`Ready to link to server ${server}.`,"more");
-        const { ApiPromise, WsProvider } = require('@polkadot/api');
-        //const { Keyring } = require('@polkadot/api');
-
+        
+        const ApiPromise=Polkadot.ApiPromise;
+        const WsProvider=Polkadot.WsProvider;
+        const Keyring=Polkadot.Keyring;
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             self.html(`Linker to node [${server}] created.`,"more");
             websocket = api;
             
             anchorJS.set(api);
-            //anchorJS.setKeyring(Keyring);
+            anchorJS.setKeyring(Keyring);
             return ck && ck();
         });
     },
