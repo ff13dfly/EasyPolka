@@ -16,7 +16,6 @@
 
 //!important, React Setting Needed.
 const { anchorJS } = require('../../lib/anchor.js');
-
 const fs=require('fs');
 
 //basic config for Loader
@@ -35,6 +34,8 @@ const config = {
             "logo512.png":true,
             "robots.txt":true,
             ".DS_Store":true,
+            "anchor.min.js":true,
+            "polkadot.min.js":true,
         },
         foler:{
             "js":true,
@@ -42,6 +43,7 @@ const config = {
         },
     },
     server:"ws://127.0.0.1:9944",
+    //server:"wss://dev.metanchor.net",
 };
 
 //arguments
@@ -236,25 +238,39 @@ file.read(cfgFile,(xcfg)=>{
                 
                 //TODO, replace the resource here, to Base64
                 //5.2.write js lib
-                const protocol_js={"type": "lib","fmt": "js","ver":ver}
+                // const protocol_js={"type": "lib","fmt": "js","ver":ver}
+                // let code_js=cache.js.join(";");
+                // code_js=code_js.replace("sourceMappingURL=","")
+                // for(var k in cache.resource){
+                //     const reg=new RegExp(`${k}`,"g");
+                //     code_js=code_js.replace(reg,cache.resource[k]);
+                // }
+                // list.push({name:related.js,raw:code_js,protocol:protocol_js});
+
+                //5.3.write app anchor
+                const ls=[];
+                if(xcfg.libs){
+                    for(let i=0;i<xcfg.libs.length;i++){
+                        ls.push(xcfg.libs[i]);
+                    }
+                }
+                ls.push(related.css);
+                //ls.push(related.js);
+                const protocol={
+                    "type": "app",
+                    "fmt": "js",
+                    "lib":ls,
+                    "ver":ver,
+                    "tpl":"react"
+                }
                 let code_js=cache.js.join(";");
                 code_js=code_js.replace("sourceMappingURL=","")
                 for(var k in cache.resource){
                     const reg=new RegExp(`${k}`,"g");
                     code_js=code_js.replace(reg,cache.resource[k]);
                 }
-                list.push({name:related.js,raw:code_js,protocol:protocol_js});
-
-                //5.3.write app anchor
-                const protocol={
-                    "type": "app",
-                    "fmt": "js",
-                    "lib":[related.css,related.js],
-                    "ver":ver,
-                    "tpl":"react"
-                }
-                const code=``;
-                list.push({name:xcfg.name,raw:code,protocol:protocol});
+                //const code=``;
+                list.push({name:xcfg.name,raw:code_js,protocol:protocol});
                 self.auto(()=>{
                     const seed='Dave';
                     const { Keyring } = require('@polkadot/api');

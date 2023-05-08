@@ -16,7 +16,6 @@
 
 //!important, React Setting Needed.
 const { anchorJS } = require('../../lib/anchor.js');
-
 const fs=require('fs');
 
 //basic config for Loader
@@ -35,6 +34,8 @@ const config = {
             "logo512.png":true,
             "robots.txt":true,
             ".DS_Store":true,
+            "anchor.min.js":true,
+            "polkadot.min.js":true,
         },
         foler:{
             "js":true,
@@ -42,6 +43,7 @@ const config = {
         },
     },
     server:"ws://127.0.0.1:9944",
+    //server:"wss://dev.metanchor.net",
 };
 
 //arguments
@@ -141,8 +143,8 @@ const self={
         console.log(row);
 
         file.read(row.file,(res)=>{
+            //console.log(res);
             switch (row.suffix) {
-
                 case 'css':
                     cache.css.push(res);
                     break;
@@ -158,7 +160,7 @@ const self={
                     break;
             }
             return self.getTodo(list,ck);
-        },false,true);
+        },false,(row.suffix!=='js'&&row.suffix!=='css')?true:false);
     },
     getType:(suffix)=>{
         const check=suffix.toLocaleLowerCase();
@@ -222,7 +224,7 @@ file.read(cfgFile,(xcfg)=>{
             //4.check the public folder to get resouce and convert to Base64
             self.resource(folder,()=>{
                 console.log(`Resource is transformed.`);
-
+                //return false;
                 //5.write React project to Anchor Network
                 const list=[];
                 const related=xcfg.related;
@@ -246,10 +248,18 @@ file.read(cfgFile,(xcfg)=>{
                 list.push({name:related.js,raw:code_js,protocol:protocol_js});
 
                 //5.3.write app anchor
+                const ls=[];
+                if(xcfg.libs){
+                    for(let i=0;i<xcfg.libs.length;i++){
+                        ls.push(xcfg.libs[i]);
+                    }
+                }
+                ls.push(related.css);
+                ls.push(related.js);
                 const protocol={
                     "type": "app",
                     "fmt": "js",
-                    "lib":[related.css,related.js],
+                    "lib":ls,
                     "ver":ver,
                     "tpl":"react"
                 }

@@ -4,18 +4,12 @@
 // https://esbuild.github.io/api/
 // ../node_modules/.bin/esbuild react_loader.js --bundle --minify --outfile=loader.min.js
 
-
 //node_modules/.bin/esbuild index.js --bundle --minify --outfile=pok.min.js --global-name=Polkadot
 //node_modules/.bin/esbuild anchor.js --bundle --minify --outfile=anchor.min.js --global-name=anchorJS
 
 //Can load from local file.
 //file:///Users/fuzhongqiang/Desktop/loader.html#ppp@ws://127.0.0.1:9944
 
-//library needed
-//console.log(anchorJS);
-//console.log(Polkadot);
-
-//const { anchorJS } = require('../lib/anchor.js');
 
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
@@ -29,6 +23,7 @@ const self={
         if(websocket!==null) return ck && ck();
         self.html(`Ready to link to server ${server}.`,"more");
         
+        //TODO, need to modify the name `Polkadot`, invoid to overwrite the plinth libs
         const ApiPromise=Polkadot.ApiPromise;
         const WsProvider=Polkadot.WsProvider;
         const Keyring=Polkadot.Keyring;
@@ -36,6 +31,7 @@ const self={
             self.html(`Linker to node [${server}] created.`,"more");
             websocket = api;
             
+            //TODO, need to modify the name `anchorJS`, invoid to overwrite the plinth libs
             anchorJS.set(api);
             anchorJS.setKeyring(Keyring);
             return ck && ck();
@@ -90,22 +86,31 @@ self.auto(()=>{
     };
     
     easyRun(linker,startAPI,(res) => {
-        //1.need to check the result;
-        const js=res.libs.js;
-        const css=res.libs.css;
-        eval(js);
+        //1.needed css libs
+        if(res.libs && res.libs.js){
+            const js=res.libs.js;
+            eval(js);
+        }
+        
+        //2.needed js libs
+        if(res.libs && res.libs.css){
+            const css=res.libs.css;
+            const head = document.getElementsByTagName('head')[0];
+		    const style = document.createElement('style');
+		    const cmap = document.createTextNode(css);
+		    style.appendChild(cmap);
+		    head.appendChild(style);
+        }
 
-        const head = document.getElementsByTagName('head')[0];
-		const style = document.createElement('style');
-		const cmap = document.createTextNode(css);
-		style.appendChild(cmap);
-		head.appendChild(style);
-
-        //2.information output
+        //3.app code
+        if(res.code){
+            eval(res.code);
+        }
+        
+        //4.information output
         const block=res.location[1],name=res.location[0];
         const key=`${name}_${block}`;
         const anchor=res.data[key];
-
         self.html(`${name} on ${block.toLocaleString()}, signed by ${anchor.signer}`,"more");
         self.hide("info");
     });
