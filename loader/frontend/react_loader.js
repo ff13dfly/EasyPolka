@@ -104,7 +104,8 @@ self.auto(()=>{
 
         //3.app code
         if(res.code){
-            eval(res.code);
+            const capp=new Function("a","b","c",res.code);
+            capp({},{},{});
         }
         
         //4.information output

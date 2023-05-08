@@ -42,8 +42,8 @@ const config = {
             "css":true,
         },
     },
-    server:"ws://127.0.0.1:9944",
-    //server:"wss://dev.metanchor.net",
+    //server:"ws://127.0.0.1:9944",
+    server:"wss://dev.metanchor.net",
 };
 
 //arguments

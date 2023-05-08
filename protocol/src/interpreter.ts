@@ -2,6 +2,9 @@
 //!important All data come from `Anchor Link`
 //!important This implement extend `auth` and `hide` by salt way to load data
 
+//../node_modules/.bin/esbuild interpreter.js --bundle --minify --outfile=../dist/easy.min.js --global-name=easy
+//../node_modules/.bin/esbuild interpreter.js --bundle --minify --outfile=../dist/easy.js
+
 import { anchorLocation,anchorObject,errorObject,APIObject,easyResult } from "./protocol";
 import { rawType,errorLevel} from "./protocol";
 import { keywords,authAddress,authTrust,anchorMap,relatedIndex} from "./protocol";

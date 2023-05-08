@@ -6,7 +6,8 @@ const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
     folder:     "release",
-    server:     "ws://127.0.0.1:9944",
+    //server:     "ws://127.0.0.1:9944",
+    server:     "wss://dev.metanchor.net",
 };
 // file reader
 const file={
