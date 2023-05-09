@@ -6,7 +6,7 @@
         "css":"p_css",
         "resource":"p_res"
     },
-    "libs":["polkadot","anchorjs"],
+    "libs":["polkadot","anchorjs","easy"],
     "account":{
 
     },

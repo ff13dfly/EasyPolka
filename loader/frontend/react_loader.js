@@ -14,7 +14,15 @@
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
+    anchor:     'plinth',
+    server:     'ws://127.0.0.1:9944',
 };
+
+//get the global
+const Polkadot=P;
+const anchorJS=A;
+const easyRun=E.easyRun;
+const ApiPromise=Polkadot.ApiPromise,WsProvider=Polkadot.WsProvider,Keyring=Polkadot.Keyring;
 
 //websocket link to server
 let websocket=null;
@@ -22,16 +30,9 @@ const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
         self.html(`Ready to link to server ${server}.`,"more");
-        
-        //TODO, need to modify the name `Polkadot`, invoid to overwrite the plinth libs
-        const ApiPromise=Polkadot.ApiPromise;
-        const WsProvider=Polkadot.WsProvider;
-        const Keyring=Polkadot.Keyring;
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             self.html(`Linker to node [${server}] created.`,"more");
             websocket = api;
-            
-            //TODO, need to modify the name `anchorJS`, invoid to overwrite the plinth libs
             anchorJS.set(api);
             anchorJS.setKeyring(Keyring);
             return ck && ck();
@@ -39,8 +40,8 @@ const self={
     },
     decoder:(hash)=>{
         const result={
-            anchor:'plinth',                    //default launcher
-            server:'ws://127.0.0.1:9944',       //default server
+            anchor:config.anchor, 
+            server:config.server,
         }
         if(!hash) return result;
         const arr=hash.split('@');
@@ -73,7 +74,6 @@ self.html(result.anchor,"target");
 
 //console.log(config.success,`Ready to decode Anchor Link : ${linker} .`);
 self.auto(()=>{
-    const { easyRun } = require('../lib/easy.js');
     const startAPI = {
         common: {
             "latest": anchorJS.latest,
@@ -86,13 +86,17 @@ self.auto(()=>{
     };
     
     easyRun(linker,startAPI,(res) => {
-        //1.needed css libs
+        //console.log(res);
         if(res.libs && res.libs.js){
             const js=res.libs.js;
-            eval(js);
+            //FIXME, need global support now, need to remove this. 
+            //Easy way is to replace `window.Polkadot` to `Polkadot` in the react compiled JS file
+
+            //This code added the libs to window, then react application can call them.
+            const gb='window.Polkadot=Polkadot;window.anchorJS=anchorJS;window.easy=easy;';
+            eval(js+gb);
         }
-        
-        //2.needed js libs
+
         if(res.libs && res.libs.css){
             const css=res.libs.css;
             const head = document.getElementsByTagName('head')[0];
@@ -105,8 +109,9 @@ self.auto(()=>{
         //3.app code
         if(res.code){
             const capp=new Function("a","b","c",res.code);
-            capp({},{},{});
+            capp({},{node:result.server},[]);
         }
+
         
         //4.information output
         const block=res.location[1],name=res.location[0];

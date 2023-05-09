@@ -35,6 +35,7 @@ const config = {
             "robots.txt":true,
             ".DS_Store":true,
             "anchor.min.js":true,
+            "easy.min.js":true,
             "polkadot.min.js":true,
         },
         foler:{
@@ -42,8 +43,8 @@ const config = {
             "css":true,
         },
     },
-    //server:"ws://127.0.0.1:9944",
-    server:"wss://dev.metanchor.net",
+    server:"ws://127.0.0.1:9944",
+    //server:"wss://dev.metanchor.net",
 };
 
 //arguments
@@ -235,19 +236,8 @@ file.read(cfgFile,(xcfg)=>{
                 let code_css=cache.css.join(" ");
                 code_css=code_css.replace("sourceMappingURL=","")
                 list.push({name:related.css,raw:code_css,protocol:protocol_css});
-                
-                //TODO, replace the resource here, to Base64
-                //5.2.write js lib
-                // const protocol_js={"type": "lib","fmt": "js","ver":ver}
-                // let code_js=cache.js.join(";");
-                // code_js=code_js.replace("sourceMappingURL=","")
-                // for(var k in cache.resource){
-                //     const reg=new RegExp(`${k}`,"g");
-                //     code_js=code_js.replace(reg,cache.resource[k]);
-                // }
-                // list.push({name:related.js,raw:code_js,protocol:protocol_js});
 
-                //5.3.write app anchor
+                //5.2.write app anchor
                 const ls=[];
                 if(xcfg.libs){
                     for(let i=0;i<xcfg.libs.length;i++){
@@ -255,7 +245,6 @@ file.read(cfgFile,(xcfg)=>{
                     }
                 }
                 ls.push(related.css);
-                //ls.push(related.js);
                 const protocol={
                     "type": "app",
                     "fmt": "js",
@@ -269,7 +258,7 @@ file.read(cfgFile,(xcfg)=>{
                     const reg=new RegExp(`${k}`,"g");
                     code_js=code_js.replace(reg,cache.resource[k]);
                 }
-                //const code=``;
+                
                 list.push({name:xcfg.name,raw:code_js,protocol:protocol});
                 self.auto(()=>{
                     const seed='Dave';

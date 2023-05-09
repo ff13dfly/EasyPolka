@@ -6,8 +6,8 @@ const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
     folder:     "release",
-    //server:     "ws://127.0.0.1:9944",
-    server:     "wss://dev.metanchor.net",
+    server:     "ws://127.0.0.1:9944",
+    //server:     "wss://dev.metanchor.net",
 };
 // file reader
 const file={
@@ -33,8 +33,9 @@ const file={
 };
 
 const libs={
-    "anchorjs":"anchor.min.js",
-    "polkadot":"polkadot.min.js",
+    //"anchorjs":"anchor.min.js",
+    //"polkadot":"polkadot.min.js",
+    "easy":"easy.min.js",
 }
 
 let websocket=null;
