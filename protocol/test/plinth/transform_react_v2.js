@@ -43,6 +43,7 @@ const config = {
             "css":true,
         },
     },
+    globalVars:["Polkadot","anchorJS","easy"],
     server:"ws://127.0.0.1:9944",
     //server:"wss://dev.metanchor.net",
 };
@@ -252,14 +253,27 @@ file.read(cfgFile,(xcfg)=>{
                     "ver":ver,
                     "tpl":"react"
                 }
+
+                //5.3.clean and merge the code
+                //a.remove sourceMapping support
                 let code_js=cache.js.join(";");
                 code_js=code_js.replace("sourceMappingURL=","")
                 for(var k in cache.resource){
                     const reg=new RegExp(`${k}`,"g");
                     code_js=code_js.replace(reg,cache.resource[k]);
                 }
+
+                //b.replace the global 
+                const g_list=config.globalVars;
+                for(let i=0;i<g_list.length;i++){
+                    const row=g_list[i];
+                   // console.log(`window.${row}`);
+                    const reg=new RegExp(`window.${row}`,"g");
+                    code_js=code_js.replace(reg,row);
+                }
                 
                 list.push({name:xcfg.name,raw:code_js,protocol:protocol});
+
                 self.auto(()=>{
                     const seed='Dave';
                     const { Keyring } = require('@polkadot/api');
