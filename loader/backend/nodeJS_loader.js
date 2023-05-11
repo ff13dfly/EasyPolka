@@ -2,18 +2,18 @@
 //!important, The breif rule is treating it as cache service and can be stopped anytime.
 //!important, Load unkown `node on-chain application` will face security problem.
 
-//node demo_loader.js anchor://node_me/ ws://127.0.0.1:9944
-
-//package command, `esbuild` needed.
-//yarn add esbuild
-//../node_modules/.bin/esbuild nodeJS_loader.js --bundle --minify --outfile=nodeJS.loader.min.js --platform=node
-//node nodeJS.loader.min.js anchor://node_me/ ws://127.0.0.1:9944
+//../node_modules/.bin/esbuild nodeJS_loader.js --bundle --minify --outfile=nodeJS.min.js --platform=node
+//../node_modules/.bin/esbuild nodeJS_loader.js --minify --outfile=nodeJS.min.js --platform=node
+//node nodeJS_loader.js anchor://node_me/ ws://127.0.0.1:9944
+//node nodeJS.min.js anchor://node_me/ ws://127.0.0.1:9944
 
 //basic config for Loader
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
 };
+
+const fs=require('fs');
 
 //arguments
 const args = process.argv.slice(2);
@@ -22,7 +22,7 @@ const linker=args[0];
 const server=!args[1]?"ws://127.0.0.1:9944":args[1];
 
 //library needed
-const { anchorJS } = require('../lib/anchor.js');
+const anchorJS = require('../lib/anchor.js');
 
 //websocket link to server
 let websocket=null;
