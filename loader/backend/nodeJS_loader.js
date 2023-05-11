@@ -3,7 +3,7 @@
 //!important, Load unkown `node on-chain application` will face security problem.
 
 //../node_modules/.bin/esbuild nodeJS_loader.js --bundle --minify --outfile=nodeJS.min.js --platform=node
-//../node_modules/.bin/esbuild nodeJS_loader.js --minify --outfile=nodeJS.min.js --platform=node
+//../node_modules/.bin/esbuild nodeJS_loader.js --minify --outfile=runner.min.js --platform=node
 //node nodeJS_loader.js anchor://node_me/ ws://127.0.0.1:9944
 //node nodeJS.min.js anchor://node_me/ ws://127.0.0.1:9944
 
@@ -11,6 +11,7 @@
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
+    run:        true,
 };
 
 const fs=require('fs');
@@ -22,7 +23,19 @@ const linker=args[0];
 const server=!args[1]?"ws://127.0.0.1:9944":args[1];
 
 //library needed
-const anchorJS = require('../lib/anchor.js');
+let {anchorJS} = require('../lib/anchor.js');
+let { ApiPromise, WsProvider } = require('@polkadot/api');
+let { Keyring } = require('@polkadot/api');
+let { easyRun } = require('../lib/easy.js');
+
+if(!config.run){
+    ApiPromise=Polkadot.ApiPromise;
+    WsProvider=Polkadot.WsProvider;
+    Keyring=Polkadot.Keyring;
+    easyRun=Easy.easyRun;
+    anchorJS=Anchor;
+}
+
 
 //websocket link to server
 let websocket=null;
@@ -30,15 +43,11 @@ const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
         console.log(`Ready to link to server ${server}.`);
-        const { ApiPromise, WsProvider } = require('@polkadot/api');
-        const { Keyring } = require('@polkadot/api');
         
-
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             console.log(config.success,`Linker to node [${server}] created.`);
 
             websocket = api;
-            
             anchorJS.set(api);
             anchorJS.setKeyring(Keyring);
             return ck && ck();
@@ -49,7 +58,6 @@ const self={
 //load target anchor as application 
 console.log(config.success,`Ready to decode Anchor Link : ${linker} .`);
 self.auto(()=>{
-    const { easyRun } = require('../lib/easy.js');
     const startAPI = {
         common: {
             "latest": anchorJS.latest,
@@ -60,7 +68,7 @@ self.auto(()=>{
             "block": anchorJS.block,
         }
     };
-    
+
     easyRun(linker,startAPI,(result) => {
         //!important, these functions limit the application
         //setup the APIs for application.
