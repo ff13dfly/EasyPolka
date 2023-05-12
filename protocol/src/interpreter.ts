@@ -12,8 +12,7 @@ import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth,checkTrust } from "./auth";
 import { checkHide } from "./hide";
 
-const {Libs} = require("../lib/loader");
-//const {anchorJS} =require("../lib/anchor");
+const {Libs} = require("../../anchorJS/publish/loader");
 
 let API:APIObject=null;
 

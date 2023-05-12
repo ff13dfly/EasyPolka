@@ -3,7 +3,7 @@
 
 import { ApiPromise, WsProvider,Keyring } from '@polkadot/api';
 import { easyRun } from "../src/interpreter";
-const {anchorJS} =require("../lib/anchor");
+const anchorJS =require("../../anchorJS/publish/anchor");
 
 const API={
     "common":{

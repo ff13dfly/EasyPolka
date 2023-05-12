@@ -1,7 +1,7 @@
 //!important, this is the demo of loading node.js lib from anchor
 
-console.log(module);
-return false;
+// console.log(module);
+// return false;
 
 const fun_raw=(name)=>{
     console.log("hello,"+name);

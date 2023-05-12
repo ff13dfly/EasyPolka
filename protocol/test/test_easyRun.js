@@ -4,7 +4,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var api_1 = require("@polkadot/api");
 var interpreter_1 = require("../src/interpreter");
-var anchorJS = require("../lib/anchor").anchorJS;
+var anchorJS = require("../../anchorJS/publish/anchor");
 var API = {
     "common": {
         "latest": anchorJS.latest,
