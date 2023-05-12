@@ -21,46 +21,63 @@ const file={
 };
 
 const self={
-    getLibs:(list,ck,code)=>{
-        if(!code) code="";
-        if(list.length===0) return ck && ck(code);
+    getLibs:(list,ck,map)=>{
+        
+        if(!map) map={};
+        if(list.length===0) return ck && ck(map);
         const row=list.pop();
-        file.read(row,(res)=>{
-            code+=res;
-            return self.getLibs(list,ck,code);
+        //console.log(row);
+        //return false;
+        file.read(row.file,(res)=>{
+            map[row.name]=res;
+            return self.getLibs(list,ck,map);
         });
     },
 }
 
-const folder="lib";
-const libs=[
-    "polkadot.min.js",
-    "anchor.min.js",
-    "easy.min.js",
-];
+const folder="../../package/node/";
+const libs={
+    "Polkadot":"polkadot.node.js",
+    "anchorJS":"anchor.node.js",
+    "easy":"easy.node.js",
+}
 const runner="runner.min.js";
 const target="nodeJS_loader.min.js";
 
 //1.get the libs code
 const list=[];
-for(let i=0;i<libs.length;i++){
-    const row=libs[i];
-    list.push(`${folder}/${row}`);
+for(let k in libs){
+    const row=libs[k];
+    list.push({file:`${folder}/${row}`,name:k});
 }
-self.getLibs(list,(code)=>{
-    
-    //2.get the running code
-    file.read(runner,(run)=>{
-        //console.log(run);
 
-        const str=`;(function(){${code};${run}})()`;
-        file.save(target,str,(res)=>{
-            if(res!==true && res.error){
-                return console.log(res);
-            }
-            console.log(`Done! The node.js loader of Anchor Network is "${target}"`);
-            console.log(`You can run the follow command to test.\n\nnode ${target} anchor://{anchor_name}\n`);
-        });
-    })
+self.getLibs(list,(code)=>{
+    //console.log(code);
+    for(var k in code){
+        console.log(k);
+        const row=code[k];
+
+    }
+
+    // require("../../package/node/anchor.node")
+
+    // try {
+    //     const fun = eval(code);
+    //     console.log(fun);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
+    //2.get the running code
+    // file.read(runner,(run)=>{
+    //     const str=`;(function(){${code};${run}})()`;
+    //     file.save(target,str,(res)=>{
+    //         if(res!==true && res.error){
+    //             return console.log(res);
+    //         }
+    //         console.log(`Done! The node.js loader of Anchor Network is "${target}"`);
+    //         console.log(`You can run the follow command to test.\n\nnode ${target} anchor://{anchor_name}\n`);
+    //     });
+    // })
 });
 

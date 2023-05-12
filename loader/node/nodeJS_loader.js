@@ -11,7 +11,7 @@
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
-    run:        true,
+    //run:        true,
 };
 
 const fs=require('fs');
@@ -23,19 +23,10 @@ const linker=args[0];
 const server=!args[1]?"ws://127.0.0.1:9944":args[1];
 
 //library needed
-let {anchorJS} = require('../lib/anchor.js');
-let { ApiPromise, WsProvider } = require('@polkadot/api');
-let { Keyring } = require('@polkadot/api');
-let { easyRun } = require('../lib/easy.js');
-
-if(!config.run){
-    ApiPromise=Polkadot.ApiPromise;
-    WsProvider=Polkadot.WsProvider;
-    Keyring=Polkadot.Keyring;
-    easyRun=Easy.easyRun;
-    anchorJS=Anchor;
-}
-
+const anchorJS= require('../../package/node/anchor.node');
+const { ApiPromise, WsProvider } = require('../../package/node/polkadot.node');
+const { Keyring } = require('../../package/node/polkadot.node');
+const { easyRun } = require('../../package/node/easy.node');
 
 //websocket link to server
 let websocket=null;

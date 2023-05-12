@@ -1,14 +1,14 @@
-const anchorJS = require('./node/anchor.node.js');
-const fs=require('fs');
+const { ApiPromise, WsProvider } = require('../node/polkadot.node.js');
+const { Keyring } = require('../node/polkadot.node.js');
+const anchorJS = require('../node/anchor.node.js');
 
-//console.log(anchorJS);
-//return false;
+const fs=require('fs');
 
 //basic config for Loader
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
-    folder:     "frontend",
+    folder:     "../node",
     server:     "ws://127.0.0.1:9944",
     //server:     "wss://dev.metanchor.net",
 };
@@ -36,9 +36,9 @@ const file={
 };
 
 const libs={
-    "anchorjs":"anchor.min.js",
-    "polkadot":"polkadot.min.js",
-    "easy":"easy.min.js",
+    "anchorjs":"anchor.node.js",
+    "polkadot":"polkadot.node.js",
+    "easy":"easy.node.js",
 }
 
 let websocket=null;
@@ -47,8 +47,8 @@ const self={
         if(websocket!==null) return ck && ck();
         const server=config.server;
         console.log(`Ready to link to server ${server}.`);
-        const { ApiPromise, WsProvider } = require('@polkadot/api');
-        const { Keyring } = require('@polkadot/api');
+
+        
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             console.log(config.success,`Linker to node [${server}] created.`);
 
@@ -85,15 +85,14 @@ const self={
 
 self.load(libs,(codes)=>{
     self.auto(()=>{
-        const seed='Dave';
-        const { Keyring } = require('@polkadot/api');
+        const seed='Alice';
         const ks = new Keyring({ type: 'sr25519' });
         const pair= ks.addFromUri(`//${seed}`);
 
         const list=[];
         for(let k in codes){
             const code=codes[k];
-            list.push({name:k,raw:code,protocol:{"type": "lib","fmt": "js","ver":"1.0.0"}});
+            list.push({name:'node_'+k,raw:code,protocol:{"type": "lib","fmt": "js","ver":"1.0.0"}});
         }
 
         self.multi(list,()=>{
