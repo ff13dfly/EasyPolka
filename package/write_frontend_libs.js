@@ -1,11 +1,14 @@
-const { anchorJS } = require('./lib/anchor.js');
+const anchorJS = require('./node/anchor.node.js');
 const fs=require('fs');
+
+//console.log(anchorJS);
+//return false;
 
 //basic config for Loader
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
-    folder:     "release",
+    folder:     "frontend",
     server:     "ws://127.0.0.1:9944",
     //server:     "wss://dev.metanchor.net",
 };
@@ -33,8 +36,8 @@ const file={
 };
 
 const libs={
-    //"anchorjs":"anchor.min.js",
-    //"polkadot":"polkadot.min.js",
+    "anchorjs":"anchor.min.js",
+    "polkadot":"polkadot.min.js",
     "easy":"easy.min.js",
 }
 
@@ -80,11 +83,7 @@ const self={
     },
 };
 
-
-
-
 self.load(libs,(codes)=>{
-    //console.log(codes);
     self.auto(()=>{
         const seed='Dave';
         const { Keyring } = require('@polkadot/api');

@@ -4,9 +4,6 @@
 // https://esbuild.github.io/api/
 // ../node_modules/.bin/esbuild react_loader.js --bundle --minify --outfile=loader.min.js
 
-//node_modules/.bin/esbuild index.js --bundle --minify --outfile=pok.min.js --global-name=Polkadot
-//node_modules/.bin/esbuild anchor.js --bundle --minify --outfile=anchor.min.js --global-name=anchorJS
-
 //Can load from local file.
 //file:///Users/fuzhongqiang/Desktop/loader.html#ppp@ws://127.0.0.1:9944
 
@@ -19,9 +16,9 @@ const config = {
 };
 
 //get the global
-const Polkadot=P;
-const anchorJS=A;
-const easyRun=E.easyRun;
+const Polkadot=LP;
+const anchorJS=LA;
+const easyRun=LE.easyRun;
 const ApiPromise=Polkadot.ApiPromise,WsProvider=Polkadot.WsProvider,Keyring=Polkadot.Keyring;
 
 //websocket link to server
@@ -87,6 +84,19 @@ self.auto(()=>{
     
     easyRun(linker,startAPI,(res) => {
         console.log(res);
+        if(res.error && res.error.length!==0){
+            let txt='';
+            for(let i=0;i<res.error.length;i++){
+                const row=res.error[i];
+                txt+=`${row.level?(row.level+":"):""}${row.error}`;
+            }
+            
+            self.html(txt,"info");
+            delete res.error;
+            self.html(`${JSON.stringify(res)}`,"root");
+            return false;
+        }
+        
         if(res.libs && res.libs.js){
             const js=res.libs.js;
             //FIXME, need global support now, need to remove this. 

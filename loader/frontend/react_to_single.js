@@ -46,14 +46,10 @@ const target='loader.html';
 const source_js='loader.min.js';
 const replace_js='<script src="loader.min.js"></script>';
 
-// const rms={
-//     "anchorJS":'<script src="lib/anchor.min.js"></script>',
-//     "Polkadot":'<script src="lib/polkadot.min.js"></script>',
-// }
-
 const ls={
-    "anchorJS":"lib/anchor.min.js",
-    "Polkadot":"lib/polkadot.min.js",
+    "anchorJS":"../../package/loader/anchor.loader.js",
+    "Polkadot":"../../package/loader/polkadot.loader.js",
+    "Easy":"../../package/loader/easy.loader.js",
 }
 
 file.read(source,(txt)=>{
