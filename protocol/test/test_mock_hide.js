@@ -4,10 +4,13 @@
 //#run this mock.
 //node test_mock_data.js
 
-const { ApiPromise, WsProvider } =require('@polkadot/api');
-const { Keyring } =require('@polkadot/api');
-const {anchorJS} = require('../lib/anchor.js');
-const {easyRun} = require('../dist/easy.js');
+// const { ApiPromise, WsProvider } =require('@polkadot/api');
+// const { Keyring } =require('@polkadot/api');
+
+const { ApiPromise, WsProvider,Keyring} = require('../../package/node/polkadot.node.js');
+
+const anchorJS = require('../../package/node/anchor.node');
+const {easyRun} = require('../../package/node/easy.node');
 const md5 =require("md5");
 
 const config={
@@ -223,24 +226,22 @@ function hide_called_capp(index,ck){
     list.push({name:anchor,raw:txt+self.randomData(),protocol:protocol});
 
     self.multi(list,()=>{
-        anchorJS.history(auth_anchor,(history_auth)=>{
-            anchorJS.history(anchor,(history_app)=>{
-                const alist=[];
+        anchorJS.history(anchor,(history_app)=>{
+            const alist=[];
 
-                //3.hide the latest app anchor
-                const block_1=history_app[0].block;
-                const block_2=history_app[1].block;
-                const hide_anchor="call_hide";
-                const hide_raw=[block_1,block_2];
-                const hide_protocol={"type":"data","fmt":"json"};
-                alist.push({name:hide_anchor,raw:hide_raw,protocol:hide_protocol});
+            //3.hide the latest app anchor
+            const block_1=history_app[0].block;
+            const block_2=history_app[1].block;
+            const hide_anchor="call_hide";
+            const hide_raw=[block_1,block_2];
+            const hide_protocol={"type":"data","fmt":"json"};
+            alist.push({name:hide_anchor,raw:hide_raw,protocol:hide_protocol});
 
-                self.multi(alist,()=>{
-                    const end=self.stamp();
-                    console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
-                    return ck && ck();
-                },index,pair);
-            });
+            self.multi(alist,()=>{
+                const end=self.stamp();
+                console.log(config.color,`[${index}] ${end}, cost: ${end-start} ms \n ------------------------------`);
+                return ck && ck();
+            },index,pair);
         });
     },index,pair);
 }

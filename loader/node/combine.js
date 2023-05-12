@@ -37,9 +37,9 @@ const self={
 
 const folder="../../package/node/";
 const libs={
-    "Polkadot":"polkadot.node.js",
-    "anchorJS":"anchor.node.js",
+    //"Polkadot":"polkadot.node.js",
     "easy":"easy.node.js",
+    //"anchorJS":"anchor.node.js",   
 }
 const runner="runner.min.js";
 const target="nodeJS_loader.min.js";
@@ -51,13 +51,24 @@ for(let k in libs){
     list.push({file:`${folder}/${row}`,name:k});
 }
 
-self.getLibs(list,(code)=>{
-    //console.log(code);
-    for(var k in code){
-        console.log(k);
-        const row=code[k];
-
-    }
+self.getLibs(list,(codes)=>{
+    for(var k in codes){
+        //console.log(k);
+        //str+=code[k];
+        try {
+            eval(codes[k]);
+            console.log(module);
+            //console.log(module.exports);
+        } catch (error) {
+            console.log(error);
+        }
+    } 
+    // try {
+    //     eval(str);
+    //     console.log(module.exports);
+    // } catch (error) {
+    //     console.log(error);
+    // }
 
     // require("../../package/node/anchor.node")
 

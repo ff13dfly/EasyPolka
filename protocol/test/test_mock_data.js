@@ -6,7 +6,7 @@
 
 const { ApiPromise, WsProvider } =require('@polkadot/api');
 const { Keyring } =require('@polkadot/api');
-const {anchorJS} = require('../lib/anchor.js');
+const anchorJS = require('../../anchorJS/publish/anchor');
 const md5 =require("md5");
 
 const config={

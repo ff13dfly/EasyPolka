@@ -700,6 +700,7 @@ const self = {
 //!important, need to exports like this. Esbuild command like this
 //!important, yarn add esbuild
 //!important, ../playground/node_modules/.bin/esbuild anchor.js --bundle --minify --outfile=anchor.min.js --global-name=anchorJS
+console.log(exports);
 
 exports.set=self.setWebsocket;
 exports.setKeyring=self.setKeyring;

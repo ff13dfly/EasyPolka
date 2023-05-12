@@ -6,8 +6,8 @@
 
 const { ApiPromise, WsProvider } =require('@polkadot/api');
 const { Keyring } =require('@polkadot/api');
-const {anchorJS} = require('../lib/anchor.js');
-const {easyRun} = require('../dist/easy.js');
+const anchorJS = require('../../package/node/anchor.node');
+const {easyRun} = require('../../package/node/easy.node');
 const md5 =require("md5");
 
 const config={

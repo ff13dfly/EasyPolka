@@ -1,0 +1,29 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn add moleculer
+
+PATH: 
+  /usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/fuzhongqiang/.cargo/bin:/usr/local/opt/go@1.9/bin
+
+Yarn version: 
+  1.22.11
+
+Node version: 
+  19.6.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/moleculer: ETIMEDOUT
+      at Timeout._onTimeout (/usr/local/lib/node_modules/yarn/lib/cli.js:141423:19)
+      at listOnTimeout (node:internal/timers:568:17)
+      at process.processTimers (node:internal/timers:511:7)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
