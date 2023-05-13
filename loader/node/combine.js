@@ -39,7 +39,7 @@ const folder="../../package/node/";
 const libs={
     "easy":"easy.node.js",
     "anchorJS":"anchor.node.js",   
-    "Polkadot":"polkadot.node.js",
+    "polkadot":"polkadot.node.js",
 }
 const runner="runner.min.js";
 const target="nodeJS_loader.min.js";
@@ -51,18 +51,43 @@ for(let k in libs){
     list.push({file:`${folder}/${row}`,name:k});
 }
 
-self.getLibs(list,(codes)=>{
-    for(var k in codes){
-        //console.log(k);
-        //str+=code[k];
-        try {
-            eval(codes[k]);
-            console.log(module.exports);
-            //console.log(module.exports);
-        } catch (error) {
-            console.log(error);
+file.read(runner,(run)=>{
+    //console.log(run);
+    self.getLibs(list,(codes)=>{
+        for(var k in codes){
+            const str=`(function(){${codes[k]};return module.exports;})()`;
+            const reg=new RegExp(`require("../../package/node/${k}.node")`,"g");
+            run=run.replace(reg,str);
         }
-    } 
+        //console.log(run);
+        file.save(target,run,(res)=>{
+            console.log(`Done! The node.js loader of Anchor Network is "${target}"`);
+            console.log(`You can run the follow command to test.\n\nnode ${target} anchor://{anchor_name}\n`);
+        });
+    });
+});
+
+return false;
+
+
+self.getLibs(list,(codes)=>{
+    const tools={};
+    for(var k in codes){
+        console.log(k);
+        const replace=`require("../../package/node/${k}.node")`;
+        const str=`eval(';(function(){${codes[k]};return module.exports;})();')`;
+
+        // eval single exports module
+        // try {
+        //     const replace=`require("../../package/node/${k}.node")`;
+        //     const str=`eval(';(function(){${codes[k]};return module.exports;})();')`;
+        //     const { easyRun }=eval(str);
+        //     console.log(easyRun);
+        // } catch (error) {
+        //     console.log(error);
+        // }
+    }
+    console.log(tools);
     // try {
     //     eval(str);
     //     console.log(module.exports);

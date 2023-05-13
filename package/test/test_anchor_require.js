@@ -1,7 +1,6 @@
 //!important, this is the demo of loading node.js lib from anchor
 
 const fs=require('fs');
-const { constants } = require('http2');
 const file={
     read:(target,ck,)=>{
         fs.stat(target,(err,stats)=>{

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "moleculer": "^0.14.29"
+  }
+}

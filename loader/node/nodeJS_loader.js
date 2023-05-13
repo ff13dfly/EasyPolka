@@ -24,8 +24,7 @@ const server=!args[1]?"ws://127.0.0.1:9944":args[1];
 
 //library needed
 const anchorJS= require('../../package/node/anchor.node');
-const { ApiPromise, WsProvider } = require('../../package/node/polkadot.node');
-const { Keyring } = require('../../package/node/polkadot.node');
+const { ApiPromise,WsProvider,Keyring } = require('../../package/node/polkadot.node');
 const { easyRun } = require('../../package/node/easy.node');
 
 //websocket link to server
