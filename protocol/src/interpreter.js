@@ -726,4 +726,5 @@ var debug_run = function (linker, inputAPI, ck) {
     });
 };
 var final_run = (debug.disable ? run : debug_run);
-exports.easyRun = final_run;
+//exports.easyRun = final_run;
+module.exports={easyRun:final_run};

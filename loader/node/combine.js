@@ -37,9 +37,9 @@ const self={
 
 const folder="../../package/node/";
 const libs={
-    //"Polkadot":"polkadot.node.js",
     "easy":"easy.node.js",
-    //"anchorJS":"anchor.node.js",   
+    "anchorJS":"anchor.node.js",   
+    "Polkadot":"polkadot.node.js",
 }
 const runner="runner.min.js";
 const target="nodeJS_loader.min.js";
@@ -57,7 +57,7 @@ self.getLibs(list,(codes)=>{
         //str+=code[k];
         try {
             eval(codes[k]);
-            console.log(module);
+            console.log(module.exports);
             //console.log(module.exports);
         } catch (error) {
             console.log(error);

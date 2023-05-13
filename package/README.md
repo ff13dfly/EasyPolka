@@ -84,7 +84,15 @@
             ./node_modules/esbuild/bin/esbuild ../anchorJS/publish/anchor.js --bundle --minify --outfile=./node/anchor.node.js --platform=node
         ```
 
-    3. Easy Protocol ( v1 )
+    3. Easy Protocol ( v1 ). For the `Typescript` is not compiled to `modules.exports`, need to modify the compiled JS file.
+
+        ```JAVASCRIPT
+            //This is the exports, so can not rewrite the module.exports
+            exports.easyRun = final_run;
+
+            //modify the above line as follow
+            module.exports={easyRun:final_run};
+        ```
 
         ```BASH
             # Easy Protocol ( v1 ) package

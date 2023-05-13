@@ -8,6 +8,8 @@
 /node_modules/
 package-lock.json
 yarn.lock
+yarn-error.log
+
 /demo/
 /sample/
 /test/react/package/
