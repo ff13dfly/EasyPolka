@@ -19,7 +19,7 @@ const config = {
 const Polkadot=LP;
 const anchorJS=LA;
 const easyRun=LE.easyRun;
-const ApiPromise=Polkadot.ApiPromise,WsProvider=Polkadot.WsProvider,Keyring=Polkadot.Keyring;
+const ApiPromise=Polkadot.ApiPromise,WsProvider=Polkadot.WsProvider;
 
 //websocket link to server
 let websocket=null;
@@ -31,7 +31,7 @@ const self={
             self.html(`Linker to node [${server}] created.`,"more");
             websocket = api;
             anchorJS.set(api);
-            anchorJS.setKeyring(Keyring);
+            //anchorJS.setKeyring(Keyring);
             return ck && ck();
         });
     },

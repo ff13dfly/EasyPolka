@@ -11,7 +11,7 @@
 
 - JS package for loader, the global name is different from library on chain.
 
-    1. @Polkadot/API
+    1. @Polkadot/API, only `ApiPromise` and `WsProvider` are needed.
 
         ```BASH
             # API install, if not exsist
