@@ -67,7 +67,7 @@
 
 - JS package for node.js, this package is the on-chain one.
 
-    1. @polkadot/api
+    1. @polkadot/api, official JS SDK for Substrate node.
 
         ```BASH
             # API install, if not exsist
@@ -99,39 +99,51 @@
             ./node_modules/esbuild/bin/esbuild ../protocol/src/interpreter.js --bundle --minify --outfile=./node/easy.node.js --platform=node
         ```
 
-    4. Moleculer. Mircoservice framework.
+    4. koa.js, http server framework.
 
         ```BASH
-            # Moleculer
-            ./node_modules/esbuild/bin/esbuild ../node_modules/moleculer/index.js --bundle --minify --outfile=./node/moleculer.node.js --platform=node
+            #insatll needed package
+            npm install koa
+            npm install koa-router
+            npm install koa-jwt
+            npm install koa-helmet
+
+            # koa package
+            ./node_modules/esbuild/bin/esbuild node_modules/koa/lib/application.js --bundle --minify --outfile=./node/koa.node.js --platform=node
+
+            # koa-router package
+            ./node_modules/esbuild/bin/esbuild node_modules/koa-router/lib/router.js --bundle --minify --outfile=./node/koa-router.node.js --platform=node
+
+            # koa-jwt package
+            ./node_modules/esbuild/bin/esbuild node_modules/koa-jwt/lib/index.js --bundle --minify --outfile=./node/koa-jwt.node.js --platform=node
+
+            # koa-helmet package
+            #./node_modules/esbuild/bin/esbuild node_modules/koa-jwt/lib/index.js --bundle --minify --outfile=./node/koa-jwt.node.js --platform=node
+        ```
+
+    5. Moleculer. Mircoservice framework. ( Remove, not pure JS, need bin support event_loop_stats )
+
+        ```BASH
+            # Get moleculer resource
+            git clone https://github.com/moleculerjs/moleculer
+            cd moleculer
+
+            # install the necessary library
+            yarn install
+
+            # install the Esbuild
+            yarn add esbuild
+
+            # minify the package
+            node_modules/esbuild/bin/esbuild index.js --bundle --minify --outfile=./node/moleculer.node.js --platform=node
         ```
 
 - How to load from Anchor. Copy the code to run, or get it [demo_require.js](test/demo_require.js) here directly.
 
     ```Javascript
-        //!important This is a demo to show how to load node.js lib via string way.
-
-        // The mock function
-        const fun_mock=(name)=>{
-            console.log("hello,"+name);
-        };
-
-        // The code string, mock the Anchor raw data. 
-        const code='exports.hello=(name)=>{console.log("hello,"+name);}';
-
-        // "eval" is used here, so "try".
-        try {
-            const fun = eval(code);
-            fun_mock("raw function");
-            fun("require function");
-            
-        } catch (error) {
-            console.log(error);
-        }
-
-        //run by node.js, the result should be.
-        /*
-        Bash> hello,raw function
-        Bash> hello,require function
-        */
+        //This `module.exports` will return from the function, isolate the different modules
+        const obj=(function(){
+            /* Minified module code here */
+            return module.exports;
+        })();
     ```

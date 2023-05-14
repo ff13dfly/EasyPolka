@@ -1,8 +1,5 @@
 //!important, this is the demo of loading node.js lib from anchor
-
-// console.log(module);
-// return false;
-
+//!important, `module.exports` is seperated by every function calling.
 const fun_raw=(name)=>{
     console.log("hello,"+name);
 };
