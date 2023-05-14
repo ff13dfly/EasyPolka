@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add moleculer
+  /usr/local/bin/node /usr/local/bin/yarn add avsc
 
 PATH: 
   /usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/go/bin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/fuzhongqiang/.cargo/bin:/usr/local/opt/go@1.9/bin
@@ -20,7 +20,11 @@ Trace:
       at process.processTimers (node:internal/timers:511:7)
 
 npm manifest: 
-  No manifest
+  {
+    "dependencies": {
+      "moleculer": "^0.14.29"
+    }
+  }
 
 yarn manifest: 
   No manifest

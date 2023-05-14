@@ -99,6 +99,13 @@
             ./node_modules/esbuild/bin/esbuild ../protocol/src/interpreter.js --bundle --minify --outfile=./node/easy.node.js --platform=node
         ```
 
+    4. Moleculer. Mircoservice framework.
+
+        ```BASH
+            # Moleculer
+            ./node_modules/esbuild/bin/esbuild ../node_modules/moleculer/index.js --bundle --minify --outfile=./node/moleculer.node.js --platform=node
+        ```
+
 - How to load from Anchor. Copy the code to run, or get it [demo_require.js](test/demo_require.js) here directly.
 
     ```Javascript

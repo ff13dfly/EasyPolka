@@ -1,13 +1,9 @@
 //!important, This is the transformer of React object.
 //!important, By dealing with the built package, React project can be deployed to Anchor Network
 
-//node transform_react.js demo_anchor ws://127.0.0.1:9944 build
-//node transform_react.js demo_anchor ws://127.0.0.1:9944 
-//node transform_react.js demo_anchor
-
-//node transform_react.js xconfig.json package password_for_account
-//node transform_react.js xconfig.json package
-//node transform_react.js xconfig.json
+//node transform_react_v2.js xconfig.json package password_for_account
+//node transform_react_v2.js xconfig.json package
+//node transform_react_v2.js xconfig.json
 
 
 //package command, `esbuild` needed.
@@ -15,8 +11,10 @@
 //../../node_modules/.bin/esbuild transform_react.js --bundle --minify --outfile=reactTransform.js --platform=node
 
 //!important, React Setting Needed.
-const { anchorJS } = require('../../lib/anchor.js');
+const anchorJS= require('../../../package/node/anchor.node');
 const fs=require('fs');
+const { ApiPromise, WsProvider } = require('@polkadot/api');
+const { Keyring } = require('@polkadot/api');
 
 //basic config for Loader
 const config = {
@@ -43,7 +41,7 @@ const config = {
             "css":true,
         },
     },
-    globalVars:["Polkadot","anchorJS","easy"],
+    globalVars:["Polkadot","AnchorJS","Easy"],
     server:"ws://127.0.0.1:9944",
     //server:"wss://dev.metanchor.net",
 };
@@ -100,7 +98,6 @@ const self={
         },false);
     },
     resource:(folder,ck)=>{
-        //TODO, here to load all resource, convert to base64 then replace.
         const todo=[];
         const igsFiles=config.ignor.files;
         const igsDirs=config.ignor.foler;
@@ -180,8 +177,7 @@ const self={
         if(websocket!==null) return ck && ck();
         const server=config.server;
         console.log(`Ready to link to server ${server}.`);
-        const { ApiPromise, WsProvider } = require('@polkadot/api');
-        const { Keyring } = require('@polkadot/api');
+        
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             console.log(config.success,`Linker to node [${server}] created.`);
 
@@ -224,6 +220,7 @@ file.read(cfgFile,(xcfg)=>{
         self.load(entry,()=>{
 
             //4.check the public folder to get resouce and convert to Base64
+            // result will be storaged on `cache`
             self.resource(folder,()=>{
                 console.log(`Resource is transformed.`);
                 //return false;
@@ -276,7 +273,6 @@ file.read(cfgFile,(xcfg)=>{
 
                 self.auto(()=>{
                     const seed='Dave';
-                    const { Keyring } = require('@polkadot/api');
                     const ks = new Keyring({ type: 'sr25519' });
                     const pair= ks.addFromUri(`//${seed}`);
 

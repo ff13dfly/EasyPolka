@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@polkadot/api": "^10.6.1",
-    "esbuild": "^0.17.18"
+    "avsc": "^5.7.7",
+    "esbuild": "^0.17.18",
+    "thrift": "^0.18.1"
   }
 }
