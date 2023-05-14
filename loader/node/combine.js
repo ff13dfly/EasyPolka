@@ -1,5 +1,8 @@
 //!important, This is a application to combine the backend loader.
 
+//########## USEAGE ##########
+//node combine.js
+
 const fs=require('fs');
 const file={
     read:(target,ck,)=>{

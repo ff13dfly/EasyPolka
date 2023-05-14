@@ -4,6 +4,7 @@
 // https://esbuild.github.io/api/
 // ../node_modules/.bin/esbuild react_loader.js --bundle --minify --outfile=loader.min.js
 
+//########## USEAGE ##########
 //Can load from local file.
 //file:///Users/fuzhongqiang/Desktop/loader.html#ppp@ws://127.0.0.1:9944
 
@@ -16,10 +17,9 @@ const config = {
 };
 
 //get the global
-const Polkadot=LP;
+const Polkadot=LP,ApiPromise=Polkadot.ApiPromise,WsProvider=Polkadot.WsProvider;
 const anchorJS=LA;
 const easyRun=LE.easyRun;
-const ApiPromise=Polkadot.ApiPromise,WsProvider=Polkadot.WsProvider;
 
 //websocket link to server
 let websocket=null;
@@ -99,12 +99,6 @@ self.auto(()=>{
         
         if(res.libs && res.libs.js){
             const js=res.libs.js;
-            //FIXME, need global support now, need to remove this. 
-            //Easy way is to replace `window.Polkadot` to `Polkadot` in the react compiled JS file
-
-            //This code added the libs to window, then react application can call them.
-            //const gb='window.Polkadot=Polkadot;window.anchorJS=anchorJS;window.easy=easy;';
-            //eval(js+gb);
             try {
                 const capp=new Function("API","input","errs",js+(res.code?res.code:""));
                 const input={

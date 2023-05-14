@@ -1,16 +1,21 @@
 //!important, This is the transformer of React object.
 //!important, By dealing with the built package, React project can be deployed to Anchor Network
 
-//node transform_react_v2.js xconfig.json package password_for_account
-//node transform_react_v2.js xconfig.json package
-//node transform_react_v2.js xconfig.json
 
+//node transform_react_v2.js xconfig.json [password_for_account]
 
+//########## USEAGE ##########
+//node transform_react_v2.js xconfig.json 
+
+//########## BUILD ##########
 //package command, `esbuild` needed.
 //yarn add esbuild
 //../../node_modules/.bin/esbuild transform_react.js --bundle --minify --outfile=reactTransform.js --platform=node
 
+//TODO, need to single one, convert by `xconfig.json`. Multi implement is confused.
+
 //!important, React Setting Needed.
+
 const anchorJS= require('../../package/node/anchor.node');
 const fs=require('fs');
 const { ApiPromise, WsProvider } = require('@polkadot/api');

@@ -2,10 +2,15 @@
 //!important, The breif rule is treating it as cache service and can be stopped anytime.
 //!important, Load unkown `node on-chain application` will face security problem.
 
-//../node_modules/.bin/esbuild nodeJS_loader.js --bundle --minify --outfile=nodeJS.min.js --platform=node
-//../node_modules/.bin/esbuild nodeJS_loader.js --minify --outfile=runner.min.js --platform=node
+//########## USEAGE ##########
+
 //node nodeJS_loader.js anchor://node_me/ ws://127.0.0.1:9944
 //node nodeJS.min.js anchor://node_me/ ws://127.0.0.1:9944
+
+//########## BUILD ##########
+
+//../node_modules/.bin/esbuild nodeJS_loader.js --bundle --minify --outfile=nodeJS.min.js --platform=node
+//../node_modules/.bin/esbuild nodeJS_loader.js --minify --outfile=runner.min.js --platform=node
 
 //basic config for Loader
 const config = {
