@@ -1,13 +1,13 @@
 //!important, This is the loader of launcher such as `Plinth`.
 //!important, Need to build, the index.html not support hight version JS
 
-// https://esbuild.github.io/api/
-// ../node_modules/.bin/esbuild react_loader.js --bundle --minify --outfile=loader.min.js
-
 //########## USEAGE ##########
 //Can load from local file.
 //file:///Users/fuzhongqiang/Desktop/loader.html#ppp@ws://127.0.0.1:9944
 
+//########## BUILD ##########
+// https://esbuild.github.io/api/
+// ../node_modules/.bin/esbuild react_loader.js --bundle --minify --outfile=loader.min.js
 
 const config = {
     error:      '\x1b[36m%s\x1b[0m',

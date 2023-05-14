@@ -1,7 +1,7 @@
 //!important, Package index.html and loader.min.js together
 
 //########## USEAGE ##########
-//node react_to_single.js
+//node to_single.js
 
 const fs=require('fs');
 const file={
@@ -68,7 +68,7 @@ file.read(source,(txt)=>{
         file.read(source_js,(js)=>{
             const result=`${txt}<script>${code}${js}</script></html>`;
             file.save(target,result,()=>{
-                console.log('Done!');
+                console.log('\x1b[36m%s\x1b[0m',`\nDone! Combined file is "${target}"\n`);
             });
         });
     });
