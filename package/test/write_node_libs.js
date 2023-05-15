@@ -36,9 +36,10 @@ const file={
 };
 
 const libs={
-    "anchorjs":"anchor.node.js",
-    "polkadot":"polkadot.node.js",
-    "easy":"easy.node.js",
+    // "anchorjs":"anchor.node.js",
+    // "polkadot":"polkadot.node.js",
+    // "easy":"easy.node.js",
+    "koa":"koa.node.js",
 }
 
 let websocket=null;

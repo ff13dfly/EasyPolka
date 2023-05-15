@@ -64,6 +64,7 @@ self.auto(()=>{
     };
 
     easyRun(linker,startAPI,(result) => {
+        console.log(result);
         //!important, these functions limit the application
         //setup the APIs for application.
         const API={
