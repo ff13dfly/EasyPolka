@@ -64,9 +64,9 @@ self.prepare(server,()=>{
     const linker_node_hello="anchor://node_hello/"
 
     console.log(`\n`);
-    easyRun(linker_node_hello,API,(result:any)=>{
+    easyRun(linker_full_app,API,(result:any)=>{
         console.log(`\n-----------------result of ${linker_full_caller}-----------------`);
-        console.log(result.libs);
+        console.log(result);
         //console.log(JSON.stringify(result));
         console.log(`\n\n`);
 

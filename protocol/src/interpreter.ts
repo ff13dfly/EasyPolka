@@ -144,15 +144,28 @@ const self={
         cObject.code=data.raw;
 
         if(protocol!==null && protocol.lib){
-            //FIXME code should be defined clearly
             self.getLibs(protocol.lib,(dt:any,order:any)=>{
-                //console.log(order);
-                //console.log(cObject);
+                const combine=Group(dt,order);
+
+                const router:any={}
                 for(var k in dt){
+                    console.log(k);
                     const row=dt[k];
-                    cObject.data[`${row.name}_${row.block}`]=row;
+                    if(row.name!==undefined){
+                        cObject.data[`${row.name}_${row.block}`]=row;
+                        router[row.name]=[row.name,row.block];
+                    }
                 }
-                cObject.libs=Group(dt,order);
+
+                if(combine.order.length!==0){
+                    let nods=[];
+                    for(let i=0;i<combine.order.length;i++){
+                        const key=combine.order[i];
+                        if(router[key]!==undefined) nods.push(router[key]);
+                    }
+                    combine.order=nods;
+                }
+                cObject.libs=combine;
                 return ck && ck(cObject);
             });
         }else{
@@ -169,14 +182,35 @@ const self={
         //1.check and get libs
         if(protocol!==null && protocol.lib){
             self.getLibs(protocol.lib,(dt:any,order:any)=>{
-                //console.log(order);
-                cObject.libs=Group(dt,order);
+                const combine=Group(dt,order);
+
+                const router:any={}
+                for(var k in dt){
+                    console.log(k);
+                    const row=dt[k];
+                    if(row.name!==undefined){
+                        cObject.data[`${row.name}_${row.block}`]=row;
+                        router[row.name]=[row.name,row.block];
+                    }
+                }
+
+                if(combine.order.length!==0){
+                    let nods=[];
+                    for(let i=0;i<combine.order.length;i++){
+                        const key=combine.order[i];
+                        if(router[key]!==undefined) nods.push(router[key]);
+                    }
+                    combine.order=nods;
+                }
+                cObject.libs=combine;
                 return ck && ck(cObject);
             });
         }else{
             return ck && ck(cObject);
         }
     },
+
+    formatLibs:()=>{},
 
     getLibs:(list:anchorLocation[],ck:Function)=>{
         if(API===null) return ck && ck({error:"No API to get data.",level:errorLevel.ERROR});

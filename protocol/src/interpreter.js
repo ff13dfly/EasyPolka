@@ -106,15 +106,27 @@ var self = {
         var protocol = data.protocol;
         cObject.code = data.raw;
         if (protocol !== null && protocol.lib) {
-            //FIXME code should be defined clearly
             self.getLibs(protocol.lib, function (dt, order) {
-                //console.log(order);
-                //console.log(cObject);
+                var combine = Group(dt, order);
+                var router = {};
                 for (var k in dt) {
+                    console.log(k);
                     var row = dt[k];
-                    cObject.data["".concat(row.name, "_").concat(row.block)] = row;
+                    if (row.name !== undefined) {
+                        cObject.data["".concat(row.name, "_").concat(row.block)] = row;
+                        router[row.name] = [row.name, row.block];
+                    }
                 }
-                cObject.libs = Group(dt, order);
+                if (combine.order.length !== 0) {
+                    var nods = [];
+                    for (var i = 0; i < combine.order.length; i++) {
+                        var key = combine.order[i];
+                        if (router[key] !== undefined)
+                            nods.push(router[key]);
+                    }
+                    combine.order = nods;
+                }
+                cObject.libs = combine;
                 return ck && ck(cObject);
             });
         }
@@ -130,8 +142,26 @@ var self = {
         //1.check and get libs
         if (protocol !== null && protocol.lib) {
             self.getLibs(protocol.lib, function (dt, order) {
-                //console.log(order);
-                cObject.libs = Group(dt, order);
+                var combine = Group(dt, order);
+                var router = {};
+                for (var k in dt) {
+                    console.log(k);
+                    var row = dt[k];
+                    if (row.name !== undefined) {
+                        cObject.data["".concat(row.name, "_").concat(row.block)] = row;
+                        router[row.name] = [row.name, row.block];
+                    }
+                }
+                if (combine.order.length !== 0) {
+                    var nods = [];
+                    for (var i = 0; i < combine.order.length; i++) {
+                        var key = combine.order[i];
+                        if (router[key] !== undefined)
+                            nods.push(router[key]);
+                    }
+                    combine.order = nods;
+                }
+                cObject.libs = combine;
                 return ck && ck(cObject);
             });
         }
@@ -139,6 +169,7 @@ var self = {
             return ck && ck(cObject);
         }
     },
+    formatLibs: function () { },
     getLibs: function (list, ck) {
         if (API === null)
             return ck && ck({ error: "No API to get data.", level: protocol_1.errorLevel.ERROR });

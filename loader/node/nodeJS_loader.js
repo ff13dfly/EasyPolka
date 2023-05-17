@@ -4,7 +4,7 @@
 
 //########## USEAGE ##########
 
-//node nodeJS_loader.js anchor://node_me/ ws://127.0.0.1:9944
+//node nodeJS_loader.js anchor://node_hello/ ws://127.0.0.1:9944
 //node nodeJS.min.js anchor://node_me/ ws://127.0.0.1:9944
 
 //########## BUILD ##########
@@ -64,7 +64,26 @@ self.auto(()=>{
     };
 
     easyRun(linker,startAPI,(result) => {
-        console.log(result);
+        //console.log(result.data);
+        //console.log(result.libs.order);
+
+        if(result.libs.order.length!==0){
+            let funs={},str='';
+            for(let i=0;i<result.libs.order.length;i++){
+                const row=result.libs.order[i];
+                const key=`${row[0]}_${row[1]}`;
+                if(result.data[key]){
+                    const anchor=result.data[key];
+                    console.log(key);
+                    console.log(anchor.raw.length);
+                    //const str=`(function(){${codes[k]};return module.exports;})()`;
+                    str+=`;funs['${row[0]}']=(function(){${anchor.raw};return module.exports})()`; 
+                }
+            }
+            eval(str);
+            console.log(funs);
+        }
+
         //!important, these functions limit the application
         //setup the APIs for application.
         const API={

@@ -96,7 +96,6 @@ const self={
             if(recover===null){
                 for(let i=0;i<row.lib.length;i++){
                     const lib=row.lib[i];
-                    //console.log('ready to check lib:'+lib);
                     if(map[lib]===true){
                         queue.push(lib);
                     }else{
@@ -108,7 +107,6 @@ const self={
                 if(recover.lib!==undefined && recover.lib!==row.lib.length){
                     for(let i=recover.lib+1;i<row.lib.length;i++){
                         const lib=row.lib[i];
-                        //console.log('ready to check lib:'+lib);
                         if(map[lib]===true){
                             queue.push(lib);
                         }else{
@@ -186,7 +184,6 @@ const self={
                         if(done[lib]) continue;
                         if(complex[lib]){
                             const cqueue=self.getComplexOrder(lib,map);
-                            console.log(`${lib}:${JSON.stringify(cqueue)}`)
                             for(let j=0;j<cqueue.length;j++){
                                 const clib=cqueue[j];
                                 if(done[clib]) continue;
@@ -230,15 +227,16 @@ const self={
         return queue;
     },
     regroupCode:(map,order)=>{
-        //console.log(map);
+        //console.log({order});
         const decode=self.decodeLib;
         let js='';
         let css='';
         let done={};
         let failed={};
-        let error=false;    //标志位输出
+        let error=false;
 
         const ods=self.mergeOrder(order);
+        //console.log({ods});
         for(let i=0;i<ods.length;i++){
             const row=ods[i];
             if(done[row]) continue;
@@ -269,7 +267,7 @@ exports.Libs=(list,API,ck)=>{
     search=API.search;
     target=API.target;
     self.getLibs(list,(dt,order)=>{ 
-        //console.log(dt);          
+        console.log(dt);          
         const code=self.regroupCode(dt,order);
         return ck && ck(code);
     });
