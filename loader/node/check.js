@@ -270,4 +270,4 @@ methods/index.js:
    * MIT Licensed
    *)
 */
-;return module.exports;})(),};const koa=XxX["koa"];let app=new koa;const Rt=XxX["koa-router"],router=new Rt;app.use(router.routes()),router.get("/",async o=>{o.body=JSON.stringify({hello:"world peace"})}),router.get("/good",async o=>{o.body=JSON.stringify({good:"world peace"})});const port=6677;app.listen(port,()=>{console.log(`Http server running at port ${port}, url: http://localhost:${port}`)});
+;return module.exports;})(),};const fs=require("fs"),file={read:(r,e)=>{fs.stat(r,(o,t)=>{if(o)return e&&e({error:o});if(!t.isFile())return e&&e(!1);fs.readFile(r,(n,s)=>n?e&&e({error:n}):e&&e(s.toString()))})},save:(r,e,o)=>{fs.writeFile(r,e,"utf8",function(t){return t?o&&o({error:t}):o&&o(!0)})}},koa=XxX["koa"];let app=new koa;const Rt=XxX["koa-router"],router=new Rt;app.use(router.routes()),router.get("/",async r=>{r.body=JSON.stringify({hello:"world peace"})}),router.get("/good",async r=>{r.body=JSON.stringify({good:"world peace"}),file.save("test","good day")});const port=6677;app.listen(port,()=>{console.log(`Http server running at port ${port}, url: http://localhost:${port}`)});

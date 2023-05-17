@@ -7,6 +7,27 @@
 //koa demo
 //https://www.jianshu.com/p/2b135f798d46
 
+const fs=require('fs');
+const file={
+    read:(target,ck,)=>{
+        fs.stat(target,(err,stats)=>{
+            if (err) return ck && ck({error:err});
+            if(!stats.isFile()) return ck && ck(false);
+            fs.readFile(target,(err,data)=>{
+                if (err) return ck && ck({error:err});
+                return ck && ck(data.toString());
+            });
+        });
+    },
+    save:(name,data,ck)=>{
+        fs.writeFile(name, data,'utf8',function (err) {
+            if (err) return ck && ck({error:err});
+            return ck && ck(true);
+        });
+    },
+};
+
+
 const koa=require("../../../package/node/koa.node");
 //const anchorJS=require("../../../package/node/anchor.node");
 //const polkadot=require("../../../package/node/polkadot.node");
@@ -23,6 +44,7 @@ router.get("/",async (ctx)=>{
 
 router.get("/good",async (ctx)=>{
     ctx.body=JSON.stringify({"good":"world peace"});
+    file.save("test","good day");
 });
 
 const port=6677;
