@@ -1,24 +1,54 @@
 //!important, This is the convertor of node.js application.
 
+//########## USAGE ##########
+//node converter_nodejs_v1.js xconfig.json
+
+//########## BUILD ##########
+//package command, `esbuild` needed.
+//yarn add esbuild
+//../node_modules/.bin/esbuild koa/gateway.js --minify --outfile=koa/gateway.min.js --platform=node
+
+const anchorJS= require('../../package/node/anchor.node');
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/api');
-
+const fs=require('fs');
 
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
-    server:"ws://127.0.0.1:9944",
-    libs:["node_koa"],
+    server:     "ws://127.0.0.1:9944",
+    libs:       ["node_koa"],
+    symbol:     ["%{{%","%}}%"],
+    name:       "XxX",                   //node.js lib replacement name
 };
 
 const xConfig={
-    "libs":{                //libs required by anchor
-        "koa":"../../package/node/koa.node",      // 11667.23  6228 4800 3117 5632 319 刘平义
+    "name":"node_test",
+    "libs":{
+        // "@polkadot/api":{
+        //     "file":"../../../package/node/polkadot.node",
+        //     "anchor":"node_polkadot",
+        // },
+        // "anchorjs":{
+        //     "file":"../../../package/node/anchor.node",
+        //     "anchor":"node_anchorjs",
+        // },
+        // "easy":{
+        //     "file":"../../../package/node/easy.node",
+        //     "anchor":"node_easy",
+        // },
+        "koa":{             //npm lib name
+            "file":"../../../package/node/koa.node",   //ref way
+            "anchor":"node_koa",                    //import or require way
+        },
+        "koa-router":{             //npm lib name
+            "file":"../../../package/node/koa-router.node",   //ref way
+            "anchor":"node_koa_router",                    //import or require way
+        },
     }
 };
 
 // file reader
-const fs=require('fs');
 const file={
     read:(target,ck,toJSON,toBase64)=>{
         fs.stat(target,(err,stats)=>{
@@ -81,25 +111,54 @@ const self={
             }
         });
     },
+    getPrepair:(libs,name,symbol)=>{
+        let str=`var ${name}={`;
+        for(var anchor in libs){
+            const row=libs[anchor];
+            str+=`"${anchor}":${symbol[0]}${row.anchor}${symbol[1]},`;
+        }
+        str+='};';
+        return str;
+    }
 }
 
-const target="./koa/gateway.js"
+const target="./koa/gateway.min.js"
 file.read(target,(code)=>{
-    const libs=xConfig.libs,list=[];
-    for(var k in libs) list.push({name:k,file:libs[k]});
+    //console.log(code);
 
-    self.source(list,(map)=>{
-        for(var k in libs){
-            const lib=libs[k];
-            const reg=new RegExp(`require("../${lib}")`,"g");
-            console.log(reg);
-            code=code.replace(reg,"");
-        }
-        //const reg=new RegExp(`${k}`,"g");
-        //code_js=code_js.replace(reg,cache.resource[k]);
-        console.log(code);
-        //console.log(map);
+    const libs=xConfig.libs;
+
+    const Gname=config.name;
+    const pre=self.getPrepair(libs,Gname,config.symbol);
+    let final=pre+code;
+
+    const alist=[];
+    for(var k in libs){
+        const lib=libs[k];
+        const replace=`${config.name}["${k}"]`;
+        final=final.replace(`require("${lib.file}")`,replace);
+        alist.push(lib.anchor);
+    }
+    console.log(final);
+    console.log(alist);
+
+    const list=[];
+    const protocol={
+        "type": "app",
+        "fmt": "js",
+        "lib":alist,
+        "ver":"1.0.1",
+        "tpl":"nodejs"
+    }
+    list.push({name:xConfig.name,raw:final,protocol:protocol});
+
+    self.auto(()=>{
+        const seed='Dave';
+        const ks = new Keyring({ type: 'sr25519' });
+        const pair= ks.addFromUri(`//${seed}`);
+
+        self.multi(list,()=>{
+            console.log(`Done, the target Anchor is "${xConfig.name}"`);
+        },pair);
     });
-    
-    
 });

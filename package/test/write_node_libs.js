@@ -39,7 +39,8 @@ const libs={
     // "anchorjs":"anchor.node.js",
     // "polkadot":"polkadot.node.js",
     // "easy":"easy.node.js",
-    "koa":"koa.node.js",
+    // "koa":"koa.node.js",
+    "koa_router":"koa-router.node.js",
 }
 
 let websocket=null;

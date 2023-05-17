@@ -8,10 +8,13 @@
 //https://www.jianshu.com/p/2b135f798d46
 
 const koa=require("../../../package/node/koa.node");
+//const anchorJS=require("../../../package/node/anchor.node");
+//const polkadot=require("../../../package/node/polkadot.node");
+//const easy=require("../../../package/node/easy.node");
 let app=new koa();
 
 /******************koa-router example******************/
-const Rt=require("koa-router"),router=new Rt();
+const Rt=require("../../../package/node/koa-router.node"),router=new Rt();
 app.use(router.routes());
 
 router.get("/",async (ctx)=>{

@@ -4,7 +4,7 @@
 
 //node transform_react_v2.js xconfig.json [password_for_account]
 
-//########## USEAGE ##########
+//########## USAGE ##########
 //node transform_react_v2.js xconfig.json 
 
 //########## BUILD ##########

@@ -3,7 +3,6 @@
 //!important, Load unkown `node on-chain application` will face security problem.
 
 //########## USEAGE ##########
-
 //node nodeJS_loader.js anchor://node_hello/ ws://127.0.0.1:9944
 //node nodeJS.min.js anchor://node_me/ ws://127.0.0.1:9944
 
@@ -16,6 +15,7 @@
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
+    symbol:     ["%{{%","%}}%"],
 };
 
 const fs=require('fs');
@@ -64,24 +64,21 @@ self.auto(()=>{
     };
 
     easyRun(linker,startAPI,(result) => {
-        //console.log(result.data);
+        //console.log(result.code);
         //console.log(result.libs.order);
-
+        let code=result.code;
         if(result.libs.order.length!==0){
-            let funs={},str='';
+            const funs={};
             for(let i=0;i<result.libs.order.length;i++){
+            //for(let i=0;i<3;i++){
                 const row=result.libs.order[i];
                 const key=`${row[0]}_${row[1]}`;
                 if(result.data[key]){
                     const anchor=result.data[key];
-                    console.log(key);
-                    console.log(anchor.raw.length);
-                    //const str=`(function(){${codes[k]};return module.exports;})()`;
-                    str+=`;funs['${row[0]}']=(function(){${anchor.raw};return module.exports})()`; 
+                    const reg=new RegExp(`${config.symbol[0]}${anchor.name}${config.symbol[1]}`,"g");
+                    code=code.replace(reg,`(function(){${anchor.raw};return module.exports;})()`);
                 }
             }
-            eval(str);
-            console.log(funs);
         }
 
         //!important, these functions limit the application
@@ -100,14 +97,43 @@ self.auto(()=>{
         }
         
         //app struct. Need to limit `eval` and `new Function`.
-        const pa='API',pb='input',pc='errs';
-        const str=`;(function(${pa},${pb},${pc}){${result.code}})(${pa},${pb},${pc})`;
+        console.log(code.length);
+
+
+        const file={
+            read:(target,ck,)=>{
+                fs.stat(target,(err,stats)=>{
+                    if (err) return ck && ck({error:err});
+                    if(!stats.isFile()) return ck && ck(false);
+                    fs.readFile(target,(err,data)=>{
+                        if (err) return ck && ck({error:err});
+                        return ck && ck(data.toString());
+                    });
+                });
+            },
+            save:(name,data,ck)=>{
+                fs.writeFile(name, data,'utf8',function (err) {
+                    if (err) return ck && ck({error:err});
+                    return ck && ck(true);
+                });
+            },
+        };
+        file.save("check.js",code);
         try {
-            const cApp = new Function(pa, pb, pc,str);
-            console.log(config.success,`Application ready.`);
-            return cApp(API,input,result.error);
+            eval(code);
         } catch (error) {
             console.log(config.error, `Error: failed to load application from ${linker}.`);
         }
+
+        // const pa='API',pb='input',pc='errs';
+        // const str=`;(function(${pa},${pb},${pc}){${code}})(${pa},${pb},${pc})`;
+        // try {
+        //     const cApp = new Function(pa, pb, pc,str);
+        //     console.log(config.success,`Application ready.`);
+        //     return cApp(API,input,result.error);
+        // } catch (error) {
+        //     console.log(config.error, `Error: failed to load application from ${linker}.`);
+        //     console.log(error);
+        // }
     });
 });
