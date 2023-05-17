@@ -9,12 +9,12 @@ var protocol_2 = require("./protocol");
 var decoder_1 = require("./decoder");
 var auth_1 = require("./auth");
 var hide_1 = require("./hide");
-var Libs = require("../../anchorJS/publish/loader").Libs;
+var _a = require("../../anchorJS/publish/loader"), Group = _a.Group, Loader = _a.Loader;
 var API = null;
 /*************************debug part****************************/
 //debug data to improve the development
 var debug = {
-    disable: false,
+    disable: true,
     cache: true,
     search: [],
     start: 0,
@@ -107,9 +107,14 @@ var self = {
         cObject.code = data.raw;
         if (protocol !== null && protocol.lib) {
             //FIXME code should be defined clearly
-            self.getLibs(protocol.lib, function (code) {
-                //console.log(code);
-                cObject.libs = code;
+            self.getLibs(protocol.lib, function (dt, order) {
+                //console.log(order);
+                //console.log(cObject);
+                for (var k in dt) {
+                    var row = dt[k];
+                    cObject.data["".concat(row.name, "_").concat(row.block)] = row;
+                }
+                cObject.libs = Group(dt, order);
                 return ck && ck(cObject);
             });
         }
@@ -124,9 +129,9 @@ var self = {
         var protocol = data.protocol;
         //1.check and get libs
         if (protocol !== null && protocol.lib) {
-            self.getLibs(protocol.lib, function (code) {
-                //console.log(code);
-                cObject.libs = code;
+            self.getLibs(protocol.lib, function (dt, order) {
+                //console.log(order);
+                cObject.libs = Group(dt, order);
                 return ck && ck(cObject);
             });
         }
@@ -142,7 +147,7 @@ var self = {
             search: API.common.latest,
             target: API.common.target,
         };
-        Libs(list, RPC, ck);
+        Loader(list, RPC, ck);
     },
     getHistory: function (location, ck) {
         var list = [];
@@ -675,7 +680,7 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
             self.merge(data.name, data.protocol, function (mergeResult) {
                 var _a;
                 //console.log(`Merging...`);
-                console.log(mergeResult);
+                //console.log(mergeResult);
                 if (mergeResult.auth !== null)
                     cObject.auth = mergeResult.auth;
                 if (mergeResult.trust !== null)
@@ -726,5 +731,4 @@ var debug_run = function (linker, inputAPI, ck) {
     });
 };
 var final_run = (debug.disable ? run : debug_run);
-//exports.easyRun = final_run;
-module.exports={easyRun:final_run};
+exports.easyRun = final_run;

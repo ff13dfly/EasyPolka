@@ -9,7 +9,7 @@ import { linkDecoder,linkCreator } from "./decoder";
 import { checkAuth,checkTrust } from "./auth";
 import { checkHide } from "./hide";
 
-const {Libs} = require("../../anchorJS/publish/loader");
+const {Group,Loader} = require("../../anchorJS/publish/loader");
 
 let API:APIObject=null;
 
@@ -44,7 +44,7 @@ type codeResult={
 /*************************debug part****************************/
 //debug data to improve the development
 const debug:any={
-    disable:false,      //disable debug information
+    disable:true,      //disable debug information
     cache:true,         //enable cache
     search:[],
     start:0,
@@ -145,9 +145,14 @@ const self={
 
         if(protocol!==null && protocol.lib){
             //FIXME code should be defined clearly
-            self.getLibs(protocol.lib,(code:any)=>{
-                //console.log(code);
-                cObject.libs=code;
+            self.getLibs(protocol.lib,(dt:any,order:any)=>{
+                //console.log(order);
+                //console.log(cObject);
+                for(var k in dt){
+                    const row=dt[k];
+                    cObject.data[`${row.name}_${row.block}`]=row;
+                }
+                cObject.libs=Group(dt,order);
                 return ck && ck(cObject);
             });
         }else{
@@ -163,9 +168,9 @@ const self={
 
         //1.check and get libs
         if(protocol!==null && protocol.lib){
-            self.getLibs(protocol.lib,(code:any)=>{
-                //console.log(code);
-                cObject.libs=code;
+            self.getLibs(protocol.lib,(dt:any,order:any)=>{
+                //console.log(order);
+                cObject.libs=Group(dt,order);
                 return ck && ck(cObject);
             });
         }else{
@@ -180,7 +185,7 @@ const self={
             search:API.common.latest,
             target:API.common.target,
         }
-        Libs(list,RPC,ck);
+        Loader(list,RPC,ck);
     },
     getHistory:(location:[string,number],ck:(list: anchorObject[],errs:errorObject[]) => void)=>{
         const list:anchorObject[]=[];
@@ -722,7 +727,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
 
             self.merge(data.name,<keywords>data.protocol,(mergeResult:mergeResult)=>{
                 //console.log(`Merging...`);
-                console.log(mergeResult);
+                //console.log(mergeResult);
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
                 if(mergeResult.trust!==null) cObject.trust=mergeResult.trust;
                 if(mergeResult.hide!=null && mergeResult.hide.length!==0){
@@ -775,4 +780,3 @@ const debug_run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void)=>
 };
 const final_run=(debug.disable?run:debug_run);
 export { final_run as easyRun};
-//module.exports={easyRun:final_run};

@@ -61,12 +61,13 @@ self.prepare(server,()=>{
     const linker_lib_caller="anchor://js_a/";
     const linker_declared_hide="anchor://hide_last_9627/"   //right result is block 20682
     const linker_declared_hide_complex="anchor://hide_last_9627/20685/"
+    const linker_node_hello="anchor://node_hello/"
 
     console.log(`\n`);
-    easyRun(linker_full_caller,API,(result:any)=>{
+    easyRun(linker_node_hello,API,(result:any)=>{
         console.log(`\n-----------------result of ${linker_full_caller}-----------------`);
-        //console.log(result);
-        console.log(JSON.stringify(result));
+        console.log(result.libs);
+        //console.log(JSON.stringify(result));
         console.log(`\n\n`);
 
         // easyRun(linker_declared_hide_complex,API,(result:any)=>{

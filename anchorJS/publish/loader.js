@@ -43,12 +43,13 @@ const self={
         fun(anchor, (res)=>{
             if(!res || (!res.owner)) return ck && ck(anchor,'');
             if(!res.empty){
-                 const dt={
-                    key:res.name,
-                    raw:res.raw,
-                    protocol:res.protocol,
-                };
-                return ck && ck(anchor,dt);
+                // const dt={
+                //     key:res.name,
+                //     raw:res.raw,
+                //     protocol:res.protocol,
+                //     block:res.block,
+                // };
+                return ck && ck(anchor,res);
             }
         });
     },
@@ -262,10 +263,13 @@ exports.Loader =(list,API,ck)=>{
     self.getLibs(list,ck);
 };
 
+exports.Group=self.regroupCode;
+
 exports.Libs=(list,API,ck)=>{
     search=API.search;
     target=API.target;
-    self.getLibs(list,(dt,order)=>{                
+    self.getLibs(list,(dt,order)=>{ 
+        //console.log(dt);          
         const code=self.regroupCode(dt,order);
         return ck && ck(code);
     });

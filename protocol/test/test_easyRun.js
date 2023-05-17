@@ -4,7 +4,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var api_1 = require("@polkadot/api");
 var interpreter_1 = require("../src/interpreter");
-//const { easyRun }=require("../src/interpreter");
 var anchorJS = require("../../anchorJS/publish/anchor");
 var API = {
     "common": {
@@ -60,11 +59,12 @@ self.prepare(server, function () {
     var linker_lib_caller = "anchor://js_a/";
     var linker_declared_hide = "anchor://hide_last_9627/"; //right result is block 20682
     var linker_declared_hide_complex = "anchor://hide_last_9627/20685/";
+    var linker_node_hello = "anchor://node_hello/";
     console.log("\n");
-    (0, interpreter_1.easyRun)(linker_full_caller, API, function (result) {
+    (0, interpreter_1.easyRun)(linker_node_hello, API, function (result) {
         console.log("\n-----------------result of ".concat(linker_full_caller, "-----------------"));
-        //console.log(result);
-        console.log(JSON.stringify(result));
+        console.log(result.libs);
+        //console.log(JSON.stringify(result));
         console.log("\n\n");
         // easyRun(linker_declared_hide_complex,API,(result:any)=>{
         //     console.log(`\n-----------------result of ${linker_declared_hide_complex}-----------------`);
