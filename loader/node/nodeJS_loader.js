@@ -11,12 +11,16 @@
 //../node_modules/.bin/esbuild nodeJS_loader.js --bundle --minify --outfile=nodeJS.min.js --platform=node
 //../node_modules/.bin/esbuild nodeJS_loader.js --minify --outfile=runner.min.js --platform=node
 
+
+
 //basic config for Loader
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
     symbol:     ["%{{%","%}}%"],
+    check:      false,                  //save check.js to run by node and test
 };
+console.log(config.success, `\n********************** Anchor Network Loader proccess start ***********************`);
 
 const fs=require('fs');
 
@@ -97,7 +101,7 @@ self.auto(()=>{
         }
         
         //app struct. Need to limit `eval` and `new Function`.
-        console.log(code.length);
+        //console.log(code.length);
 
 
         const file={
@@ -118,11 +122,14 @@ self.auto(()=>{
                 });
             },
         };
-        file.save("check.js",code);
+        if(config.check) file.save("check.js",code);
         try {
+            console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);
             eval(code);
+            
         } catch (error) {
             console.log(config.error, `Error: failed to load application from ${linker}.`);
+            console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);
         }
 
         // const pa='API',pb='input',pc='errs';

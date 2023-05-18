@@ -267,7 +267,7 @@ exports.Libs=(list,API,ck)=>{
     search=API.search;
     target=API.target;
     self.getLibs(list,(dt,order)=>{ 
-        console.log(dt);          
+        //console.log(dt);          
         const code=self.regroupCode(dt,order);
         return ck && ck(code);
     });

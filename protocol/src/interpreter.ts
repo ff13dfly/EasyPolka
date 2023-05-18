@@ -149,7 +149,6 @@ const self={
 
                 const router:any={}
                 for(var k in dt){
-                    console.log(k);
                     const row=dt[k];
                     if(row.name!==undefined){
                         cObject.data[`${row.name}_${row.block}`]=row;
@@ -186,7 +185,6 @@ const self={
 
                 const router:any={}
                 for(var k in dt){
-                    console.log(k);
                     const row=dt[k];
                     if(row.name!==undefined){
                         cObject.data[`${row.name}_${row.block}`]=row;
