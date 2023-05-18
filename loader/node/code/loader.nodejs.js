@@ -7,9 +7,7 @@
 //node nodeJS.min.js anchor://node_me/ ws://127.0.0.1:9944
 
 //########## BUILD ##########
-
-//../node_modules/.bin/esbuild nodeJS_loader.js --bundle --minify --outfile=nodeJS.min.js --platform=node
-//../node_modules/.bin/esbuild nodeJS_loader.js --minify --outfile=runner.min.js --platform=node
+//../node_modules/.bin/esbuild loader.nodejs.js --minify --outfile=runner.min.js --platform=node
 
 
 
@@ -68,10 +66,8 @@ self.auto(()=>{
     };
 
     easyRun(linker,startAPI,(result) => {
-        //console.log(result.code);
-        //console.log(result.libs.order);
         let code=result.code;
-        if(result.libs.order.length!==0){
+        if(result.libs && result.libs.order && result.libs.order.length!==0){
             const funs={};
             for(let i=0;i<result.libs.order.length;i++){
             //for(let i=0;i<3;i++){
@@ -99,10 +95,6 @@ self.auto(()=>{
         const input={
             target:linker,
         }
-        
-        //app struct. Need to limit `eval` and `new Function`.
-        //console.log(code.length);
-
 
         const file={
             read:(target,ck,)=>{
@@ -132,15 +124,5 @@ self.auto(()=>{
             console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);
         }
 
-        // const pa='API',pb='input',pc='errs';
-        // const str=`;(function(${pa},${pb},${pc}){${code}})(${pa},${pb},${pc})`;
-        // try {
-        //     const cApp = new Function(pa, pb, pc,str);
-        //     console.log(config.success,`Application ready.`);
-        //     return cApp(API,input,result.error);
-        // } catch (error) {
-        //     console.log(config.error, `Error: failed to load application from ${linker}.`);
-        //     console.log(error);
-        // }
     });
 });

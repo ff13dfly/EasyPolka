@@ -35,16 +35,18 @@ const file={
         if(list.length===0) return ck && ck(txt);
         if(!txt) txt=";";
         const row=list.pop();
+        //console.log(row);
         file.read(row,(js)=>{
+            //console.log(js);
             txt+=js;
             return file.libs(list,ck,txt);
         });
     },
 };
 
-const source='index.html';
+const source='code/index.html';
 const target='loader.html';
-const source_js='loader.min.js';
+const source_js='code/loader.min.js';
 const replace_js='<script src="loader.min.js"></script>';
 
 const ls={
@@ -57,7 +59,7 @@ file.read(source,(txt)=>{
     txt=txt.replace(replace_js,"");
     txt=txt.replace('</html>',"");
     for(var k in ls){
-        var row=`<script src="${ls[k]}"></script>`;
+        var row=`<script src="../${ls[k]}"></script>`;
         txt=txt.replace(row,"");
     }
     
@@ -66,9 +68,10 @@ file.read(source,(txt)=>{
 
     file.libs(list,(code)=>{
         file.read(source_js,(js)=>{
+            console.log(js)
             const result=`${txt}<script>${code}${js}</script></html>`;
             file.save(target,result,()=>{
-                console.log('\x1b[36m%s\x1b[0m',`\nDone! Combined file is "${target}"\n`);
+                console.log('\x1b[36m%s\x1b[0m',`\nDone! Minified file is "${target}"\n`);
             });
         });
     });

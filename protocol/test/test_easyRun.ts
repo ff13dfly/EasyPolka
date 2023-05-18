@@ -62,9 +62,10 @@ self.prepare(server,()=>{
     const linker_declared_hide="anchor://hide_last_9627/"   //right result is block 20682
     const linker_declared_hide_complex="anchor://hide_last_9627/20685/"
     const linker_node_hello="anchor://node_hello/"
+    const linker_node_simple="anchor://node_simple/"
 
     console.log(`\n`);
-    easyRun(linker_full_app,API,(result:any)=>{
+    easyRun(linker_node_simple,API,(result:any)=>{
         console.log(`\n-----------------result of ${linker_full_caller}-----------------`);
         console.log(result);
         //console.log(JSON.stringify(result));

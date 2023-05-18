@@ -110,7 +110,6 @@ var self = {
                 var combine = Group(dt, order);
                 var router = {};
                 for (var k in dt) {
-                    console.log(k);
                     var row = dt[k];
                     if (row.name !== undefined) {
                         cObject.data["".concat(row.name, "_").concat(row.block)] = row;
@@ -145,7 +144,6 @@ var self = {
                 var combine = Group(dt, order);
                 var router = {};
                 for (var k in dt) {
-                    console.log(k);
                     var row = dt[k];
                     if (row.name !== undefined) {
                         cObject.data["".concat(row.name, "_").concat(row.block)] = row;

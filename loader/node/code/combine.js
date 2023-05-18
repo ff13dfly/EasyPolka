@@ -38,14 +38,14 @@ const self={
     },
 }
 
-const folder="../../package/node/";
+const folder="../../../package/node/";
 const libs={
     "easy":"easy.node.js",
     "anchorJS":"anchor.node.js",   
     "polkadot":"polkadot.node.js",
 }
 const runner="runner.min.js";
-const target="nodeJS_loader.min.js";
+const target="loader.nodejs.min.js";
 
 //1.get the libs code
 const list=[];
@@ -59,7 +59,7 @@ file.read(runner,(run)=>{
     self.getLibs(list,(codes)=>{
         for(var k in codes){
             const str=`(function(){${codes[k]};return module.exports;})()`;
-            const reg=new RegExp(`require("../../package/node/${k}.node")`,"g");
+            const reg=new RegExp(`require("../../../package/node/${k}.node")`,"g");
             run=run.replace(reg,str);
         }
         //console.log(run);

@@ -60,8 +60,9 @@ self.prepare(server, function () {
     var linker_declared_hide = "anchor://hide_last_9627/"; //right result is block 20682
     var linker_declared_hide_complex = "anchor://hide_last_9627/20685/";
     var linker_node_hello = "anchor://node_hello/";
+    var linker_node_simple = "anchor://node_simple/";
     console.log("\n");
-    (0, interpreter_1.easyRun)(linker_full_app, API, function (result) {
+    (0, interpreter_1.easyRun)(linker_node_simple, API, function (result) {
         console.log("\n-----------------result of ".concat(linker_full_caller, "-----------------"));
         console.log(result);
         //console.log(JSON.stringify(result));
