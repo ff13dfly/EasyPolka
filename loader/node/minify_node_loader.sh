@@ -4,9 +4,10 @@
 # add libs and save to "nodeJS_loader.min.js"
 node code/combine.js
 
-# remove processing files.
-rm -rf runner.min.js
-rm -rf check.js
-
 # copy to release
-cp loader.nodejs.min.js ../release/loader.nodejs.min.js
+cp loader.nodejs.min.js ../release/loader.nodejs.js
+
+# remove processing files.
+#rm -rf runner.min.js
+rm -rf check.js
+rm -rf loader.nodejs.min.js

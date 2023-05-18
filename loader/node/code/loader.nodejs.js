@@ -29,9 +29,9 @@ const linker=args[0];
 const server=!args[1]?"ws://127.0.0.1:9944":args[1];
 
 //library needed
-const anchorJS= require('../../package/node/anchor.node');
-const { ApiPromise,WsProvider } = require('../../package/node/polkadot.node');
-const { easyRun } = require('../../package/node/easy.node');
+const anchorJS= require('../../../package/node/anchor.node.js');
+const { ApiPromise,WsProvider } = require('../../../package/node/polkadot.node.js');
+const {easyRun} = require('../../../package/node/easy.node.js');
 
 //websocket link to server
 let websocket=null;
@@ -45,7 +45,6 @@ const self={
 
             websocket = api;
             anchorJS.set(api);
-            //anchorJS.setKeyring(Keyring);
             return ck && ck();
         });
     },
@@ -70,7 +69,6 @@ self.auto(()=>{
         if(result.libs && result.libs.order && result.libs.order.length!==0){
             const funs={};
             for(let i=0;i<result.libs.order.length;i++){
-            //for(let i=0;i<3;i++){
                 const row=result.libs.order[i];
                 const key=`${row[0]}_${row[1]}`;
                 if(result.data[key]){

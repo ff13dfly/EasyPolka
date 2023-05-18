@@ -29,8 +29,6 @@ const self={
         if(!map) map={};
         if(list.length===0) return ck && ck(map);
         const row=list.pop();
-        //console.log(row);
-        //return false;
         file.read(row.file,(res)=>{
             map[row.name]=res;
             return self.getLibs(list,ck,map);
@@ -38,10 +36,10 @@ const self={
     },
 }
 
-const folder="../../../package/node/";
+const folder="../../package/node/";
 const libs={
     "easy":"easy.node.js",
-    "anchorJS":"anchor.node.js",   
+    "anchor":"anchor.node.js", 
     "polkadot":"polkadot.node.js",
 }
 const runner="runner.min.js";
@@ -55,15 +53,25 @@ for(let k in libs){
 }
 
 file.read(runner,(run)=>{
-    //console.log(run);
     self.getLibs(list,(codes)=>{
+        let final=run.replaceAll("../../../package/node/","");
+        //console.log(final);
+        
         for(var k in codes){
-            const str=`(function(){${codes[k]};return module.exports;})()`;
-            const reg=new RegExp(`require("../../../package/node/${k}.node")`,"g");
-            run=run.replace(reg,str);
+            final=final.replaceAll(`require("${k}.node.js")`,`pre${k}nodejs`);
+            const str=`(function(){${codes[k]};console.log(module.exports);return module.exports;})()`;
+            
+            const replace=`pre${k}nodejs`;
+            console.log(replace);
+            console.log(str.length);
+            final=final.replaceAll(replace,str);
+
+            // const reg=new RegExp(`pre${k}nodejs`,"g");
+            // console.log(reg);
+            // final.replaceAll(reg,str);
         }
-        //console.log(run);
-        file.save(target,run,(res)=>{
+        //console.log(final);
+        file.save(target,final,(res)=>{
             console.log(`Done! The node.js loader of Anchor Network is "${target}"`);
             console.log(`You can run the follow command to test.\n\nnode ${target} anchor://{anchor_name}\n`);
         });

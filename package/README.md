@@ -86,17 +86,19 @@
 
     3. Easy Protocol ( v1 ). For the `Typescript` is not compiled to `modules.exports`, need to modify the compiled JS file.
 
-        ```JAVASCRIPT
-            //This is the exports, so can not rewrite the module.exports
-            exports.easyRun = final_run;
-
-            //modify the above line as follow
-            module.exports={easyRun:final_run};
-        ```
-
         ```BASH
             # Easy Protocol ( v1 ) package
             ./node_modules/esbuild/bin/esbuild ../protocol/src/interpreter.js --bundle --minify --outfile=./node/easy.node.js --platform=node
+        ```
+
+        ```JAVASCRIPT
+            //This is fake code, the `minified_fun_name` should be short characters like `Dc`
+            //This is the exports, so can not rewrite the module.exports
+            exports.easyRun = `minified_fun_name`;
+
+            //!important, have to do this or facing errors.
+            //modify the above line as follow
+            module.exports={easyRun:`minified_fun_name`};
         ```
 
     4. koa.js, http server framework.

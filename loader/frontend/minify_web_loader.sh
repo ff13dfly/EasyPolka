@@ -6,3 +6,6 @@ node code/to_single.js
 
 # copy to release
 cp loader.html ../release/loader.web.html
+
+# remove processing files
+rm -rf loader.html
