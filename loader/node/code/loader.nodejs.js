@@ -63,11 +63,11 @@ self.auto(()=>{
             "block": anchorJS.block,
         }
     };
-    console.log(easyRun);
-    console.log(startAPI);
+    //console.log(easyRun);
+    //console.log(startAPI);
     easyRun(linker,startAPI,(result) => {
         let code=result.code;
-        console.log(result);
+        //console.log(result);
         if(result.libs && result.libs.order && result.libs.order.length!==0){
             const funs={};
             for(let i=0;i<result.libs.order.length;i++){

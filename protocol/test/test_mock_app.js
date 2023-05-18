@@ -95,66 +95,11 @@ const API = {
 };
 
 const task = [
-    //single_app,
-    node_js_app,
+    //node_js_app,
+    //node_simple_app,
+    node_libs_app,
 ];
 self.auto(task);
-
-//`hide`,`auth`,`trust` are all related to anchor.
-function single_app(index, ck) {
-    const start = self.stamp();
-    const seed = 'Alice';
-    const ks = new Keyring({ type: 'sr25519' });
-    const pair = ks.addFromUri(`//${seed}`);
-
-    console.log(config.color, `[${index}] ${start} Hide by protocol directly ${seed}`);
-
-    const list = [];
-
-    const name = `nothing`;
-    const code_old = `;(function(API,input,errs){
-        var id=input.container;
-        console.log("Nothing to do with "+id)
-        var anchorJS=API.anchorJS;
-        var ele=document.getElementById(id);
-        var anchor="cpx_hide";
-        anchorJS.search(anchor,function(data){
-           console.log(data);
-           ele.append(data.name);
-        });
-    })(API,input,errs)`;
-
-    const code = `var id=input.container;
-        console.log("Nothing to do with "+id)
-        var anchorJS=API.anchorJS;
-        var ele=document.getElementById(id);
-        var anchor="cpx_hide";
-        anchorJS.search(anchor,function(data){
-           console.log(data);
-           ele.append(data.name);
-        });`;
-
-    const protocol = { 
-        "type": "app",
-        "fmt": "js",
-        "lib":["jquery"],
-        "ver":"0.1.2",
-    };
-    list.push({ name: name, raw: code, protocol: protocol });
-
-    self.multi(list, () => {
-        const linker=`anchor://${name}/`;
-        easyRun(linker, API, (result) => {
-            console.log(`-----------------result-----------------`);
-            console.log(JSON.stringify(result));
-
-            const end = self.stamp();
-            console.log(config.color, `[${index}] ${end}, cost: ${end - start} ms \n ------------------------------`);
-            return ck && ck();
-        });
-    }, index, pair);
-}
-
 
 function node_js_app(index, ck) {
     const start = self.stamp();
@@ -175,6 +120,72 @@ function node_js_app(index, ck) {
     const protocol = { 
         "type": "app",
         "fmt": "js",
+        "ver":"0.0.1",
+    };
+    list.push({ name: name, raw: code, protocol: protocol });
+
+    self.multi(list, () => {
+        const linker=`anchor://${name}/`;
+        easyRun(linker, API, (result) => {
+            console.log(`-----------------result-----------------`);
+            console.log(JSON.stringify(result));
+
+            const end = self.stamp();
+            console.log(config.color, `[${index}] ${end}, cost: ${end - start} ms \n ------------------------------`);
+            return ck && ck();
+        });
+    }, index, pair);
+}
+
+function node_simple_app(index, ck) {
+    const start = self.stamp();
+    const seed = 'Alice';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair = ks.addFromUri(`//${seed}`);
+
+    console.log(config.color, `[${index}] ${start} Hide by protocol directly ${seed}`);
+
+    const list = [];
+
+    const name = `node_simple`;
+    const code = `console.log("This is a simple node application. No libs needed.")`;
+    const protocol = { 
+        "type": "app",
+        "fmt": "js",
+        "ver":"0.0.1",
+    };
+    list.push({ name: name, raw: code, protocol: protocol });
+
+    self.multi(list, () => {
+        const linker=`anchor://${name}/`;
+        easyRun(linker, API, (result) => {
+            console.log(`-----------------result-----------------`);
+            console.log(JSON.stringify(result));
+
+            const end = self.stamp();
+            console.log(config.color, `[${index}] ${end}, cost: ${end - start} ms \n ------------------------------`);
+            return ck && ck();
+        });
+    }, index, pair);
+}
+
+function node_libs_app(index, ck) {
+    const start = self.stamp();
+    const seed = 'Alice';
+    const ks = new Keyring({ type: 'sr25519' });
+    const pair = ks.addFromUri(`//${seed}`);
+
+    console.log(config.color, `[${index}] ${start} Hide by protocol directly ${seed}`);
+
+    const list = [];
+
+    const name = `node_libs`;
+    const libs=["node_polkadot","node_anchorjs","node_easy","node_koa"];
+    const code = `console.log("Libs needed : ${JSON.stringify(libs)}")`;
+    const protocol = { 
+        "type": "app",
+        "fmt": "js",
+        "lib":libs,
         "ver":"0.0.1",
     };
     list.push({ name: name, raw: code, protocol: protocol });
