@@ -4,5 +4,5 @@
 # add libs and save to "nodeJS_loader.min.js"
 node code/to_single.js
 
-# remove processing files.
-#rm -rf loader.min.js
+# copy to release
+cp loader.html ../release/loader.web.html

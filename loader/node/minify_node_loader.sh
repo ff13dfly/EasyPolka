@@ -7,3 +7,6 @@ node code/combine.js
 # remove processing files.
 rm -rf runner.min.js
 rm -rf check.js
+
+# copy to release
+cp loader.nodejs.min.js ../release/loader.nodejs.min.js

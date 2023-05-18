@@ -68,7 +68,7 @@ file.read(source,(txt)=>{
 
     file.libs(list,(code)=>{
         file.read(source_js,(js)=>{
-            console.log(js)
+            //console.log(js)
             const result=`${txt}<script>${code}${js}</script></html>`;
             file.save(target,result,()=>{
                 console.log('\x1b[36m%s\x1b[0m',`\nDone! Minified file is "${target}"\n`);
