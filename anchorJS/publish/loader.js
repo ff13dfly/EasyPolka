@@ -74,11 +74,20 @@ const self={
 
         //solve raw problem; hex to ascii
         if(dt.raw.substr(0, 2).toLowerCase()==='0x'){
-            result.data=decodeURIComponent(dt.raw.slice(2).replace(/\s+/g, '').replace(/[0-9a-f]{2}/g, '%$&'));
+            result.data=self.decodeUTF8(dt.raw);
         }else{
             result.data=dt.raw;
         }
         return result;
+    },
+    decodeUTF8:(str) => {
+		if(str.substr(0, 2).toLowerCase()==='0x') str=tr.slice(2);
+		const arr=str.replace(/\s+/g, '').split("");
+		let final='';
+		for(let i=0;i<arr.length;i+=2){
+			final+="%"+arr[i]+arr[i+1];
+		}
+		return decodeURIComponent(final);
     },
     
     getComplexOrder:(name,map,queue,hold)=>{

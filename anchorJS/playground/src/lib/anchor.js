@@ -644,7 +644,14 @@ const self = {
 	 * @param {string}	str		//Hex string need to convert
 	*/
 	decodeUTF8:(str) => {
-		return decodeURIComponent(str.slice(2).replace(/\s+/g, '').replace(/[0-9a-f]{2}/g, '%$&'));
+		if(str.substr(0, 2).toLowerCase()==='0x') str=tr.slice(2);
+		const arr=str.replace(/\s+/g, '').split("");
+		let final='';
+		for(let i=0;i<arr.length;i+=2){
+			final+="%"+arr[i]+arr[i+1];
+		}
+		return decodeURIComponent(final);
+		//return decodeURIComponent(str.slice(2).replace(/\s+/g, '').replace(/[0-9a-f]{2}/g, '%$&'));
 	},
 
 	/** 

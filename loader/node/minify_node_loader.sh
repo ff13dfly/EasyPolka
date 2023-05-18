@@ -8,6 +8,6 @@ node code/combine.js
 cp loader.nodejs.min.js ../release/loader.nodejs.js
 
 # remove processing files.
-#rm -rf runner.min.js
+rm -rf runner.min.js
 rm -rf check.js
 rm -rf loader.nodejs.min.js

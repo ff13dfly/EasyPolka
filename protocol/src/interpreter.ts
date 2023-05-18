@@ -44,7 +44,7 @@ type codeResult={
 /*************************debug part****************************/
 //debug data to improve the development
 const debug:any={
-    disable:true,      //disable debug information
+    disable:false,      //disable debug information
     cache:true,         //enable cache
     search:[],
     start:0,

@@ -56,19 +56,19 @@ file.read(runner,(run)=>{
     self.getLibs(list,(codes)=>{
         let final=run.replaceAll("../../../package/node/","");
         //console.log(final);
-        
+        const pre='whynodejs',suffix='nodeme';
         for(var k in codes){
-            final=final.replaceAll(`require("${k}.node.js")`,`pre${k}nodejs`);
-            const str=`(function(){${codes[k]};console.log(module.exports);return module.exports;})()`;
+            final=final.replace(`require("${k}.node.js")`,`${pre}${k}${suffix}`);
+            const str=`(function(){${codes[k]};return module.exports;})()`;
             
-            const replace=`pre${k}nodejs`;
+            const replace=`${pre}${k}${suffix}`;
             console.log(replace);
             console.log(str.length);
             final=final.replaceAll(replace,str);
 
-            // const reg=new RegExp(`pre${k}nodejs`,"g");
+            // const reg=new RegExp(`${pre}${k}${suffix}`,"g");
             // console.log(reg);
-            // final.replaceAll(reg,str);
+            // final.replace(reg,str);
         }
         //console.log(final);
         file.save(target,final,(res)=>{
