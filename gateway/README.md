@@ -88,3 +88,12 @@ Gateway is the EasyPolka micro service system.
 - moleculer, a microservice framework [https://moleculer.services/docs/0.14/](https://moleculer.services/docs/0.14/)
 
 - Koa.js, a http server framework. Popular and easy to understand.
+
+- Security problems [https://tool.4xseo.com/a/57952.html](https://tool.4xseo.com/a/57952.html)
+    1. Token, gateway manage.
+    2. Timestamp, add to request.
+    3. URL signature,  web JSON token
+    4. Recall, client encry all parameters and sent to server
+    5. Https
+
+- JSON RPC 2.0 [https://www.npmjs.com/package/json-rpc-2.0?activeTab=readme](https://www.npmjs.com/package/json-rpc-2.0?activeTab=readme)
