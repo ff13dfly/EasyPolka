@@ -109,6 +109,7 @@
             npm install koa-router
             npm install koa-jwt
             npm install koa-helmet
+            npm install koa-bodyparser
 
             # koa package
             ./node_modules/esbuild/bin/esbuild node_modules/koa/lib/application.js --bundle --minify --outfile=./node/koa.node.js --platform=node
@@ -121,23 +122,19 @@
 
             # koa-helmet package
             #./node_modules/esbuild/bin/esbuild node_modules/koa-jwt/lib/index.js --bundle --minify --outfile=./node/koa-jwt.node.js --platform=node
+
+            # koa-bodyparser package
+            ./node_modules/esbuild/bin/esbuild node_modules/koa-bodyparser/index.js --bundle --minify --outfile=./node/koa-bodyparser.node.js --platform=node
         ```
 
-    5. Moleculer. Mircoservice framework. ( Remove, not pure JS, need bin support event_loop_stats )
+    5. json-rpc-2.0, JSON RPC 2.0 implement.
 
         ```BASH
-            # Get moleculer resource
-            git clone https://github.com/moleculerjs/moleculer
-            cd moleculer
+            # install the package
+            yarn add json-rpc-2.0
 
-            # install the necessary library
-            yarn install
-
-            # install the Esbuild
-            yarn add esbuild
-
-            # minify the package
-            node_modules/esbuild/bin/esbuild index.js --bundle --minify --outfile=./node/moleculer.node.js --platform=node
+            # build the package  
+            ./node_modules/esbuild/bin/esbuild node_modules/json-rpc-2.0/dist/index.js --bundle --minify --outfile=./node/json-rpc-2.0.node.js --platform=node
         ```
 
 - How to load from Anchor. Copy the code to run, or get it [demo_require.js](test/demo_require.js) here directly.
