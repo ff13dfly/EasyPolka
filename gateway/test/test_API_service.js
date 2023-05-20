@@ -23,7 +23,9 @@ server.addMethod("log", ({ message }) => console.log(message));
 
 app.use(router.routes());
 router.post("/", async (ctx) => {
+    console.log(`Req:${JSON.stringify(ctx.request.body)}\n`)
     const JR2=await server.receive(ctx.request.body);
+    console.log(`Res:${JSON.stringify(JR2)}\n`)
     ctx.body=JSON.stringify(JR2);
 });
 
