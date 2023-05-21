@@ -25,15 +25,12 @@ const data={
     "id":"2223344"
 };
 
-
-
 const config={
     method: 'post',
     url: URL,
     data: data,
     headers: {'token': token}
 }
-axios(config);
 axios(config).then((result)=>{
     console.log(result.data);
 }).catch((err)=>{
