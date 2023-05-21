@@ -1,6 +1,3 @@
-const cAPI=require("../lib/API_v_service");
-console.log(cAPI);
-
 
 const koa=require("../../package/node/koa.node");
 const Rt=require("koa-router");
