@@ -1,4 +1,5 @@
-const koa=require("../../package/node/koa.node");
+//const koa=require("../../package/node/koa.node");
+const koa=require("koa");
 const bodyParser = require("koa-bodyparser");
 const Rt=require("koa-router");
 const app=new koa();
@@ -8,6 +9,9 @@ app.use(bodyParser({
         return ctx;
     }
 }));
+
+//root@167.179.119.110
+//iptables -I INPUT -p tcp --dport 8001 -j ACCEPT
 
 //curl "http://localhost:8001" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":1}'
 //{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":1}
@@ -23,8 +27,9 @@ server.addMethod("log", ({ message }) => console.log(message));
 
 app.use(router.routes());
 router.post("/", async (ctx) => {
-    console.log(`Req:${JSON.stringify(ctx.request.body)}\n`)
-    const JR2=await server.receive(ctx.request.body);
+    console.log(`Req:${JSON.stringify(ctx.request.body)}`)
+    const JR2 = await server.receive(ctx.request.body);
+    console.log(JR2);
     console.log(`Res:${JSON.stringify(JR2)}\n`)
     ctx.body=JSON.stringify(JR2);
 });
@@ -35,5 +40,5 @@ app.listen(port,()=>{
     console.log(`http://localhost:${port}`);
 
     console.log(`Testing command lines:`);
-    console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'`)
+    console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
 });
