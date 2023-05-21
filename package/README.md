@@ -137,6 +137,26 @@
             ./node_modules/esbuild/bin/esbuild node_modules/json-rpc-2.0/dist/index.js --bundle --minify --outfile=./node/json-rpc-2.0.node.js --platform=node
         ```
 
+    6. axios, HTTP client
+
+        ```BASH
+            # install the package
+            yarn add axios
+
+            # build the package  
+            ./node_modules/esbuild/bin/esbuild node_modules/axios/index.js --bundle --minify --outfile=./node/axios.node.js --platform=node
+        ```
+
+    7. jsonwebtoken, JWT implement
+
+        ```BASH
+            # install the package
+            yarn add jsonwebtoken
+
+            # build the package  
+            #./node_modules/esbuild/bin/esbuild node_modules/axios/index.js --bundle --minify --outfile=./node/axios.node.js --platform=node
+        ```
+
 - How to load from Anchor. Copy the code to run, or get it [demo_require.js](test/demo_require.js) here directly.
 
     ```Javascript

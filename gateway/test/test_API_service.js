@@ -27,11 +27,34 @@ server.addMethod("log", ({ message }) => console.log(message));
 
 app.use(router.routes());
 router.post("/", async (ctx) => {
+    const jsonwebtoken = require('jsonwebtoken');
+    const token=ctx.request.header.token;
+    const secret="abc";
+    const auth=await jsonwebtoken.verify(token, secret);
+    console.log(auth);
+
     console.log(`Req:${JSON.stringify(ctx.request.body)}`)
+
+    // check the request
+    // if(self.check(ctx.request.body)){
+
+    // }
+
     const JR2 = await server.receive(ctx.request.body);
-    console.log(JR2);
     console.log(`Res:${JSON.stringify(JR2)}\n`)
     ctx.body=JSON.stringify(JR2);
+
+    // const { JSONRPCErrorException } = require("json-rpc-2.0");
+    // const errorCode = 123;
+    // const errorData = {
+    //     foo: "bar",
+    // };
+
+    // throw new JSONRPCErrorException(
+    //     "A human readable error message",
+    //     errorCode,
+    //     errorData
+    // );
 });
 
 const port=8001;
