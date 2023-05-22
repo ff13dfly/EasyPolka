@@ -20,19 +20,29 @@ const data={
     "jsonrpc":"2.0",
     "method":"echo",
     "params":{
-        "text":"hello axios"
+        "name":"node_me"
     },
     "id":"2223344"
 };
 
+const self={
+    test:(config,count)=>{
+        const n=!count?1:parseInt(count);
+        for(let i=0;i<n;i++){
+            config.data.params.name="node_me_"+i;
+            axios(config).then((result)=>{
+                console.log(result.data);
+            }).catch((err)=>{
+                console.log(err);
+            });
+        }
+    },
+};
+
 const config={
     method: 'post',
-    url: URL,
+    url: URL+"/service",
     data: data,
     headers: {'token': token}
 }
-axios(config).then((result)=>{
-    console.log(result.data);
-}).catch((err)=>{
-    console.log(err);
-});
+self.test(config,1000);

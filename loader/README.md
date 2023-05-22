@@ -33,7 +33,7 @@
 
     ```BASH
         # node loader_nodejs.min.js [anchor link] [node]
-        node loader_nodejs.min.js anchor://node_me/ ws://127.0.0.1:9944
+        node loader.nodejs.js anchor://node_me/ ws://127.0.0.1:9944
     ```
 
 ## Converter
