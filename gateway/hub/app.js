@@ -2,7 +2,7 @@
 // security
 // 1. no refer anchor, single Anchor data to run
 // 2. only trust anchor data, even the encry JSON file.
-// 3. when start, need to vertify the runner password.
+// 3. when start, need to vertify the runner password. When adding vservice, need to confirm the account
 
 //########## BUILD ##########
 //package command, `esbuild` needed.
@@ -12,13 +12,10 @@
 const koa=require("koa");
 const bodyParser = require("koa-bodyparser");
 const koaRouter=require("koa-router");
-const { JSONRPCServer } = require("json-rpc-2.0");
+const {JSONRPCServer} = require("json-rpc-2.0");
 
 //combine all files needed to test package. Can be removed when final release.
 const me={
-    "anchor":{
-        
-    },
     "pub":{
         "koa":koa,
         "koa-router":koaRouter,
@@ -27,15 +24,19 @@ const me={
         "jwt":require("jsonwebtoken"),
         "axios":require("axios").default,
     },
+    "anchor":{
+        "anchorjs":"",
+        "polkadot":"",
+    },
     "lib":{
         "mndb":require("../lib/mndb.js"),
     },
     "service":{      //service functions here
-        "knock":require("./service/knock.js"),
-        "reg":require("./service/reg.js"),
+        //"knock":require("./service/knock.js"),
+        //"reg":require("./service/reg.js"),
         "shuttle":require("./service/shuttle.js"),
     },
-
+    
     "call":{        //public request method name checked here
         "auto":require("./call/auto.js"),
         "spam":require("./call/spam.js"),
@@ -43,6 +44,7 @@ const me={
     "manage":{      //manage request method name checked here
         "apart":require("./manage/apart.js"),
         "dock":require("./manage/dock.js"),
+        "list":require("./manage/list.js"),
     },
 };
 
@@ -55,55 +57,53 @@ app.use(bodyParser({
 }));
 app.use(router.routes());
 
-
-const config={
-
-};
-
 // application implement
 const self={
-    input:()=>{
-
-    },
     stamp:()=>{
         return new Date().getTime();
     },
-    valid:(header,post)=>{
-
-    },
 }
 
-// Router of Hub
+// Router of Hub, API calls
 router.post("/", async (ctx) => {
-    //1.check the header
-    console.log(ctx.request.body);
-    const server = new JSONRPCServer();
-    server.addMethod("echo", (params) => {
-        return params.text+' ,this is modified by functions';
-    });
-    server.addMethod("log", ({ message }) => console.log(message));
 
-    //2.reponse to different mods.
-    console.log(`[${self.stamp()}]Req:${JSON.stringify(ctx.request.body)}`)
-    const JR2 = await server.receive(ctx.request.body);
-    console.log(`[${self.stamp()}]Res:${JSON.stringify(JR2)}\n`)
-    ctx.body=JSON.stringify(JR2);
+    const header=ctx.request.header;
+    const req=ctx.request.body;
+    if(!req.method || !me.call[req.method]){
+        return ctx.body=JSON.stringify({error:"unkown call"});
+    }
+
+    //1.check the header
+    const server = new JSONRPCServer();
+    for(let k in me.call){
+        server.addMethod(k,()=>{
+            return me.call[k](req.method,req.params,req.id,req.id);
+        });
+    }
+
+    try {
+        const result = await server.receive(ctx.request.body);
+        ctx.body=JSON.stringify(result);
+    } catch (error) {
+        ctx.body=JSON.stringify({error:error});
+    }
 });
 
 // Manage APIs
 router.post("/manage", async (ctx) => {
     const header=ctx.request.header;
     const req=ctx.request.body;
-    console.log({req,header});
-    ctx.body=JSON.stringify({hello:"manage"});
+    if(!req.method || !me.manage[req.method]){
+        return ctx.body=JSON.stringify({error:"unkown call"});
+    }
+    ctx.body=me.manage[req.method](req.method,req.params,req.id,req.id);
 });
 
 // vService APIs
-// let count=0;
 router.post("/service", async (ctx) => {
     const header=ctx.request.header;
     const req=ctx.request.body;
-
+    
     const config={
         method: 'post',
         url: "http://localhost:4501",
@@ -116,10 +116,11 @@ router.post("/service", async (ctx) => {
         ctx.body=JSON.stringify(axios_result.data);
     } catch (error) {
         console.log(error);
-        //ctx.body=JSON.stringify({error:"500"});
+        ctx.body=JSON.stringify({error:"500"});
     }
 });
 
+// start hub application
 const port=8001;
 app.listen(port,()=>{
     console.log(`JSON RPC 2.0 server running at port ${port}`);
@@ -128,4 +129,3 @@ app.listen(port,()=>{
     console.log(`Testing command lines:`);
     console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
 });
-

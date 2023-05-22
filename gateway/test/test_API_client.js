@@ -45,4 +45,4 @@ const config={
     data: data,
     headers: {'token': token}
 }
-self.test(config,1000);
+self.test(config,100);

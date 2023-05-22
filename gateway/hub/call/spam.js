@@ -6,6 +6,18 @@
 // Security
 // 1. not related to account. That will cause ddos to target account.
 
-module.exports=(method,params,id,address)=>{
+const self={
+    stamp:()=>{
+        return new Date().getTime();
+    },
+}
 
+
+module.exports=(method,params,id,address)=>{
+    const res={
+        success:true,
+        stamp:self.stamp(),
+    }
+    
+    return res;
 };
