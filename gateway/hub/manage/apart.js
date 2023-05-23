@@ -11,10 +11,13 @@ const self={
 }
 
 module.exports=(method,params,id,address)=>{
-    const res={
-        success:true,
-        stamp:self.stamp(),
-    }
-    
-    return JSON.stringify(res);
+    return new Promise((resolve, reject) => {
+        const result={
+            data:{hello:"apart function"},
+            head:null,
+            stamp:self.stamp(),
+        }
+        
+        return resolve(result);
+    }); 
 };

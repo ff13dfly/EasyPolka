@@ -12,30 +12,14 @@ const self={
 const axios= require("axios").default;
 
 module.exports=(method,params,id,address)=>{
-    console.log({method,params,id,address});
+    return new Promise((resolve, reject) => {
+        const uri=params.uri;
 
-    const uri=params.uri;
-
-    //1.sent salt to target uri
-    const salt="abcdefg";
-    const cfgKnock={
-        method: 'post',
-        url: uri,
-        data: {
-            "jsonrpc":"2.0",
-            "method":"knock",
-            "params":{
-                "salt":salt,
-            },
-            "id":"hub_ss58_address",
-        },
-        //headers: {'token': token}
-    }
-    axios(cfgKnock).then((result)=>{
-        console.log(result.data);
-        const cfgReg={
+        //1.sent salt to target uri
+        const salt="abcdefg";
+        const cfgKnock={
             method: 'post',
-            url: uri,
+            url: uri+'/hub',
             data: {
                 "jsonrpc":"2.0",
                 "method":"knock",
@@ -43,16 +27,40 @@ module.exports=(method,params,id,address)=>{
                     "salt":salt,
                 },
                 "id":"hub_ss58_address",
-            },
-            //headers: {'token': token}
+            }
         }
-        axios(cfgReg).then((final)=>{
-            return JSON.stringify(final);
-        }).catch((err)=>{
-            return {error:err};
-        });
+        axios(cfgKnock).then((resKonck)=>{
+            const cfgReg={
+                method: 'post',
+                url: uri+'/hub',
+                data: {
+                    "jsonrpc":"2.0",
+                    "method":"reg",
+                    "params":{
+                        "name":"gateway name",
+                        "token":"new secret",
+                    },
+                    "id":"hub_ss58_address",
+                },
+                //headers: {'token': token}
+            }
+            axios(cfgReg).then((resReg)=>{
+                const data={
+                    success:true,
+                    stamp:self.stamp(),
+                };
+                const result={
+                    data:data,
+                    head:null,
+                }
+                return resolve(result);
+            }).catch((err)=>{
+                //return {error:err};
+                return reject({error:err});
+            });
 
-    }).catch((err)=>{
-        return {error:err};
+        }).catch((err)=>{
+            return reject({error:err});
+        });
     });
 };

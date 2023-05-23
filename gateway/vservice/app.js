@@ -2,6 +2,35 @@
 //package command, `esbuild` needed.
 //yarn add esbuild
 //../node_modules/.bin/esbuild app.js --bundle --minify --outfile=vservice.min.js --platform=node
+const config = {
+    error:      '\x1b[36m%s\x1b[0m',
+    success:    '\x1b[36m%s\x1b[0m',
+    port:       4501,
+};
+
+const args = process.argv.slice(2);
+//if(!args || !args[0]) return console.log(config.error,`Error: no target anchor to run ...`);
+const port=!args[1]?config.port:args[1];
+
+const anchor={
+    name:"vHistory",
+    methods:{
+        view:{
+            intro:'View anchor details',
+            type:'POST',
+            param:{
+                'anchor':'String'
+            }, 
+        },
+        history:{
+            intro:'View anchor history',
+            type:'POST',
+            param:{
+                'anchor':'String'
+            }, 
+        },
+    },
+};
 
 const anchorJS= require('../../package/node/anchor.node.js');
 const { ApiPromise,WsProvider } = require('../../package/node/polkadot.node.js');
@@ -11,7 +40,7 @@ const server="ws://127.0.0.1:9944";
 const koa=require("koa");
 const bodyParser = require("koa-bodyparser");
 const koaRouter=require("koa-router");
-//const { JSONRPCServer } = require("json-rpc-2.0");
+const { JSONRPCServer } = require("json-rpc-2.0");
 
 const me={
     "pub":{
@@ -35,11 +64,6 @@ const me={
     "mod":{      //manage request method name checked here
         "view":require("./mod/view.js"),
     },
-};
-
-const config = {
-    error:      '\x1b[36m%s\x1b[0m',
-    success:    '\x1b[36m%s\x1b[0m',
 };
 
 const app=new koa(),router=new koaRouter();
@@ -82,6 +106,17 @@ const self={
             });
         });
     },
+
+    //checking functions by anchor
+    analyze:()=>{
+
+    },
+    rand:(m,n)=>{return Math.floor(Math.random() * (m-n+1) + n);},
+    char:(n,pre)=>{
+        n=n||7;pre=pre||'';
+        for(let i=0;i<n;i++)pre+=i%2?String.fromCharCode(self.rand(65,90)):String.fromCharCode(self.rand(97,122));
+        return pre;
+    },
 }
 
 self.auto(()=>{
@@ -100,10 +135,14 @@ self.auto(()=>{
         if(!req.method || !me.hub[req.method]){
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
-        ctx.body=me.hub[req.method](req.method,req.params,req.id,req.id);
+        const result=me.hub[req.method](req,ctx.req.client);
+        if(result.header){
+
+        }
+        ctx.body=result.data;
     });
 
-    const port=4501;
+    //const port=4501;
     app.listen(port,()=>{
         console.log(`vService running at port ${port}`);
         console.log(`http://localhost:${port}`);
