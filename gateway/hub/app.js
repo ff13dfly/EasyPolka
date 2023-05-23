@@ -68,6 +68,20 @@ const self={
         for(let i=0;i<n;i++)pre+=i%2?String.fromCharCode(self.rand(65,90)):String.fromCharCode(self.rand(97,122));
         return pre;
     },
+    exportJSON:(data,id)=>{
+        if(data.error){
+            return {
+                jsonrpc: '2.0',
+                id:id,
+                error: data.error,
+            }
+        };
+        return {
+            jsonrpc: '2.0',
+            id:id,
+            result: data
+        }
+    },
 }
 
 // Router of Hub, API calls
@@ -89,9 +103,9 @@ router.post("/", async (ctx) => {
 
     try {
         const result = await server.receive(ctx.request.body);
-        ctx.body=JSON.stringify(result);
+        ctx.body= self.exportJSON(result,req.id);
     } catch (error) {
-        ctx.body=JSON.stringify({error:error});
+        ctx.body= self.exportJSON({error:error},req.id);
     }
 });
 
@@ -103,8 +117,8 @@ router.post("/manage", async (ctx) => {
         return ctx.body=JSON.stringify({error:"unkown call"});
     }
     const result= await me.manage[req.method](req.method,req.params,req.id,req.id);
-    console.log(result);
-    ctx.body=result.data;
+
+    ctx.body=self.exportJSON(result.data,req.id);
 });
 
 // vService APIs

@@ -13,7 +13,7 @@ const max={
 
 const self={
     /******************key part******************/
-    key_get:(key)=>{
+    key_get:(key,ttl)=>{
         const type=typeof(key);
         if(type!=='string' || type!=='number') return false;
         if(type==='number') key=''+key;
@@ -21,18 +21,24 @@ const self={
         if(!cache[key]) return null;
         return cache[k];
     },
-    key_set:(key,val)=>{
+    key_set:(key,val,ttl)=>{
         if(typeof(key)!=='string') return false;
         if(key.length>max.key) return false;
         if(JSON.stringify(val).length>max.val) return false;
         cache[key]=val;
         return true;
     },
+    key_ttl:(key,ttl)=>{
+
+    },
     /******************hash part******************/
     hash_get:(main,key)=>{
 
     },
     hash_set:(main,key,val)=>{
+
+    },
+    hash_ttl:(main,ttl)=>{
 
     },
     hash_count:(main)=>{
@@ -58,6 +64,9 @@ const self={
     list_shift:(key)=>{
 
     },
+    list_ttl:(key,ttl)=>{
+
+    },
 };
 
-exports.MNDB=self;
+module.exports=self;

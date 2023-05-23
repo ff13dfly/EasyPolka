@@ -117,6 +117,20 @@ const self={
         for(let i=0;i<n;i++)pre+=i%2?String.fromCharCode(self.rand(65,90)):String.fromCharCode(self.rand(97,122));
         return pre;
     },
+    exportJSON:(data,id)=>{
+        if(data.error){
+            return {
+                jsonrpc: '2.0',
+                id:id,
+                error: data.error,
+            }
+        };
+        return {
+            jsonrpc: '2.0',
+            id:id,
+            result: data
+        }
+    },
 }
 
 self.auto(()=>{
@@ -135,11 +149,11 @@ self.auto(()=>{
         if(!req.method || !me.hub[req.method]){
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
-        const result=me.hub[req.method](req,ctx.req.client);
+        const result=me.hub[req.method](req,ctx.req);
         if(result.header){
 
         }
-        ctx.body=result.data;
+        ctx.body= self.exportJSON(result.data,req.id) ;
     });
 
     //const port=4501;
