@@ -150,8 +150,10 @@ self.auto(()=>{
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
         const result=me.hub[req.method](req,ctx.req);
-        if(result.header){
-
+        if(result.head){
+            for(var k in result.head){
+                ctx.set(k,result.head[k])
+            }
         }
         ctx.body= self.exportJSON(result.data,req.id) ;
     });

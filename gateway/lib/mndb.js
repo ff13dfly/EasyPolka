@@ -2,7 +2,7 @@
 
 //../node_modules/.bin/esbuild mndb.js --bundle --minify --outfile=mndb.min.js --global-name=MNDB --platform=node
 
-const cache={};     //key cache 
+const cache={};       //key cache 
 const hash={};      //hash cache
 const queue={};     //list cache
 
@@ -15,11 +15,11 @@ const self={
     /******************key part******************/
     key_get:(key,ttl)=>{
         const type=typeof(key);
-        if(type!=='string' || type!=='number') return false;
+        if(type!=='string' && type!=='number') return false;
         if(type==='number') key=''+key;
         if(key.length>max.key) return false;
         if(!cache[key]) return null;
-        return cache[k];
+        return cache[key];
     },
     key_set:(key,val,ttl)=>{
         if(typeof(key)!=='string') return false;

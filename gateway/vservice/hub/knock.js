@@ -4,6 +4,7 @@
 const JWT=require("jsonwebtoken");
 const DB=require("../../lib/mndb.js");
 
+
 const self={
     stamp:()=>{
         return new Date().getTime();
@@ -17,13 +18,24 @@ const self={
 }
 
 module.exports=(req,server)=>{
-    console.log(`[ knock ] called : ${JSON.stringify(req)}`); 
-    const token=self.char(20);
+    console.log(`[ knock ] called : ${JSON.stringify(req)}`);
+    const salt=req.params.salt;
+    const token=self.char(6);           //need to save
+    DB.key_set("hub",token);
+    console.log(DB.key_get("hub"));
+
+    const encry = JWT.sign(
+        {salt:salt,uri:"http://localhost:4501",token:token,from:"vService"},
+        salt, 
+        {expiresIn: '3h'});
+
     const result={
         data:{
-            token:token,
+            success:true,
         },
-        head:{},
+        head:{
+            encry:encry,
+        },
         stamp:self.stamp(),
     }
     console.log(`[ knock ] response : ${JSON.stringify(result)}\n`)

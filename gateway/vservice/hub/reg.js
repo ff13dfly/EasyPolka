@@ -18,6 +18,11 @@ const self={
 
 module.exports=(req,server)=>{  
     console.log(`[ reg ] called : ${JSON.stringify(req)}`); 
+    const token=DB.key_get("hub");
+    const encry=server.headers.encry;
+    const edata=JWT.verify(encry,token);
+    console.log(edata);
+
     const result={
         data:{
             details:{

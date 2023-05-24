@@ -82,6 +82,11 @@ const self={
             result: data
         }
     },
+
+    // reg hub details
+    reg:()=>{
+
+    },
 }
 
 // Router of Hub, API calls
@@ -94,7 +99,6 @@ router.post("/", async (ctx) => {
     }
 
     //1.check the header
-    const server = new JSONRPCServer();
     for(let k in me.call){
         server.addMethod(k,()=>{
             return me.call[k](req.method,req.params,req.id,req.id);
@@ -117,8 +121,11 @@ router.post("/manage", async (ctx) => {
         return ctx.body=JSON.stringify({error:"unkown call"});
     }
     const result= await me.manage[req.method](req.method,req.params,req.id,req.id);
-
-    ctx.body=self.exportJSON(result.data,req.id);
+    if(!result.error){
+        ctx.body=self.exportJSON(result.data,req.id);
+    }else{
+        ctx.body=self.exportJSON(result,req.id);
+    }
 });
 
 // vService APIs
