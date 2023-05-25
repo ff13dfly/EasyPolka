@@ -13,10 +13,10 @@ const self={
     },
 }
 
-
 module.exports=(method,params,id,address)=>{
     console.log(`Here: ${method}, params : ${JSON.stringify(params)}`);
     const res={
+        data:"hello world",
         success:true,
         stamp:self.stamp(),
     }

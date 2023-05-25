@@ -2,9 +2,16 @@
 
 //../node_modules/.bin/esbuild mndb.js --bundle --minify --outfile=mndb.min.js --global-name=MNDB --platform=node
 
-const cache={};       //key cache 
-const hash={};      //hash cache
-const queue={};     //list cache
+const cache={};         //key cache 
+const hash={};          //hash cache
+const queue={};         //list cache
+
+let timer=null;
+const remove={
+    cache:{},
+    hash:{},
+    queue:{},
+}
 
 const max={
     "key":256,      //max 256 Bytes
@@ -12,6 +19,41 @@ const max={
 };
 
 const self={
+    remover:()=>{
+        if(timer!==null) return false;
+        timer=setInterval(()=>{
+            const ms=new Date().getTime();
+            console.log(`Remove timer : ${ms}`);
+            const stamp=parseInt(ms*0.001);
+            for(var type in remove){
+                if(remove[type][stamp]){
+                    const list=remove[type][stamp];
+                    switch (type) {
+                        case 'cache':
+                            for(let i=0;i<list.length;i++){
+                                const dkey=list[i];
+                                delete cache[dkey];
+                            }
+                            break;
+                        case 'hash':
+                            for(let i=0;i<list.length;i++){
+                                const dkey=list[i];
+                                delete hash[dkey];
+                            }
+                            break;
+                        case 'queue':
+                            for(let i=0;i<list.length;i++){
+                                const dkey=list[i];
+                                delete queue[dkey];
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        },900);
+    },
     /******************key part******************/
     key_get:(key,ttl)=>{
         const type=typeof(key);

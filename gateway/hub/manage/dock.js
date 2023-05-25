@@ -30,9 +30,10 @@ const jsonwebtoken = require('jsonwebtoken');
 // const jServer = new JSONRPCServer();
 
 module.exports=(method,params,id,address)=>{
-    console.log(`[ dock ] called : ${JSON.stringify(params)}`); 
+    const start=self.stamp();
+    console.log(`[ dock ] called : ${JSON.stringify(params)}, stamp ${start}`); 
     const check=DB.key_get(params.uri);
-    if(check!==null) return  {error:"vService registered."};
+    //if(check!==null) return  {error:"vService registered."};
     
     console.log(check);
 
@@ -80,7 +81,8 @@ module.exports=(method,params,id,address)=>{
                     data:data,
                     head:null,
                 }
-                console.log(`[ dock ] response : ${JSON.stringify(result)}\n`);
+                const end=self.stamp();
+                console.log(`[ dock ] response : ${JSON.stringify(result)} , stamp : ${end}, cost : ${end-start}\n`);
                 return resolve(result);
             }).catch((err)=>{
 

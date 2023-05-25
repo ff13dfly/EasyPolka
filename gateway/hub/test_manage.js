@@ -71,7 +71,8 @@ const test_c={
         "jsonrpc":"2.0",
         "method":"dock",
         "params":{
-            "uri":"http://localhost:4501"
+            //"uri":"http://localhost:4501"
+            "uri":"http://167.179.119.110:4501"
         },
         "id":self.char(16,'mock_'),
     },

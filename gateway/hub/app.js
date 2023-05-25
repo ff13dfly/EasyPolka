@@ -87,11 +87,68 @@ const self={
     reg:()=>{
 
     },
+    getParams:(str)=>{
+        const map={};
+        if(!str) return map;
+        const txt=str.replace("/?","");
+        const arr=txt.split("&");
+        
+        for(let i=0;i<arr.length;i++){
+          const kv=arr[i].split("=");
+          map[kv[0]]=kv[1];
+        }
+        return map;
+    },
+    formatParams:(map)=>{
+        const params={};
+        let stamp=0;
+        let callback='';
+        const json={
+            id:"",
+            method:"",
+            params:{},
+        }
+        for(var k in map){
+            if(k==="_"){
+                stamp=map[k];
+                continue;
+            }
+            if(k==="callback"){
+                callback=map[k];
+                continue;
+            }
+            if(k==="id"){
+                json.id=map[k];
+                continue;
+            }
+            if(k==="method"){
+                json.method=map[k];
+                continue;
+            }
+            params[k]=map[k];
+        }
+        json.params=params;
+
+        return {request:json,callback:callback,stamp:stamp}
+    },
+    export:(data,callback,id)=>{
+        const result={
+            "jsonrpc": "2.0",
+            "result": data, 
+            "id": id
+        }
+        return `${callback}(${JSON.stringify(result)})`;
+    },
 }
+
+router.get("/", async (ctx) => {
+    const params=self.getParams(ctx.request.url);
+    const jsonp=self.formatParams(params);
+    ctx.body=self.export({info:"normal call"},jsonp.callback,jsonp.request.id);
+});
 
 // Router of Hub, API calls
 router.post("/", async (ctx) => {
-
     const header=ctx.request.header;
     const req=ctx.request.body;
     if(!req.method || !me.call[req.method]){

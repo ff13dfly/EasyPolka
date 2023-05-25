@@ -2,10 +2,15 @@
 //package command, `esbuild` needed.
 //yarn add esbuild
 //../node_modules/.bin/esbuild app.js --bundle --minify --outfile=vservice.min.js --platform=node
+
+//scp vservice.min.js root@167.179.119.110:/root/
+//curl "http://167.179.119.110:4501/ping" -v
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
     port:       4501,
+    //polka:      'wss://dev.metanchor.net',
+    polka:      'ws://127.0.0.1:9944',
 };
 
 const args = process.argv.slice(2);
@@ -35,7 +40,6 @@ const anchor={
 const anchorJS= require('../../package/node/anchor.node.js');
 const { ApiPromise,WsProvider } = require('../../package/node/polkadot.node.js');
 const {easyRun} = require('../../package/node/easy.node.js');
-const server="ws://127.0.0.1:9944";
 
 const koa=require("koa");
 const bodyParser = require("koa-bodyparser");
@@ -78,10 +82,10 @@ let websocket=null;
 const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
-        console.log(`Ready to link to server ${server}.`);
+        console.log(`Ready to link to server ${config.polka}.`);
         
-        ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
-            console.log(config.success,`Linker to node [${server}] created.`);
+        ApiPromise.create({ provider: new WsProvider(config.polka) }).then((api) => {
+            console.log(config.success,`Linker to node [${config.polka}] created.`);
 
             websocket = api;
             anchorJS.set(api);
@@ -134,6 +138,10 @@ const self={
 }
 
 self.auto(()=>{
+    router.get("/ping",async (ctx)=>{
+        ctx.body=JSON.stringify({hello:"world"});
+    });
+
     router.post("/",async (ctx)=>{
         const header=ctx.request.header;
         const req=ctx.request.body;
@@ -162,7 +170,8 @@ self.auto(()=>{
     app.listen(port,()=>{
         console.log(`vService running at port ${port}`);
         console.log(`http://localhost:${port}`);
-    
-        console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
+        
+        console.log(`curl "http://localhost:${port}/ping"\n`)
+        //console.log(`curl "http://localhost:${port}/ping" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
     });
 });
