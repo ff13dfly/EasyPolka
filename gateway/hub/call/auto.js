@@ -6,6 +6,7 @@
 // Security
 // 1. check the name of service. Check all parameters by definition.
 // 2. forbiden all password and write operation on Hub itself.
+const DB=require("../../lib/mndb.js");
 
 const self={
     stamp:()=>{

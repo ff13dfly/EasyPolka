@@ -101,7 +101,6 @@ const self={
     },
     formatParams:(map)=>{
         const params={};
-        let stamp=0;
         let callback='';
         const json={
             id:"",
@@ -110,7 +109,6 @@ const self={
         }
         for(var k in map){
             if(k==="_"){
-                stamp=map[k];
                 continue;
             }
             if(k==="callback"){
@@ -129,25 +127,59 @@ const self={
         }
         json.params=params;
 
-        return {request:json,callback:callback,stamp:stamp}
+        return {request:json,callback:callback,stamp:self.stamp()}
     },
     export:(data,callback,id)=>{
-        const result={
-            "jsonrpc": "2.0",
-            "result": data, 
-            "id": id
+        if(data.error){
+            const err={
+                "jsonrpc": "2.0",
+                "error": data.error, 
+                "id": id
+            }
+            return `${callback}(${JSON.stringify(err)})`;
+        }else{
+            const result={
+                "jsonrpc": "2.0",
+                "result": data, 
+                "id": id
+            }
+            return `${callback}(${JSON.stringify(result)})`;
         }
-        return `${callback}(${JSON.stringify(result)})`;
+    },
+    checkSpam:(spam,stamp)=>{
+        console.log(`Spam checking ...`);
+        const DB=require("../lib/mndb.js");
+        const data=DB.key_get(spam);
+        if(data===null) return 'error spam';
+
+        const exp=stamp-data.stamp;
+        if(exp>10*60*1000) return 'expired spam';
+        return true;
     },
 }
 
+// Router of hub, API clls, for web jsonp
 router.get("/", async (ctx) => {
     const params=self.getParams(ctx.request.url);
     const jsonp=self.formatParams(params);
-    ctx.body=self.export({info:"normal call"},jsonp.callback,jsonp.request.id);
+    const method=jsonp.request.method;
+    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${self.stamp()}`);
+    if(method!=='spam'){
+        if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.callback,jsonp.request.id);
+        const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
+        if(spamResult!==true){
+            return ctx.body=self.export({error:spamResult},jsonp.callback,jsonp.request.id);
+        }
+    }
+
+    if(!method || !me.call[method]){
+        return ctx.body=self.export({error:"unkown call"},jsonp.callback,jsonp.request.id);
+    }
+    const result = await me.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
+    ctx.body=self.export(result,jsonp.callback,jsonp.request.id);
 });
 
-// Router of Hub, API calls
+// Router of Hub, API calls, for server
 router.post("/", async (ctx) => {
     const header=ctx.request.header;
     const req=ctx.request.body;
