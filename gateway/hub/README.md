@@ -10,6 +10,8 @@
 - Question: how to verify the node, both `Hub` and `vService`.
 - The security is in hand of `Hub`. The `Hub` can test the `vService` exposed method to check wether it works properly. ( If node want to cheat `Hub`, it can response correctly. Still security problem. )
 
+- Two ways to run, one is anonymous, one is account.
+
 ## Workflow
 
 ### Way 1, vService voluntary

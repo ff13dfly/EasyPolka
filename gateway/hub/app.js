@@ -153,7 +153,10 @@ const self={
         if(data===null) return 'error spam';
 
         const exp=stamp-data.stamp;
-        if(exp>10*60*1000) return 'expired spam';
+        if(exp>10*60*1000){
+            //TODO, here to clean the spam
+            return 'expired spam';
+        } 
         return true;
     },
 }
@@ -177,6 +180,26 @@ router.get("/", async (ctx) => {
     }
     const result = await me.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
     ctx.body=self.export(result,jsonp.callback,jsonp.request.id);
+});
+
+router.get("/manage", async (ctx) => {
+    const params=self.getParams(ctx.request.url);
+    const jsonp=self.formatParams(params);
+    const method=jsonp.request.method;
+    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${self.stamp()}`);
+    if(method!=='spam'){
+        if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.callback,jsonp.request.id);
+        const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
+        if(spamResult!==true){
+            return ctx.body=self.export({error:spamResult},jsonp.callback,jsonp.request.id);
+        }
+    }
+
+    if(!method || !me.manage[method]){
+        return ctx.body=self.export({error:"unkown call"},jsonp.callback,jsonp.request.id);
+    }
+    const result = await me.manage[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
+    ctx.body=self.export(result.data,jsonp.callback,jsonp.request.id);
 });
 
 // Router of Hub, API calls, for server

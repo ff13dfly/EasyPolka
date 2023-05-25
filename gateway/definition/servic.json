@@ -1,0 +1,40 @@
+{
+    "vCache":{
+        "view":{
+            "intro":"",
+            "params":{
+                "name":"string"
+            }
+        },
+        "target":{
+            "intro":"",
+            "params":{
+                "name":"string",
+                "block":"blocknumber"
+            }
+        },
+        "history":{
+            "intro":"",
+            "params":{
+                "name":"string",
+                "page":"u32",
+                "step":"u32"
+            }
+        },
+        "multi":{
+            "intro":"",
+            "params":{
+                "list":"anchor[]"
+            }
+        }
+    },
+    "vAccounts":{
+        
+    },
+    "vSocial":{
+        
+    },
+    "vAirdrop":{
+        
+    }
+}
