@@ -9,6 +9,9 @@
 //yarn add esbuild
 //../node_modules/.bin/esbuild app.js --bundle --minify --outfile=hub.min.js --platform=node
 
+//JSON RPC 2.0
+//https://www.jsonrpc.org/specification#response_object
+
 const koa=require("koa");
 const bodyParser = require("koa-bodyparser");
 const koaRouter=require("koa-router");
