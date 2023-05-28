@@ -37,6 +37,7 @@ const me={
     "service":{      //service functions here
         //"knock":require("./service/knock.js"),
         //"reg":require("./service/reg.js"),
+        "pong":require("./service/pong.js"),
         "shuttle":require("./service/shuttle.js"),
     },
     
@@ -45,7 +46,11 @@ const me={
         "spam":require("./call/spam.js"),
     },
     "manage":{      //manage request method name checked here
+        "auth":require("./manage/auth.js"),
+        "upload":require("./manage/upload.js"),
         "apart":require("./manage/apart.js"),
+        "drop":require("./manage/drop.js"),
+        "system":require("./manage/system.js"),
         "dock":require("./manage/dock.js"),
         "list":require("./manage/list.js"),
     },
@@ -71,29 +76,17 @@ const self={
         for(let i=0;i<n;i++)pre+=i%2?String.fromCharCode(self.rand(65,90)):String.fromCharCode(self.rand(97,122));
         return pre;
     },
-    exportJSON:(data,id)=>{
-        if(data.error){
-            return {
-                jsonrpc: '2.0',
-                id:id,
-                error: data.error,
-            }
-        };
-        return {
-            jsonrpc: '2.0',
-            id:id,
-            result: data
-        }
-    },
+    
 
     // reg hub details
     reg:()=>{
 
     },
-    getParams:(str)=>{
+    getParams:(str,pre)=>{
         const map={};
         if(!str) return map;
-        const txt=str.replace("/?","");
+        const txt=str.replace((!pre?'':pre+"/?"),"");
+        console.log(!pre?'':pre+"/?");
         const arr=txt.split("&");
         
         for(let i=0;i<arr.length;i++){
@@ -132,22 +125,17 @@ const self={
 
         return {request:json,callback:callback,stamp:self.stamp()}
     },
-    export:(data,callback,id)=>{
-        if(data.error){
-            const err={
-                "jsonrpc": "2.0",
-                "error": data.error, 
-                "id": id
-            }
-            return `${callback}(${JSON.stringify(err)})`;
+    export:(data,id,callback)=>{
+        let output={jsonrpc: '2.0',id:id};
+        if(!data){
+            output.error='No response from server';
         }else{
-            const result={
-                "jsonrpc": "2.0",
-                "result": data, 
-                "id": id
-            }
-            return `${callback}(${JSON.stringify(result)})`;
+            if(data.error) output.error=data.error;
         }
+        
+        if(output.error) return !callback?output:`${callback}(${JSON.stringify(output)})`;
+        output.result=data;
+        return !callback?output:`${callback}(${JSON.stringify(output)})`;
     },
     checkSpam:(spam,stamp)=>{
         console.log(`Spam checking ...`);
@@ -171,38 +159,38 @@ router.get("/", async (ctx) => {
     const method=jsonp.request.method;
     console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${self.stamp()}`);
     if(method!=='spam'){
-        if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.callback,jsonp.request.id);
+        if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
         const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
         if(spamResult!==true){
-            return ctx.body=self.export({error:spamResult},jsonp.callback,jsonp.request.id);
+            return ctx.body=self.export({error:spamResult},jsonp.request.id,jsonp.callback);
         }
     }
 
     if(!method || !me.call[method]){
-        return ctx.body=self.export({error:"unkown call"},jsonp.callback,jsonp.request.id);
+        return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await me.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
-    ctx.body=self.export(result,jsonp.callback,jsonp.request.id);
+    ctx.body=self.export(result,jsonp.request.id,jsonp.callback);
 });
 
 router.get("/manage", async (ctx) => {
-    const params=self.getParams(ctx.request.url);
+    const params=self.getParams(ctx.request.url,"/manage");
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
     console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${self.stamp()}`);
     if(method!=='spam'){
-        if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.callback,jsonp.request.id);
+        if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
         const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
         if(spamResult!==true){
-            return ctx.body=self.export({error:spamResult},jsonp.callback,jsonp.request.id);
+            return ctx.body=self.export({error:spamResult},jsonp.request.id,jsonp.callback);
         }
     }
-
+    console.log(`Request method : ${method}`);
     if(!method || !me.manage[method]){
-        return ctx.body=self.export({error:"unkown call"},jsonp.callback,jsonp.request.id);
+        return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await me.manage[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
-    ctx.body=self.export(result.data,jsonp.callback,jsonp.request.id);
+    ctx.body=self.export(result.data,jsonp.request.id,jsonp.callback);
 });
 
 // Router of Hub, API calls, for server
@@ -222,9 +210,9 @@ router.post("/", async (ctx) => {
 
     try {
         const result = await server.receive(ctx.request.body);
-        ctx.body= self.exportJSON(result,req.id);
+        ctx.body= self.export(result,req.id);
     } catch (error) {
-        ctx.body= self.exportJSON({error:error},req.id);
+        ctx.body= self.export({error:error},req.id);
     }
 });
 
@@ -237,9 +225,9 @@ router.post("/manage", async (ctx) => {
     }
     const result= await me.manage[req.method](req.method,req.params,req.id,req.id);
     if(!result.error){
-        ctx.body=self.exportJSON(result.data,req.id);
+        ctx.body=self.export(result.data,req.id);
     }else{
-        ctx.body=self.exportJSON(result,req.id);
+        ctx.body=self.export(result,req.id);
     }
 });
 

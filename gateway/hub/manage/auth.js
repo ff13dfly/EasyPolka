@@ -20,11 +20,20 @@ const self={
 
 
 module.exports=(method,params,id,address)=>{
-    const spam=self.char(13);
+
+    console.log(`From auth API, params : ${JSON.stringify(params)}`);
+    const token=self.char(6,"AU");
     const stamp=self.stamp();
-    DB.key_set(spam,{stamp:stamp,more:{}});
+    DB.key_set(token,{stamp:stamp,more:{}});
+
+    const jsonwebtoken = require('jsonwebtoken');
+    const sent_encry = jsonwebtoken.sign({token:token,stamp:self.stamp()}, 'spam', {expiresIn:'3h'}); 
+
     const res={
-        spam:spam,
+        data:{
+            token:sent_encry,
+        },
+        success:true,
         stamp:stamp,
     }
     

@@ -36,7 +36,7 @@ const self={
     },
 }
 
-const test_a={
+const test_list={
     method: 'post',
     url: URL+"/manage",
     data: {
@@ -50,7 +50,7 @@ const test_a={
     headers: {'token': token}
 }
 
-const test_b={
+const test_apart={
     method: 'post',
     url: URL+"/manage",
     data: {
@@ -64,7 +64,7 @@ const test_b={
     headers: {'token': token}
 }
 
-const test_c={
+const test_dock={
     method: 'post',
     url: URL+"/manage",
     data: {
@@ -79,7 +79,64 @@ const test_c={
     headers: {'token': token}
 }
 
-const test_d={
+const test_auth={
+    method: 'post',
+    url: URL+"/manage",
+    data: {
+        "jsonrpc":"2.0",
+        "method":"auth",
+        "params":{
+            "salt":"salt_from_hub"
+        },
+        "id":self.char(16,'mock_'),
+    },
+    headers: {'token': token}
+}
+
+const test_upload={
+    method: 'post',
+    url: URL+"/manage",
+    data: {
+        "jsonrpc":"2.0",
+        "method":"upload",
+        "params":{
+            "encry":"encried_address_json_file",
+            "addr":"address",                           //Hub will confirm this first
+        },
+        "id":self.char(16,'mock_'),
+    },
+    headers: {'token': token}
+}
+
+const test_drop={
+    method: 'post',
+    url: URL+"/manage",
+    data: {
+        "jsonrpc":"2.0",
+        "method":"drop",
+        "params":{
+            "addr":"encry_address"
+        },
+        "id":self.char(16,'mock_'),
+    },
+    headers: {'token': token}
+}
+
+const test_system={
+    method: 'post',
+    url: URL+"/manage",
+    data: {
+        "jsonrpc":"2.0",
+        "method":"system",
+        "params":{
+            "hello":"world"
+        },
+        "id":self.char(16,'mock_'),
+    },
+    headers: {'token': token}
+}
+
+const test_error={
     method: 'post',
     url: URL+"/manage",
     data: {
@@ -95,10 +152,14 @@ const test_d={
 
 
 const list=[
-    //test_a,
-    //test_b,
-    test_c,
-    //test_d,
+    //test_list,
+    //test_apart,
+    //test_dock,
+    //test_error,
+    test_auth,
+    test_upload,
+    test_drop,
+    test_system,
 ]
 
 self.auto(list);

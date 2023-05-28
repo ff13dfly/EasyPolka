@@ -20,6 +20,7 @@ const self={
 
 
 module.exports=(method,params,id,address)=>{
+    console.log(`From upload API, params : ${JSON.stringify(params)}`);
     const spam=self.char(13);
     const stamp=self.stamp();
     DB.key_set(spam,{stamp:stamp,more:{}});

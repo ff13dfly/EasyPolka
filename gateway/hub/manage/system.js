@@ -10,6 +10,7 @@ const self={
 }
 
 module.exports=(method,params,id,address)=>{
+    console.log(`From system API, params : ${JSON.stringify(params)}`);
     return new Promise((resolve, reject) => {
         const map={
             "vHistory":{

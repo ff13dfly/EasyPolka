@@ -18,7 +18,6 @@ const self={
     },
 }
 
-
 module.exports=(method,params,id,address)=>{
     const spam=self.char(8);
     const stamp=self.stamp();
@@ -27,6 +26,5 @@ module.exports=(method,params,id,address)=>{
         spam:spam,
         stamp:stamp,
     }
-    
     return res;
 };
