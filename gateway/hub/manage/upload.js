@@ -21,6 +21,21 @@ const self={
 
 module.exports=(method,params,id,address)=>{
     console.log(`From upload API, params : ${JSON.stringify(params)}`);
+
+    const encry=require('../lib/encry');
+    const s_key='1234123412341234',s_iv='5566556655665566'
+    encry.setKey(s_key);
+    encry.setIV(s_iv);
+    const de_file=encry.decrypt(params.file);
+
+    try {
+        const json=JSON.parse(de_file);
+        console.log(json);
+
+    } catch (error) {
+        
+    }
+
     const spam=self.char(13);
     const stamp=self.stamp();
     DB.key_set(spam,{stamp:stamp,more:{}});

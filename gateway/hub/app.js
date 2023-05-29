@@ -193,7 +193,12 @@ router.get("/manage", async (ctx) => {
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await me.manage[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
-    ctx.body=self.export(result.data,jsonp.request.id,jsonp.callback);
+    if(result.error){
+        ctx.body=self.export({error:result.error},jsonp.request.id,jsonp.callback);
+    }else{
+        ctx.body=self.export(result.data,jsonp.request.id,jsonp.callback);
+    }
+    
 });
 
 // Router of Hub, API calls, for server

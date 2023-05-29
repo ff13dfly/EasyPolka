@@ -2,14 +2,28 @@ import { Row,Col,Form,Button } from 'react-bootstrap';
 import { useEffect,useState} from 'react';
 
 function Verify(props) {
+  const node=props.server;
+
   let [disable,setDisable]=useState({upload:false,verify:false});
   let [info,setInfo]=useState("");
   let [code,setCode]=useState("");
   let [pass,setPass]=useState("");
 
   const tools=require('../lib/tools');
+  const encry=require('../lib/encry');
+  const tmp_encrypto={
+    key:"",
+    iv:"",
+  }
 
   const self={
+    fresh:()=>{
+      tmp_encrypto.key=tools.char(16);
+      tmp_encrypto.iv=tools.char(16);
+    },
+    getTemp:()=>{
+      return `${tmp_encrypto.key}.${tmp_encrypto.iv}`;
+    },
     passChange:(ev)=>{
       setPass(ev.target.value);
     },
@@ -20,16 +34,39 @@ function Verify(props) {
     },
     uploadClick:(ev)=>{
       if(!code) return setInfo('No encry json file.');
+      const md5=encry.md5(code.address);
+      const key=md5.substring(0,16),iv=md5.substring(16,32);
+      encry.setKey(key);
+      encry.setIV(iv);
+      
+      //console.log(self.getTemp());
+      const s_key="1234123412ABCDEF",s_iv="ABCDEF1234123412";
+      const security=encry.encrypt(`${s_key}.${s_iv}`);
+      
 
-      //TODO ready to sent the encry JSON file, by using encry token
+      tools.jsonp(node,{id:"abc",method:"spam"},(res)=>{
+        console.log(res);
+        const spam=res.result.spam;
+        const data={id:"auth_id",method:"auth",params:{code:security,spam:spam}}
+        tools.jsonp(node+'/manage/',data,(res)=>{
+            console.log(res);
+            if(res.result.token){
+              encry.setKey(s_key);
+              encry.setIV(s_iv);
+              const token=encry.decrypt(res.result.token);
+              const tmp=token.split(".");
 
-      //1. sent a encry salt to server ( server will md5(salt+hub_name) to get the `key` and `iv`)
-      // use the addresss as default salt md5(address) then get the temp `key` and `iv` to transfer the 
-
-      //2. get the encried data to get `key` and `iv`
-
-      //3. sent the encrypto data to server
-
+              encry.setKey(tmp[0]);
+              encry.setIV(tmp[1]);
+              const fa=encry.encrypt(JSON.stringify(code));
+              console.log(fa);
+              const up_config={id:"auth_id",method:"upload",params:{file:fa,spam:spam}}
+              tools.jsonp(node+'/manage/',up_config,(res)=>{
+                console.log(res);
+              });
+            }
+        });
+      });
     },
     fileChange:(ev)=>{
       try {
@@ -42,7 +79,7 @@ function Verify(props) {
             if(sign.address.length!==48)  return setInfo('Error SS58 address');
             if(sign.encoded.length!==268)  return setInfo('Error encoded verification');
             setInfo('Encoded account file loaded');
-            setCode(JSON.stringify(sign));
+            setCode(sign);
           }catch (error) {
             console.log(error);
             setInfo('Not encry JSON file');
@@ -56,7 +93,8 @@ function Verify(props) {
   };
 
   useEffect(() => {
-
+    self.fresh();
+    console.log(self.getTemp());
   }, []);
 
   return (

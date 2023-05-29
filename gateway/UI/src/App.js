@@ -14,7 +14,7 @@ const test={
     tools.jsonp(URI,data,(res)=>{
       console.log(res);
       const data={id:"address_ss58",method:"list",params:{v:"vhistory",a:"view",spam:res.result.spam}}
-      tools.jsonp(URI+'manage',data,(res)=>{
+      tools.jsonp(URI+'/manage',data,(res)=>{
         console.log(res);
       });
     });
@@ -41,16 +41,27 @@ const test={
 
     const de_result=encry.decrypt(result);
     console.log(de_result);
+
+    const md5=encry.md5('5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw');
+    console.log(md5);
   },
 }
 
 function App() {
   let [hubs,setHubs]=useState([]);
   let [server,setServer]=useState("");
+  //let [spam,setSpam]=useState({});
 
   const self={
     changeServer:(uri)=>{
       setServer(uri);
+      // if(!spam[uri]){
+      //   const data={id:"abc",method:"spam"}
+      //   tools.jsonp(uri,data,(res)=>{
+      //     console.log(res);
+          
+      //   });
+      // }
     },
     fresh:()=>{
 
@@ -58,17 +69,19 @@ function App() {
   }
 
   useEffect(() => {
-    const URI="http://127.0.0.1:8001/";
+    const URI="http://127.0.0.1:8001";
     //test.spam(URI);
     //test.auth(URI);
     //test.aes();
 
     //Fresh hubs list
-    setHubs([
+    const hs=[
       {URI:"http://localhost:8001",name:"Local_hub_8001"},
       {URI:"http://localhost:8002",name:"Local_hub_8002"},
       {URI:"http://localhost:8003",name:"Local_hub_8003"},
-    ]);
+    ];
+    setHubs(hs);
+    setServer(hs[0].URI);
   }, []);
 
   return (
@@ -87,7 +100,7 @@ function App() {
               </Form.Select>
             </Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <Verify />
+              <Verify server={server}/>
             </Col>
           </Row>
         </Col>
@@ -95,7 +108,7 @@ function App() {
           <Dock hub={server}/>
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <List server={server} />
+              <List server={server}/>
             </Col>
           </Row>
           
