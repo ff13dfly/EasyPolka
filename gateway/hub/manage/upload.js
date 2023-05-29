@@ -30,8 +30,8 @@ module.exports=(method,params,id,address)=>{
 
     try {
         const json=JSON.parse(de_file);
-        console.log(json);
-
+        //console.log(json);
+        DB.hash_set(json.address,json);
     } catch (error) {
         
     }

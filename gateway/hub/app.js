@@ -49,8 +49,9 @@ const me={
         "spam":require("./call/spam.js"),
     },
     "manage":{      //manage request method name checked here
-        "auth":require("./manage/auth.js"),
-        "upload":require("./manage/upload.js"),
+        "handshake":require("./manage/handshake.js"),   //get hub encry token to transport JSON file
+        "upload":require("./manage/upload.js"),         //upload account JSON file
+        "auth":require("./manage/auth.js"),             //verify authority to get JWT token
         "apart":require("./manage/apart.js"),
         "drop":require("./manage/drop.js"),
         "system":require("./manage/system.js"),
