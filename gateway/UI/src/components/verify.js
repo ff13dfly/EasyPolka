@@ -71,7 +71,9 @@ function Verify(props) {
             const pass = encry.encrypt('123456');
             const pass_config = { id: "auth_id", method: "auth", params: { pass: pass, spam: spam } }
             tools.jsonp(node + '/manage/', pass_config, (res) => {
-              console.log(res);
+              //console.log(res);
+              const access = encry.decrypt(res.result.access);
+              console.log(access);
             });
           });
         });

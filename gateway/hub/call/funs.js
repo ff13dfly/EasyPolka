@@ -1,7 +1,7 @@
 /***********************/
 /***********************/
 
-// The system information of Hub and docked vservices.
+// Service list which can be accessed.
 
 const self={
     stamp:()=>{
@@ -10,6 +10,7 @@ const self={
 }
 
 module.exports=(method,params,id,config)=>{
+    
     console.log(`From system API, params : ${JSON.stringify(params)}`);
     return new Promise((resolve, reject) => {
         const map={
@@ -28,7 +29,6 @@ module.exports=(method,params,id,config)=>{
             head:null,
             stamp:self.stamp(),
         }
-        
         return resolve(result);
     }); 
 };

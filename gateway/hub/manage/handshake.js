@@ -1,10 +1,6 @@
 /***********************/
 /***********************/
 
-// set special token for JWT what is needed for docking new service
-
-// Security
-// 1. not related to account. That will cause ddos to target account.
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 const encry=require('../lib/encry');

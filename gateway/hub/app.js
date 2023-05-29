@@ -53,7 +53,7 @@ const init={
         const ks=config.keys;
         DB.key_set(ks.runner,address);
         DB.key_set(ks.setting,cfgAnchor);
-        DB.key_set(ks.executor,{token:"",exp:0});
+        DB.key_set(ks.executor,{salt:"",exp:0});
         DB.key_set(ks.encry,{key:"",iv:""});
     },
 }
@@ -180,7 +180,7 @@ const self={
         return !callback?output:`${callback}(${JSON.stringify(output)})`;
     },
     checkSpam:(spam,stamp)=>{
-        console.log(`Spam checking ...`);
+        //console.log(`Spam checking ...`);
         const DB=require("../lib/mndb.js");
         const data=DB.key_get(spam);
         if(data===null) return 'error spam';
@@ -237,7 +237,6 @@ router.get("/manage", async (ctx) => {
     }else{
         ctx.body=self.export(result.data,jsonp.request.id,jsonp.callback);
     }
-    
 });
 
 // Router of Hub, API calls, for server

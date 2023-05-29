@@ -7,19 +7,14 @@
 // 1. check the name of service. Check all parameters by definition.
 // 2. forbiden all password and write operation on Hub itself.
 const DB=require("../../lib/mndb.js");
+const tools=require("../../lib/tools");
 
-const self={
-    stamp:()=>{
-        return new Date().getTime();
-    },
-}
-
-module.exports=(method,params,id,address)=>{
+module.exports=(method,params,id,config)=>{
     console.log(`Here: ${method}, params : ${JSON.stringify(params)}`);
     const res={
         data:"hello world",
         success:true,
-        stamp:self.stamp(),
+        stamp:tools.stamp(),
     }
     
     return res;

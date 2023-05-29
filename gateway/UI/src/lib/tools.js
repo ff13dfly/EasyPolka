@@ -1,5 +1,5 @@
 const self={
-    jsonp:(server,data,ck)=>{
+    jsonp:(server,data,ck,headers)=>{
         var uri=server+'?';
         if(data.id) uri += `id=${data.id}&`;
         if(data.method) uri += `method=${data.method}&`;

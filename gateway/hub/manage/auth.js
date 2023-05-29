@@ -1,3 +1,5 @@
+/***********************/
+/***********************/
 
 const {Keyring}=require('@polkadot/api');
 const DB=require("../../lib/mndb");
@@ -6,12 +8,10 @@ const encry=require('../lib/encry');
 
 module.exports=(method,params,id,config)=>{
     console.log(`From auth API, params : ${JSON.stringify(params)}`);
+
+    //1.decode the password
     const ks=config.keys;
-    const runner=DB.key_get(ks.runner);
     const json=DB.key_get(ks.encoded);
-
-    const stamp=tools.stamp();
-
     const ekey=DB.key_get(ks.encry);
     const s_key=ekey.key,s_iv=ekey.iv;
     encry.setKey(s_key);
@@ -22,21 +22,29 @@ module.exports=(method,params,id,config)=>{
     const keyring = new Keyring({ type: 'sr25519' });
     const pair = keyring.createFromJson(json);
     try {
+
         pair.decodePkcs8(de_pass);
-        console.log(pair.address);
+        const runner=DB.key_get(ks.runner);
+        if(runner!==pair.address) return {error:"Illegal account"}
+
+        //3. set up the access
+        const stamp=tools.stamp();
+        const excutor={salt:tools.char(3),exp:stamp+10000*60};
+        DB.key_set(ks.excutor,excutor);
+        console.log(excutor);
+        const access=encry.encrypt(JSON.stringify(excutor));
+
+        //4. remove the encoded json file
+
+        const res={
+            data:{
+                access:access,
+            },
+        }
+    
+        return res;
+        
     } catch (error) {
-        console.log(error);
+        return {error:error}
     }
-
-    const res={
-        data:{
-            //secret:secret,
-            //token:token,
-            cache:json,
-            password:de_pass,
-        },
-        stamp:stamp,
-    }
-
-    return res;
 };

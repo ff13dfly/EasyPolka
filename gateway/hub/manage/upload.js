@@ -1,10 +1,6 @@
 /***********************/
 /***********************/
 
-// upload runner auth JSON file. Hub can decode it from encry string then compare with the anchor data.
-
-// Security
-// 1. not related to account. That will cause ddos to target account.
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 const encry=require('../lib/encry');
