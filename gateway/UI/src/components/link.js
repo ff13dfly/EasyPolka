@@ -27,7 +27,7 @@ function Link(props) {
           <Form.Control 
             size="md" 
             type="text" 
-            placeholder="Gateway URI to add..." 
+            placeholder="Gateway Hub URI to add..." 
             onChange={(ev) => {
                 self.onChange(ev)
             }} 

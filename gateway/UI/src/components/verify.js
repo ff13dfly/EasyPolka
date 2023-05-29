@@ -7,6 +7,8 @@ function Verify(props) {
   let [code,setCode]=useState("");
   let [pass,setPass]=useState("");
 
+  const tools=require('../lib/tools');
+
   const self={
     passChange:(ev)=>{
       setPass(ev.target.value);
@@ -20,6 +22,13 @@ function Verify(props) {
       if(!code) return setInfo('No encry json file.');
 
       //TODO ready to sent the encry JSON file, by using encry token
+
+      //1. sent a encry salt to server ( server will md5(salt+hub_name) to get the `key` and `iv`)
+      // use the addresss as default salt md5(address) then get the temp `key` and `iv` to transfer the 
+
+      //2. get the encried data to get `key` and `iv`
+
+      //3. sent the encrypto data to server
 
     },
     fileChange:(ev)=>{

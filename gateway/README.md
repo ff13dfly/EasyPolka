@@ -97,3 +97,12 @@ Gateway is the EasyPolka micro service system.
     5. Https
 
 - JSON RPC 2.0 [https://www.npmjs.com/package/json-rpc-2.0?activeTab=readme](https://www.npmjs.com/package/json-rpc-2.0?activeTab=readme)
+
+
+## 原理说明
+
+- hub启动需要指定一个默认的账号，address_a。这个账号只有在manage的时候需要，那这个账号就可以作为默认的salt来进行第一次握手，获取到临时加密密码之后，就后继用临时的来处理。
+
+- hub是JWT的服务器，无论对UI的管理，还是vService的认证，都使用这个JWT认证服务。
+
+- vService注册的时候，也需要服务器知道启动vService的账号是啥，进行初次握手

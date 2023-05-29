@@ -9,6 +9,9 @@
 //yarn add esbuild
 //../node_modules/.bin/esbuild app.js --bundle --minify --outfile=hub.min.js --platform=node
 
+//########## RUNNING ##########
+// node app.js ss58_address cfg_anchor
+
 //JSON RPC 2.0
 //https://www.jsonrpc.org/specification#response_object
 
