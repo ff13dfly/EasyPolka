@@ -5,25 +5,18 @@
 
 // Security
 // 1. not related to account. That will cause ddos to target account.
-const DB=require("../../lib/mndb.js");
-const self={
-    stamp:()=>{
-        return new Date().getTime();
-    },
-    rand:(m,n)=>{return Math.floor(Math.random() * (m-n+1) + n);},
-    char:(n,pre)=>{
-        n=n||7;pre=pre||'';
-        for(let i=0;i<n;i++)pre+=i%2?String.fromCharCode(self.rand(65,90)):String.fromCharCode(self.rand(97,122));
-        return pre;
-    },
-}
+const DB=require("../../lib/mndb");
+const tools=require("../../lib/tools");
+const encry=require('../lib/encry');
 
-module.exports=(method,params,id,address)=>{
+module.exports=(method,params,id,config)=>{
     console.log(`From handshake API, params : ${JSON.stringify(params)}`);
-    const mock_runner="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";       //mock running address
-    
-    const encry=require('../lib/encry.js');
-    const md5=encry.md5(mock_runner);
+
+    const ks=config.keys;
+    const runner=DB.key_get(ks.runner);
+
+    //1.decode by runner address
+    const md5=encry.md5(runner);
     const key=md5.substring(0,16),iv=md5.substring(16,32);
     encry.setKey(key);
     encry.setIV(iv);
@@ -32,13 +25,16 @@ module.exports=(method,params,id,address)=>{
         return {error:"No authority to access."}
     }
 
+    //2.get the client `key` and `iv` to encode server `key` and `iv`
     const arr=de_result.split(".");
     encry.setKey(arr[0]);
     encry.setIV(arr[1]);
 
-    const s_key='1234123412341234',s_iv='5566556655665566'
+    const s_key=tools.char(16),s_iv=tools.char(16);
+    DB.key_set(ks.encry,{key:s_key,iv:s_iv});
+
     const security=encry.encrypt(`${s_key}.${s_iv}`);
-    const stamp=self.stamp();
+    const stamp=tools.stamp();
     const res={
         data:{
             token:security,

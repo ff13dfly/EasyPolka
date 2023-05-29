@@ -61,8 +61,8 @@ function List(props) {
             <Col md={2} lg={2} xl={2} xxl={2} className="pt-2">{item.name}</Col>
             <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
               {item.nodes.map((node, index) => (
-                <p id={index}>
-                  <Button size="sm" variant="danger" key={index} onClick={(ev) => {
+                <p key={index}>
+                  <Button size="sm" variant="danger" onClick={(ev) => {
                     self.removeService(node)
                   }}>X</Button>
                   {node}

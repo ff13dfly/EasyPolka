@@ -1,8 +1,4 @@
-
-// security
-// 1. no refer anchor, single Anchor data to run
-// 2. only trust anchor data, even the encry JSON file.
-// 3. when start, need to vertify the runner password. When adding vservice, need to confirm the account
+//!important This is the Hub of Anchor Network micro-service system.
 
 //########## BUILD ##########
 //package command, `esbuild` needed.
@@ -11,9 +7,58 @@
 
 //########## RUNNING ##########
 // node app.js ss58_address cfg_anchor
+// node app.js 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw
 
 //JSON RPC 2.0
 //https://www.jsonrpc.org/specification#response_object
+
+// security
+// 1. no refer anchor, single Anchor data to run
+// 2. only trust anchor data, even the encry JSON file.
+// 3. when start, need to vertify the runner password. When adding vservice, need to confirm the account
+
+
+// running config
+const tools=require("../lib/tools");
+const config={
+    theme:{
+        error:      '\x1b[36m%s\x1b[0m',
+        success:    '\x1b[36m%s\x1b[0m',
+    },
+    keys:{
+        runner:tools.char(20),      //DB key: storage the runner address
+        executor:tools.char(20),    //DB key: the one who is operate the hub
+        encry:tools.char(20),       //DB key: encry `key` adn `iv` data
+        setting:tools.char(20),     //DB key: the config anchor name
+        encoded:tools.char(20),     //DB key: the encoded account file
+    },
+}
+console.log(`\nAnchor Gateway Hub ( v1.0 ) running...`);
+
+// arguments
+const args = process.argv.slice(2);
+if(!args[0]) return console.log(config.theme.error,`Error: no runner address.`);
+const address=args[0];
+if(address.length!==48) return  console.log(config.theme.error,`Error: runner address illegal.`);
+const cfgAnchor=!args[1]?"":args[1];
+console.log(config.theme.success,`Ready to load gateway Hub by ${address}, the config Anchor is ${!cfgAnchor?"not set":cfgAnchor}`);
+
+// basic setting and init the env
+const DB=require("../lib/mndb");
+const init={
+    run:()=>{
+        init.mndb();
+    },
+    mndb:()=>{
+        const ks=config.keys;
+        DB.key_set(ks.runner,address);
+        DB.key_set(ks.setting,cfgAnchor);
+        DB.key_set(ks.executor,{token:"",exp:0});
+        DB.key_set(ks.encry,{key:"",iv:""});
+    },
+}
+init.run();
+//console.log( DB.key_get(config.keys.runner));
 
 const koa=require("koa");
 const bodyParser = require("koa-bodyparser");
@@ -27,7 +72,7 @@ const me={
         "koa-router":koaRouter,
         "koa-bodyparser":bodyParser,
         "json-rpc-2.0":JSONRPCServer,
-        "jwt":require("jsonwebtoken"),
+        //"jwt":require("jsonwebtoken"),
         "axios":require("axios").default,
     },
     "anchor":{
@@ -36,7 +81,15 @@ const me={
     },
     "lib":{
         "mndb":require("../lib/mndb.js"),
-    },
+    }
+};
+
+/*****************************************************/
+/*********** koa.js to run the http server ***********/
+/*****************************************************/
+
+// exposed module
+const exposed={
     "service":{      //service functions here
         //"knock":require("./service/knock.js"),
         //"reg":require("./service/reg.js"),
@@ -58,7 +111,7 @@ const me={
         "dock":require("./manage/dock.js"),
         "list":require("./manage/list.js"),
     },
-};
+}
 
 // application start
 const app=new koa(),router=new koaRouter();
@@ -71,21 +124,6 @@ app.use(router.routes());
 
 // application implement
 const self={
-    stamp:()=>{
-        return new Date().getTime();
-    },
-    rand:(m,n)=>{return Math.floor(Math.random() * (m-n+1) + n);},
-    char:(n,pre)=>{
-        n=n||7;pre=pre||'';
-        for(let i=0;i<n;i++)pre+=i%2?String.fromCharCode(self.rand(65,90)):String.fromCharCode(self.rand(97,122));
-        return pre;
-    },
-    
-
-    // reg hub details
-    reg:()=>{
-
-    },
     getParams:(str,pre)=>{
         const map={};
         if(!str) return map;
@@ -127,7 +165,7 @@ const self={
         }
         json.params=params;
 
-        return {request:json,callback:callback,stamp:self.stamp()}
+        return {request:json,callback:callback,stamp:tools.stamp()}
     },
     export:(data,id,callback)=>{
         let output={jsonrpc: '2.0',id:id};
@@ -161,7 +199,7 @@ router.get("/", async (ctx) => {
     const params=self.getParams(ctx.request.url);
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
-    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${self.stamp()}`);
+    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${tools.stamp()}`);
     if(method!=='spam'){
         if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
         const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
@@ -170,10 +208,10 @@ router.get("/", async (ctx) => {
         }
     }
 
-    if(!method || !me.call[method]){
+    if(!method || !exposed.call[method]){
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
-    const result = await me.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
+    const result = await exposed.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
     ctx.body=self.export(result,jsonp.request.id,jsonp.callback);
 });
 
@@ -181,7 +219,7 @@ router.get("/manage", async (ctx) => {
     const params=self.getParams(ctx.request.url,"/manage");
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
-    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${self.stamp()}`);
+    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${tools.stamp()}`);
     if(method!=='spam'){
         if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
         const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
@@ -190,10 +228,10 @@ router.get("/manage", async (ctx) => {
         }
     }
     console.log(`Request method : ${method}`);
-    if(!method || !me.manage[method]){
+    if(!method || !exposed.manage[method]){
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
-    const result = await me.manage[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
+    const result = await exposed.manage[method](method,jsonp.request.params,jsonp.request.id,config);
     if(result.error){
         ctx.body=self.export({error:result.error},jsonp.request.id,jsonp.callback);
     }else{
@@ -206,14 +244,14 @@ router.get("/manage", async (ctx) => {
 router.post("/", async (ctx) => {
     const header=ctx.request.header;
     const req=ctx.request.body;
-    if(!req.method || !me.call[req.method]){
+    if(!req.method || !exposed.call[req.method]){
         return ctx.body=JSON.stringify({error:"unkown call"});
     }
 
     //1.check the header
-    for(let k in me.call){
+    for(let k in exposed.call){
         server.addMethod(k,()=>{
-            return me.call[k](req.method,req.params,req.id,req.id);
+            return exposed.call[k](req.method,req.params,req.id,req.id);
         });
     }
 
@@ -229,10 +267,10 @@ router.post("/", async (ctx) => {
 router.post("/manage", async (ctx) => {
     const header=ctx.request.header;
     const req=ctx.request.body;
-    if(!req.method || !me.manage[req.method]){
+    if(!req.method || !exposed.manage[req.method]){
         return ctx.body=JSON.stringify({error:"unkown call"});
     }
-    const result= await me.manage[req.method](req.method,req.params,req.id,req.id);
+    const result= await exposed.manage[req.method](req.method,req.params,req.id,req.id);
     if(!result.error){
         ctx.body=self.export(result.data,req.id);
     }else{

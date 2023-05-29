@@ -1,20 +1,20 @@
 {
     "vCache":{
         "view":{
-            "intro":"",
+            "intro":"view latest anchor data",
             "params":{
                 "name":"string"
             }
         },
         "target":{
-            "intro":"",
+            "intro":"get targe block anchor data",
             "params":{
                 "name":"string",
                 "block":"blocknumber"
             }
         },
         "history":{
-            "intro":"",
+            "intro":"get anchor history data",
             "params":{
                 "name":"string",
                 "page":"u32",
@@ -22,14 +22,25 @@
             }
         },
         "multi":{
-            "intro":"",
+            "intro":"get multi anchor data",
             "params":{
                 "list":"anchor[]"
             }
         }
     },
     "vAccounts":{
-        
+        "address":{
+            "intro":"Get id from compress list.",
+            "params":{
+                "id":"u32"
+            }
+        },
+        "id":{
+            "intro":"Get SS58 address index",
+            "params":{
+                "address":"ss58"
+            }
+        }
     },
     "vSocial":{
         
