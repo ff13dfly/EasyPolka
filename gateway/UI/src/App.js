@@ -8,7 +8,6 @@ import Verify from './components/verify';
 
 const tools=require('./lib/tools');
 
-
 const test={
   spam:(URI)=>{
     const data={id:"abc",method:"spam"}
@@ -33,6 +32,16 @@ const test={
       });
     });
   },
+  aes:()=>{
+    const encry=require('./lib/encry');
+    encry.setKey("176G123412ABCDEF");
+    encry.setIV("ABCDEF123412341p");
+    const result=encry.encrypt(JSON.stringify({hello:"world"}));
+    console.log(result);
+
+    const de_result=encry.decrypt(result);
+    console.log(de_result);
+  },
 }
 
 function App() {
@@ -51,7 +60,8 @@ function App() {
   useEffect(() => {
     const URI="http://127.0.0.1:8001/";
     //test.spam(URI);
-    test.auth(URI);
+    //test.auth(URI);
+    //test.aes();
 
     //Fresh hubs list
     setHubs([

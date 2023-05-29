@@ -13,6 +13,7 @@ function Dock(props) {
       setURI(ev.target.value);
     },
     onClick:()=>{
+      console.log(hub);
       console.log(uri);
     },
   };
