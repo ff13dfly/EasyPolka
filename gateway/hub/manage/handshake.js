@@ -19,7 +19,6 @@ const self={
 }
 
 module.exports=(method,params,id,address)=>{
-
     console.log(`From handshake API, params : ${JSON.stringify(params)}`);
     const mock_runner="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";       //mock running address
     

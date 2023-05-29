@@ -64,11 +64,11 @@ function Verify(props) {
           encry.setKey(tmp[0]);
           encry.setIV(tmp[1]);
           const fa = encry.encrypt(JSON.stringify(code));
-          //console.log(fa);
+          console.log(fa);
           const up_config = { id: "auth_id", method: "upload", params: { file: fa, spam: spam } }
           tools.jsonp(node + '/manage/', up_config, (res) => {
             //console.log(res);
-            const pass = encry.encrypt('password');
+            const pass = encry.encrypt('123456');
             const pass_config = { id: "auth_id", method: "auth", params: { pass: pass, spam: spam } }
             tools.jsonp(node + '/manage/', pass_config, (res) => {
               console.log(res);
