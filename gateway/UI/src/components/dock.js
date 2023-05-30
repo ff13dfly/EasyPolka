@@ -2,12 +2,11 @@ import { Row, Col, Button, Form } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
 function Dock(props) {
-
+  const show=props.show;
+  console.log(show);
   let [uri, setURI] = useState("");
 
   const hub = props.hub;
-  console.log(hub);
-
   const self = {
     onChange: (ev) => {
       setURI(ev.target.value);
@@ -23,7 +22,7 @@ function Dock(props) {
   }, []);
 
   return (
-    <Row>
+    <Row hidden={!show}>
       <Col md={2} lg={2} xl={2} xxl={2} className="pt-2"></Col>
       <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
         <Form.Control
@@ -47,7 +46,6 @@ function Dock(props) {
         }}>Dock</Button>
       </Col>
     </Row>
-
   );
 }
 export default Dock;

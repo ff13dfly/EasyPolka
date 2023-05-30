@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 
 function Verify(props) {
   const node = props.server;
+  const setAuth=props.authority;
+  //const fresh=props.fresh;
+  const show=props.show;
 
   let [disable, setDisable] = useState({ upload: false, verify: false });
   let [info, setInfo] = useState("");
@@ -73,7 +76,10 @@ function Verify(props) {
             tools.jsonp(node + '/manage/', pass_config, (res) => {
               //console.log(res);
               const access = encry.decrypt(res.result.access);
-              console.log(access);
+              const obj=JSON.parse(access);
+              //obj.token=res.result.access;
+              setAuth(obj.exp,res.result.access);
+              //fresh();
             });
           });
         });
@@ -105,11 +111,11 @@ function Verify(props) {
 
   useEffect(() => {
     self.fresh();
-    console.log(self.getTemp());
+    //console.log(self.getTemp());
   }, []);
 
   return (
-    <Row>
+    <Row hidden={!show}>
       <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
         Vertifying Management Account
       </Col>

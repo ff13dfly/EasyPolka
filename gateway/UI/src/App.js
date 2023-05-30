@@ -5,8 +5,10 @@ import Link from './components/link';
 import Dock from './components/dock';
 import List from './components/list';
 import Verify from './components/verify';
+import Tick from './components/tick';
 
 const tools=require('./lib/tools');
+const DB=require('./lib/mndb');
 
 const test={
   spam:(URI)=>{
@@ -45,48 +47,71 @@ const test={
     const md5=encry.md5('5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw');
     console.log(md5);
   },
+  auto:()=>{
+    const URI="http://127.0.0.1:8001";
+    test.spam(URI);
+    test.auth(URI);
+    test.aes();
+  },
 }
 
 function App() {
   let [hubs,setHubs]=useState([]);
   let [server,setServer]=useState("");
-  //let [spam,setSpam]=useState({});
+  let [token,setToken]=useState("");
+  let [exp,setExp]=useState(0);
+  let [dock,setDock]=useState("");
+
+  const storage={
+    key:"hub_nodes",
+    loadNodes:()=>{
+      const str=localStorage.getItem(storage.key);
+      if(str===null) return [];
+      try {
+        return JSON.parse(str);
+      } catch (error) {
+        localStorage.removeItem(storage.key);
+        return [];
+      }
+    },
+    saveNodes:(list)=>{
+      localStorage.setItem(storage.key,JSON.stringify(list));
+      return true;
+    },
+  }
 
   const self={
-    changeServer:(uri)=>{
-      setServer(uri);
-      // if(!spam[uri]){
-      //   const data={id:"abc",method:"spam"}
-      //   tools.jsonp(uri,data,(res)=>{
-      //     console.log(res);
-          
-      //   });
-      // }
+    changeServer:(index)=>{
+      const node=hubs[index];
+      setServer(node.URI);
+    },
+    setAuthority:(exp,token)=>{
+      setToken(token);
+      setExp(exp);
     },
     fresh:()=>{
+      //1.list the storaged nodes
+      const hs=storage.loadNodes();
+      setHubs(hs);
+      if(hs.length!==0) setServer(hs[0].URI);
 
+      //2.check authority
+      //console.log(token);
+      //console.log(exp);
+      // if(token && exp){
+      //   setDock(<Dock hub={server}/>);
+      // }
     },
   }
 
   useEffect(() => {
-    const URI="http://127.0.0.1:8001";
-    //test.spam(URI);
-    //test.auth(URI);
-    //test.aes();
-
-    //Fresh hubs list
-    const hs=[
-      {URI:"http://localhost:8001",name:"Local_hub_8001"},
-      {URI:"http://localhost:8002",name:"Local_hub_8002"},
-      {URI:"http://localhost:8003",name:"Local_hub_8003"},
-    ];
-    setHubs(hs);
-    setServer(hs[0].URI);
+    //test.auto();
+    self.fresh();
   }, []);
 
   return (
     <Container>
-      <Link />
+      <Link storage={storage} fresh={self.fresh}/>
       <Row>
         <Col md={3} lg={3} xl={3} xxl={3} className="pt-2">
           <Row>
@@ -95,17 +120,21 @@ function App() {
                 self.changeServer(ev.target.value);
               }} >
               {hubs.map((item,index) => (
-                <option value={item.URI} key={index}>{item.name}</option>
+                <option value={index} key={index}>{item.name}</option>
               ))}
               </Form.Select>
             </Col>
+            <Col md={12} lg={12} xl={12} xxl={12}>
+              {server}
+            </Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <Verify server={server}/>
+              <Verify server={server} authority={self.setAuthority} show={!token?true:false}/>
+              <Tick expired={exp} show={token?true:false}/>
             </Col>
           </Row>
         </Col>
         <Col md={9} lg={9} xl={9} xxl={9} className="pt-2">
-          <Dock hub={server}/>
+          <Dock hub={server} show={token?true:false}/>
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               <List server={server}/>
