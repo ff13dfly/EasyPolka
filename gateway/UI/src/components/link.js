@@ -19,7 +19,7 @@ function Link(props) {
     onClick:(ev)=>{
       if(!hub) return false;
       const list=storage.loadNodes();
-      const nlist=[{URI:hub,name:"new node"}];
+      const nlist=[{URI:hub,name:"New Hub: "+hub}];
       for(let i=0;i<list.length;i++){
         const row=list[i];
         if(row.URI===hub){

@@ -55,12 +55,12 @@ const test={
   },
 }
 
+const authority={}
+
 function App() {
   let [hubs,setHubs]=useState([]);
   let [server,setServer]=useState("");
-  let [token,setToken]=useState("");
-  let [exp,setExp]=useState(0);
-  let [dock,setDock]=useState("");
+  let [force,setForce]=useState(0);
 
   const storage={
     key:"hub_nodes",
@@ -86,8 +86,13 @@ function App() {
       setServer(node.URI);
     },
     setAuthority:(exp,token)=>{
-      setToken(token);
-      setExp(exp);
+      authority[server]={
+        token:token,
+        expired:exp,
+      }
+    },
+    removeAuthority:(server)=>{
+
     },
     fresh:()=>{
       //1.list the storaged nodes
@@ -95,12 +100,8 @@ function App() {
       setHubs(hs);
       if(hs.length!==0) setServer(hs[0].URI);
 
-      //2.check authority
-      //console.log(token);
-      //console.log(exp);
-      // if(token && exp){
-      //   setDock(<Dock hub={server}/>);
-      // }
+      setForce(force+1);
+      console.log(force);
     },
   }
 
@@ -112,7 +113,7 @@ function App() {
   return (
     <Container>
       <Link storage={storage} fresh={self.fresh}/>
-      <Row>
+      <Row index={force}>
         <Col md={3} lg={3} xl={3} xxl={3} className="pt-2">
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
@@ -128,16 +129,23 @@ function App() {
               {server}
             </Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <Verify server={server} authority={self.setAuthority} show={!token?true:false}/>
-              <Tick expired={exp} show={token?true:false}/>
+              <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
+                show={(authority[server] && authority[server].token)?false:true}/>
+              <Tick server={server} remove={self.removeAuthority}
+                expired={authority[server]?authority[server].expired:0} 
+                show={(authority[server] && authority[server].token)?true:false}/>
             </Col>
           </Row>
         </Col>
         <Col md={9} lg={9} xl={9} xxl={9} className="pt-2">
-          <Dock hub={server} show={token?true:false}/>
+          <Dock server={server} fresh={self.fresh} 
+              token={(authority[server] && authority[server].token)?authority[server].token:""}
+              show={(authority[server] && authority[server].token)?true:false}/>
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <List server={server}/>
+              <List server={server} fresh={self.fresh} 
+                token={(authority[server] && authority[server].token)?authority[server].token:""}
+                show={(authority[server] && authority[server].token)?true:false}/>
             </Col>
           </Row>
           

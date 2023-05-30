@@ -6,7 +6,7 @@
 //../node_modules/.bin/esbuild app.js --bundle --minify --outfile=hub.min.js --platform=node
 
 //########## RUNNING ##########
-// node app.js ss58_address cfg_anchor
+// node app.js ss58_address port cfg_anchor
 // node app.js 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw
 
 //JSON RPC 2.0
@@ -40,7 +40,8 @@ const args = process.argv.slice(2);
 if(!args[0]) return console.log(config.theme.error,`Error: no runner address.`);
 const address=args[0];
 if(address.length!==48) return  console.log(config.theme.error,`Error: runner address illegal.`);
-const cfgAnchor=!args[1]?"":args[1];
+const port=!args[1]?8001:args[1];
+const cfgAnchor=!args[2]?"":args[2];
 console.log(config.theme.success,`Ready to load gateway Hub by ${address}, the config Anchor is ${!cfgAnchor?"not set":cfgAnchor}`);
 
 // basic setting and init the env
@@ -72,7 +73,6 @@ const me={
         "koa-router":koaRouter,
         "koa-bodyparser":bodyParser,
         "json-rpc-2.0":JSONRPCServer,
-        //"jwt":require("jsonwebtoken"),
         "axios":require("axios").default,
     },
     "anchor":{
@@ -299,7 +299,6 @@ router.post("/service", async (ctx) => {
 });
 
 // start hub application
-const port=8001;
 app.listen(port,()=>{
     console.log(`JSON RPC 2.0 server running at port ${port}`);
     console.log(`http://localhost:${port}`);

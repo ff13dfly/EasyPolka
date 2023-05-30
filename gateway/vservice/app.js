@@ -4,7 +4,7 @@
 //../node_modules/.bin/esbuild app.js --bundle --minify --outfile=vservice.min.js --platform=node
 
 //########## RUNNING ##########
-// node app.js ss58_address cfg_anchor
+//node app.js ss58_address port cfg_anchor
 
 //scp vservice.min.js root@167.179.119.110:/root/
 //curl "http://167.179.119.110:4501/ping" -v

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 function Verify(props) {
   const node = props.server;
   const setAuth=props.authority;
-  //const fresh=props.fresh;
+  const fresh=props.fresh;
   const show=props.show;
 
   let [disable, setDisable] = useState({ upload: false, verify: false });
@@ -79,7 +79,7 @@ function Verify(props) {
               const obj=JSON.parse(access);
               //obj.token=res.result.access;
               setAuth(obj.exp,res.result.access);
-              //fresh();
+              fresh();
             });
           });
         });

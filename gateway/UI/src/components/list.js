@@ -1,8 +1,13 @@
 import { Row, Col, Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
+const tools = require('../lib/tools');
+
 function List(props) {
-  const server = props.server;
+  const node = props.server;
+  const show = props.show;
+  const token = props.token;
+
   //console.log(server);
 
   let [svcs, setServers] = useState([
@@ -44,8 +49,25 @@ function List(props) {
   ]);
 
   const self = {
-    removeService: (uri) => {
-      console.log(uri);
+    removeService: (uri,name) => {
+      
+      tools.jsonp(node, { id: "abc", method: "spam" }, (res) => {
+        //console.log(res);
+        const spam = res.result.spam;
+        const request={
+          id: "remove_vservice", 
+          method: "apart", 
+          params:{
+            token:token,
+            name:name,
+            node:uri,
+            spam:spam,
+          }
+        }
+        tools.jsonp(node+'/manage/',request, (res) => {
+          console.log(res);
+        });
+      });
     },
   }
 
@@ -62,8 +84,8 @@ function List(props) {
             <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
               {item.nodes.map((node, index) => (
                 <p key={index}>
-                  <Button size="sm" variant="danger" onClick={(ev) => {
-                    self.removeService(node)
+                  <Button size="sm" variant="danger" className='mr-4' hidden={!show} onClick={(ev) => {
+                    self.removeService(node,item.name)
                   }}>X</Button>
                   {node}
                 </p>
