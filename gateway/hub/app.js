@@ -31,6 +31,7 @@ const config={
         encry:tools.char(20),       //DB key: encry `key` adn `iv` data
         setting:tools.char(20),     //DB key: the config anchor name
         encoded:tools.char(20),     //DB key: the encoded account file
+        hub:tools.char(20),         //DB key: Hub request uri
     },
 }
 console.log(`\nAnchor Gateway Hub ( v1.0 ) running...`);
@@ -124,6 +125,10 @@ app.use(router.routes());
 
 // application implement
 const self={
+    getRequestURI:()=>{
+        const uri="http://localhost:8001";
+        return uri;
+    },
     getParams:(str,pre)=>{
         const map={};
         if(!str) return map;
@@ -232,11 +237,7 @@ router.get("/manage", async (ctx) => {
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await exposed.manage[method](method,jsonp.request.params,jsonp.request.id,config);
-    if(result.error){
-        ctx.body=self.export({error:result.error},jsonp.request.id,jsonp.callback);
-    }else{
-        ctx.body=self.export(result.data,jsonp.request.id,jsonp.callback);
-    }
+    ctx.body=self.export(!result.error?result.data:result,jsonp.request.id,jsonp.callback);
 });
 
 // Router of Hub, API calls, for server
@@ -270,36 +271,14 @@ router.post("/manage", async (ctx) => {
         return ctx.body=JSON.stringify({error:"unkown call"});
     }
     const result= await exposed.manage[req.method](req.method,req.params,req.id,req.id);
-    if(!result.error){
-        ctx.body=self.export(result.data,req.id);
-    }else{
-        ctx.body=self.export(result,req.id);
-    }
-});
-
-// vService APIs
-router.post("/service", async (ctx) => {
-    const header=ctx.request.header;
-    const req=ctx.request.body;
-    
-    const config={
-        method: 'post',
-        url: "http://localhost:4501",
-        data: req,
-    }
-
-    try {
-        const axios_result=await me.pub.axios(config);
-        console.log("get data : "+JSON.stringify(axios_result.data))
-        ctx.body=JSON.stringify(axios_result.data);
-    } catch (error) {
-        console.log(error);
-        ctx.body=JSON.stringify({error:"500"});
-    }
+    ctx.body=self.export(!result.error?result.data:result,req.id);
 });
 
 // start hub application
 app.listen(port,()=>{
+    console.log(self.getRequestURI()+'/service/')
+    DB.key_set(config.keys.hub,self.getRequestURI()+'/service/');
+
     console.log(`JSON RPC 2.0 server running at port ${port}`);
     console.log(`http://localhost:${port}`);
 

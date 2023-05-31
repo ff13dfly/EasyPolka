@@ -5,7 +5,7 @@
 
 //########## RUNNING ##########
 //node app.js ss58_address port cfg_anchor
-//node app.js 5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9 4501
+//node app.js 5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9 4502
 
 //scp vservice.min.js root@167.179.119.110:/root/
 //curl "http://167.179.119.110:4501/ping" -v
@@ -151,11 +151,12 @@ const self={
     },
     tick:()=>{
         //let secret=tools.vcode();
-        console.log(`Secret code : ${secret} , this is for Gateway Hub to dock this vService. \nWill expire in 2 minute at ${new Date(tools.stamp()+config.interlval)}\n`)
+        console.log(`Secret code : ${secret} , this is for Gateway Hub to dock this vService. \nWill expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}\n`)
+        DB.key_set("secret",secret);
         timer=setInterval(()=>{
             secret=tools.sn();
             DB.key_set("secret",secret);
-            console.log(`Secret code : ${secret} , this is for Gateway Hub to dock this vService. \nWill expire in 2 minute at ${new Date(tools.stamp()+config.interlval)}\n`)
+            console.log(`Secret code : ${secret} , this is for Gateway Hub to dock this vService. \nWill expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}\n`)
         },config.interlval);
     }
 }
@@ -186,7 +187,11 @@ self.auto(()=>{
                 ctx.set(k,result.head[k])
             }
         }
-        ctx.body= self.exportJSON(result.data,req.id);
+        if(result.error){
+            ctx.body= self.exportJSON({error:result.error},req.id);
+        }else{
+            ctx.body= self.exportJSON(result.data,req.id);
+        }
     });
 
     app.listen(port,()=>{
