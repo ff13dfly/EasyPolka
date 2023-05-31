@@ -41,7 +41,7 @@ function Link(props) {
   return (
     <Row>
          <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
-          <h5 className="pt-2">Gateway UI</h5>
+          <h4 className="pt-2">Gateway UI</h4>
         </Col>
         <Col md={2} lg={2} xl={2} xxl={2} className="pt-2 text-end">
           <Button variant="default" onClick={() => {
