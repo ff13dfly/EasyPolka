@@ -8,25 +8,38 @@ const tools=require("../../lib/tools");
 const DB=require("../../lib/mndb");
 
 module.exports=(method,params,id,config)=>{
-    const ks=config.keys;
-    const list=DB.hash_all(ks.nodes);
-
-    console.log(list);
-
     return new Promise((resolve, reject) => {
-        const map={
-            "vHistory":{
-                "vh-101":{},
-                "vh-1024":{},
-            },
-            "vMarket":{
-                "vh-101":{},
-                "vh-1024":{},
-            },
+        const ks=config.keys;
+        const raw=DB.hash_all(ks.nodes);
+        
+        const router={}
+        for(let URI in raw){
+            const row=raw[URI];
+            if(!router[row.name]) router[row.name]={funs:null,nodes:[]}
+            if(router[row.name].funs===null)router[row.name].funs=row.exposed;
+            router[row.name].nodes.push(URI);
         }
 
+        const list=[];
+        for(let name in router){
+            const row=router[name];
+            row.name=name;
+            list.push(row);
+        }
+
+        // const map={
+        //     "vHistory":{
+        //         "vh-101":{},
+        //         "vh-1024":{},
+        //     },
+        //     "vMarket":{
+        //         "vh-101":{},
+        //         "vh-1024":{},
+        //     },
+        // }
+
         const result={
-            data:map,
+            data:list,
             head:null,
             stamp:tools.stamp(),
         }

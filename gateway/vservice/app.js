@@ -16,19 +16,22 @@
 const tools=require("../lib/tools");
 const config = {
     theme:{
-        error:      '\x1b[36m%s\x1b[0m',
+        error:      '\x1b[31m%s\x1b[0m',
         success:    '\x1b[36m%s\x1b[0m',
+        primary:    '\x1b[33m%s\x1b[0m',
+        dark:       '\x1b[90m%s\x1b[0m',
     },
     keys:{
-        hubs:tools.char(13),        //DB key: save hub data
+        hubs:tools.char(13),    //DB key: save hub data
     },
     port:       4501,
-    interlval:  120000,
+    interlval:  120000,         //2 minutes
+    fresh:      540000,         //9 minutes
     //polka:      'wss://dev.metanchor.net',
     polka:      'ws://127.0.0.1:9944',
 };
 
-console.log(`\nAnchor Gateway vService demo ( v1.0 ) running...`);
+console.log(config.theme.dark,`\nAnchor Gateway vService demo ( v1.0 ) running...`);
 
 const args = process.argv.slice(2);
 if(!args[0]) return console.log(config.theme.error,`Error: no runner address.`);
@@ -154,12 +157,23 @@ const self={
     },
     tick:()=>{
         //let secret=tools.vcode();
-        console.log(`Secret code : ${secret} , this is for Gateway Hub to dock this vService. \nWill expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}\n`)
+        console.log(config.theme.success,`---------------------------- secret code ----------------------------`)
+        console.log(`Secret code, this is for Gateway Hub to dock this vService.`)
+        console.log(config.theme.primary,secret);
+        console.log(`Will expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}`);
+        console.log(config.theme.success,`---------------------------- secret code ----------------------------\n`)
+
         DB.key_set("secret",secret);
         timer=setInterval(()=>{
             secret=tools.sn();
             DB.key_set("secret",secret);
-            console.log(`Secret code : ${secret} , this is for Gateway Hub to dock this vService. \nWill expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}\n`)
+
+            console.log(config.theme.success,`---------------------------- secret code ----------------------------`)
+            console.log(`Secret code, this is for Gateway Hub to dock this vService.`)
+            console.log(config.theme.primary,secret);
+            console.log(`Will expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}`);
+            console.log(config.theme.success,`---------------------------- secret code ----------------------------\n`)
+
         },config.interlval);
     }
 }
@@ -181,6 +195,8 @@ self.auto(()=>{
     router.post("/hub",async (ctx)=>{
         const header=ctx.request.header;
         const req=ctx.request.body;
+        console.log(config.theme.success,`--------------------------- request start ---------------------------`);
+        console.log(`[ hub ] stamp: ${tools.stamp()}. JSON RPC : ${JSON.stringify(req)}`);
         if(!req.method || !me.hub[req.method]){
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
@@ -190,11 +206,10 @@ self.auto(()=>{
                 ctx.set(k,result.head[k])
             }
         }
-        if(result.error){
-            ctx.body= self.exportJSON({error:result.error},req.id);
-        }else{
-            ctx.body= self.exportJSON(result.data,req.id);
-        }
+
+        console.log(`[ hub ] stamp: ${tools.stamp()}. Result : ${JSON.stringify(result)}`);
+        console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
+        ctx.body= self.exportJSON(!result.error?result.data:result,req.id);
     });
 
     app.listen(port,()=>{

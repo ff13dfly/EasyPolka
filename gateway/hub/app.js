@@ -17,13 +17,14 @@
 // 2. only trust anchor data, even the encry JSON file.
 // 3. when start, need to vertify the runner password. When adding vservice, need to confirm the account
 
-
 // running config
 const tools=require("../lib/tools");
 const config={
     theme:{
-        error:      '\x1b[36m%s\x1b[0m',
+        error:      '\x1b[31m%s\x1b[0m',
         success:    '\x1b[36m%s\x1b[0m',
+        primary:    '\x1b[33m%s\x1b[0m',
+        dark:       '\x1b[90m%s\x1b[0m',
     },
     keys:{
         runner:tools.char(20),      //DB key: storage the runner address
@@ -35,7 +36,7 @@ const config={
         nodes:tools.char(20),       //DB key: node save
     },
 }
-console.log(`\nAnchor Gateway Hub ( v1.0 ) running...`);
+console.log(config.theme.dark,`\nAnchor Gateway Hub ( v1.0 ) running...`);
 
 // arguments
 const args = process.argv.slice(2);
@@ -107,11 +108,11 @@ const exposed={
         "handshake":require("./manage/handshake.js"),   //get hub encry token to transport JSON file
         "upload":require("./manage/upload.js"),         //upload account JSON file
         "auth":require("./manage/auth.js"),             //verify authority to get JWT token
-        "apart":require("./manage/apart.js"),
-        "drop":require("./manage/drop.js"),
+        "dock":require("./manage/dock.js"),             //dock vService by URI and secret
+        "apart":require("./manage/apart.js"),           //apart vService by URI
         "system":require("./manage/system.js"),
-        "dock":require("./manage/dock.js"),
         "list":require("./manage/list.js"),
+        "drop":require("./manage/drop.js"),
     },
 }
 
@@ -134,9 +135,7 @@ const self={
         const map={};
         if(!str) return map;
         const txt=str.replace((!pre?'':pre+"/?"),"");
-        console.log(!pre?'':pre+"/?");
         const arr=txt.split("&");
-        
         for(let i=0;i<arr.length;i++){
           const kv=arr[i].split("=");
           map[kv[0]]=kv[1];
@@ -203,9 +202,12 @@ const self={
 // Router of hub, API clls, for web jsonp
 router.get("/", async (ctx) => {
     const params=self.getParams(ctx.request.url);
+    console.log(config.theme.success,`--------------------------- request start ---------------------------`);
+    console.log(`[ call ] stamp: ${tools.stamp()}. Params : ${JSON.stringify(params)}`);
+
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
-    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${tools.stamp()}`);
+    //console.log(`Request stamp: ${jsonp.stamp()}, server stamp : ${tools.stamp()}`);
     if(method!=='spam'){
         if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
         const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
@@ -218,14 +220,19 @@ router.get("/", async (ctx) => {
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await exposed.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
+    console.log(`[ call ] stamp: ${tools.stamp()}. Result : ${JSON.stringify(result)}`);
+    console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
     ctx.body=self.export(result,jsonp.request.id,jsonp.callback);
 });
 
 router.get("/manage", async (ctx) => {
     const params=self.getParams(ctx.request.url,"/manage");
+    console.log(config.theme.success,`--------------------------- request start ---------------------------`);
+    console.log(`[ manage ] stamp: ${tools.stamp()}. Params : ${JSON.stringify(params)}`);
+
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
-    console.log(`Request stamp: ${jsonp.stamp}, server stamp : ${tools.stamp()}`);
+    //console.log(`Request [ manage ] stamp: ${jsonp.stamp}, server stamp : ${tools.stamp()}`);
     if(method!=='spam'){
         if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
         const spamResult=self.checkSpam(jsonp.request.params.spam,jsonp.stamp);
@@ -233,56 +240,60 @@ router.get("/manage", async (ctx) => {
             return ctx.body=self.export({error:spamResult},jsonp.request.id,jsonp.callback);
         }
     }
-    console.log(`Request method : ${method}`);
+    //console.log(`Request [ manage ] method : ${method}`);
     if(!method || !exposed.manage[method]){
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await exposed.manage[method](method,jsonp.request.params,jsonp.request.id,config);
+    console.log(`[ manage ] stamp: ${tools.stamp()}. Result : ${JSON.stringify(result)}`);
+    console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
     ctx.body=self.export(!result.error?result.data:result,jsonp.request.id,jsonp.callback);
 });
 
 // Router of Hub, API calls, for server
-router.post("/", async (ctx) => {
-    const header=ctx.request.header;
-    const req=ctx.request.body;
-    if(!req.method || !exposed.call[req.method]){
-        return ctx.body=JSON.stringify({error:"unkown call"});
-    }
+// router.post("/", async (ctx) => {
+//     const header=ctx.request.header;
+//     const req=ctx.request.body;
+//     if(!req.method || !exposed.call[req.method]){
+//         return ctx.body=JSON.stringify({error:"unkown call"});
+//     }
 
-    //1.check the header
-    for(let k in exposed.call){
-        server.addMethod(k,()=>{
-            return exposed.call[k](req.method,req.params,req.id,req.id);
-        });
-    }
+//     //1.check the header
+//     for(let k in exposed.call){
+//         server.addMethod(k,()=>{
+//             return exposed.call[k](req.method,req.params,req.id,req.id);
+//         });
+//     }
 
-    try {
-        const result = await server.receive(ctx.request.body);
-        ctx.body= self.export(result,req.id);
-    } catch (error) {
-        ctx.body= self.export({error:error},req.id);
-    }
-});
+//     try {
+//         const result = await server.receive(ctx.request.body);
+//         ctx.body= self.export(result,req.id);
+//     } catch (error) {
+//         ctx.body= self.export({error:error},req.id);
+//     }
+// });
 
 // Manage APIs
-router.post("/manage", async (ctx) => {
-    const header=ctx.request.header;
-    const req=ctx.request.body;
-    if(!req.method || !exposed.manage[req.method]){
-        return ctx.body=JSON.stringify({error:"unkown call"});
-    }
-    const result= await exposed.manage[req.method](req.method,req.params,req.id,req.id);
-    ctx.body=self.export(!result.error?result.data:result,req.id);
-});
+// router.post("/manage", async (ctx) => {
+//     const header=ctx.request.header;
+//     const req=ctx.request.body;
+//     if(!req.method || !exposed.manage[req.method]){
+//         return ctx.body=JSON.stringify({error:"unkown call"});
+//     }
+//     const result= await exposed.manage[req.method](req.method,req.params,req.id,req.id);
+//     ctx.body=self.export(!result.error?result.data:result,req.id);
+// });
 
 // start hub application
 app.listen(port,()=>{
     console.log(self.getRequestURI()+'/service/')
     DB.key_set(config.keys.hub,self.getRequestURI()+'/service/');
 
-    console.log(`JSON RPC 2.0 server running at port ${port}`);
-    console.log(`http://localhost:${port}`);
+    //console.log(`JSON RPC 2.0 server running at port ${port}`);
+    console.log(config.theme.primary,`[ Hub url ] http://localhost:${port}`);
+    console.log(config.theme.primary,`[ Manage url ] http://localhost:${port}/manage`);
 
     console.log(`Testing command lines:`);
-    console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
+    console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'`)
+    console.log(config.theme.success,`Enjoy the Anchor Gateway Micro-service System.\n`)
 });

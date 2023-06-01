@@ -4,52 +4,17 @@ import { useEffect, useState } from 'react';
 const tools = require('../lib/tools');
 
 function List(props) {
-  const node = props.server;
+  const server = props.server;
   const show = props.show;
   const token = props.token;
 
-  let [svcs, setServers] = useState([
-    {
-      name: "vHistory", funs: {
-        "view": {
-          "intro": "",
-          "params": {
-            "name": "string"
-          }
-        },
-        "target": {
-          "intro": "",
-          "params": {
-            "name": "string",
-            "block": "blocknumber"
-          }
-        },
-        "history": {
-          "intro": "",
-          "params": {
-            "name": "string",
-            "page": "u32",
-            "step": "u32"
-          }
-        },
-      }, nodes: ["http://localhost:5600", "http://localhost:5601"]
-    },
-    {
-      name: "vSocial", funs: {
-        "fav": {
-          "intro": "",
-          "params": {
-            "name": "string"
-          }
-        },
-      }, nodes: ["http://localhost:8843"]
-    },
-  ]);
+  let [svcs, setServers] = useState([]);
 
+  //console.log(props);
 
   const self = {
-    removeService: (uri,name) => {
-      tools.jsonp(uri, { id: "abc", method: "spam" }, (res) => {
+    removeService: (node,name) => {
+      tools.jsonp(server, { id: "abc", method: "spam" }, (res) => {
         //console.log(res);
         const spam = res.result.spam;
         const request={
@@ -58,19 +23,20 @@ function List(props) {
           params:{
             token:token,
             name:name,
-            node:uri,
+            node:node,
             spam:spam,
           }
         }
-        tools.jsonp(uri+'/manage/',request, (res) => {
+        tools.jsonp(server+'/manage/',request, (res) => {
           console.log(res);
+          
         });
       });
     },
     load:(uri)=>{
-      console.log(uri);
+      //console.log(uri);
       tools.jsonp(uri,{id:"load_spam",method:"spam"},(res)=>{
-        console.log(res);
+        //console.log(res);
         const spam = res.result.spam;
         const request={
           id: "list_vservice", 
@@ -80,23 +46,23 @@ function List(props) {
           }
         }
         tools.jsonp(uri+'/manage/',request, (res) => {
-          console.log(res);
+          setServers(res.result);
+          //console.log(svcs);
         });
       });
     },
   }
 
   useEffect(() => {
-    if(node!=="") self.load(node);
-    console.log(node);
-    //self.load(node);
+    if(server!=="") self.load(server);
+    //console.log(node);
   }, []);
 
   return (
     <Row>
       <Col md={12} lg={12} xl={12} xxl={12} className="pt-2 text-end">
           <Button size="sm" variant="info" className='mr-4' onClick={(ev) => {
-            self.load(node)
+            self.load(server)
           }}>Fresh</Button>
       </Col>
       {svcs.map((item, key) => (

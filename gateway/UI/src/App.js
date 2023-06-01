@@ -8,7 +8,7 @@ import Verify from './components/verify';
 import Tick from './components/tick';
 
 const tools=require('./lib/tools');
-const DB=require('./lib/mndb');
+//const DB=require('./lib/mndb');
 
 const test={
   spam:(URI)=>{

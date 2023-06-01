@@ -7,8 +7,7 @@ const tools=require("../../lib/tools");
 const encry=require('../lib/encry');
 
 module.exports=(method,params,id,config)=>{
-    console.log(`From auth API, params : ${JSON.stringify(params)}`);
-
+    //console.log(`From auth API, params : ${JSON.stringify(params)}`);
     //1.decode the password
     const ks=config.keys;
     const json=DB.key_get(ks.encoded);
@@ -35,7 +34,6 @@ module.exports=(method,params,id,config)=>{
         const access=encry.encrypt(JSON.stringify(excutor));
 
         //4. remove the encoded json file
-
         const res={
             data:{
                 access:access,
