@@ -42,8 +42,8 @@ module.exports=(method,params,id,config)=>{
             data:self.formatJSON("knock",{stamp:tools.stamp()},id),
         }
         axios(reqKnock).then((resKonck)=>{
-            console.log(`Result of "knock" : ${JSON.stringify(resKonck.data)}`);
-            console.log(`Header of "knock" : ${JSON.stringify(resKonck.headers)}`);
+            //console.log(`Result of "knock" : ${JSON.stringify(resKonck.data)}`);
+            //console.log(`Header of "knock" : ${JSON.stringify(resKonck.headers)}`);
 
             //2. `reg` with basic information
             const salt=resKonck.data.result.salt,secret=params.secret;
@@ -56,8 +56,8 @@ module.exports=(method,params,id,config)=>{
             const sURI=DB.key_get(ks.hub);
             const v_token=self.getMD5();
             const data={
-                hub:runner,
-                AES:v_token,
+                address:runner,
+                AES:v_token,            //This token is used to encry the fresh token
                 URI:sURI,
             };
             const code=encry.encrypt(JSON.stringify(data));
@@ -70,31 +70,32 @@ module.exports=(method,params,id,config)=>{
                     encry:code,
                 },id),
             }
-            //console.log(JSON.stringify(reqReg));
             axios(reqReg).then((resReg)=>{
-                //console.log("here:");
-                //console.log(JSON.stringify(resReg))
                 const rData=resReg.data;
                 const info=rData.result;
-                console.log(`Reg result : ${JSON.stringify(info)}`);
+                const vs={
+                    name:info.name,
+                    exposed:info.exposed,
+                    test:info.test,
+                    token:info.token,
+                    AES:v_token,
+                }
+                DB.hash_set(ks.nodes,uri,vs);
+                DB.key_set(info.token,uri);
 
-                DB.hash_set(ks.nodes,uri,info);
-
-                //{"jsonrpc":"2.0","id":"dock_vservice",
-                //"result":{"name":"vHistory",
-                //"exposed":{"view":{},"history":{}},
-                //"test":{"view":{"params":[],"result":""},
-                //"history":{"params":[],"result":""}},"success":true}}
-
-                return resolve(resReg);
+                delete vs.token;
+                delete vs.AES;
+                const res={
+                    data:vs,
+                    stamp:tools.stamp(),
+                }
+                return resolve(res);
             }).catch((err)=>{
-                //console.log("Error form reg.");
-                //console.log(err);
+                console.log(config.theme.error,err);
                 return reject({error:err});
             });
         }).catch((err)=>{
-            //console.log("Error form knock.");
-            //console.log(err);
+            console.log(config.theme.error,err);
             return reject({error:err});
         });
     });

@@ -13,8 +13,8 @@ const self = {
 }
 
 module.exports = (req, server, config) => {
-    console.log(`[ reg ] called : ${JSON.stringify(req)}`);
-    console.log(`[ reg ] config : ${JSON.stringify(config)}`);
+    //console.log(`[ reg ] called : ${JSON.stringify(req)}`);
+    //console.log(`[ reg ] config : ${JSON.stringify(config)}`);
     if (!req.params) return { error: "Invalid request." };
     if (!req.params.encry) return { error: "Invalid request data." };
     if (!req.params.salt) return { error: "Invalid salt." };
@@ -32,9 +32,11 @@ module.exports = (req, server, config) => {
     encry.setKey(obj.key);
     encry.setIV(obj.iv);
     const ddata = encry.decrypt(code);
-    console.log(`Decode result : ${ddata}`);
+    //console.log(`Decode result : ${ddata}`);
     try {
         const reg = JSON.parse(ddata);
+        const token=tools.char(16);
+        reg.active=token;
         DB.hash_set(config.keys.hubs, reg.URI, reg);      //save Hub details
         const result = {
             data: {
@@ -76,14 +78,15 @@ module.exports = (req, server, config) => {
                         result: '',
                     },
                 },
+                token:token,
                 success: true,
             },
             stamp: tools.stamp(),
         }
-        console.log(`[ reg ] response : ${JSON.stringify(result)}\n`);
+        //console.log(`[ reg ] response : ${JSON.stringify(result)}\n`);
         return result;
     } catch (error) {
-        console.log(`Error here : ${error}`);
+        console.log(config.theme.error,`Error here : ${error}`);
         return { error: error }
     }
 };

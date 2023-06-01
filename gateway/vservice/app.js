@@ -26,7 +26,8 @@ const config = {
     },
     port:       4501,
     interlval:  120000,         //2 minutes
-    fresh:      540000,         //9 minutes
+    //fresh:      540000,         //9 minutes
+    fresh:      5000,         //9 minutes
     //polka:      'wss://dev.metanchor.net',
     polka:      'ws://127.0.0.1:9944',
 };
@@ -103,8 +104,9 @@ app.use(bodyParser({
 }));
 app.use(router.routes());
 
+const axios= require("axios").default;
 let websocket=null;
-let timer=null;
+let timer=null,active=null;
 let secret=tools.sn(); 
 const self={
     auto: (ck) => {
@@ -175,7 +177,67 @@ const self={
             console.log(config.theme.success,`---------------------------- secret code ----------------------------\n`)
 
         },config.interlval);
-    }
+    },
+    active:()=>{
+        if(active===null) active=setInterval(()=>{
+            console.log(config.theme.success,`---------------------------- auto fresh ----------------------------`)
+            const hubs=DB.hash_all(config.keys.hubs);
+            if(hubs===null){
+                console.log(config.theme.error,`No active Hub linked yet.`);
+                return true;
+            }
+
+            const list=[];
+            for(let k in hubs){
+                list.push(hubs[k]);
+            }
+            self.ping(list,()=>{
+                console.log(config.theme.success,`All hubs active.`);
+            });
+            //console.log(list);
+
+            // const reqKnock={
+            //     method: 'post',
+            //     url: uri+'/hub',
+            //     data:self.formatJSON("knock",{stamp:tools.stamp()},id),
+            // }
+            //console.log(`Secret code, this is for Gateway Hub to dock this vService.`)
+            //console.log(config.theme.primary,secret);
+            //console.log(`Will expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}`);
+            console.log(config.theme.success,`---------------------------- auto fresh ----------------------------\n`)
+        },config.fresh);
+    },
+    ping:(list,ck)=>{
+        if(list.length===0) return ck && ck();
+        const row=list.pop();
+        const fresh=tools.char(16);
+        const data={
+            fresh:fresh,
+            token:row.active,
+        };
+        console.log(data);
+        const reqPing={
+            method: 'post',
+            url: row.URI,
+            data:self.formatJSON("pong",data,`autofresh_${tools.stamp()}`),
+        }
+        axios(reqPing).then((res)=>{
+            console.log(res);
+            return self.ping(list,ck);
+        }).catch((err)=>{
+            console.log(config.theme.error,err);
+            return self.ping(list,ck);
+        });
+    },
+    formatJSON:(method,params,id)=>{
+        //console.log(params);
+        return {
+            "jsonrpc":"2.0",
+            "method":method,
+            "params":params,
+            "id":id,
+        }
+    },
 }
 
 self.auto(()=>{
@@ -195,8 +257,9 @@ self.auto(()=>{
     router.post("/hub",async (ctx)=>{
         const header=ctx.request.header;
         const req=ctx.request.body;
+        const start=tools.stamp();
         console.log(config.theme.success,`--------------------------- request start ---------------------------`);
-        console.log(`[ hub ] stamp: ${tools.stamp()}. JSON RPC : ${JSON.stringify(req)}`);
+        console.log(`[ hub ] stamp: ${start}, JSON RPC : ${JSON.stringify(req)}`);
         if(!req.method || !me.hub[req.method]){
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
@@ -206,19 +269,21 @@ self.auto(()=>{
                 ctx.set(k,result.head[k])
             }
         }
-
-        console.log(`[ hub ] stamp: ${tools.stamp()}. Result : ${JSON.stringify(result)}`);
-        console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
         ctx.body= self.exportJSON(!result.error?result.data:result,req.id);
+
+        const end=tools.stamp();
+        console.log(`[ hub ] stamp: ${end}, cost: ${end-start}ms, Result : ${JSON.stringify(result)}`);
+        console.log(config.theme.success,`---------------------------- request end ----------------------------\n`); 
     });
 
     app.listen(port,()=>{
         console.log(`vService running at port ${port}`);
-        console.log(`http://localhost:${port}`);
+        console.log(config.theme.primary,`http://localhost:${port}`);
         
         console.log(`curl "http://localhost:${port}/ping"\n`)
 
         self.tick();
+        self.active();
         //console.log(`curl "http://localhost:${port}/ping" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
     });
 });

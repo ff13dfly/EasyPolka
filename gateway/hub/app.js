@@ -202,8 +202,9 @@ const self={
 // Router of hub, API clls, for web jsonp
 router.get("/", async (ctx) => {
     const params=self.getParams(ctx.request.url);
+    const start=tools.stamp();
     console.log(config.theme.success,`--------------------------- request start ---------------------------`);
-    console.log(`[ call ] stamp: ${tools.stamp()}. Params : ${JSON.stringify(params)}`);
+    console.log(`[ call ] stamp: ${start}. Params : ${JSON.stringify(params)}`);
 
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
@@ -220,15 +221,18 @@ router.get("/", async (ctx) => {
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await exposed.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
-    console.log(`[ call ] stamp: ${tools.stamp()}. Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
     ctx.body=self.export(result,jsonp.request.id,jsonp.callback);
+
+    const end=tools.stamp();
+    console.log(`[ manage ] stamp: ${end}, cost: ${end-start}ms, Result : ${JSON.stringify(result)}`);
+    console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);  
 });
 
 router.get("/manage", async (ctx) => {
     const params=self.getParams(ctx.request.url,"/manage");
+    const start=tools.stamp();
     console.log(config.theme.success,`--------------------------- request start ---------------------------`);
-    console.log(`[ manage ] stamp: ${tools.stamp()}. Params : ${JSON.stringify(params)}`);
+    console.log(`[ manage ] stamp: ${start}. Params : ${JSON.stringify(params)}`);
 
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
@@ -245,9 +249,30 @@ router.get("/manage", async (ctx) => {
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
     const result = await exposed.manage[method](method,jsonp.request.params,jsonp.request.id,config);
-    console.log(`[ manage ] stamp: ${tools.stamp()}. Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
     ctx.body=self.export(!result.error?result.data:result,jsonp.request.id,jsonp.callback);
+
+    const end=tools.stamp();
+    console.log(`[ manage ] stamp: ${end}, cost: ${end-start}ms, Result : ${JSON.stringify(result)}`);
+    console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
+});
+
+// vService APIs
+router.post("/service", async (ctx) => {
+    //const header=ctx.request.header;
+    const req=ctx.request.body;
+    const start=tools.stamp();
+    console.log(config.theme.success,`--------------------------- request start ---------------------------`);
+    console.log(`[ service ] stamp: ${start}. Request : ${JSON.stringify(req)}`);
+
+    if(!req.method || !exposed.service[req.method]){
+        return ctx.body=JSON.stringify({error:"unkown call"});
+    }
+    const result= await exposed.service[req.method](req.method,req.params,req.id,config);
+    ctx.body=self.export(!result.error?result.data:result,req.id);
+
+    const end=tools.stamp();
+    console.log(`[ service ] stamp: ${end}, cost: ${end-start}ms, Result : ${JSON.stringify(result)}`);
+    console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
 });
 
 // Router of Hub, API calls, for server
