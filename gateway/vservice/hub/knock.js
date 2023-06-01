@@ -9,7 +9,7 @@
 
 const DB=require("../../lib/mndb.js");
 const tools=require("../../lib/tools");
-module.exports=(req,server)=>{
+module.exports=(req,server,config)=>{
     console.log(`[ knock ] called : ${JSON.stringify(req)}`);
     //console.log(server);
     //1.DDOS check to avoid too much request

@@ -94,17 +94,20 @@ function App() {
     removeAuthority:(server)=>{
 
     },
-    fresh:()=>{
+    fresh:(skip)=>{
       //1.list the storaged nodes
       const hs=storage.loadNodes();
       setHubs(hs);
       if(hs.length!==0) setServer(hs[0].URI);
 
-      setForce(force+1);
-      console.log(force);
+      if(!skip){
+        //console.log(`force  fresh`);
+        setForce(force  +1);
+      } 
     },
   }
-
+  
+  
   useEffect(() => {
     //test.auto();
     self.fresh();

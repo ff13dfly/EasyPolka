@@ -19,6 +19,9 @@ const config = {
         error:      '\x1b[36m%s\x1b[0m',
         success:    '\x1b[36m%s\x1b[0m',
     },
+    keys:{
+        hubs:tools.char(13),        //DB key: save hub data
+    },
     port:       4501,
     interlval:  120000,
     //polka:      'wss://dev.metanchor.net',
@@ -172,7 +175,7 @@ self.auto(()=>{
         if(!req.method || !me.mod[req.method]){
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
-        ctx.body=me.mod[req.method](req.method,req.params,req.id,req.id);
+        ctx.body=me.mod[req.method](req.method,req.params,req.id,req.id,config);
     });
 
     router.post("/hub",async (ctx)=>{
@@ -181,7 +184,7 @@ self.auto(()=>{
         if(!req.method || !me.hub[req.method]){
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
-        const result=me.hub[req.method](req,ctx.req);
+        const result=me.hub[req.method](req,ctx.req,config);
         if(result.head){
             for(var k in result.head){
                 ctx.set(k,result.head[k])

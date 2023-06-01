@@ -75,10 +75,18 @@ const self={
     },
     /******************hash part******************/
     hash_get:(main,key)=>{
-
+        if(typeof(main)!=='string' || typeof(key)!=='string') return false;
+        if(main.length>max.key || key.length>max.key) return false;
+        if(!hash[main] || !hash[main][key]) return null;
+        return hash[main][key];
     },
     hash_set:(main,key,val)=>{
-
+        if(typeof(main)!=='string' || typeof(key)!=='string') return false;
+        if(main.length>max.key || key.length>max.key) return false;
+        if(JSON.stringify(val).length>max.val) return false;
+        if(!hash[main]) hash[main]={};
+        hash[main][key]=val;
+        return true;
     },
     hash_ttl:(main,ttl)=>{
 
@@ -86,13 +94,22 @@ const self={
     hash_count:(main)=>{
 
     },
+    hash_all:(main)=>{
+        if(typeof(main)!=='string') return false;
+        if(main.length>max.key) return false;
+        if(!hash[main]) return null;
+        return hash[main];
+    },
 
     /******************list part******************/
     list_init:(key,list)=>{
+        if(typeof(key)!=='string') return false;
+        if(key.length>max.key) return false;
 
     },
     list_get:(key)=>{
-
+        if(typeof(key)!=='string') return false;
+        if(key.length>max.key) return false;
     },
     list_push:(key,val)=>{
 

@@ -53,7 +53,6 @@ module.exports=(method,params,id,config)=>{
 
             const ks=config.keys;
             const runner=DB.key_get(ks.runner);
-            console.log(ks);
             const sURI=DB.key_get(ks.hub);
             const v_token=self.getMD5();
             const data={
@@ -71,17 +70,31 @@ module.exports=(method,params,id,config)=>{
                     encry:code,
                 },id),
             }
-            console.log(JSON.stringify(reqReg));
+            //console.log(JSON.stringify(reqReg));
             axios(reqReg).then((resReg)=>{
-                //console.log(resReg)
+                //console.log("here:");
+                //console.log(JSON.stringify(resReg))
+                const rData=resReg.data;
+                const info=rData.result;
+                console.log(`Reg result : ${JSON.stringify(info)}`);
+
+                DB.hash_set(ks.nodes,uri,info);
+
+                //{"jsonrpc":"2.0","id":"dock_vservice",
+                //"result":{"name":"vHistory",
+                //"exposed":{"view":{},"history":{}},
+                //"test":{"view":{"params":[],"result":""},
+                //"history":{"params":[],"result":""}},"success":true}}
 
                 return resolve(resReg);
             }).catch((err)=>{
-                console.log(err);
+                //console.log("Error form reg.");
+                //console.log(err);
                 return reject({error:err});
             });
         }).catch((err)=>{
-            console.log(err);
+            //console.log("Error form knock.");
+            //console.log(err);
             return reject({error:err});
         });
     });

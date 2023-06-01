@@ -3,11 +3,8 @@
 
 // Service list which can be accessed.
 
-const self={
-    stamp:()=>{
-        return new Date().getTime();
-    },
-}
+
+const tools=require("../../lib/tools");
 
 module.exports=(method,params,id,config)=>{
     

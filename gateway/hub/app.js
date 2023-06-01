@@ -32,6 +32,7 @@ const config={
         setting:tools.char(20),     //DB key: the config anchor name
         encoded:tools.char(20),     //DB key: the encoded account file
         hub:tools.char(20),         //DB key: Hub request uri
+        nodes:tools.char(20),       //DB key: node save
     },
 }
 console.log(`\nAnchor Gateway Hub ( v1.0 ) running...`);

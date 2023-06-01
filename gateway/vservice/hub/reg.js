@@ -12,11 +12,13 @@ const self={
     },
 }
 
-module.exports=(req,server)=>{  
+module.exports=(req,server,config)=>{  
     console.log(`[ reg ] called : ${JSON.stringify(req)}`); 
+    console.log(`[ reg ] config : ${JSON.stringify(config)}`); 
     if(!req.params) return {error:"Invalid request."};
     if(!req.params.encry) return {error:"Invalid request data."};
     if(!req.params.salt) return {error:"Invalid salt."};
+
     //1.get the right secret
     const code=req.params.encry;
     const salt=req.params.salt;
@@ -30,10 +32,10 @@ module.exports=(req,server)=>{
     encry.setKey(obj.key);
     encry.setIV(obj.iv);
     const ddata=encry.decrypt(code);
-    console.log(ddata);
+    console.log(`Decode result : ${ddata}`);
     try {
         const reg=JSON.parse(ddata);
-        console.log(reg);
+        DB.hash_set(config.keys.hubs,reg.URI,reg);      //save Hub details
         const result={
             data:{
                 name:"vHistory",
@@ -58,6 +60,7 @@ module.exports=(req,server)=>{
         console.log(`[ reg ] response : ${JSON.stringify(result)}\n`);
         return result;
     } catch (error) {
+        console.log(`Error here : ${error}`);
         return {error:error}
     }
 };

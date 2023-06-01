@@ -8,8 +8,6 @@ function List(props) {
   const show = props.show;
   const token = props.token;
 
-  //console.log(server);
-
   let [svcs, setServers] = useState([
     {
       name: "vHistory", funs: {
@@ -48,10 +46,10 @@ function List(props) {
     },
   ]);
 
+
   const self = {
     removeService: (uri,name) => {
-      
-      tools.jsonp(node, { id: "abc", method: "spam" }, (res) => {
+      tools.jsonp(uri, { id: "abc", method: "spam" }, (res) => {
         //console.log(res);
         const spam = res.result.spam;
         const request={
@@ -64,7 +62,24 @@ function List(props) {
             spam:spam,
           }
         }
-        tools.jsonp(node+'/manage/',request, (res) => {
+        tools.jsonp(uri+'/manage/',request, (res) => {
+          console.log(res);
+        });
+      });
+    },
+    load:(uri)=>{
+      console.log(uri);
+      tools.jsonp(uri,{id:"load_spam",method:"spam"},(res)=>{
+        console.log(res);
+        const spam = res.result.spam;
+        const request={
+          id: "list_vservice", 
+          method: "list", 
+          params:{
+            spam:spam,
+          }
+        }
+        tools.jsonp(uri+'/manage/',request, (res) => {
           console.log(res);
         });
       });
@@ -72,11 +87,18 @@ function List(props) {
   }
 
   useEffect(() => {
-
+    if(node!=="") self.load(node);
+    console.log(node);
+    //self.load(node);
   }, []);
 
   return (
     <Row>
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2 text-end">
+          <Button size="sm" variant="info" className='mr-4' onClick={(ev) => {
+            self.load(node)
+          }}>Fresh</Button>
+      </Col>
       {svcs.map((item, key) => (
         <Col md={12} lg={12} xl={12} xxl={12} className="pt-2" key={item.name}>
           <Row>
