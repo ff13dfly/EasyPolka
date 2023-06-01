@@ -30,7 +30,7 @@ module.exports=(method,params,id,config)=>{
         const stamp=tools.stamp();
         const excutor={salt:tools.char(3),exp:stamp+10000*60};
         DB.key_set(ks.excutor,excutor);
-        console.log(excutor);
+        //console.log(excutor);
         const access=encry.encrypt(JSON.stringify(excutor));
 
         //4. remove the encoded json file

@@ -26,18 +26,7 @@ module.exports=(method,params,id,config)=>{
             row.name=name;
             list.push(row);
         }
-
-        // const map={
-        //     "vHistory":{
-        //         "vh-101":{},
-        //         "vh-1024":{},
-        //     },
-        //     "vMarket":{
-        //         "vh-101":{},
-        //         "vh-1024":{},
-        //     },
-        // }
-
+        
         const result={
             data:list,
             head:null,

@@ -26,8 +26,7 @@ const config = {
     },
     port:       4501,
     interlval:  120000,         //2 minutes
-    //fresh:      540000,         //9 minutes
-    fresh:      10000,         //9 minutes
+    fresh:      540000,         //9 minutes to fresh token and AES salt
     //polka:      'wss://dev.metanchor.net',
     polka:      'ws://127.0.0.1:9944',
 };
@@ -267,10 +266,18 @@ self.auto(()=>{
     router.post("/",async (ctx)=>{
         const header=ctx.request.header;
         const req=ctx.request.body;
+        const start=tools.stamp();
+        console.log(config.theme.success,`--------------------------- request start ---------------------------`);
+        console.log(`[ call ] stamp: ${start}, JSON RPC : ${JSON.stringify(req)}`);
         if(!req.method || !me.mod[req.method]){
             return ctx.body=JSON.stringify({error:"unkown call"});
         }
-        ctx.body=me.mod[req.method](req.method,req.params,req.id,req.id,config);
+        const result= await me.mod[req.method](req.method,req.params,req.id,config);
+        console.log(result);
+        ctx.body=ctx.body= self.exportJSON(!result.error?result.data:result,req.id);
+        const end=tools.stamp();
+        console.log(`[ call ] stamp: ${end}, cost: ${end-start}ms, Result : ${JSON.stringify(result)}`);
+        console.log(config.theme.success,`---------------------------- request end ----------------------------\n`); 
     });
 
     router.post("/hub",async (ctx)=>{

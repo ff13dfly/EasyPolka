@@ -134,7 +134,8 @@ const self={
     getParams:(str,pre)=>{
         const map={};
         if(!str) return map;
-        const txt=str.replace((!pre?'':pre+"/?"),"");
+        const txt=str.replace(((!pre?'':pre)+"/?"),"");
+        console.log(txt);
         const arr=txt.split("&");
         for(let i=0;i<arr.length;i++){
           const kv=arr[i].split("=");
@@ -208,6 +209,7 @@ router.get("/", async (ctx) => {
 
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
+    console.log(jsonp);
     //console.log(`Request stamp: ${jsonp.stamp()}, server stamp : ${tools.stamp()}`);
     if(method!=='spam'){
         if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
@@ -220,7 +222,7 @@ router.get("/", async (ctx) => {
     if(!method || !exposed.call[method]){
         return ctx.body=self.export({error:"unkown call"},jsonp.request.id,jsonp.callback);
     }
-    const result = await exposed.call[method](method,jsonp.request.params,jsonp.request.id,jsonp.request.id);
+    const result = await exposed.call[method](method,jsonp.request.params,jsonp.request.id,config);
     ctx.body=self.export(result,jsonp.request.id,jsonp.callback);
 
     const end=tools.stamp();

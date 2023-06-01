@@ -3,8 +3,6 @@
 
 // Drop hub server
 
-// Security
-// 1. not related to account. That will cause ddos to target account.
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 

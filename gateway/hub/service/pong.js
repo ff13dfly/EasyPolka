@@ -1,11 +1,9 @@
-/***********************/
-/***********************/
-
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 const encry = require('../lib/encry');
 
 module.exports=(method,params,id,config)=>{
+    if(method!=="pong") return {error:"illegle request"};
     const start=tools.stamp();
     console.log(`[ dock ] called : ${JSON.stringify(params)}, stamp ${start}`);
     const uri=DB.key_get(params.token);

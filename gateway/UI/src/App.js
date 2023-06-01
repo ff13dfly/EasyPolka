@@ -47,11 +47,29 @@ const test={
     const md5=encry.md5('5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw');
     console.log(md5);
   },
+  direct:(URI)=>{
+    const data={id:"abc",method:"spam"}
+    tools.jsonp(URI,data,(res)=>{
+      console.log(res);
+      const spam=res.result.spam;
+      const params={
+        svc:'vHistory',
+        act:'view',
+        name:'hello',
+        spam:spam,
+      }
+      const data={id:"auth_id",method:"auto",params:params};
+      tools.jsonp(URI,data,(res)=>{
+        console.log(res);
+      });
+    });
+  },
   auto:()=>{
     const URI="http://127.0.0.1:8001";
-    test.spam(URI);
-    test.auth(URI);
-    test.aes();
+    //test.spam(URI);
+    //test.auth(URI);
+    test.direct(URI);
+    //test.aes();
   },
 }
 
@@ -109,7 +127,7 @@ function App() {
   
   
   useEffect(() => {
-    //test.auto();
+    test.auto();
     self.fresh();
   }, []);
 
