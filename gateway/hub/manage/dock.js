@@ -83,8 +83,8 @@ module.exports=(method,params,id,config)=>{
                 DB.hash_set(ks.nodes,uri,vs);
                 DB.key_set(info.token,uri);
 
-                delete vs.token;
-                delete vs.AES;
+                //delete vs.token;
+                //delete vs.AES;
                 const res={
                     data:vs,
                     stamp:tools.stamp(),

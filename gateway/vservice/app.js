@@ -27,7 +27,7 @@ const config = {
     port:       4501,
     interlval:  120000,         //2 minutes
     //fresh:      540000,         //9 minutes
-    fresh:      5000,         //9 minutes
+    fresh:      10000,         //9 minutes
     //polka:      'wss://dev.metanchor.net',
     polka:      'ws://127.0.0.1:9944',
 };
@@ -105,9 +105,12 @@ app.use(bodyParser({
 app.use(router.routes());
 
 const axios= require("axios").default;
+const encry = require('../lib/encry');
 let websocket=null;
-let timer=null,active=null;
-let secret=tools.sn(); 
+let timer=null,active=null;                 //two tast: 1. SN ; 2. Fresh AES token
+
+let secret=tools.sn();
+let locker=false;                           //when response, lock the AES update
 const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
@@ -182,6 +185,7 @@ const self={
         if(active===null) active=setInterval(()=>{
             console.log(config.theme.success,`---------------------------- auto fresh ----------------------------`)
             const hubs=DB.hash_all(config.keys.hubs);
+            console.log(hubs);
             if(hubs===null){
                 console.log(config.theme.error,`No active Hub linked yet.`);
                 return true;
@@ -191,42 +195,57 @@ const self={
             for(let k in hubs){
                 list.push(hubs[k]);
             }
-            self.ping(list,()=>{
+            self.ping(list,(ts)=>{
+                for(var k in ts){
+                    const row=ts[k];
+                    hubs[k]["AES"]=row.AES;
+                    hubs[k]["active"]=row.active;
+                }
+                //console.log(ts);
                 console.log(config.theme.success,`All hubs active.`);
             });
-            //console.log(list);
-
-            // const reqKnock={
-            //     method: 'post',
-            //     url: uri+'/hub',
-            //     data:self.formatJSON("knock",{stamp:tools.stamp()},id),
-            // }
-            //console.log(`Secret code, this is for Gateway Hub to dock this vService.`)
-            //console.log(config.theme.primary,secret);
-            //console.log(`Will expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}`);
             console.log(config.theme.success,`---------------------------- auto fresh ----------------------------\n`)
         },config.fresh);
     },
-    ping:(list,ck)=>{
-        if(list.length===0) return ck && ck();
+    ping:(list,ck,ts)=>{
+        if(!ts) ts={};
+        if(list.length===0) return ck && ck(ts);
         const row=list.pop();
         const fresh=tools.char(16);
+        //ts[row.address]=fresh;
+        console.log(row);
+
+        //1. encry the new salt to sent to Hub
+        const md5=row.AES;
+        const key=md5.substring(0,16),iv=md5.substring(16,32);
+        encry.setKey(key);
+        encry.setIV(iv);
+        const code=encry.encrypt(fresh);
+        //console.log({key,iv,code,md5,fresh})
+
         const data={
-            fresh:fresh,
+            fresh:code,
             token:row.active,
         };
-        console.log(data);
+        //console.log(data);
         const reqPing={
             method: 'post',
             url: row.URI,
             data:self.formatJSON("pong",data,`autofresh_${tools.stamp()}`),
         }
         axios(reqPing).then((res)=>{
-            console.log(res);
-            return self.ping(list,ck);
+            const json=res.data;
+            //console.log(json);
+            const AES=encry.decrypt(json.result.AES);
+            ts[row.URI]={
+                active:fresh,
+                AES:AES,
+            }
+            
+            return self.ping(list,ck,ts);
         }).catch((err)=>{
             console.log(config.theme.error,err);
-            return self.ping(list,ck);
+            return self.ping(list,ck,ts);
         });
     },
     formatJSON:(method,params,id)=>{

@@ -275,40 +275,6 @@ router.post("/service", async (ctx) => {
     console.log(config.theme.success,`---------------------------- request end ----------------------------\n`);
 });
 
-// Router of Hub, API calls, for server
-// router.post("/", async (ctx) => {
-//     const header=ctx.request.header;
-//     const req=ctx.request.body;
-//     if(!req.method || !exposed.call[req.method]){
-//         return ctx.body=JSON.stringify({error:"unkown call"});
-//     }
-
-//     //1.check the header
-//     for(let k in exposed.call){
-//         server.addMethod(k,()=>{
-//             return exposed.call[k](req.method,req.params,req.id,req.id);
-//         });
-//     }
-
-//     try {
-//         const result = await server.receive(ctx.request.body);
-//         ctx.body= self.export(result,req.id);
-//     } catch (error) {
-//         ctx.body= self.export({error:error},req.id);
-//     }
-// });
-
-// Manage APIs
-// router.post("/manage", async (ctx) => {
-//     const header=ctx.request.header;
-//     const req=ctx.request.body;
-//     if(!req.method || !exposed.manage[req.method]){
-//         return ctx.body=JSON.stringify({error:"unkown call"});
-//     }
-//     const result= await exposed.manage[req.method](req.method,req.params,req.id,req.id);
-//     ctx.body=self.export(!result.error?result.data:result,req.id);
-// });
-
 // start hub application
 app.listen(port,()=>{
     console.log(self.getRequestURI()+'/service/')
