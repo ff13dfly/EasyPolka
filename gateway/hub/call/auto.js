@@ -13,7 +13,7 @@ const axios= require("axios").default;
 
 const self={
     formatJSON:(method,params,id)=>{
-        console.log(params);
+        //console.log(params);
         return {
             "jsonrpc":"2.0",
             "method":method,
@@ -36,7 +36,7 @@ module.exports=(method,params,id,config)=>{
                 list.push({uri:uri,token:row.token})
             }
         }
-        console.log(list);
+        //console.log(list);
         if(list.length===0) return resolve({error:"no vService active."});
 
         const active=list.length===1?list[0]:list[0];
@@ -55,15 +55,15 @@ module.exports=(method,params,id,config)=>{
         }
         to.token=active.token;
 
-        //if(!uri) return reject({error:"no vService active."});
-
         const reqAuto={
             method: 'post',
             url: active.uri,
             data:self.formatJSON(act,to,id),
         }
+        //console.log(reqAuto);
         axios(reqAuto).then((resAuto)=>{
             const rData=resAuto.data;
+            if(rData.error) return resolve({error:rData.error});
             const info=rData.result;
             const res={
                 data:info,

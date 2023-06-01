@@ -195,12 +195,13 @@ const self={
                 list.push(hubs[k]);
             }
             self.ping(list,(ts)=>{
+
                 for(var k in ts){
                     const row=ts[k];
                     hubs[k]["AES"]=row.AES;
                     hubs[k]["active"]=row.active;
                 }
-                //console.log(ts);
+
                 console.log(config.theme.success,`All hubs active.`);
             });
             console.log(config.theme.success,`---------------------------- auto fresh ----------------------------\n`)
@@ -214,7 +215,7 @@ const self={
         //ts[row.address]=fresh;
         console.log(row);
 
-        //1. encry the new salt to sent to Hub
+        //1. encry the new salt to sent to Hub (as spam, hub will call with this)
         const md5=row.AES;
         const key=md5.substring(0,16),iv=md5.substring(16,32);
         encry.setKey(key);
@@ -234,7 +235,6 @@ const self={
         }
         axios(reqPing).then((res)=>{
             const json=res.data;
-            //console.log(json);
             const AES=encry.decrypt(json.result.AES);
             ts[row.URI]={
                 active:fresh,
@@ -263,6 +263,7 @@ self.auto(()=>{
         ctx.body=JSON.stringify({hello:"world"});
     });
 
+    // call from Hub of exposed method
     router.post("/",async (ctx)=>{
         const header=ctx.request.header;
         const req=ctx.request.body;
@@ -270,16 +271,34 @@ self.auto(()=>{
         console.log(config.theme.success,`--------------------------- request start ---------------------------`);
         console.log(`[ call ] stamp: ${start}, JSON RPC : ${JSON.stringify(req)}`);
         if(!req.method || !me.mod[req.method]){
-            return ctx.body=JSON.stringify({error:"unkown call"});
+            return ctx.body=self.exportJSON({error:"unkown call"},req.id);
         }
+        if(!req.params || !req.params.token){
+            return ctx.body=self.exportJSON({error:"no authority"},req.id);
+        }
+
+        //const hub=DB.key_get(req.params.token);
+        let pass=false;
+        const token=req.params.token;
+        const hubs=DB.hash_all(config.keys.hubs);
+        for(var uri in hubs){
+            const row=hubs[uri];
+            if(row.active===token){
+                pass=true;
+                break;
+            }
+        }
+        if(!pass) return ctx.body=self.exportJSON({error:"illigle token"},req.id);
+
         const result= await me.mod[req.method](req.method,req.params,req.id,config);
-        console.log(result);
-        ctx.body=ctx.body= self.exportJSON(!result.error?result.data:result,req.id);
+        ctx.body= self.exportJSON(!result.error?result.data:result,req.id);
+
         const end=tools.stamp();
         console.log(`[ call ] stamp: ${end}, cost: ${end-start}ms, Result : ${JSON.stringify(result)}`);
         console.log(config.theme.success,`---------------------------- request end ----------------------------\n`); 
     });
 
+    // call from Hub of management
     router.post("/hub",async (ctx)=>{
         const header=ctx.request.header;
         const req=ctx.request.body;

@@ -135,7 +135,6 @@ const self={
         const map={};
         if(!str) return map;
         const txt=str.replace(((!pre?'':pre)+"/?"),"");
-        console.log(txt);
         const arr=txt.split("&");
         for(let i=0;i<arr.length;i++){
           const kv=arr[i].split("=");
@@ -209,7 +208,6 @@ router.get("/", async (ctx) => {
 
     const jsonp=self.formatParams(params);
     const method=jsonp.request.method;
-    console.log(jsonp);
     //console.log(`Request stamp: ${jsonp.stamp()}, server stamp : ${tools.stamp()}`);
     if(method!=='spam'){
         if(!jsonp.request.params.spam) return ctx.body=self.export({error:"no spam"},jsonp.request.id,jsonp.callback);
