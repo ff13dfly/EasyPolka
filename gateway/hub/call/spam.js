@@ -7,8 +7,11 @@
 // 1. not related to account. That will cause ddos to target account.
 const DB = require("../../lib/mndb.js");
 const tools = require("../../lib/tools");
+
 const self = {
-    
+    clean:()=>{     //clean the expired spam
+
+    },
 }
 module.exports = (method, params, id, config,env) => {
     //TODO, record the request to avoid DDOS
@@ -17,7 +20,10 @@ module.exports = (method, params, id, config,env) => {
     const stamp = tools.stamp();
     const exp = stamp + config.expire.spam;
 
-    DB.key_set(spam, {
+
+    const ks=config.keys;
+    DB.list_push(ks.clean,spam);
+    DB.hash_set(ks.spam,spam, {
         start: stamp, 
         exp: exp, 
         more: {

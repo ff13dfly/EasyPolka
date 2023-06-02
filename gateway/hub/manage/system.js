@@ -11,7 +11,6 @@ module.exports=(method,params,id,config)=>{
 
         //1.The runner status, if there is the json file.
         //2.vService status (A.alive time; B.request times; C.the flow; )
-        //3.
 
         const result={
             data:data,

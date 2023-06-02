@@ -33,12 +33,14 @@ const config = {
         setting: tools.char(20),     //DB key: the config anchor name
         encoded: tools.char(20),     //DB key: the encoded account file
         hub: tools.char(20),         //DB key: Hub request uri
-        nodes: tools.char(20),       //DB key: node save
-        //monitor:tools.char(20),   //DB key: monitor data
+        nodes: tools.char(20),       //Hash main: node save
+        spam:  tools.char(19),       //Hash main: spam
+        clean: tools.char(19),       //List main: spam
     },
     expire: {
         spam: 300000,                //spam expire time, 5 mins
         encry: 600000,               //JSON encry file expired time, 10 mins
+        vservice:9000000,            //vService acitve exipred time, 15 mins
     },
 }
 console.log(config.theme.dark, `\nAnchor Gateway Hub ( v1.0 ) running...`);
@@ -132,8 +134,11 @@ app.use(router.routes());
 
 // application implement
 const self = {
-    getRequestURI: () => {
-        const uri = "http://localhost:8001";
+    getRequestURI: (port) => {
+        //const IP=self.getIpAddress();
+        //console.log(IP);
+        const host="localhost";
+        const uri = `http://${host}:${port}`;
         return uri;
     },
     getParams: (str, pre) => {
@@ -192,7 +197,7 @@ const self = {
     checkSpam: (spam, IP) => {
         //console.log(`Spam checking ...`);
         const DB = require("../lib/mndb.js");
-        const data = DB.key_get(spam);
+        const data = DB.hash_get(config.keys.spam,spam);
         if (data === null) return 'error spam';
 
         const stamp = tools.stamp();
@@ -213,6 +218,19 @@ const self = {
             ip = ip.replace('::ffff:', '')
         }
         return ip;
+    },
+    getIpAddress:()=>{
+        const os = require('os');
+        let ifaces = os.networkInterfaces()
+        for (let dev in ifaces) {
+            let iface = ifaces[dev]
+            for (let i = 0; i < iface.length; i++) {
+                let { family, address, internal } = iface[i]
+                if (family === 'IPv4' && address !== '127.0.0.1' && !internal) {
+                    return address
+                }
+            }
+        }
     },
 }
 
@@ -302,8 +320,8 @@ router.post("/service", async (ctx) => {
 
 // start hub application
 app.listen(port, () => {
-    console.log(self.getRequestURI() + '/service/')
-    DB.key_set(config.keys.hub, self.getRequestURI() + '/service/');
+    //console.log(self.getRequestURI(port) + '/service/')
+    DB.key_set(config.keys.hub, self.getRequestURI(port) + '/service/');
 
     //console.log(`JSON RPC 2.0 server running at port ${port}`);
     console.log(config.theme.primary, `[ Hub url ] http://localhost:${port}`);

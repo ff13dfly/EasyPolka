@@ -74,18 +74,22 @@ module.exports=(method,params,id,config)=>{
                 //3. store the status of the vService
                 const rData=resReg.data;
                 const info=rData.result;
+                const stamp=tools.stamp();
                 const vs={
                     name:info.name,
                     exposed:info.exposed,
                     test:info.test,
                     token:info.token,
                     AES:v_token,
+                    start:stamp,
+                    last:stamp,
+                    exp:stamp+config.expire.vservice,
                 }
                 DB.hash_set(ks.nodes,uri,vs);
                 DB.key_set(info.token,uri);
 
                 //4. set the monitor of vService
-                const stamp=tools.stamp();
+                
                 const mon={
                     flow:0,
                     req:0,

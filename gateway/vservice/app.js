@@ -26,7 +26,7 @@ const config = {
     },
     port:       4501,
     interlval:  120000,         //2 minutes
-    fresh:      540000,         //9 minutes to fresh token and AES salt
+    fresh:      130000,          //9 minutes ( 540000 ) to fresh token and AES salt
     //polka:      'wss://dev.metanchor.net',
     polka:      'ws://127.0.0.1:9944',
 };

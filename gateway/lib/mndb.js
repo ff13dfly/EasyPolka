@@ -73,6 +73,15 @@ const self={
     key_ttl:(key,ttl)=>{
 
     },
+    key_del:(key)=>{
+        const type=typeof(key);
+        if(type!=='string' && type!=='number') return false;
+        if(type==='number') key=''+key;
+        if(key.length>max.key) return false;
+        if(!cache[key]) return null;
+        delete cache[key];
+        return true;
+    },
     /******************hash part******************/
     hash_get:(main,key)=>{
         if(typeof(main)!=='string' || typeof(key)!=='string') return false;
@@ -102,20 +111,38 @@ const self={
     },
 
     /******************list part******************/
-    list_init:(key,list)=>{
-        if(typeof(key)!=='string') return false;
+    list_init:(key,force)=>{
+        const type=typeof(key);
+        if(type!=='string') return false;
+        if(type==='number') key=''+key;
         if(key.length>max.key) return false;
-
+        if(force){
+            queue[key]=[];
+            return true;
+        }
+        if(queue[key]!==undefined) return true;
+        queue[key]=[];
+        return true;
     },
     list_get:(key)=>{
         if(typeof(key)!=='string') return false;
+        if(type==='number') key=''+key;
         if(key.length>max.key) return false;
+        if(!queue[key]) return false;
+        return queue[key];
     },
     list_push:(key,val)=>{
-
+        if(!self.list_init(key)) return false;
+        queue[key].push(val);
+        return true;
     },
     list_pop:(key)=>{
-
+        if(typeof(key)!=='string') return false;
+        if(type==='number') key=''+key;
+        if(key.length>max.key) return false;
+        if(!queue[key]) return false;
+        queue[key].pop();
+        return true;
     },
     list_lpush:(key,val)=>{
 
