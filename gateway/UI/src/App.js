@@ -76,7 +76,6 @@ const test={
 const authority={}
 
 function App() {
-  let [hubs,setHubs]=useState([]);
   let [server,setServer]=useState("");
   let [force,setForce]=useState(0);
 
@@ -98,37 +97,55 @@ function App() {
     },
   }
 
+  //let hubs=[];
+  let [hubs,setHubs]=useState([]);
   const self={
     changeServer:(index)=>{
       const node=hubs[index];
       setServer(node.URI);
     },
     setAuthority:(exp,token)=>{
+      console.log({exp,token})
       authority[server]={
         token:token,
         expired:exp,
       }
-    },
-    removeAuthority:(server)=>{
-
+      return true;
     },
     fresh:(skip)=>{
       //1.list the storaged nodes
       const hs=storage.loadNodes();
+      //console.log(server);
+      //console.log(hs);
       setHubs(hs);
-      if(hs.length!==0) setServer(hs[0].URI);
-
-      if(!skip){
-        //console.log(`force  fresh`);
-        setForce(force  +1);
+      if(hubs.length!==0){
+        let index=0;
+        for(let i=0;i<hubs.length;i++){
+          const row=hubs[i];
+          if(row.URI===server) index=i;
+        }
+        setServer(hubs[index].URI);
       } 
+      if(!skip){
+        setForce(force+1);
+      }
+    },
+    system:(ck)=>{
+      console.log(hubs);
+      return ck && ck();
     },
   }
-  
-  
+
   useEffect(() => {
-    test.auto();
     self.fresh();
+    setTimeout(()=>{
+      const ev = new Event('change', { bubbles: true});
+      const node = document.getElementById('trigger_me');
+      node.dispatchEvent(ev);
+    },0);
+    self.system(()=>{
+      
+    });
   }, []);
 
   return (
@@ -138,7 +155,7 @@ function App() {
         <Col md={3} lg={3} xl={3} xxl={3} className="pt-2">
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <Form.Select onChange={(ev) => {
+              <Form.Select  simulated="true" id="trigger_me" onChange={(ev) => {
                 self.changeServer(ev.target.value);
               }} >
               {hubs.map((item,index) => (
