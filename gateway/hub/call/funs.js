@@ -6,7 +6,7 @@
 
 const tools=require("../../lib/tools");
 
-module.exports=(method,params,id,config)=>{
+module.exports=(method,params,id,config,env)=>{
     
     console.log(`From system API, params : ${JSON.stringify(params)}`);
     return new Promise((resolve, reject) => {

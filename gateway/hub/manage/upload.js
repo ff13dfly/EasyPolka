@@ -16,17 +16,19 @@ module.exports=(method,params,id,config)=>{
 
     try {
         const json=JSON.parse(de_file);
+        const stamp=tools.stamp();
+        json.exp=stamp+config.expire.encry;
+        json.start=stamp;
         DB.key_set(ks.encoded,json);
     } catch (error) {
-        
+        return {error:error};
     }
-
-    const spam=tools.char(13);
     const stamp=tools.stamp();
-    DB.key_set(spam,{stamp:stamp,more:{}});
     const res={
-        hello:"uploading",
-        spam:spam,
+        data:{
+            success:true,
+        },
+        success:true,
         stamp:stamp,
     }
     

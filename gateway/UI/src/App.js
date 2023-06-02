@@ -103,6 +103,9 @@ function App() {
     changeServer:(index)=>{
       const node=hubs[index];
       setServer(node.URI);
+      self.system(node.URI,()=>{
+      
+      });
     },
     setAuthority:(exp,token)=>{
       console.log({exp,token})
@@ -130,8 +133,17 @@ function App() {
         setForce(force+1);
       }
     },
-    system:(ck)=>{
-      console.log(hubs);
+    system:(uri,ck)=>{
+      //console.log(hubs);
+      if(server==="") return false;
+
+      tools.jsonp(uri, { id: "system_spam_id", method: "spam" }, (res) => {
+        const spam = res.result.spam;
+        const data = { id: "system_id", method: "system", params: { spam: spam } }
+        tools.jsonp(uri + '/manage/', data, (res) => {
+            console.log(res);
+        });
+      });
       return ck && ck();
     },
   }
@@ -143,9 +155,8 @@ function App() {
       const node = document.getElementById('trigger_me');
       node.dispatchEvent(ev);
     },0);
-    self.system(()=>{
-      
-    });
+    
+    
   }, []);
 
   return (

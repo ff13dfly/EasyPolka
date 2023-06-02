@@ -1,32 +1,21 @@
 /***********************/
 /***********************/
 
-// The system information of Hub and docked vservices.
-
-const self={
-    stamp:()=>{
-        return new Date().getTime();
-    },
-}
+const DB=require("../../lib/mndb");
+const tools=require("../../lib/tools");
 
 module.exports=(method,params,id,config)=>{
     console.log(`From system API, params : ${JSON.stringify(params)}`);
     return new Promise((resolve, reject) => {
-        const map={
-            "vHistory":{
-                "vh-101":{},
-                "vh-1024":{},
-            },
-            "vMarket":{
-                "vh-101":{},
-                "vh-1024":{},
-            },
-        }
+        const data=DB.dump();
+
+        //1.The runner status, if there is the json file.
+        //2.vService status (A.alive time; B.request times; C.the flow; )
+        //3.
 
         const result={
-            data:map,
-            head:null,
-            stamp:self.stamp(),
+            data:data,
+            stamp:tools.stamp(),
         }
         
         return resolve(result);

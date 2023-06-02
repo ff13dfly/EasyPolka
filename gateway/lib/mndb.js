@@ -126,6 +126,13 @@ const self={
     list_ttl:(key,ttl)=>{
 
     },
+    dump:()=>{
+        return {
+            cache:cache,
+            hash:hash,
+            queue:queue,
+        }
+    },
 };
 
 module.exports=self;

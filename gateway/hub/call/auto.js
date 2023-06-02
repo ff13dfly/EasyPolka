@@ -23,7 +23,7 @@ const self={
     },
 }
 
-module.exports=(method,params,id,config)=>{
+module.exports=(method,params,id,config,env)=>{
     console.log(`Here: ${method}, params : ${JSON.stringify(params)}`);
 
     return new Promise((resolve, reject) => {

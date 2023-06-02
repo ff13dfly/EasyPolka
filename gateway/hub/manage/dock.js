@@ -71,6 +71,7 @@ module.exports=(method,params,id,config)=>{
                 },id),
             }
             axios(reqReg).then((resReg)=>{
+                //3. store the status of the vService
                 const rData=resReg.data;
                 const info=rData.result;
                 const vs={
@@ -83,11 +84,22 @@ module.exports=(method,params,id,config)=>{
                 DB.hash_set(ks.nodes,uri,vs);
                 DB.key_set(info.token,uri);
 
+                //4. set the monitor of vService
+                const stamp=tools.stamp();
+                const mon={
+                    flow:0,
+                    req:0,
+                    shuttle:0,
+                    start:stamp,
+                    last:stamp,
+                }
+                DB.key_set(uri,mon);
+
                 //delete vs.token;
                 //delete vs.AES;
                 const res={
                     data:vs,
-                    stamp:tools.stamp(),
+                    stamp:stamp,
                 }
                 return resolve(res);
             }).catch((err)=>{

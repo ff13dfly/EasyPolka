@@ -15,7 +15,7 @@ function List(props) {
   const self = {
     removeService: (node,name) => {
       tools.jsonp(server, { id: "abc", method: "spam" }, (res) => {
-        //console.log(res);
+
         const spam = res.result.spam;
         const request={
           id: "remove_vservice", 
@@ -52,10 +52,11 @@ function List(props) {
       });
     },
   }
+  console.log({server})
+  
 
   useEffect(() => {
     if(server!=="") self.load(server);
-    //console.log(node);
   }, []);
 
   return (
