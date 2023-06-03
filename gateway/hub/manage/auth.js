@@ -23,7 +23,7 @@ module.exports=(method,params,id,config)=>{
     try {
 
         pair.decodePkcs8(de_pass);
-        const runner=DB.key_get(ks.runner);
+        const host=DB.key_get(ks.host),runner=host.runner;
         if(runner!==pair.address) return {error:"Illegal account"}
 
         //3. set up the access

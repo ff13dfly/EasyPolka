@@ -27,15 +27,14 @@ const config = {
         dark: '\x1b[90m%s\x1b[0m',
     },
     keys: {
-        runner: tools.char(20),      //DB key: storage the runner address
-        executor: tools.char(20),    //DB key: the one who is operate the hub
-        encry: tools.char(20),       //DB key: encry `key` adn `iv` data
+        host: tools.char(20),        //DB key: host information
+        encry: tools.char(20),       //DB key: encry `key` and `iv` data of excutor
         setting: tools.char(20),     //DB key: the config anchor name
         encoded: tools.char(20),     //DB key: the encoded account file
-        hub: tools.char(20),         //DB key: Hub request uri
+        monitor:tools.char(20),      //DB key: Hub monitor
         nodes: tools.char(20),       //Hash main: node save
         spam:  tools.char(19),       //Hash main: spam
-        clean: tools.char(19),       //List main: spam
+        clean: tools.char(19),       //List main: spam list, stack, used to clean the expired spam
     },
     expire: {
         spam: 300000,                //spam expire time, 5 mins
@@ -62,10 +61,27 @@ const init = {
     },
     mndb: () => {
         const ks = config.keys;
-        DB.key_set(ks.runner, address);
-        DB.key_set(ks.setting, cfgAnchor);
-        DB.key_set(ks.executor, { salt: "", exp: 0 });
+        //DB.key_set(ks.runner, address);                 //runner address
+        DB.key_set(ks.setting, cfgAnchor);              //setting anchor
+        DB.key_set(ks.host, {                           //hub host details
+            endpoint:"",        //access uri
+            service:"",
+            manage:"",
+            runner:address,
+        });              
         DB.key_set(ks.encry, { key: "", iv: "" });
+
+        const stamp=tools.stamp();
+        DB.key_set(ks.monitor, {
+            start:stamp,
+            last:stamp,
+            req:0,              //request of Hub
+            manage:0,           //request of Hub management
+            service:0,          //request of service
+            active:0,           //pong request from vService
+            flow:0,             //flow length of Hub
+            spam:0,             //access spam count
+        });
     },
 }
 init.run();
@@ -241,6 +257,10 @@ router.get("/", async (ctx) => {
     console.log(config.theme.success, `--------------------------- request start ---------------------------`);
     console.log(`[ call ] stamp: ${start}. Params : ${JSON.stringify(params)}`);
 
+    const mon=DB.key_get(config.keys.monitor);
+    mon.req+=1;
+    mon.last=tools.stamp();
+
     const jsonp = self.formatParams(params);
     const method = jsonp.request.method;
     const IP = self.getClientIP(ctx.req);
@@ -252,6 +272,8 @@ router.get("/", async (ctx) => {
         if (spamResult !== true) {
             return ctx.body = self.export({ error: spamResult }, jsonp.request.id, jsonp.callback);
         }
+    }else{
+        mon.spam+=1;
     }
 
     if (!method || !exposed.call[method]) {
@@ -273,7 +295,10 @@ router.get("/manage", async (ctx) => {
     console.log(config.theme.success, `--------------------------- request start ---------------------------`);
     console.log(`[ manage ] stamp: ${start}. Params : ${JSON.stringify(params)}`);
 
-    
+    const mon=DB.key_get(config.keys.monitor);
+    mon.manage+=1;
+    mon.last=tools.stamp();
+
     const jsonp = self.formatParams(params);
     const method = jsonp.request.method;
     //console.log(`Request [ manage ] stamp: ${jsonp.stamp}, server stamp : ${tools.stamp()}`);
@@ -307,7 +332,12 @@ router.post("/service", async (ctx) => {
     console.log(config.theme.success, `--------------------------- request start ---------------------------`);
     console.log(`[ service ] stamp: ${start}. Request : ${JSON.stringify(req)}`);
 
+    const mon=DB.key_get(config.keys.monitor);
+    mon.service+=1;
+    mon.last=tools.stamp();
+
     if (!req.method || !exposed.service[req.method]) {
+        
         return ctx.body = JSON.stringify({ error: "unkown call" });
     }
     const result = await exposed.service[req.method](req.method, req.params, req.id, config);
@@ -320,8 +350,14 @@ router.post("/service", async (ctx) => {
 
 // start hub application
 app.listen(port, () => {
-    //console.log(self.getRequestURI(port) + '/service/')
-    DB.key_set(config.keys.hub, self.getRequestURI(port) + '/service/');
+    //console.log(self.getRequestURI(port) + '/service/');
+    const ks=config.keys;
+    const endpoint=self.getRequestURI(port);
+
+    const host=DB.key_get(ks.host);
+    host.endpoint=endpoint;
+    host.service=`${endpoint}/service/`;
+    host.manage=`${endpoint}/manage/`;
 
     //console.log(`JSON RPC 2.0 server running at port ${port}`);
     console.log(config.theme.primary, `[ Hub url ] http://localhost:${port}`);

@@ -52,8 +52,11 @@ module.exports=(method,params,id,config)=>{
             encry.setIV(obj.iv);
 
             const ks=config.keys;
-            const runner=DB.key_get(ks.runner);
-            const sURI=DB.key_get(ks.hub);
+
+            
+            const host=DB.key_get(ks.host),sURI=host.service;
+            const runner=host.runner;
+
             const v_token=self.getMD5();
             const data={
                 address:runner,
@@ -91,11 +94,13 @@ module.exports=(method,params,id,config)=>{
                 //4. set the monitor of vService
                 
                 const mon={
-                    flow:0,
-                    req:0,
-                    shuttle:0,
-                    start:stamp,
-                    last:stamp,
+                    flow:0,             //data length
+                    req:0,              //request from Hub count
+                    failed:0,           //request failed count
+                    shuttle:0,          //between vService
+                    active:0,           //ping-pong count
+                    start:stamp,        //monitor start stamp
+                    last:stamp,         //last update stamp
                 }
                 DB.key_set(uri,mon);
 

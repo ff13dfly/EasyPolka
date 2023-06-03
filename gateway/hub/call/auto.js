@@ -61,6 +61,12 @@ module.exports=(method,params,id,config,env)=>{
             data:self.formatJSON(act,to,id),
         }
         //console.log(reqAuto);
+
+        //3. monitor data update
+        const mon=DB.key_get(active.uri);
+        mon.req+=1;
+        mon.last=tools.stamp();
+
         axios(reqAuto).then((resAuto)=>{
             const rData=resAuto.data;
             if(rData.error) return resolve({error:rData.error});
@@ -69,6 +75,9 @@ module.exports=(method,params,id,config,env)=>{
                 data:info,
                 stamp:tools.stamp(),
             }
+
+            //4. monitor length data update
+
             return resolve(res);
         }).catch((err)=>{
             console.log(config.theme.error,err);

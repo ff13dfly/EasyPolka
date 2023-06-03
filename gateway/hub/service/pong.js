@@ -26,10 +26,19 @@ module.exports=(method,params,id,config)=>{
     svc.token=token;
     svc.last=stamp;
     svc.exp=stamp+config.expire.vservice;
-
     const code=encry.encrypt(nMD5);
     
     DB.key_set(token,uri);
+
+    //3.update monitor data
+    //3.1.vService details
+    const mon=DB.key_get(uri);
+    mon.active+=1;
+    mon.last=stamp;
+
+    //3.2.Hub details
+    const mon_hub=DB.key_get(config.keys.monitor);
+    mon_hub.active+=1;
 
     const res={
         data:{

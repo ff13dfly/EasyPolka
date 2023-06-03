@@ -9,7 +9,8 @@ module.exports=(method,params,id,config)=>{
     console.log(`From handshake API, params : ${JSON.stringify(params)}`);
 
     const ks=config.keys;
-    const runner=DB.key_get(ks.runner);
+    const host=DB.key_get(ks.host);
+    const runner=host.runner;
 
     //1.decode by runner address
     const md5=encry.md5(runner);
