@@ -10,8 +10,7 @@ function Basic(props) {
   const storage=props.storage;
   const fresh=props.fresh;
 
-  console.log({now,index})
-
+  //console.log({now,index})
   const self={
     onChange:(ev)=>{
       storage.updateNode(ev.target.value,index);
@@ -38,7 +37,6 @@ function Basic(props) {
           onChange={(ev) => {
             self.onChange(ev)
           }}
-          onKeyDown={(ev) => { }}
         />
       </Col>
       <Col md={3} lg={3} xl={3} xxl={3} className="pt-1 text-end">

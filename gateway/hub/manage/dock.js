@@ -44,6 +44,7 @@ module.exports=(method,params,id,config)=>{
         axios(reqKnock).then((resKonck)=>{
             //console.log(`Result of "knock" : ${JSON.stringify(resKonck.data)}`);
             //console.log(`Header of "knock" : ${JSON.stringify(resKonck.headers)}`);
+            //TODO, error handle of `knock`
 
             //2. `reg` with basic information
             const salt=resKonck.data.result.salt,secret=params.secret;
@@ -60,7 +61,7 @@ module.exports=(method,params,id,config)=>{
             const v_token=self.getMD5();
             const data={
                 address:runner,
-                AES:v_token,            //This token is used to encry the fresh token
+                AES:v_token,            //This token is used to encry the fresh token from vService
                 URI:sURI,
             };
             const code=encry.encrypt(JSON.stringify(data));
@@ -74,6 +75,8 @@ module.exports=(method,params,id,config)=>{
                 },id),
             }
             axios(reqReg).then((resReg)=>{
+                //TODO, error handle of `reg`
+
                 //3. store the status of the vService
                 const rData=resReg.data;
                 const info=rData.result;

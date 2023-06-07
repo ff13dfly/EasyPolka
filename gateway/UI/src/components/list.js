@@ -9,6 +9,8 @@ function List(props) {
   const token = props.token;
   const spam=props.spam;
 
+  //console.log({server,show,token,spam})
+
   let [svcs, setServers] = useState([]);
   let [info, setInfo] = useState('');
 
@@ -24,6 +26,7 @@ function List(props) {
             spam:spam,
           }
         }
+        console.log(request);
         tools.jsonp(server+'/manage/',request, (res) => {
           console.log(res);
           

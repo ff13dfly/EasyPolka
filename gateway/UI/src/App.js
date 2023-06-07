@@ -132,11 +132,14 @@ function App() {
     changeServer: (index) => {
       const node = hubs[index];
       setDomList("Loading");
+      if(!node){
+
+        return false;
+      }
       setServer(node.URI);
       setEndpoint(node.URI);
-      
+      setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh}/>)
       self.system(node.URI, (res) => {
-        setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh}/>)
         if(res.error){
           return setDomList(res.error);
         } 
@@ -191,10 +194,11 @@ function App() {
         if(spam && spam.error!==undefined) return ck && ck(spam);
         const data = { id: "system_id", method: "system", params: { spam: spam } }
         tools.jsonp(uri + '/manage/', data, (res) => {
+          console.log(res);
           if(res.error){
             delete spams[uri];
             return self.system(uri,ck);
-          } 
+          }
           return ck && ck(res.result);
         });
       });
@@ -213,10 +217,10 @@ function App() {
   return (
     <Container>
       <Link storage={storage} fresh={self.fresh} />
-      <Row index={force}>
+      <Row index={force} hidden={hubs.length===0?true:false}>
         <Col md={3} lg={3} xl={3} xxl={3} className="pt-2">
           <Row>
-            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
+            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2" >
               <Form.Select simulated="true" id="trigger_me" onChange={(ev) => {
                 self.changeServer(ev.target.value);
               }}>
