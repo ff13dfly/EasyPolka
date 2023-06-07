@@ -74,16 +74,19 @@ const test = {
   },
 }
 
-const authority = {};
+const authority = {};   //storage authority
 const spams = {};       //storage the spams
+const monitor={};       //storage monitor data
 
 function App() {
+
+  //storage part
   let [server, setServer] = useState("");
   let [force, setForce] = useState(0);
-  let [data, setData] = useState({});
 
-
+  //render part;
   let [domList,setDomList]=useState("");
+  
 
   const storage = {
     key: "hub_nodes",
@@ -109,12 +112,12 @@ function App() {
     changeServer: (index) => {
       const node = hubs[index];
       setDomList("Loading");
+      setServer(node.URI);
       self.system(node.URI, (res) => {
         if(res.error){
           return setDomList(res.error);
         } 
-        setServer(node.URI);
-        setData(res);
+        monitor[node.URI]=res;
         setDomList(<List server={node.URI} spam={spams[node.URI]} fresh={self.fresh}
           token={(authority[node.URI] && authority[node.URI].token) ? authority[node.URI].token : ""}
           show={(authority[node.URI] && authority[node.URI].token) ? true : false} />);
@@ -193,18 +196,15 @@ function App() {
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               <Form.Select simulated="true" id="trigger_me" onChange={(ev) => {
                 self.changeServer(ev.target.value);
-              }} >
+              }}>
                 {hubs.map((item, index) => (
                   <option value={index} key={index}>{item.name}</option>
                 ))}
               </Form.Select>
             </Col>
-            <Col md={12} lg={12} xl={12} xxl={12}>
-              {server}
-            </Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
-                uploaded={true}
+                uploaded={false}
                 show={(authority[server] && authority[server].token) ? false : true} />
               <Tick server={server} remove={self.removeAuthority}
                 expired={authority[server] ? authority[server].expired : 0}

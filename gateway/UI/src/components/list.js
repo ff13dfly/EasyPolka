@@ -10,6 +10,7 @@ function List(props) {
   const spam=props.spam;
 
   let [svcs, setServers] = useState([]);
+  let [info, setInfo] = useState('');
 
   const self = {
     removeService: (node,name) => {
@@ -38,15 +39,14 @@ function List(props) {
         }
         tools.jsonp(uri+'/manage/',request, (res) => {
           setServers(res.result);
+          if(res.result.length===0) setInfo("No active vService.");
         });
     },
   }
-  //console.log({server})
-  
 
   useEffect(() => {
-    console.log({server});
     if(server!=="") self.load(server);
+
   }, []);
 
   return (
@@ -56,6 +56,7 @@ function List(props) {
             self.load(server)
           }}>Fresh</Button>
       </Col> */}
+      <Col md={12} lg={12} xl={12} xxl={12}>{info}</Col>
       {svcs.map((item, key) => (
         <Col md={12} lg={12} xl={12} xxl={12} className="pt-2" key={item.name}>
           <Row>

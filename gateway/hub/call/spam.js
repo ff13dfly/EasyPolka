@@ -21,6 +21,7 @@ const self = {
 
         if( stamp < first.exp) return true;
 
+        //TODO, need to check the clean process cost time.
         //2.ready to clean the expired spam
         const queue=DB.list_get(ckey);
         const map=DB.hash_all(mkey);
@@ -54,7 +55,6 @@ module.exports = (method, params, id, config,env) => {
         }
     });
     
-
     const res = {
         spam: spam,
         stamp: stamp,
