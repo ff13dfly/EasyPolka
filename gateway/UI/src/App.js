@@ -6,6 +6,7 @@ import Dock from './components/dock';
 import List from './components/list';
 import Verify from './components/verify';
 import Tick from './components/tick';
+import Basic from './components/basic';
 import Details from './components/details';
 
 const tools = require('./lib/tools');
@@ -86,6 +87,8 @@ function App() {
 
   //render part;
   let [domList,setDomList]=useState("");
+  let [basic,setBasic]=useState("");
+  let [endpoint,setEndpoint]=useState("");
   
 
   const storage = {
@@ -104,6 +107,23 @@ function App() {
       localStorage.setItem(storage.key, JSON.stringify(list));
       return true;
     },
+    removeNode:(index)=>{
+      console.log({index});
+      const old=storage.loadNodes();
+      const list=[];
+      console.log(old);
+      for(let i=0;i<old.length;i++){
+        const row=old[i];
+        if(i!==parseInt(index)) list.push(row);
+      }
+      console.log(list);
+      storage.saveNodes(list);
+    },
+    updateNode:(name,index)=>{
+      const list=storage.loadNodes();
+      list[index].name=name;
+      storage.saveNodes(list);
+    },
   }
 
   //let hubs=[];
@@ -113,7 +133,10 @@ function App() {
       const node = hubs[index];
       setDomList("Loading");
       setServer(node.URI);
+      setEndpoint(node.URI);
+      
       self.system(node.URI, (res) => {
+        setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh}/>)
         if(res.error){
           return setDomList(res.error);
         } 
@@ -202,6 +225,8 @@ function App() {
                 ))}
               </Form.Select>
             </Col>
+            <Col md={12} lg={12} xl={12} xxl={12}>{endpoint}</Col>
+            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">{basic}</Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
                 uploaded={false}
