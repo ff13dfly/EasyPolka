@@ -6,8 +6,9 @@ function Verify(props) {
   const setAuth=props.authority;
   const fresh=props.fresh;
   const show=props.show;
+  const uploaded=props.uploaded;
 
-  let [disable, setDisable] = useState({ upload: false, verify: false });
+  let [disable, setDisable] = useState({ upload: uploaded, verify: false });
   let [info, setInfo] = useState("");
   let [code, setCode] = useState("");
   let [pass, setPass] = useState("");
@@ -23,7 +24,10 @@ function Verify(props) {
     passClick: (ev) => {
       if (!pass) return setInfo('No password to verify.');
     },
-    uploadClick: (ev) => {
+    getAES:(ck)=>{
+
+    },
+    verifyClick: (ev) => {
       if (!code) return setInfo('No encry json file.');
       if (!pass) return setInfo('No password to decode.');
 
@@ -103,7 +107,7 @@ function Verify(props) {
         Vertifying Management
       </Col>
       <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-        <Form.Control size="md" type="file" hidden={disable.upload} placeholder="Password to verify..."
+        <Form.Control size="md" type="file" hidden={disable.upload} placeholder="Encrypto JSON file upload..."
           onChange={(ev) => {
             self.fileChange(ev);
           }} />
@@ -115,9 +119,9 @@ function Verify(props) {
           }} />
       </Col>
       <Col md={4} lg={4} xl={4} xxl={4} className="pt-2 text-end">
-      <Button hidden={disable.upload} onClick={() => {
-          self.uploadClick();
-        }}>Upload</Button>
+      <Button hidden={disable.upload && disable.verify} onClick={() => {
+          self.verifyClick();
+        }}>Verify</Button>
       </Col>
       <Col md={12} lg={12} xl={12} xxl={12}>{info}</Col>
     </Row>

@@ -7,16 +7,12 @@ function List(props) {
   const server = props.server;
   const show = props.show;
   const token = props.token;
+  const spam=props.spam;
 
   let [svcs, setServers] = useState([]);
 
-  //console.log(props);
-
   const self = {
     removeService: (node,name) => {
-      tools.jsonp(server, { id: "abc", method: "spam" }, (res) => {
-
-        const spam = res.result.spam;
         const request={
           id: "remove_vservice", 
           method: "apart", 
@@ -31,13 +27,8 @@ function List(props) {
           console.log(res);
           
         });
-      });
     },
     load:(uri)=>{
-      //console.log(uri);
-      tools.jsonp(uri,{id:"load_spam",method:"spam"},(res)=>{
-        //console.log(res);
-        const spam = res.result.spam;
         const request={
           id: "list_vservice", 
           method: "list", 
@@ -47,25 +38,24 @@ function List(props) {
         }
         tools.jsonp(uri+'/manage/',request, (res) => {
           setServers(res.result);
-          //console.log(svcs);
         });
-      });
     },
   }
-  console.log({server})
+  //console.log({server})
   
 
   useEffect(() => {
+    console.log({server});
     if(server!=="") self.load(server);
   }, []);
 
   return (
     <Row>
-      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2 text-end">
+      {/* <Col md={12} lg={12} xl={12} xxl={12} className="pt-2 text-end">
           <Button size="sm" variant="info" className='mr-4' onClick={(ev) => {
             self.load(server)
           }}>Fresh</Button>
-      </Col>
+      </Col> */}
       {svcs.map((item, key) => (
         <Col md={12} lg={12} xl={12} xxl={12} className="pt-2" key={item.name}>
           <Row>

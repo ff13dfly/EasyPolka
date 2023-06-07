@@ -6,9 +6,17 @@ const self={
         for(var k in data.params) uri += `${k}=${data.params[k]}&`;
         uri+='callback=?';
         console.log(`${uri}`);
-        window.$.getJSON({type:'get',url:uri,async:false,success:function(res){
-            return ck && ck(res);
-        }});
+
+        window.$.getJSON({
+            type:'get',
+            url:uri,
+            async:false,
+            success:function(res){
+                return ck && ck(res);
+            }
+        }).fail(function( jqxhr, textStatus, err ) {
+            return ck && ck({error:err});
+        });
     },
     stamp:()=>{
         return new Date().getTime();
