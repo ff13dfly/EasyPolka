@@ -37,7 +37,8 @@ const config = {
         clean: tools.char(19),       //List main: spam list, stack, used to clean the expired spam
     },
     expire: {
-        spam: 300000,                //spam expire time, 5 mins
+        //spam: 300000,                //spam expire time, 5 mins
+        spam: 10000,                //spam expire time, 5 mins
         encry: 600000,               //JSON encry file expired time, 10 mins
         vservice:9000000,            //vService acitve exipred time, 15 mins
     },

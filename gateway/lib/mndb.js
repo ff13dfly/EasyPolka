@@ -57,9 +57,7 @@ const self={
     /******************key part******************/
     key_get:(key,ttl)=>{
         const type=typeof(key);
-        if(type!=='string' && type!=='number') return false;
-        if(type==='number') key=''+key;
-        if(key.length>max.key) return false;
+        if((type!=='string'&& type!=='number')|| key.length>max.key) return false;
         if(!cache[key]) return null;
         return cache[key];
     },
@@ -125,7 +123,8 @@ const self={
         return true;
     },
     list_get:(key)=>{
-        if(typeof(key)!=='string') return false;
+        const type=typeof(key);
+        if(type!=='string') return false;
         if(type==='number') key=''+key;
         if(key.length>max.key) return false;
         if(!queue[key]) return false;
@@ -137,12 +136,28 @@ const self={
         return true;
     },
     list_pop:(key)=>{
+        const type=typeof(key);
+        if((type!=='string'&& type!=='number')|| key.length>max.key || !queue[key]) return false;
+        queue[key].pop();
+        return true;
+    },
+    list_first:(key)=>{
+        const type=typeof(key);
+        if((type!=='string'&& type!=='number')|| key.length>max.key || !queue[key]) return false;
+        return queue[key][0];
+    },
+    list_last:(key)=>{
+        const type=typeof(key);
+        if((type!=='string'&& type!=='number')|| key.length>max.key || !queue[key]) return false;
+        const len=queue[key].length;
+        return queue[key][len-1];
+    },
+    list_len:(key)=>{
         if(typeof(key)!=='string') return false;
         if(type==='number') key=''+key;
         if(key.length>max.key) return false;
         if(!queue[key]) return false;
-        queue[key].pop();
-        return true;
+        return queue[key].length;
     },
     list_lpush:(key,val)=>{
 

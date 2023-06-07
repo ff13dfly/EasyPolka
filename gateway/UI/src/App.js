@@ -85,7 +85,6 @@ function App() {
 
   let [domList,setDomList]=useState("");
 
-
   const storage = {
     key: "hub_nodes",
     loadNodes: () => {
@@ -153,7 +152,6 @@ function App() {
           if(res.error){
             return ck && ck({error:"Failed to get spam"});
           }
-
           const spam = res.result.spam;
           spams[uri]=spam;
           return ck && ck(spams[uri]);
@@ -164,11 +162,13 @@ function App() {
     },
     system: (uri, ck) => {
       self.serverSpam(uri,(spam)=>{
-        //console.log(spam);
-        //if(!spam) return ck && ck({error:"No response from server."});
         if(spam && spam.error!==undefined) return ck && ck(spam);
         const data = { id: "system_id", method: "system", params: { spam: spam } }
         tools.jsonp(uri + '/manage/', data, (res) => {
+          if(res.error){
+            delete spams[uri];
+            return self.system(uri,ck);
+          } 
           return ck && ck(res.result);
         });
       });

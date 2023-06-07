@@ -9,8 +9,30 @@ const DB = require("../../lib/mndb.js");
 const tools = require("../../lib/tools");
 
 const self = {
-    clean:()=>{     //clean the expired spam
+    clean:(stamp,ckey,mkey)=>{     //clean the expired spam
+        //const queue=DB.list_get(ckey);
+        //console.log(queue);
 
+        //1.get the latest spam to confirm clean process;
+        const first_spam=DB.list_first(ckey);
+        const first=DB.hash_get(mkey,first_spam);
+        console.log({first});
+        if(!first) return false;
+
+        if( stamp < first.exp) return true;
+
+        //2.ready to clean the expired spam
+        const queue=DB.list_get(ckey);
+        const map=DB.hash_all(mkey);
+        let count=0;
+        for(let i=0;i<queue.length;i++){
+            const row=queue[i];
+            if( stamp < map[row].exp) break;
+            count++;
+            delete map[row];
+        }
+        console.log(`${count} rows need to be removed`);
+        for(let i=0;i<count;i++) queue.shift();
     },
 }
 module.exports = (method, params, id, config,env) => {
@@ -20,8 +42,9 @@ module.exports = (method, params, id, config,env) => {
     const stamp = tools.stamp();
     const exp = stamp + config.expire.spam;
 
-
     const ks=config.keys;
+    self.clean(stamp,ks.clean,ks.spam);
+
     DB.list_push(ks.clean,spam);
     DB.hash_set(ks.spam,spam, {
         start: stamp, 
@@ -30,6 +53,7 @@ module.exports = (method, params, id, config,env) => {
             IP:env.IP,      //store the IP to confirm IP
         }
     });
+    
 
     const res = {
         spam: spam,
