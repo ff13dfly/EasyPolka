@@ -7,7 +7,7 @@
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 const axios= require("axios").default;
-const encry=require('../lib/encry');
+const encry=require('../../lib/encry');
 
 const self={
     formatJSON:(method,params,id)=>{

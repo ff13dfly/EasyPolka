@@ -4,7 +4,7 @@
 const {Keyring}=require('@polkadot/api');
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
-const encry=require('../lib/encry');
+const encry=require('../../lib/encry');
 
 module.exports=(method,params,id,config)=>{
     //console.log(`From auth API, params : ${JSON.stringify(params)}`);

@@ -36,11 +36,9 @@ module.exports=(method,params,id,config,env)=>{
                 list.push({uri:uri,token:row.token})
             }
         }
-        //console.log(list);
         if(list.length===0) return resolve({error:"no vService active."});
 
-        const active=list.length===1?list[0]:list[0];
-
+        const active=list.length===1?list[0]:list[tools.rand(0,list.length-1)];
         const act=params.act;
         const to={};
         for(var k in params){

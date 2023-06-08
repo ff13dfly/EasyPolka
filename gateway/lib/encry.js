@@ -1,7 +1,4 @@
 const CryptoJS = require('crypto-js');
-//const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF");  //16bytes salt
-//const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412');   //16bytes offset
-
 let key=null;
 let iv=null;
 
