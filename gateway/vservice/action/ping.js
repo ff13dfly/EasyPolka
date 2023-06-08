@@ -36,6 +36,11 @@ const self = {
         axios(reqPing).then((res)=>{
             const json=res.data;
             const AES=encry.decrypt(json.result.AES);
+
+            //fresh token-Hub map
+            DB.key_del(row.active);
+            DB.key_set(fresh,row.URI);
+
             ts[row.URI]={
                 active:fresh,
                 AES:AES,

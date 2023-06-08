@@ -95,7 +95,6 @@ module.exports=(method,params,id,config)=>{
                 DB.key_set(info.token,uri);
 
                 //4. set the monitor of vService
-                
                 const mon={
                     flow:0,             //data length
                     req:0,              //request from Hub count

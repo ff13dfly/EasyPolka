@@ -44,34 +44,20 @@ console.log(config.theme.success,`Ready to load gateway Hub by ${address}, the c
 const anchorJS= require('../../package/node/anchor.node.js');
 const { ApiPromise,WsProvider } = require('../../package/node/polkadot.node.js');
 const {easyRun} = require('../../package/node/easy.node.js');
-
 const koa=require("koa"),bodyParser = require("koa-bodyparser"),koaRouter=require("koa-router");
 const { JSONRPCServer } = require("json-rpc-2.0");
 
 const me={
-    // "pub":{
-    //     "koa":koa,
-    //     "koa-router":koaRouter,
-    //     "koa-bodyparser":bodyParser,
-    //     "json-rpc-2.0":JSONRPCServer,
-    //     "jwt":require("jsonwebtoken"),
-    // },
-    // "anchor":{
-    //     "anchorjs":"",
-    //     "polkadot":"",
-    // },
-    // "lib":{
-    //     "mndb":require("../lib/mndb.js"),
-    // },
     "action":{
-        "tick":require("./action/tick.js"),
-        "ping":require("./action/ping.js"),
+        "tick":require("./action/tick.js"),     //fresh link secret
+        "ping":require("./action/ping.js"),     //ping Hub to confirm link and fresh token
     },
     "hub":{        //public request method name checked here
-        "knock":require("./hub/knock.js"),
-        "reg":require("./hub/reg.js"),
+        "knock":require("./hub/knock.js"),      //response the handshake from Hub
+        "reg":require("./hub/reg.js"),          //response the reg request from Hub
+        "unlink":require("./hub/unlink.js"),    //response the apart request from Hub
     },
-    "mod":{      //manage request method name checked here
+    "mod":{
         "view":require("./mod/view.js"),
     },
 };
@@ -133,8 +119,9 @@ const self={
 }
 
 self.auto(()=>{
+    // Test function, not sure to keep this.
     router.get("/ping",async (ctx)=>{
-        ctx.body=JSON.stringify({hello:"world"});
+        ctx.body=JSON.stringify({hello:"world",stamp:tools.stamp()});
     });
 
     // call from Hub of exposed method
@@ -152,18 +139,22 @@ self.auto(()=>{
         }
 
         //FIXME, check all hubs to confirm the token is stupid.
+
+        //2.check Hub token
         const DB=require("../lib/mndb.js");
-        let pass=false;
         const token=req.params.token;
-        const hubs=DB.hash_all(config.keys.hubs);
-        for(var uri in hubs){
-            const row=hubs[uri];
-            if(row.active===token){
-                pass=true;
-                break;
-            }
-        }
-        if(!pass) return ctx.body=self.exportJSON({error:"illigle token"},req.id);
+        const hub=DB.key_get(token);
+        if(hub===null) return ctx.body=self.exportJSON({error:"illigle token"},req.id);
+
+        // const hubs=DB.hash_all(config.keys.hubs);
+        // for(var uri in hubs){
+        //     const row=hubs[uri];
+        //     if(row.active===token){
+        //         pass=true;
+        //         break;
+        //     }
+        // }
+        // if(!pass) return ctx.body=self.exportJSON({error:"illigle token"},req.id);
 
         const result= await me.mod[req.method](req.method,req.params,req.id,config);
         ctx.body= self.exportJSON(!result.error?result.data:result,req.id);
@@ -197,18 +188,15 @@ self.auto(()=>{
     });
 
     app.listen(port,()=>{
+        //1.bind application to server port
         console.log(`vService running at port ${port}`);
         console.log(config.theme.primary,`http://localhost:${port}`);
         
         console.log(`curl "http://localhost:${port}/ping"\n`)
 
         //2.start auto actions
+        for(var k in me.action) me.action[k](config);
 
-        for(var k in me.action){
-            me.action[k](config);
-        }
-        //self.tick();
-        //self.active();
         //console.log(`curl "http://localhost:${port}/ping" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
     });
 });

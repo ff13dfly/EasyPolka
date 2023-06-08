@@ -13,6 +13,7 @@ const self = {
 }
 
 module.exports = (req, server, config) => {
+    console.log(`[ reg ] called : ${JSON.stringify(req)}`);
     //console.log(`[ reg ] called : ${JSON.stringify(req)}`);
     //console.log(`[ reg ] config : ${JSON.stringify(config)}`);
     if (!req.params) return { error: "Invalid request." };
@@ -37,7 +38,8 @@ module.exports = (req, server, config) => {
         const reg = JSON.parse(ddata);
         const token=tools.char(16);
         reg.active=token;
-        DB.hash_set(config.keys.hubs, reg.URI, reg);      //save Hub details
+        DB.hash_set(config.keys.hubs, reg.URI, reg);    //save Hub details
+        DB.key_set(token,reg.URI);                      //set token-Hub map
         const result = {
             data: {
                 name: "vHistory",

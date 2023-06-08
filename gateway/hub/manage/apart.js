@@ -6,7 +6,20 @@
 
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
+const axios= require("axios").default;
 const encry=require('../lib/encry');
+
+const self={
+    formatJSON:(method,params,id)=>{
+        console.log(params);
+        return {
+            "jsonrpc":"2.0",
+            "method":method,
+            "params":params,
+            "id":id,
+        }
+    },
+}
 
 module.exports=(method,params,id,config)=>{
     console.log(`From apart API, params : ${JSON.stringify(params)}`);
@@ -42,6 +55,9 @@ module.exports=(method,params,id,config)=>{
         
         const nodes=DB.hash_all(ks.nodes);
         const info=nodes[uri];
+        //3.1.prepare the vService call data
+        const token=info.token;
+
         //2.2.remove token map
         // DB.key_set(info.token,uri);
         DB.key_del(info.token);
@@ -55,10 +71,29 @@ module.exports=(method,params,id,config)=>{
         delete nodes[uri];
         
 
-        const result={
-            data:{hello:"apart function"},
-            stamp:tools.stamp(),
+        //3.tell vService the apart
+        const reqUnlink={
+            method: 'post',
+            url: uri+'/hub',
+            data:self.formatJSON("unlink",{stamp:tools.stamp(),token:token},id),
         }
-        return resolve(result);
+        axios(reqUnlink).then((resUnlink)=>{
+            //console.log(resUnlink);
+            const res=resUnlink.data;
+            console.log(res);
+            if(res.error) return reject({error:res.error});
+
+            const result={
+                data:{success:true,raw:res.result},
+                stamp:tools.stamp(),
+            }
+            return resolve(result);
+
+        }).catch((err)=>{
+            console.log(config.theme.error,err);
+            return reject({error:err});
+        });
+
+        
     }); 
 };
