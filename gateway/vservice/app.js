@@ -23,11 +23,11 @@ const config = {
     },
     keys:{
         hubs:tools.char(13),    //DB key: save hub data
+        locker:tools.char(22),  //DB key: response locker, when response the Hub data request, hold 500ms to retry
     },
     port:       4501,
     interlval:  120000,         //2 minutes
     fresh:      130000,          //9 minutes ( 540000 ) to fresh token and AES salt
-    //polka:      'wss://dev.metanchor.net',
     polka:      'ws://127.0.0.1:9944',
 };
 
@@ -41,50 +41,31 @@ const port=!args[1]?config.port:args[1];
 const cfgAnchor=!args[2]?"":args[2];
 console.log(config.theme.success,`Ready to load gateway Hub by ${address}, the config Anchor is ${!cfgAnchor?"not set":cfgAnchor}`);
 
-const anchor={
-    name:"vHistory",
-    methods:{
-        view:{
-            intro:'View anchor details',
-            type:'POST',
-            param:{
-                'anchor':'String'
-            }, 
-        },
-        history:{
-            intro:'View anchor history',
-            type:'POST',
-            param:{
-                'anchor':'String'
-            }, 
-        },
-    },
-};
-
 const anchorJS= require('../../package/node/anchor.node.js');
 const { ApiPromise,WsProvider } = require('../../package/node/polkadot.node.js');
 const {easyRun} = require('../../package/node/easy.node.js');
 
-const koa=require("koa");
-const bodyParser = require("koa-bodyparser");
-const koaRouter=require("koa-router");
+const koa=require("koa"),bodyParser = require("koa-bodyparser"),koaRouter=require("koa-router");
 const { JSONRPCServer } = require("json-rpc-2.0");
-const DB=require("../lib/mndb.js");
 
 const me={
-    "pub":{
-        "koa":koa,
-        "koa-router":koaRouter,
-        "koa-bodyparser":bodyParser,
-        "json-rpc-2.0":JSONRPCServer,
-        "jwt":require("jsonwebtoken"),
-    },
-    "anchor":{
-        "anchorjs":"",
-        "polkadot":"",
-    },
-    "lib":{
-        "mndb":require("../lib/mndb.js"),
+    // "pub":{
+    //     "koa":koa,
+    //     "koa-router":koaRouter,
+    //     "koa-bodyparser":bodyParser,
+    //     "json-rpc-2.0":JSONRPCServer,
+    //     "jwt":require("jsonwebtoken"),
+    // },
+    // "anchor":{
+    //     "anchorjs":"",
+    //     "polkadot":"",
+    // },
+    // "lib":{
+    //     "mndb":require("../lib/mndb.js"),
+    // },
+    "action":{
+        "tick":require("./action/tick.js"),
+        "ping":require("./action/ping.js"),
     },
     "hub":{        //public request method name checked here
         "knock":require("./hub/knock.js"),
@@ -103,13 +84,7 @@ app.use(bodyParser({
 }));
 app.use(router.routes());
 
-const axios= require("axios").default;
-const encry = require('../lib/encry');
 let websocket=null;
-let timer=null,active=null;                 //two tast: 1. SN ; 2. Fresh AES token
-
-let secret=tools.sn();
-let locker=false;                           //when response, lock the AES update
 const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
@@ -155,107 +130,6 @@ const self={
             result: data
         }
     },
-    getExpire:()=>{
-        const start=tools.stamp;
-        const end=start+config.interlval;
-    },
-    tick:()=>{
-        //let secret=tools.vcode();
-        console.log(config.theme.success,`---------------------------- secret code ----------------------------`)
-        console.log(`Secret code, this is for Gateway Hub to dock this vService.`)
-        console.log(config.theme.primary,secret);
-        console.log(`Will expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}`);
-        console.log(config.theme.success,`---------------------------- secret code ----------------------------\n`)
-
-        DB.key_set("secret",secret);
-        timer=setInterval(()=>{
-            secret=tools.sn();
-            DB.key_set("secret",secret);
-
-            console.log(config.theme.success,`---------------------------- secret code ----------------------------`)
-            console.log(`Secret code, this is for Gateway Hub to dock this vService.`)
-            console.log(config.theme.primary,secret);
-            console.log(`Will expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}`);
-            console.log(config.theme.success,`---------------------------- secret code ----------------------------\n`)
-
-        },config.interlval);
-    },
-    active:()=>{
-        if(active===null) active=setInterval(()=>{
-            console.log(config.theme.success,`---------------------------- auto fresh ----------------------------`)
-            const hubs=DB.hash_all(config.keys.hubs);
-            console.log(hubs);
-            if(hubs===null){
-                console.log(config.theme.error,`No active Hub linked yet.`);
-                return true;
-            }
-
-            const list=[];
-            for(let k in hubs){
-                list.push(hubs[k]);
-            }
-            self.ping(list,(ts)=>{
-
-                for(var k in ts){
-                    const row=ts[k];
-                    hubs[k]["AES"]=row.AES;
-                    hubs[k]["active"]=row.active;
-                }
-
-                console.log(config.theme.success,`All hubs active.`);
-            });
-            console.log(config.theme.success,`---------------------------- auto fresh ----------------------------\n`)
-        },config.fresh);
-    },
-    ping:(list,ck,ts)=>{
-        if(!ts) ts={};
-        if(list.length===0) return ck && ck(ts);
-        const row=list.pop();
-        const fresh=tools.char(16);
-        //ts[row.address]=fresh;
-        console.log(row);
-
-        //1. encry the new salt to sent to Hub (as spam, hub will call with this)
-        const md5=row.AES;
-        const key=md5.substring(0,16),iv=md5.substring(16,32);
-        encry.setKey(key);
-        encry.setIV(iv);
-        const code=encry.encrypt(fresh);
-        //console.log({key,iv,code,md5,fresh})
-
-        const data={
-            fresh:code,
-            token:row.active,
-        };
-        //console.log(data);
-        const reqPing={
-            method: 'post',
-            url: row.URI,
-            data:self.formatJSON("pong",data,`autofresh_${tools.stamp()}`),
-        }
-        axios(reqPing).then((res)=>{
-            const json=res.data;
-            const AES=encry.decrypt(json.result.AES);
-            ts[row.URI]={
-                active:fresh,
-                AES:AES,
-            }
-            
-            return self.ping(list,ck,ts);
-        }).catch((err)=>{
-            console.log(config.theme.error,err);
-            return self.ping(list,ck,ts);
-        });
-    },
-    formatJSON:(method,params,id)=>{
-        //console.log(params);
-        return {
-            "jsonrpc":"2.0",
-            "method":method,
-            "params":params,
-            "id":id,
-        }
-    },
 }
 
 self.auto(()=>{
@@ -277,7 +151,8 @@ self.auto(()=>{
             return ctx.body=self.exportJSON({error:"no authority"},req.id);
         }
 
-        //const hub=DB.key_get(req.params.token);
+        //FIXME, check all hubs to confirm the token is stupid.
+        const DB=require("../lib/mndb.js");
         let pass=false;
         const token=req.params.token;
         const hubs=DB.hash_all(config.keys.hubs);
@@ -327,8 +202,13 @@ self.auto(()=>{
         
         console.log(`curl "http://localhost:${port}/ping"\n`)
 
-        self.tick();
-        self.active();
+        //2.start auto actions
+
+        for(var k in me.action){
+            me.action[k](config);
+        }
+        //self.tick();
+        //self.active();
         //console.log(`curl "http://localhost:${port}/ping" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'\n`)
     });
 });
