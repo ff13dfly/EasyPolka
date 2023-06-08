@@ -5,7 +5,11 @@ const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 
 module.exports=(method,params,id,config)=>{
-    console.log(`From system API, params : ${JSON.stringify(params)}`);
+    if(method!=="system") return {error:"illegle request"};
+
+    // const start=tools.stamp();
+    // console.log(`[ system ] called : ${JSON.stringify(params)}, stamp ${start}`);
+
     return new Promise((resolve, reject) => {
         const ks=config.keys;
         

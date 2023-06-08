@@ -6,7 +6,11 @@ const tools=require("../../lib/tools");
 const encry=require('../../lib/encry');
 
 module.exports=(method,params,id,config)=>{
-    //console.log(`From upload API, params : ${JSON.stringify(params)}`);
+    if(method!=="upload") return {error:"illegle request"};
+
+    // const start=tools.stamp();
+    // console.log(`[ upload ] called : ${JSON.stringify(params)}, stamp ${start}`);
+
     const ks=config.keys;
     const ekey=DB.key_get(ks.encry);
     const s_key=ekey.key,s_iv=ekey.iv;

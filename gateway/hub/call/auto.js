@@ -1,19 +1,12 @@
 /***********************/
 /***********************/
 
-// only exposed method to allow call vService.
-
-// Security
-// 1. check the name of service. Check all parameters by definition.
-// 2. forbiden all password and write operation on Hub itself.
-
 const DB=require("../../lib/mndb.js");
 const tools=require("../../lib/tools");
 const axios= require("axios").default;
 
 const self={
     formatJSON:(method,params,id)=>{
-        //console.log(params);
         return {
             "jsonrpc":"2.0",
             "method":method,
@@ -24,7 +17,7 @@ const self={
 }
 
 module.exports=(method,params,id,config,env)=>{
-    console.log(`Here: ${method}, params : ${JSON.stringify(params)}`);
+    console.log(`From auto exposed API, params : ${JSON.stringify(params)}`);
 
     return new Promise((resolve, reject) => {
         //1.prepare the vService list
@@ -38,6 +31,7 @@ module.exports=(method,params,id,config,env)=>{
         }
         if(list.length===0) return resolve({error:"no vService active."});
 
+        //2.select proper vService to call
         const active=list.length===1?list[0]:list[tools.rand(0,list.length-1)];
         const act=params.act;
         const to={};
@@ -58,7 +52,6 @@ module.exports=(method,params,id,config,env)=>{
             url: active.uri,
             data:self.formatJSON(act,to,id),
         }
-        //console.log(reqAuto);
 
         //3. monitor data update
         const mon=DB.key_get(active.uri);
@@ -68,7 +61,9 @@ module.exports=(method,params,id,config,env)=>{
         axios(reqAuto).then((resAuto)=>{
             const rData=resAuto.data;
             if(rData.error) return resolve({error:rData.error});
+
             const info=rData.result;
+
             const res={
                 data:info,
                 stamp:tools.stamp(),

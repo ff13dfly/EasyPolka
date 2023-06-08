@@ -7,7 +7,11 @@ const tools=require("../../lib/tools");
 const encry=require('../../lib/encry');
 
 module.exports=(method,params,id,config)=>{
-    //console.log(`From auth API, params : ${JSON.stringify(params)}`);
+    if(method!=="auth") return {error:"illegle request"};
+
+    // const start=tools.stamp();
+    // console.log(`[ auth ] called : ${JSON.stringify(params)}, stamp ${start}`);
+
     //1.decode the password
     const ks=config.keys;
     const json=DB.key_get(ks.encoded);
@@ -34,13 +38,13 @@ module.exports=(method,params,id,config)=>{
         const access=encry.encrypt(JSON.stringify(excutor));
 
         //4. remove the encoded json file
-        const res={
+        const result={
             data:{
                 access:access,
             },
         }
     
-        return res;
+        return result;
         
     } catch (error) {
         return {error:error}

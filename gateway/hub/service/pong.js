@@ -4,8 +4,10 @@ const encry = require('../../lib/encry');
 
 module.exports=(method,params,id,config)=>{
     if(method!=="pong") return {error:"illegle request"};
+
     const start=tools.stamp();
-    console.log(`[ dock ] called : ${JSON.stringify(params)}, stamp ${start}`);
+    console.log(`[ pong ] called : ${JSON.stringify(params)}, stamp ${start}`);
+    
     const uri=DB.key_get(params.token);
     const svc=DB.hash_get(config.keys.nodes,uri);
     if(!svc || svc===null){

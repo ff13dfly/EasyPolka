@@ -8,6 +8,11 @@ const tools=require("../../lib/tools");
 const DB=require("../../lib/mndb");
 
 module.exports=(method,params,id,config)=>{
+    if(method!=="list") return {error:"illegle request"};
+
+    // const start=tools.stamp();
+    // console.log(`[ list ] called : ${JSON.stringify(params)}, stamp ${start}`);
+
     return new Promise((resolve, reject) => {
         const ks=config.keys;
         const raw=DB.hash_all(ks.nodes);

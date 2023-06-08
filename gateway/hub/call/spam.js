@@ -16,7 +16,6 @@ const self = {
         //1.get the latest spam to confirm clean process;
         const first_spam=DB.list_first(ckey);
         const first=DB.hash_get(mkey,first_spam);
-        console.log({first});
         if(!first) return false;
 
         if( stamp < first.exp) return true;
@@ -55,8 +54,8 @@ module.exports = (method, params, id, config,env) => {
         }
     });
     
-    const res = {
-        spam: spam,
+    const res = {       //upper method will post res.data to requestor
+        spam: spam,              
         stamp: stamp,
     }
     return res;

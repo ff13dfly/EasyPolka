@@ -6,7 +6,10 @@ const tools=require("../../lib/tools");
 const encry=require('../../lib/encry');
 
 module.exports=(method,params,id,config)=>{
-    console.log(`From handshake API, params : ${JSON.stringify(params)}`);
+    if(method!=="handshake") return {error:"illegle request"};
+
+    // const start=tools.stamp();
+    // console.log(`[ handshake ] called : ${JSON.stringify(params)}, stamp ${start}`);
 
     const ks=config.keys;
     const host=DB.key_get(ks.host);
@@ -32,14 +35,13 @@ module.exports=(method,params,id,config)=>{
 
     const security=encry.encrypt(`${s_key}.${s_iv}`);
     const stamp=tools.stamp();
-    const res={
+    const result={
         data:{
             token:security,
             encry:de_result,
         },
-        success:true,
         stamp:stamp,
     }
     
-    return res;
+    return result;
 };

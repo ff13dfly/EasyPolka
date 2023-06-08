@@ -9,20 +9,11 @@ const tools=require("../../lib/tools");
 const axios= require("axios").default;
 const encry=require('../../lib/encry');
 
-const self={
-    formatJSON:(method,params,id)=>{
-        console.log(params);
-        return {
-            "jsonrpc":"2.0",
-            "method":method,
-            "params":params,
-            "id":id,
-        }
-    },
-}
-
 module.exports=(method,params,id,config)=>{
-    console.log(`From apart API, params : ${JSON.stringify(params)}`);
+    if(method!=="apart") return {error:"illegle request"};
+
+    // const start=tools.stamp();
+    // console.log(`[ apart ] called : ${JSON.stringify(params)}, stamp ${start}`);
     
     return new Promise((resolve, reject) => {
         
@@ -69,21 +60,19 @@ module.exports=(method,params,id,config)=>{
         //2.1.remove nodes information
         // DB.hash_set(ks.nodes,uri,vs);
         delete nodes[uri];
-        
 
         //3.tell vService the apart
         const reqUnlink={
             method: 'post',
             url: uri+'/hub',
-            data:self.formatJSON("unlink",{stamp:tools.stamp(),token:token},id),
+            data:tools.formatJSONRPC("unlink",{stamp:tools.stamp(),token:token},id),
         }
         axios(reqUnlink).then((resUnlink)=>{
             //console.log(resUnlink);
             const res=resUnlink.data;
-            console.log(res);
             if(res.error) return reject({error:res.error});
 
-            const result={
+            const result={      //upper method will post result.data to caller
                 data:{success:true,raw:res.result},
                 stamp:tools.stamp(),
             }
@@ -93,7 +82,5 @@ module.exports=(method,params,id,config)=>{
             console.log(config.theme.error,err);
             return reject({error:err});
         });
-
-        
     }); 
 };

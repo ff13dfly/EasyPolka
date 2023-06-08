@@ -9,15 +9,6 @@ const axios= require("axios").default;
 const encry=require('../../lib/encry');
 
 const self={
-    formatJSON:(method,params,id)=>{
-        console.log(params);
-        return {
-            "jsonrpc":"2.0",
-            "method":method,
-            "params":params,
-            "id":id,
-        }
-    },
     getKeyIV:(secret,salt)=>{
         const md5=encry.md5(secret+salt);
         const key=md5.substring(0,16),iv=md5.substring(16,32);
@@ -29,8 +20,10 @@ const self={
 }
 
 module.exports=(method,params,id,config)=>{
-    const start=tools.stamp();
-    console.log(`[ dock ] called : ${JSON.stringify(params)}, stamp ${start}`); 
+    if(method!=="dock") return {error:"illegle request"};
+    
+    // const start=tools.stamp();
+    // console.log(`[ dock ] called : ${JSON.stringify(params)}, stamp ${start}`); 
 
     return new Promise((resolve, reject) => {
         const uri=params.node;
@@ -39,13 +32,10 @@ module.exports=(method,params,id,config)=>{
         const reqKnock={
             method: 'post',
             url: uri+'/hub',
-            data:self.formatJSON("knock",{stamp:tools.stamp()},id),
+            data:tools.formatJSONRPC("knock",{stamp:tools.stamp()},id),
         }
         axios(reqKnock).then((resKonck)=>{
-            //console.log(`Result of "knock" : ${JSON.stringify(resKonck.data)}`);
-            //console.log(`Header of "knock" : ${JSON.stringify(resKonck.headers)}`);
-            //TODO, error handle of `knock`
-
+            if(resKonck.data.error) return reject({error:resKonck.data.error});
             //2. `reg` with basic information
             const salt=resKonck.data.result.salt,secret=params.secret;
             const obj=self.getKeyIV(secret,salt);
@@ -53,8 +43,6 @@ module.exports=(method,params,id,config)=>{
             encry.setIV(obj.iv);
 
             const ks=config.keys;
-
-            
             const host=DB.key_get(ks.host),sURI=host.service;
             const runner=host.runner;
 
@@ -69,13 +57,13 @@ module.exports=(method,params,id,config)=>{
             const reqReg={
                 method: 'post',
                 url: uri+'/hub',
-                data:self.formatJSON("reg",{
+                data:tools.formatJSONRPC("reg",{
                     salt:salt,
                     encry:code,
                 },id),
             }
             axios(reqReg).then((resReg)=>{
-                //TODO, error handle of `reg`
+                if(resReg.data.error) return reject({error:resReg.data.error});
 
                 //3. store the status of the vService
                 const rData=resReg.data;

@@ -94,22 +94,22 @@ const koaRouter = require("koa-router");
 const { JSONRPCServer } = require("json-rpc-2.0");
 
 //combine all files needed to test package. Can be removed when final release.
-const me = {
-    "pub": {
-        "koa": koa,
-        "koa-router": koaRouter,
-        "koa-bodyparser": bodyParser,
-        "json-rpc-2.0": JSONRPCServer,
-        "axios": require("axios").default,
-    },
-    "anchor": {
-        "anchorjs": "",
-        "polkadot": "",
-    },
-    "lib": {
-        "mndb": require("../lib/mndb.js"),
-    }
-};
+// const me = {
+//     "pub": {
+//         "koa": koa,
+//         "koa-router": koaRouter,
+//         "koa-bodyparser": bodyParser,
+//         "json-rpc-2.0": JSONRPCServer,
+//         "axios": require("axios").default,
+//     },
+//     "anchor": {
+//         "anchorjs": "",
+//         "polkadot": "",
+//     },
+//     "lib": {
+//         "mndb": require("../lib/mndb.js"),
+//     }
+// };
 
 /*****************************************************/
 /*********** koa.js to run the http server ***********/
@@ -129,14 +129,14 @@ const exposed = {
         "spam": require("./call/spam.js"),
     },
     "manage": {      //manage request method name checked here
-        "handshake": require("./manage/handshake.js"),   //get hub encry token to transport JSON file
-        "upload": require("./manage/upload.js"),         //upload account JSON file
-        "auth": require("./manage/auth.js"),             //verify authority to get JWT token
-        "dock": require("./manage/dock.js"),             //dock vService by URI and secret
-        "apart": require("./manage/apart.js"),           //apart vService by URI
-        "system": require("./manage/system.js"),
-        "list": require("./manage/list.js"),
-        "drop": require("./manage/drop.js"),
+        "handshake": require("./manage/handshake.js"),  //get hub encry token to transport JSON file
+        "upload": require("./manage/upload.js"),        //upload account JSON file
+        "drop": require("./manage/drop.js"),            //drop the encry JSON file
+        "auth": require("./manage/auth.js"),            //verify authority to get JWT token
+        "dock": require("./manage/dock.js"),            //dock vService by URI and secret
+        "apart": require("./manage/apart.js"),          //apart vService by URI
+        "system": require("./manage/system.js"),        //system monitor data
+        "list": require("./manage/list.js"),            //vService exposed methods list 
     },
 }
 
@@ -220,8 +220,8 @@ const self = {
         const stamp = tools.stamp();
         if (stamp > data.exp) return 'expired spam';
         data.exp = stamp + config.expire.spam;
-        console.log({ IP });
-        console.log(data);
+        //console.log({ IP });
+        //console.log(data);
         if (data.more.IP !== IP) return 'illigle spam';
         return true;
     },
