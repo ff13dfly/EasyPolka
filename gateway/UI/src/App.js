@@ -252,9 +252,9 @@ function App() {
               </Form.Select>
             </Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <Accordion defaultActiveKey="0" flush>
+              <Accordion flush>
                 <Accordion.Item eventKey="0">
-                  <Accordion.Header>Basic,{endpoint}</Accordion.Header>
+                  <Accordion.Header>Basic</Accordion.Header>
                   <Accordion.Body>
                     {basic}
                   </Accordion.Body>
@@ -263,6 +263,12 @@ function App() {
                   <Accordion.Header>Authority</Accordion.Header>
                   <Accordion.Body>
                     {uploader}
+                  </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="2">
+                  <Accordion.Header>Monitor</Accordion.Header>
+                  <Accordion.Body>
+                    Monitor data trend.
                   </Accordion.Body>
                 </Accordion.Item>
               </Accordion>
