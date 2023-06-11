@@ -103,22 +103,19 @@ function Verify(props) {
 
   return (
     <Row hidden={!show}>
-      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-        Vertifying Management
-      </Col>
-      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
+      <Col md={12} lg={12} xl={12} xxl={12}>
         <Form.Control size="md" type="file" hidden={disable.upload} placeholder="Encrypto JSON file upload..."
           onChange={(ev) => {
             self.fileChange(ev);
           }} />
       </Col>
-      <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
         <Form.Control size="md" type="text" hidden={disable.verify} placeholder="Password to verify..."
           onChange={(ev) => {
             self.passChange(ev);
           }} />
       </Col>
-      <Col md={4} lg={4} xl={4} xxl={4} className="pt-2 text-end">
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2 text-end">
       <Button hidden={disable.upload && disable.verify} onClick={() => {
           self.verifyClick();
         }}>Verify</Button>

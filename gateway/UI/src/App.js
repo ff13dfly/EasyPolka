@@ -1,4 +1,4 @@
-import { Container, Row, Col, Form } from 'react-bootstrap';
+import { Container, Row, Col, Form, Accordion } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 import Link from './components/link';
@@ -77,7 +77,7 @@ const test = {
 
 const authority = {};   //storage authority
 const spams = {};       //storage the spams
-const monitor={};       //storage monitor data
+const monitor = {};       //storage monitor data
 
 function App() {
 
@@ -86,10 +86,11 @@ function App() {
   let [force, setForce] = useState(0);
 
   //render part;
-  let [domList,setDomList]=useState("");
-  let [basic,setBasic]=useState("");
-  let [endpoint,setEndpoint]=useState("");
-  
+  let [domList, setDomList] = useState("");     //vService functions
+  let [basic, setBasic] = useState("");         //node basic information
+  let [endpoint, setEndpoint] = useState("");   //node endpoint URL
+  let [uploader,setUploader] = useState("");    //verify uploader status
+
 
   const storage = {
     key: "hub_nodes",
@@ -107,21 +108,21 @@ function App() {
       localStorage.setItem(storage.key, JSON.stringify(list));
       return true;
     },
-    removeNode:(index)=>{
-      console.log({index});
-      const old=storage.loadNodes();
-      const list=[];
+    removeNode: (index) => {
+      console.log({ index });
+      const old = storage.loadNodes();
+      const list = [];
       console.log(old);
-      for(let i=0;i<old.length;i++){
-        const row=old[i];
-        if(i!==parseInt(index)) list.push(row);
+      for (let i = 0; i < old.length; i++) {
+        const row = old[i];
+        if (i !== parseInt(index)) list.push(row);
       }
       console.log(list);
       storage.saveNodes(list);
     },
-    updateNode:(name,index)=>{
-      const list=storage.loadNodes();
-      list[index].name=name;
+    updateNode: (name, index) => {
+      const list = storage.loadNodes();
+      list[index].name = name;
       storage.saveNodes(list);
     },
   }
@@ -132,18 +133,39 @@ function App() {
     changeServer: (index) => {
       const node = hubs[index];
       setDomList("Loading");
-      if(!node){
+      if (!node) {
 
         return false;
       }
       setServer(node.URI);
       setEndpoint(node.URI);
-      setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh}/>)
+      setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh} />)
       self.system(node.URI, (res) => {
-        if(res.error){
+        if (res.error) {
           return setDomList(res.error);
-        } 
-        monitor[node.URI]=res;
+        }
+
+        console.log(res);
+        if(res.status.uploaded){
+          setUploader(
+            <Tick server={server} remove={self.removeAuthority}
+              expired={authority[server] ? authority[server].expired : 0}
+              show={true} />       
+          );
+        }else{
+          setUploader(
+            <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
+              uploaded={false}
+              show={true} />       
+          );
+        }
+        
+
+        // <Tick server={server} remove={self.removeAuthority}
+        //               expired={authority[server] ? authority[server].expired : 0}
+        //               show={(authority[server] && authority[server].token) ? true : false} />
+
+        monitor[node.URI] = res;
         setDomList(<List server={node.URI} spam={spams[node.URI]} fresh={self.fresh}
           token={(authority[node.URI] && authority[node.URI].token) ? authority[node.URI].token : ""}
           show={(authority[node.URI] && authority[node.URI].token) ? true : false} />);
@@ -175,29 +197,29 @@ function App() {
         setForce(force + 1);
       }
     },
-    serverSpam:(uri,ck)=>{
-      if(!spams[uri]){
+    serverSpam: (uri, ck) => {
+      if (!spams[uri]) {
         tools.jsonp(uri, { id: "system_spam_id", method: "spam" }, (res) => {
-          if(res.error){
-            return ck && ck({error:"Failed to get spam"});
+          if (res.error) {
+            return ck && ck({ error: "Failed to get spam" });
           }
           const spam = res.result.spam;
-          spams[uri]=spam;
+          spams[uri] = spam;
           return ck && ck(spams[uri]);
         });
-      }else{
+      } else {
         return ck && ck(spams[uri]);
       }
     },
     system: (uri, ck) => {
-      self.serverSpam(uri,(spam)=>{
-        if(spam && spam.error!==undefined) return ck && ck(spam);
+      self.serverSpam(uri, (spam) => {
+        if (spam && spam.error !== undefined) return ck && ck(spam);
         const data = { id: "system_id", method: "system", params: { spam: spam } }
         tools.jsonp(uri + '/manage/', data, (res) => {
-          console.log(res);
-          if(res.error){
+          //console.log(res);
+          if (res.error) {
             delete spams[uri];
-            return self.system(uri,ck);
+            return self.system(uri, ck);
           }
           return ck && ck(res.result);
         });
@@ -217,8 +239,8 @@ function App() {
   return (
     <Container>
       <Link storage={storage} fresh={self.fresh} />
-      <Row index={force} hidden={hubs.length===0?true:false}>
-        <Col md={3} lg={3} xl={3} xxl={3} className="pt-2">
+      <Row index={force} hidden={hubs.length === 0 ? true : false}>
+        <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2" >
               <Form.Select simulated="true" id="trigger_me" onChange={(ev) => {
@@ -229,22 +251,28 @@ function App() {
                 ))}
               </Form.Select>
             </Col>
-            <Col md={12} lg={12} xl={12} xxl={12}>{endpoint}</Col>
-            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">{basic}</Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
-                uploaded={false}
-                show={(authority[server] && authority[server].token) ? false : true} />
-              <Tick server={server} remove={self.removeAuthority}
-                expired={authority[server] ? authority[server].expired : 0}
-                show={(authority[server] && authority[server].token) ? true : false} />
+              <Accordion defaultActiveKey="0" flush>
+                <Accordion.Item eventKey="0">
+                  <Accordion.Header>Basic,{endpoint}</Accordion.Header>
+                  <Accordion.Body>
+                    {basic}
+                  </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="1">
+                  <Accordion.Header>Authority</Accordion.Header>
+                  <Accordion.Body>
+                    {uploader}
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
             </Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               {/* <Details data={data} /> */}
             </Col>
           </Row>
         </Col>
-        <Col md={9} lg={9} xl={9} xxl={9} className="pt-2">
+        <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
           <Dock server={server} fresh={self.fresh}
             token={(authority[server] && authority[server].token) ? authority[server].token : ""}
             show={(authority[server] && authority[server].token) ? true : false} />

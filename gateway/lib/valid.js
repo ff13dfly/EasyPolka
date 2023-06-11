@@ -18,8 +18,8 @@ const self={
     },
 
     //check the type of definition
-    isArray:(str)=>{
-        const result={type:"",isArray:false};
+    isArr:(str)=>{
+        const result={type:"",isArr:false};
     },
 }
 

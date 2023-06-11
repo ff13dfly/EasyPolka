@@ -28,9 +28,9 @@ function Basic(props) {
 
   return (
     <Row>
-      <Col md={9} lg={9} xl={9} xxl={9} className="pt-1">
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-1">
         <Form.Control
-          size="sm"
+          size="md"
           type="text"
           value={now}
           placeholder="Hub name..."
@@ -39,8 +39,8 @@ function Basic(props) {
           }}
         />
       </Col>
-      <Col md={3} lg={3} xl={3} xxl={3} className="pt-1 text-end">
-        <Button size="sm" variant="danger" onClick={(ev) => {
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-1 text-end">
+        <Button size="md" variant="danger" onClick={(ev) => {
           self.onRemove(ev);
         }}>Remove</Button>
       </Col>
