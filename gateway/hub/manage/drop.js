@@ -6,19 +6,20 @@
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 
-module.exports=(method,params,id,address)=>{
+module.exports=(method,params,id,config)=>{
     if(method!=="drop") return {error:"illegle request"};
 
     const start=tools.stamp();
     console.log(`[ drop ] called : ${JSON.stringify(params)}, stamp ${start}`);
 
-    const spam=tools.char(13);
-    const stamp=tools.stamp();
-    DB.key_set(spam,{stamp:stamp,more:{}});
+    const ks=config.keys;
+    DB.key_del(ks.encoded);
+    const stamp=tools.stamp;
 
     const res={
-        hello:"uploading",
-        spam:spam,
+        data:{
+            success:true,
+        },
         stamp:stamp,
     }
     

@@ -1,9 +1,15 @@
 import { Row, Col, Button } from 'react-bootstrap';
 import { useEffect } from 'react';
 
+const tools = require('../lib/tools');
+
 function Tick(props) {
   const show=props.show;
   const exp=props.expired;
+  const spam=props.spam;
+  const server = props.server;
+  const remove=props.remove;
+
   useEffect(() => {
 
   }, []);
@@ -11,6 +17,16 @@ function Tick(props) {
   const self={
     onClick:(ev)=>{
       console.log('Ready to remove the online verify JSON file.');
+      const data = { id: "drop_id", method: "drop", params: {spam:spam } }
+      tools.jsonp(server + '/manage/', data, (res) => {
+        if(res.error){
+          console.log(res);
+          return false;
+        }
+        remove(server);
+        props.fresh();
+        
+      });
     },
   }
 

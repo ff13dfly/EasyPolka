@@ -134,7 +134,6 @@ function App() {
       const node = hubs[index];
       setDomList("Loading");
       if (!node) {
-
         return false;
       }
       setServer(node.URI);
@@ -145,31 +144,31 @@ function App() {
           return setDomList(res.error);
         }
 
-        console.log(res);
+        console.log(node.URI);
         if(res.status.uploaded){
           setUploader(
-            <Tick server={server} remove={self.removeAuthority}
+            <Tick server={node.URI} remove={self.removeAuthority} fresh={self.fresh}
+              spam={spams[node.URI]}
               expired={authority[server] ? authority[server].expired : 0}
               show={true} />       
           );
         }else{
           setUploader(
-            <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
-              uploaded={false}
+            <Verify server={node.URI} authority={self.setAuthority} fresh={self.fresh}
+              uploaded={false} spam={spams[node.URI]}
               show={true} />       
           );
         }
-        
-
-        // <Tick server={server} remove={self.removeAuthority}
-        //               expired={authority[server] ? authority[server].expired : 0}
-        //               show={(authority[server] && authority[server].token) ? true : false} />
-
+      
         monitor[node.URI] = res;
         setDomList(<List server={node.URI} spam={spams[node.URI]} fresh={self.fresh}
           token={(authority[node.URI] && authority[node.URI].token) ? authority[node.URI].token : ""}
           show={(authority[node.URI] && authority[node.URI].token) ? true : false} />);
       });
+    },
+    removeAuthority:(server)=>{
+      delete authority[server];
+      return true;
     },
     setAuthority: (exp, token) => {
       //console.log({ exp, token })

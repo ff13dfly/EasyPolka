@@ -93,23 +93,6 @@ const bodyParser = require("koa-bodyparser");
 const koaRouter = require("koa-router");
 const { JSONRPCServer } = require("json-rpc-2.0");
 
-//combine all files needed to test package. Can be removed when final release.
-// const me = {
-//     "pub": {
-//         "koa": koa,
-//         "koa-router": koaRouter,
-//         "koa-bodyparser": bodyParser,
-//         "json-rpc-2.0": JSONRPCServer,
-//         "axios": require("axios").default,
-//     },
-//     "anchor": {
-//         "anchorjs": "",
-//         "polkadot": "",
-//     },
-//     "lib": {
-//         "mndb": require("../lib/mndb.js"),
-//     }
-// };
 
 /*****************************************************/
 /*********** koa.js to run the http server ***********/
