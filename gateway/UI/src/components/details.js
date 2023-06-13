@@ -6,7 +6,7 @@ const tools = require('../lib/tools');
 function Details(props) {
   const data=props.data;
   const monitor=!data?{}:data.monitor;
-  console.log(data);
+  console.log(monitor);
   
   useEffect(() => {
 

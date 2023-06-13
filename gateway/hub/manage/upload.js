@@ -21,9 +21,13 @@ module.exports=(method,params,id,config)=>{
     try {
         const json=JSON.parse(de_file);
         const stamp=tools.stamp();
-        json.exp=stamp+config.expire.encry;
+        json.exp={
+            file:stamp+config.expire.encry,
+            password:stamp+config.expire.password,
+        }
         json.start=stamp;
         DB.key_set(ks.encoded,json);
+
     } catch (error) {
         return {error:error};
     }

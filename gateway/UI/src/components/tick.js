@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 const tools = require('../lib/tools');
 
 function Tick(props) {
-  const show=props.show;
   const exp=props.expired;
   const spam=props.spam;
   const server = props.server;
@@ -31,7 +30,7 @@ function Tick(props) {
   }
 
   return (
-    <Row hidden={!show}>
+    <Row>
       <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
         Authority expired time. {exp}
       </Col>

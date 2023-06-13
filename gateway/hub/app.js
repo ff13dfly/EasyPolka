@@ -31,6 +31,7 @@ const config = {
         encry: tools.char(20),       //DB key: encry `key` and `iv` data of excutor
         setting: tools.char(20),     //DB key: the config anchor name
         encoded: tools.char(20),     //DB key: the encoded account file
+        excutor: tools.char(20),     //DB key: manager status
         monitor:tools.char(20),      //DB key: Hub monitor
         nodes: tools.char(20),       //Hash main: node save
         spam:  tools.char(19),       //Hash main: spam
@@ -38,8 +39,9 @@ const config = {
     },
     expire: {
         spam: 300000,                //spam expire time, 5 mins
-        //spam: 10000,                //spam expire time, 5 mins
-        encry: 600000,               //JSON encry file expired time, 10 mins
+        //spam: 10000,               //spam expire time, 5 mins
+        encry: 6000000,              //JSON encry file expired time, 60 mins
+        password:300000,             //Authority expired time, 5 mins
         vservice:9000000,            //vService acitve exipred time, 15 mins
     },
 }
@@ -302,6 +304,9 @@ router.get("/manage", async (ctx) => {
     }
     const result = await exposed.manage[method](method, jsonp.request.params, jsonp.request.id, config);
     ctx.body = self.export(!result.error ? result.data : result, jsonp.request.id, jsonp.callback);
+
+    //3. fresh the encry JSON file expire time
+    //TODO, fresh the expire time of JSON file.
 
     const end = tools.stamp();
     console.log(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);

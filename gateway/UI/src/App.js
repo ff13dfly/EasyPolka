@@ -82,14 +82,15 @@ const monitor = {};       //storage monitor data
 function App() {
 
   //storage part
-  let [server, setServer] = useState("");
+  //let [server, setServer] = useState("");
   let [force, setForce] = useState(0);
 
   //render part;
   let [domList, setDomList] = useState("");     //vService functions
   let [basic, setBasic] = useState("");         //node basic information
-  let [endpoint, setEndpoint] = useState("");   //node endpoint URL
+  //let [endpoint, setEndpoint] = useState("");   //node endpoint URL
   let [uploader,setUploader] = useState("");    //verify uploader status
+  let [docker,setDocker]=useState("");          //docker functions
 
 
   const storage = {
@@ -136,27 +137,30 @@ function App() {
       if (!node) {
         return false;
       }
-      setServer(node.URI);
-      setEndpoint(node.URI);
-      setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh} />)
-      self.system(node.URI, (res) => {
+      //setServer(node.URI);
+      //setEndpoint(node.URI);
+      setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh} />);
+      const server=node.URI;
+      self.system(server, (res) => {
         if (res.error) {
           return setDomList(res.error);
         }
 
-        console.log(node.URI);
+        console.log(server);
         if(res.status.uploaded){
           setUploader(
-            <Tick server={node.URI} remove={self.removeAuthority} fresh={self.fresh}
-              spam={spams[node.URI]}
-              expired={authority[server] ? authority[server].expired : 0}
-              show={true} />       
+            <Tick server={server} remove={self.removeAuthority} fresh={self.fresh}
+              spam={spams[server]}
+              expired={authority[server] ? authority[server].expired : 0}/>    
           );
+          setDocker(
+            <Dock server={server} fresh={self.fresh} spam={spams[server]}
+            token={(authority[server] && authority[server].token) ? authority[server].token : ""}/>
+          )
         }else{
           setUploader(
-            <Verify server={node.URI} authority={self.setAuthority} fresh={self.fresh}
-              uploaded={false} spam={spams[node.URI]}
-              show={true} />       
+            <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
+              uploaded={false} spam={spams[server]} />       
           );
         }
       
@@ -170,7 +174,7 @@ function App() {
       delete authority[server];
       return true;
     },
-    setAuthority: (exp, token) => {
+    setAuthority: (server ,exp, token) => {
       //console.log({ exp, token })
       authority[server] = {
         token: token,
@@ -186,9 +190,8 @@ function App() {
         let index = 0;
         for (let i = 0; i < hubs.length; i++) {
           const row = hubs[i];
-          if (row.URI === server) index = i;
+          //if (row.URI === server) index = i;
         }
-        setServer(hubs[index].URI);
       }
 
       //2.force to render
@@ -215,7 +218,7 @@ function App() {
         if (spam && spam.error !== undefined) return ck && ck(spam);
         const data = { id: "system_id", method: "system", params: { spam: spam } }
         tools.jsonp(uri + '/manage/', data, (res) => {
-          //console.log(res);
+          console.log(res);
           if (res.error) {
             delete spams[uri];
             return self.system(uri, ck);
@@ -278,9 +281,7 @@ function App() {
           </Row>
         </Col>
         <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
-          <Dock server={server} fresh={self.fresh}
-            token={(authority[server] && authority[server].token) ? authority[server].token : ""}
-            show={(authority[server] && authority[server].token) ? true : false} />
+          {docker}
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               {domList}

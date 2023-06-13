@@ -19,8 +19,12 @@ module.exports=(method,params,id,config)=>{
         //2.vService status (A.alive time; B.request times; C.the flow; )
         const mon=DB.key_get(ks.monitor);
 
+        //3.excutor status
+        //const exe=DB.key_get(ks.excutor);
+
         const status={
             uploaded:!runner?false:true,
+            expire:!runner?false:runner.exp,
             monitor:mon,
         }
         

@@ -11,9 +11,10 @@ function Verify(props) {
   const server = props.server;
   const setAuth = props.authority;
   const fresh = props.fresh;
-  const show = props.show;
   const uploaded = props.uploaded;
   const spam = props.spam;
+
+  console.log(spam);
 
   let [disable, setDisable] = useState({ upload: uploaded, verify: false });
   let [info, setInfo] = useState("");
@@ -40,7 +41,7 @@ function Verify(props) {
       const s_key = tools.char(13, "key"), s_iv = tools.char(14, "iv");
       encry.setKey(key);
       encry.setIV(iv);
-      console.log(`${s_key}.${s_iv}`);
+      //console.log(`${s_key}.${s_iv}`);
       const security = encry.encrypt(`${s_key}.${s_iv}`);
 
       const data = { id: "handshake_id", method: "handshake", params: { code: security, spam: spam } }
@@ -67,7 +68,7 @@ function Verify(props) {
           tools.jsonp(server + '/manage/', pass_config, (resAuth) => {
             const access = encry.decrypt(resAuth.result.access);
             const obj = JSON.parse(access);
-            setAuth(obj.exp, resAuth.result.access);
+            setAuth(server,obj.exp, resAuth.result.access);
             fresh();
           });
         });
@@ -103,7 +104,7 @@ function Verify(props) {
   }, []);
 
   return (
-    <Row hidden={!show}>
+    <Row>
       <Col md={12} lg={12} xl={12} xxl={12}>
         <Form.Control size="md" type="file" hidden={disable.upload} placeholder="Encrypto JSON file upload..."
           onChange={(ev) => {

@@ -6,7 +6,6 @@ const tools = require('../lib/tools');
 function Dock(props) {
   const token = props.token;
   const node = props.server;
-  const show=props.show;
 
   let [uri, setURI] = useState("");
   let [secret,setSecret]=useState("");
@@ -46,7 +45,7 @@ function Dock(props) {
   }, []);
 
   return (
-    <Row hidden={!show}>
+    <Row>
       <Col md={2} lg={2} xl={2} xxl={2} className="pt-2"></Col>
       <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
         <Form.Control
