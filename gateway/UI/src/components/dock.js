@@ -46,8 +46,7 @@ function Dock(props) {
 
   return (
     <Row>
-      <Col md={2} lg={2} xl={2} xxl={2} className="pt-2"></Col>
-      <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
         <Form.Control
           size="md"
           type="text"
@@ -55,7 +54,7 @@ function Dock(props) {
           onChange={(ev) => { self.onChange(ev) }}
         />
       </Col>
-      <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
         <Form.Control
           size="md"
           type="text"
@@ -63,7 +62,7 @@ function Dock(props) {
           onChange={(ev) => { self.secretChange(ev) }}
         />
       </Col>
-      <Col md={2} lg={2} xl={2} xxl={2} className="pt-2 text-end">
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2 text-end">
         <Button onClick={() => {
           self.onClick()
         }}>Dock</Button>

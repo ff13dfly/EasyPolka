@@ -147,15 +147,14 @@ function App() {
         }
 
         console.log(server);
+        const token=(authority[server] && authority[server].token) ? authority[server].token : "";
         if(res.status.uploaded){
           setUploader(
-            <Tick server={server} remove={self.removeAuthority} fresh={self.fresh}
-              spam={spams[server]}
+            <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]}
               expired={authority[server] ? authority[server].expired : 0}/>    
           );
           setDocker(
-            <Dock server={server} fresh={self.fresh} spam={spams[server]}
-            token={(authority[server] && authority[server].token) ? authority[server].token : ""}/>
+            <Dock server={server} fresh={self.fresh} spam={spams[server]} token={token}/>
           )
         }else{
           setUploader(
@@ -164,10 +163,9 @@ function App() {
           );
         }
       
-        monitor[node.URI] = res;
-        setDomList(<List server={node.URI} spam={spams[node.URI]} fresh={self.fresh}
-          token={(authority[node.URI] && authority[node.URI].token) ? authority[node.URI].token : ""}
-          show={(authority[node.URI] && authority[node.URI].token) ? true : false} />);
+        monitor[server] = res;
+        setDomList(<List server={server} spam={spams[server]} fresh={self.fresh}
+          token={token} show={token ? true : false} />);
       });
     },
     removeAuthority:(server)=>{
@@ -268,9 +266,9 @@ function App() {
                   </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="2">
-                  <Accordion.Header>Monitor</Accordion.Header>
+                  <Accordion.Header>vService</Accordion.Header>
                   <Accordion.Body>
-                    Monitor data trend.
+                    {docker}
                   </Accordion.Body>
                 </Accordion.Item>
               </Accordion>
@@ -281,10 +279,13 @@ function App() {
           </Row>
         </Col>
         <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
-          {docker}
+          
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               {domList}
+            </Col>
+            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
+              Hub monitor data.
             </Col>
           </Row>
 
