@@ -8,6 +8,7 @@ import Verify from './components/verify';
 import Tick from './components/tick';
 import Basic from './components/basic';
 import Details from './components/details';
+import Selector from './components/selector';
 
 const tools = require('./lib/tools');
 //const DB=require('./lib/mndb');
@@ -83,7 +84,7 @@ function App() {
 
   //storage part
   //let [server, setServer] = useState("");
-  let [force, setForce] = useState(0);
+  let [force, setForce] = useState(0);          //fresh index
 
   //render part;
   let [domList, setDomList] = useState("");     //vService functions
@@ -91,6 +92,8 @@ function App() {
   //let [endpoint, setEndpoint] = useState("");   //node endpoint URL
   let [uploader,setUploader] = useState("");    //verify uploader status
   let [docker,setDocker]=useState("");          //docker functions
+  let [selector,setSelector]=useState("");      //node selector
+
 
 
   const storage = {
@@ -128,11 +131,10 @@ function App() {
     },
   }
 
-  //let hubs=[];
-  let [hubs, setHubs] = useState([]);
   const self = {
     changeServer: (index) => {
-      const node = hubs[index];
+      const hs = storage.loadNodes();
+      const node = hs[index];
       setDomList("Loading");
       if (!node) {
         return false;
@@ -183,19 +185,18 @@ function App() {
     fresh: (skip) => {
       //1.list the storaged nodes
       const hs = storage.loadNodes();
-      setHubs(hs);
-      if (hubs.length !== 0) {
-        let index = 0;
-        for (let i = 0; i < hubs.length; i++) {
-          const row = hubs[i];
-          //if (row.URI === server) index = i;
-        }
-      }
+      setSelector(<Selector hubs={hs} fresh={self.fresh} current={0}
+        changeServer={self.changeServer}
+      />);
 
       //2.force to render
       if (!skip) {
         setForce(force + 1);
       }
+
+      setTimeout(() => {
+        self.changeSelector();
+      }, 0);
     },
     serverSpam: (uri, ck) => {
       if (!spams[uri]) {
@@ -216,7 +217,6 @@ function App() {
         if (spam && spam.error !== undefined) return ck && ck(spam);
         const data = { id: "system_id", method: "system", params: { spam: spam } }
         tools.jsonp(uri + '/manage/', data, (res) => {
-          console.log(res);
           if (res.error) {
             delete spams[uri];
             return self.system(uri, ck);
@@ -225,31 +225,25 @@ function App() {
         });
       });
     },
+    changeSelector:()=>{
+      const ev = new Event('change', { bubbles: true });
+      const node = document.getElementById('trigger_me');
+      node.dispatchEvent(ev);
+    }
   }
 
   useEffect(() => {
     self.fresh();
-    setTimeout(() => {
-      const ev = new Event('change', { bubbles: true });
-      const node = document.getElementById('trigger_me');
-      node.dispatchEvent(ev);
-    }, 0);
   }, []);
 
   return (
     <Container>
       <Link storage={storage} fresh={self.fresh} />
-      <Row index={force} hidden={hubs.length === 0 ? true : false}>
+      <Row index={force}>
         <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2" >
-              <Form.Select simulated="true" id="trigger_me" onChange={(ev) => {
-                self.changeServer(ev.target.value);
-              }}>
-                {hubs.map((item, index) => (
-                  <option value={index} key={index}>{item.name}</option>
-                ))}
-              </Form.Select>
+              {selector}
             </Col>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               <Accordion flush>
@@ -272,9 +266,6 @@ function App() {
                   </Accordion.Body>
                 </Accordion.Item>
               </Accordion>
-            </Col>
-            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              {/* <Details data={data} /> */}
             </Col>
           </Row>
         </Col>
