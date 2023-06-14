@@ -82,10 +82,6 @@ const monitor = {};       //storage monitor data
 
 function App() {
 
-  //storage part
-  //let [server, setServer] = useState("");
-  let [force, setForce] = useState(0);          //fresh index
-
   //render part;
   let [domList, setDomList] = useState("");     //vService functions
   let [basic, setBasic] = useState("");         //node basic information
@@ -113,15 +109,12 @@ function App() {
       return true;
     },
     removeNode: (index) => {
-      console.log({ index });
       const old = storage.loadNodes();
       const list = [];
-      console.log(old);
       for (let i = 0; i < old.length; i++) {
         const row = old[i];
         if (i !== parseInt(index)) list.push(row);
       }
-      console.log(list);
       storage.saveNodes(list);
     },
     updateNode: (name, index) => {
@@ -130,6 +123,8 @@ function App() {
       storage.saveNodes(list);
     },
   }
+
+  let [sidebar,setSidebar]=useState(true);
 
   const self = {
     changeServer: (index) => {
@@ -183,20 +178,26 @@ function App() {
       return true;
     },
     fresh: (skip) => {
+      
       //1.list the storaged nodes
       const hs = storage.loadNodes();
-      setSelector(<Selector hubs={hs} fresh={self.fresh} current={0}
-        changeServer={self.changeServer}
-      />);
-
-      //2.force to render
-      if (!skip) {
-        setForce(force + 1);
+      setSidebar(hs.length!==0?false:true);
+      if(hs.length!==0){
+        setSelector(<Selector hubs={hs} fresh={self.fresh} current={0}
+          changeServer={self.changeServer}
+        />);
       }
 
-      setTimeout(() => {
-        self.changeSelector();
-      }, 0);
+      //2.force to render
+      // if (!skip) {
+      //   setForce(force + 1);
+      // }
+
+      if(hs.length!==0){
+        setTimeout(() => {
+          self.changeSelector();
+        }, 0);
+      }
     },
     serverSpam: (uri, ck) => {
       if (!spams[uri]) {
@@ -239,7 +240,7 @@ function App() {
   return (
     <Container>
       <Link storage={storage} fresh={self.fresh} />
-      <Row index={force}>
+      <Row hidden={sidebar}>
         <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2" >
@@ -270,7 +271,6 @@ function App() {
           </Row>
         </Col>
         <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
-          
           <Row>
             <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
               {domList}
