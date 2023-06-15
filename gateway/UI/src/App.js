@@ -121,7 +121,6 @@ function App() {
   }
 
   let [sidebar,setSidebar]=useState(true);
-
   const self = {
     changeServer: (index) => {
       const hs = storage.loadNodes();
@@ -129,32 +128,37 @@ function App() {
       setDomList("Loading");
       if (!node) return false;
 
+      //set cur_hub to 
       localStorage.setItem("cur_hub",index);
 
       setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh} />);
       const server=node.URI;
 
       self.system(server, (res) => {
-        if (res.error) {
-          return setDomList(res.error);
-        }
+        if (res.error) return setDomList(res.error);
 
-        console.log(server);
         const token=(authority[server] && authority[server].token) ? authority[server].token : "";
-        if(res.status.uploaded){
-          setUploader(
-            <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]}
-              expired={authority[server] ? authority[server].expired : 0}/>    
-          );
-          setDocker(
-            <Dock server={server} fresh={self.fresh} spam={spams[server]} token={token}/>
-          )
+
+        //TODO, filter different authority level
+        if(!token){
+
         }else{
-          setUploader(
-            <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
-              uploaded={false} spam={spams[server]} />       
-          );
+          if(res.status.uploaded){
+            setUploader(
+              <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]}
+                expired={authority[server] ? authority[server].expired : 0}/>    
+            );
+            setDocker(
+              <Dock server={server} fresh={self.fresh} spam={spams[server]} token={token}/>
+            )
+          }else{
+            setUploader(
+              <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
+                uploaded={false} spam={spams[server]} />       
+            );
+          }
         }
+        
       
         monitor[server] = res;
         setDomList(<List server={server} spam={spams[server]} fresh={self.fresh}

@@ -1,11 +1,9 @@
 import { Row, Col, Form, Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
-
 const tools = require('../lib/tools');
 const encry = require('../lib/encry');
-const DB = require('../lib/mndb');
-
+//const DB = require('../lib/mndb');
 
 function Verify(props) {
   const server = props.server;
@@ -14,7 +12,7 @@ function Verify(props) {
   const uploaded = props.uploaded;
   const spam = props.spam;
 
-  console.log(spam);
+  //console.log(spam);
 
   let [disable, setDisable] = useState({ upload: uploaded, verify: false });
   let [info, setInfo] = useState("");
@@ -68,7 +66,7 @@ function Verify(props) {
           tools.jsonp(server + '/manage/', pass_config, (resAuth) => {
             const access = encry.decrypt(resAuth.result.access);
             const obj = JSON.parse(access);
-            setAuth(server,obj.exp, resAuth.result.access);
+            setAuth(server,obj, resAuth.result.access);
             fresh();
           });
         });

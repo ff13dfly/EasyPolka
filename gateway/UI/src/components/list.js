@@ -62,10 +62,10 @@ function List(props) {
             <Col md={4} lg={4} xl={4} xxl={4} className="pt-2">
               {item.nodes.map((node, index) => (
                 <p key={index}>
-                  <Button size="sm" variant="danger" className='ms-2' hidden={!show} onClick={(ev) => {
+                  <Button size="sm" variant="danger" className='me-2' hidden={!show} onClick={(ev) => {
                     self.removeService(node, item.name)
                   }}>X</Button>
-                  {node}
+                  <span>{node}</span>
                 </p>
               ))}
             </Col>
@@ -84,7 +84,7 @@ function List(props) {
                     </Popover>
                   }
                 >
-                  <Button size="md" variant="info">{fkey}</Button>
+                  <Button size="md" variant="info" className='ms-2'>{fkey}</Button>
                 </OverlayTrigger>
               ))}
             </Col>

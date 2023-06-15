@@ -23,7 +23,6 @@ module.exports=(method,params,id,config)=>{
         const stamp=tools.stamp();
         json.exp={
             file:stamp+config.expire.encry,
-            password:stamp+config.expire.password,
         }
         json.start=stamp;
         DB.key_set(ks.encoded,json);

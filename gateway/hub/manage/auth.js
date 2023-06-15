@@ -34,16 +34,16 @@ module.exports=(method,params,id,config)=>{
         if(runner!==pair.address) return {error:"Illegal account"}
 
         //3. set up the access
-        
-        const excutor={salt:tools.char(3),exp:stamp+10000*60};
-        DB.key_set(ks.excutor,excutor);
+        const exp_pass=stamp+config.expire.password;
+        const fa=DB.key_get(ks.encoded);
+        fa.exp.password=exp_pass;
 
-        const access=encry.encrypt(JSON.stringify(excutor));
-
+        const access=encry.encrypt(JSON.stringify({file:fa.exp.file,password:exp_pass}));
         //4. remove the encoded json file
         const result={
             data:{
                 access:access,
+                exp:fa.exp,
             },
         }
         return result;
