@@ -24,7 +24,6 @@ function Tick(props) {
         }
         remove(server);
         props.fresh();
-        
       });
     },
   }
@@ -32,7 +31,7 @@ function Tick(props) {
   return (
     <Row>
       <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
-        Authority expired time. {exp}
+        Authority expired time. {exp.password}
       </Col>
       <Col md={4} lg={4} xl={4} xxl={4} className="pt-2 text-end">
         <Button size="md" variant="danger" onClick={(ev) => {

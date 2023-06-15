@@ -141,26 +141,23 @@ function App() {
 
         //TODO, filter different authority level
         if(!token){
-
+          //a.token lost,check status
+          setUploader(
+            <Verify server={server} authority={self.setAuthority} fresh={self.fresh} 
+            remove={self.removeAuthority} uploaded={res.status.uploaded} authed={false} spam={spams[server]} />       
+          );
         }else{
-          if(res.status.uploaded){
-            setUploader(
-              <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]}
+          //b.token is ok
+          setUploader(
+            <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]}
                 expired={authority[server] ? authority[server].expired : 0}/>    
-            );
-            setDocker(
-              <Dock server={server} fresh={self.fresh} spam={spams[server]} token={token}/>
-            )
-          }else{
-            setUploader(
-              <Verify server={server} authority={self.setAuthority} fresh={self.fresh}
-                uploaded={false} spam={spams[server]} />       
-            );
-          }
+          );
+          setDocker(
+            <Dock server={server} fresh={self.fresh} spam={spams[server]} token={token}/>
+          );
         }
-        
-      
-        monitor[server] = res;
+
+        monitor[server] = res.status.monitor;
         setDomList(<List server={server} spam={spams[server]} fresh={self.fresh}
           token={token} show={token ? true : false} />);
       });
