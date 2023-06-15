@@ -1,15 +1,11 @@
 import { Form } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
 
 function Selector(props) {
   const cur=props.current;
-
-  useEffect(() => {
-
-  }, []);
-
+  console.log(cur);
+  //{(props.current===index?'selected="selected"':"")}
   return (
-    <Form.Select simulated="true" id="trigger_me" onChange={(ev) => {
+    <Form.Select id="trigger_me" value={cur} onChange={(ev) => {
       props.changeServer(ev.target.value);
     }}>
     {props.hubs.map((item, index) => (

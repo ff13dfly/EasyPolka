@@ -11,7 +11,6 @@ import Details from './components/details';
 import Selector from './components/selector';
 
 const tools = require('./lib/tools');
-//const DB=require('./lib/mndb');
 
 const test = {
   spam: (URI) => {
@@ -85,12 +84,9 @@ function App() {
   //render part;
   let [domList, setDomList] = useState("");     //vService functions
   let [basic, setBasic] = useState("");         //node basic information
-  //let [endpoint, setEndpoint] = useState("");   //node endpoint URL
   let [uploader,setUploader] = useState("");    //verify uploader status
   let [docker,setDocker]=useState("");          //docker functions
   let [selector,setSelector]=useState("");      //node selector
-
-
 
   const storage = {
     key: "hub_nodes",
@@ -131,13 +127,13 @@ function App() {
       const hs = storage.loadNodes();
       const node = hs[index];
       setDomList("Loading");
-      if (!node) {
-        return false;
-      }
-      //setServer(node.URI);
-      //setEndpoint(node.URI);
+      if (!node) return false;
+
+      localStorage.setItem("cur_hub",index);
+
       setBasic(<Basic name={node.name} index={index} storage={storage} fresh={self.fresh} />);
       const server=node.URI;
+
       self.system(server, (res) => {
         if (res.error) {
           return setDomList(res.error);
@@ -170,30 +166,21 @@ function App() {
       return true;
     },
     setAuthority: (server ,exp, token) => {
-      //console.log({ exp, token })
       authority[server] = {
         token: token,
         expired: exp,
       }
       return true;
     },
-    fresh: (skip) => {
-      
+    fresh: () => {
       //1.list the storaged nodes
       const hs = storage.loadNodes();
       setSidebar(hs.length!==0?false:true);
       if(hs.length!==0){
-        setSelector(<Selector hubs={hs} fresh={self.fresh} current={0}
+        const cur=localStorage.getItem("cur_hub");
+        setSelector(<Selector hubs={hs} fresh={self.fresh} current={cur==null?0:parseInt(cur)}
           changeServer={self.changeServer}
         />);
-      }
-
-      //2.force to render
-      // if (!skip) {
-      //   setForce(force + 1);
-      // }
-
-      if(hs.length!==0){
         setTimeout(() => {
           self.changeSelector();
         }, 0);
