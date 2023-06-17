@@ -11,7 +11,7 @@ function Tick(props) {
   const self={
     onClick:(ev)=>{
       console.log('Ready to remove the online verify JSON file.');
-      const data = { id: "drop_id", method: "drop", params: {spam:spam } }
+      const data = { id: "drop_id", method: "drop", params: {spam:spam,token:props.token} }
       tools.jsonp(server + '/manage/', data, (res) => {
         if(res.error){
           console.log(res);

@@ -152,7 +152,7 @@ function App() {
         }else{
           //b.token is ok
           setUploader(
-            <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]}
+            <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]} token={token}
                 expired={authority[server] ? authority[server].expired : 0}/>    
           );
           setDocker(

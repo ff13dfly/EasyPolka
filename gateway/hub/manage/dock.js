@@ -17,6 +17,39 @@ const self={
     getMD5:()=>{
         return encry.md5(tools.char(13)+tools.stamp());
     },
+    checkAuthority:(token,ks)=>{
+        const stamp=tools.stamp();
+
+        const ekey=DB.key_get(ks.encry);
+        const s_key=ekey.key,s_iv=ekey.iv;
+        encry.setKey(s_key);
+        encry.setIV(s_iv);
+
+        const de_token=encry.decrypt(token);
+        if(!de_token) return {error:"Illigle authority token."};
+
+
+        const auth=JSON.parse(de_token);
+        console.log(`Authority:${JSON.stringify(auth)}`);
+        const json=DB.key_get(ks.encoded);
+        if(json===null){
+            return {error:"No authority file."};
+        }
+
+        const exp=json.exp;
+        console.log(`Authority on Hub:${JSON.stringify(exp)}`);
+        if(auth.password!==exp.password){
+            return {error:"Illigle authority of pass"};
+        }
+        if(auth.file!==exp.file){
+            return {error:"Illigle authority of file"};
+        }
+
+        if(stamp>auth.password){
+            return {error:"Expired authority"};
+        }
+        return true;
+    }, 
 }
 
 module.exports=(method,params,id,config)=>{
@@ -26,9 +59,16 @@ module.exports=(method,params,id,config)=>{
     // console.log(`[ dock ] called : ${JSON.stringify(params)}, stamp ${start}`); 
 
     return new Promise((resolve, reject) => {
-        const uri=params.node;
+        
+        //0.check authority
+        const ks=config.keys;
+        const check=self.checkAuthority(params.token,ks);
+        if(check!==true){
+            return reject({error:check.error});
+        }
 
         //1.`knock` the vService to get temp salt
+        const uri=params.node;
         const reqKnock={
             method: 'post',
             url: uri+'/hub',

@@ -159,14 +159,6 @@ function Verify(props) {
             self.fileChange(ev);
           }} />
       </Col>
-      <Col md={8} lg={8} xl={8} xxl={8} className="pt-2" hidden={!disable.upload}>
-          Remove encry JSON file.
-      </Col>
-      <Col md={4} lg={4} xl={4} xxl={4} className="pt-2 text-end" hidden={!disable.upload}>
-        <Button size="sm" variant="danger" onClick={(ev) => {
-          self.removeClick(ev);
-        }}>Remove</Button>
-      </Col>
       <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
         <Form.Control size="md" type="text" hidden={!disable.upload} placeholder="Account..."
           onChange={(ev) => {
