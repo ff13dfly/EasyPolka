@@ -39,9 +39,10 @@ const config = {
     },
     expire: {
         spam: 300000,                //spam expire time, 5 mins
-        //spam: 10000,               //spam expire time, 5 mins
+        //spam: 10000,               //spam expire time, 10 sec for testing
         encry: 6000000,              //JSON encry file expired time, 60 mins
-        password:300000,             //Authority expired time, 5 mins
+        //password:300000,            //Authority expired time, 5 mins
+        password:20000,             //Authority expired time, 20 sec for testing
         vservice:9000000,            //vService acitve exipred time, 15 mins
     },
 }
