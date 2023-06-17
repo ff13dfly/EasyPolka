@@ -45,6 +45,14 @@ function List(props) {
         if (res.result.length === 0) setInfo("No active vService.");
       });
     },
+    formatParams:(list)=>{
+      let dom=`<table>`;
+      for(let k in list){
+        dom+=`<tr><td>${k}</td><td>${list[k]}</td></tr>`;
+      }
+      dom+=`</table>`;
+      return dom;
+    },
   }
 
   useEffect(() => {
@@ -79,7 +87,8 @@ function List(props) {
                     <Popover id={`popover-positioned-bottom`}>
                       <Popover.Header as="h3">{`Function params`}</Popover.Header>
                       <Popover.Body>
-                        {JSON.stringify(item.funs[fkey].params)}
+                        {self.formatParams(item.funs[fkey].params)}
+                        {/* {JSON.stringify(item.funs[fkey].params)} */}
                       </Popover.Body>
                     </Popover>
                   }

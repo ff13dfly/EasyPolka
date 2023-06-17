@@ -30,9 +30,6 @@ function Verify(props) {
     passClick: (ev) => {
       if (!pass) return setInfo('No password to verify.');
     },
-    getAES: (ck) => {
-
-    },
     removeClick:(ev)=>{
       const data = { id: "drop_id", method: "drop", params: {spam:spam } }
       tools.jsonp(server + '/manage/', data, (res) => {
@@ -46,51 +43,42 @@ function Verify(props) {
     },
     verifyClick:(ev)=>{
       if(uploaded){
-        self.verifyPassword(ev);
+        self.verifyOnlyPassword(ev);
       }else{
         self.verifyFileAndPassword(ev);
       }
     },
-    
     verifyFileAndPassword: (ev) => {
       if (!code) return setInfo('No encry json file.');
       if (!pass) return setInfo('No password to decode.');
 
-      //1.encrypto by ( md5(address) ) the temp AES key and iv 
-      const md5 = encry.md5(code.address), key = md5.substring(0, 16), iv = md5.substring(16, 32);
-      const s_key = tools.char(13, "key"), s_iv = tools.char(14, "iv");
-      encry.setKey(key);
-      encry.setIV(iv);
-      //console.log(`${s_key}.${s_iv}`);
-      const security = encry.encrypt(`${s_key}.${s_iv}`);
+      self.handshake(code.address,(res)=>{
+        self.upload(res.key,res.iv,(resUpload)=>{
 
-      const data = { id: "handshake_id", method: "handshake", params: { code: security, spam: spam } }
-      tools.jsonp(server + '/manage/', data, (res) => {
-        if (!res.result || !res.result.token) return false;
-        //2. get the new AES key and iv from Hub, then upload the JSON file
-        //2.1.decode to get the new AES key and iv
-        encry.setKey(s_key);
-        encry.setIV(s_iv);
-        const token = encry.decrypt(res.result.token);
-
-        //2.2.encrypto the json file and sent to Hub
-        const tmp = token.split(".");
-        encry.setKey(tmp[0]);
-        encry.setIV(tmp[1]);
-        const fa = encry.encrypt(JSON.stringify(code));
-
-        const up_data = { id: "upload_id", method: "upload", params: { file: fa, spam: spam } }
-        tools.jsonp(server + '/manage/', up_data, (resUpload) => {
-          //3.sent the password to confirm the authority ( the json file can storage in the Hub for 10 mins )
-          //seperate the password for the scenior, two person control the Hub
-          const password = encry.encrypt(pass);
-          const pass_config = { id: "auth_id", method: "auth", params: { pass: password, spam: spam } }
-          tools.jsonp(server + '/manage/', pass_config, (resAuth) => {
+          self.auth(pass,(resAuth)=>{
             const access = encry.decrypt(resAuth.result.access);
             const obj = JSON.parse(access);
             setAuth(server,obj, resAuth.result.access);
             fresh();
           });
+
+        });
+      });
+    },
+    verifyOnlyPassword:(ev)=>{
+      if (!address) return setInfo('No address to verify.');
+      if (!pass) return setInfo('No password to verify.');
+      if (address.length!==48) return setInfo('Invalid address to verify.');
+
+      self.handshake(address,(res)=>{
+        encry.setKey(res.key);
+        encry.setIV(res.iv);
+
+        self.auth(pass,(resAuth)=>{
+          const access = encry.decrypt(resAuth.result.access);
+          const obj = JSON.parse(access);
+          setAuth(server,obj, resAuth.result.access);
+          fresh();
         });
       });
     },
@@ -115,27 +103,26 @@ function Verify(props) {
         return ck && ck({key:tmp[0],iv:tmp[1]});
       });
     },
-    //TODO, only verify the password
 
-    verifyPassword:(ev)=>{
-      if (!address) return setInfo('No address to verify.');
-      if (!pass) return setInfo('No password to verify.');
-      if (address.length!==48) return setInfo('Invalid address to verify.');
-
-      self.handshake(address,(res)=>{
-        //console.log(res);
-        encry.setKey(res.key);
-        encry.setIV(res.iv);
-        const password = encry.encrypt(pass);
-        const pass_config = { id: "auth_id", method: "auth", params: { pass: password, spam: spam } }
-        tools.jsonp(server + '/manage/', pass_config, (resAuth) => {
-          const access = encry.decrypt(resAuth.result.access);
-          const obj = JSON.parse(access);
-          setAuth(server,obj,resAuth.result.access);
-          fresh();
-        });
+    upload:(key,iv,ck)=>{
+      encry.setKey(key);
+      encry.setIV(iv);
+      const fa = encry.encrypt(JSON.stringify(code));
+      const up_data = { id: "upload_id", method: "upload", params: { file: fa, spam: spam } }
+      tools.jsonp(server + '/manage/', up_data, (res) => {
+        return ck && ck(res);
       });
     },
+
+    auth:(pass,ck)=>{
+      const password = encry.encrypt(pass);
+      const pass_config = { id: "auth_id", method: "auth", params: { pass: password, spam: spam } }
+      tools.jsonp(server + '/manage/', pass_config, (resAuth) => {
+        return ck && ck(resAuth);
+      });
+    },
+
+    
     fileChange: (ev) => {
       try {
         const fa = ev.target.files[0];

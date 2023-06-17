@@ -121,6 +121,9 @@ function App() {
   }
 
   let [sidebar,setSidebar]=useState(true);
+  const config={
+    selector_id:"trigger_me",
+  };
   const self = {
     changeServer: (index) => {
       const hs = storage.loadNodes();
@@ -179,12 +182,11 @@ function App() {
       setSidebar(hs.length!==0?false:true);
       if(hs.length!==0){
         const cur=localStorage.getItem("cur_hub");
-        setSelector(<Selector hubs={hs} fresh={self.fresh} current={cur==null?0:parseInt(cur)}
+        setSelector(<Selector hubs={hs} fresh={self.fresh} id={config.selector_id}
+          current={cur==null?0:parseInt(cur)}
           changeServer={self.changeServer}
         />);
-        setTimeout(() => {
-          self.changeSelector();
-        }, 0);
+        self.changeSelector();
       }
     },
     serverSpam: (uri, ck) => {
@@ -215,8 +217,10 @@ function App() {
       });
     },
     changeSelector:()=>{
+      const node = document.getElementById(config.selector_id);
+      if(node===null) return setTimeout(self.changeSelector,100);   //reload if the dom is not ready
+
       const ev = new Event('change', { bubbles: true });
-      const node = document.getElementById('trigger_me');
       node.dispatchEvent(ev);
     }
   }
