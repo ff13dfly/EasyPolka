@@ -7,7 +7,7 @@ import List from './components/list';
 import Verify from './components/verify';
 import Tick from './components/tick';
 import Basic from './components/basic';
-import Details from './components/details';
+import Status from './components/status';
 import Selector from './components/selector';
 
 const tools = require('./lib/tools');
@@ -87,6 +87,7 @@ function App() {
   let [uploader,setUploader] = useState("");    //verify uploader status
   let [docker,setDocker]=useState("");          //docker functions
   let [selector,setSelector]=useState("");      //node selector
+  let [status,setStatus]=useState("");          //monitor status
 
   const storage = {
     key: "hub_nodes",
@@ -163,6 +164,7 @@ function App() {
         monitor[server] = res.status.monitor;
         setDomList(<List server={server} spam={spams[server]} fresh={self.fresh}
           token={token} show={token ? true : false} />);
+        setStatus(<Status data={res.status} server={server}/>);
       });
     },
     removeAuthority:(server)=>{
@@ -264,14 +266,9 @@ function App() {
         </Col>
         <Col md={8} lg={8} xl={8} xxl={8} className="pt-2">
           <Row>
-            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              {domList}
-            </Col>
-            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
-              Hub monitor data.
-            </Col>
+            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">{domList}</Col>
+            <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">{status}</Col>
           </Row>
-
         </Col>
       </Row>
     </Container>
