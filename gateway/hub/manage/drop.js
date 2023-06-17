@@ -52,8 +52,8 @@ module.exports=(method,params,id,config)=>{
         return {error:check.error};
     }
 
-    const start=tools.stamp();
-    console.log(`[ drop ] called : ${JSON.stringify(params)}, stamp ${start}`);
+    // const start=tools.stamp();
+    // console.log(`[ drop ] called : ${JSON.stringify(params)}, stamp ${start}`);
 
     DB.key_del(ks.encoded);
     const stamp=tools.stamp;
