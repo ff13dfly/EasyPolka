@@ -64,7 +64,7 @@ module.exports=(method,params,id,config)=>{
         const ks=config.keys;
         const check=self.checkAuthority(params.token,ks);
         if(check!==true){
-            return reject({error:check.error});
+            return resolve({error:check.error});
         }
 
         //1.`knock` the vService to get temp salt
@@ -75,7 +75,7 @@ module.exports=(method,params,id,config)=>{
             data:tools.formatJSONRPC("knock",{stamp:tools.stamp()},id),
         }
         axios(reqKnock).then((resKonck)=>{
-            if(resKonck.data.error) return reject({error:resKonck.data.error});
+            if(resKonck.data.error) return resolve({error:resKonck.data.error});
             //2. `reg` with basic information
             const salt=resKonck.data.result.salt,secret=params.secret;
             const obj=self.getKeyIV(secret,salt);
@@ -103,7 +103,7 @@ module.exports=(method,params,id,config)=>{
                 },id),
             }
             axios(reqReg).then((resReg)=>{
-                if(resReg.data.error) return reject({error:resReg.data.error});
+                if(resReg.data.error) return resolve({error:resReg.data.error});
 
                 //3. store the status of the vService
                 const rData=resReg.data;
@@ -143,11 +143,11 @@ module.exports=(method,params,id,config)=>{
                 return resolve(res);
             }).catch((err)=>{
                 console.log(config.theme.error,err);
-                return reject({error:err});
+                return resolve({error:'Failed to call vService.'});
             });
         }).catch((err)=>{
             console.log(config.theme.error,err);
-            return reject({error:err});
+            return resolve({error:'Failed to reg vService.'});
         });
     });
 };
