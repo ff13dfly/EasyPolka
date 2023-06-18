@@ -9,6 +9,7 @@ function Dock(props) {
 
   let [uri, setURI] = useState("");
   let [secret,setSecret]=useState("");
+  let [info,setInfo]=useState(token===null?"No authority to dock vService.":"");
 
   const self = {
     secretChange: (ev) => {
@@ -18,7 +19,6 @@ function Dock(props) {
       setURI(ev.target.value);
     },
     onClick:()=>{
-
       tools.jsonp(node, { id: "abc", method: "spam" }, (res) => {
         //console.log(res);
         const spam = res.result.spam;
@@ -34,7 +34,13 @@ function Dock(props) {
         }
         //console.log(request);
         tools.jsonp(node+'/manage/',request, (res) => {
-          console.log(res);
+          if(res.error) {
+            return setInfo(res.error)
+          }
+          setURI("");
+          setSecret("");
+          setInfo("");
+          props.fresh();
         });
       });
     },
@@ -46,11 +52,14 @@ function Dock(props) {
 
   return (
     <Row>
+      <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">{info}</Col>
       <Col md={12} lg={12} xl={12} xxl={12} className="pt-2">
         <Form.Control
           size="md"
           type="text"
           placeholder="vService URI..."
+          value={uri}
+          disabled={!token}
           onChange={(ev) => { self.onChange(ev) }}
         />
       </Col>
@@ -58,12 +67,14 @@ function Dock(props) {
         <Form.Control
           size="md"
           type="text"
+          disabled={!token}
+          value={secret}
           placeholder="******-******-******-******"
           onChange={(ev) => { self.secretChange(ev) }}
         />
       </Col>
       <Col md={12} lg={12} xl={12} xxl={12} className="pt-2 text-end">
-        <Button onClick={() => {
+        <Button disabled={!token} onClick={() => {
           self.onClick()
         }}>Dock</Button>
       </Col>

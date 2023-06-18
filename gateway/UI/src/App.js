@@ -156,10 +156,11 @@ function App() {
             <Tick server={server} remove={self.removeAuthority} fresh={self.fresh} spam={spams[server]} token={token}
                 expired={authority[server] ? authority[server].expired : 0}/>    
           );
-          setDocker(
-            <Dock server={server} fresh={self.fresh} spam={spams[server]} token={token}/>
-          );
         }
+        
+        setDocker(
+          <Dock server={server} fresh={self.fresh} spam={spams[server]} token={!token?null:token}/>
+        );
 
         monitor[server] = res.status.monitor;
         setDomList(<List server={server} spam={spams[server]} fresh={self.fresh}
