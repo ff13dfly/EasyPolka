@@ -145,8 +145,6 @@ self.auto(()=>{
             return ctx.body=self.exportJSON({error:"no authority"},req.id);
         }
 
-        //FIXME, check all hubs to confirm the token is stupid.
-
         //2.check Hub token
         const DB=require("../lib/mndb.js");
         const token=req.params.token;

@@ -238,7 +238,7 @@ const self = {
     },
 }
 
-// Router of hub, API clls, for web jsonp
+// Router of hub, API calls, for web jsonp
 router.get("/", async (ctx) => {
     const params = self.getParams(ctx.request.url);
     const start = tools.stamp();
@@ -263,7 +263,7 @@ router.get("/", async (ctx) => {
     }else{
         mon.spam+=1;
     }
-
+    
     if (!method || !exposed.call[method]) {
         return ctx.body = self.export({ error: "unkown call" }, jsonp.request.id, jsonp.callback);
     }
@@ -276,6 +276,8 @@ router.get("/", async (ctx) => {
     console.log(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
     console.log(config.theme.success, `---------------------------- request end ----------------------------\n`);
 });
+
+
 
 router.get("/manage", async (ctx) => {
     const params = self.getParams(ctx.request.url, "/manage");

@@ -66,12 +66,34 @@ const test = {
       });
     });
   },
+  huge:(URI,count)=>{
+    const data = { id: "abc", method: "spam" }
+    tools.jsonp(URI, data, (res) => {
+      const spam = res.result.spam;
+      for(let i=0;i<count;i++){
+        const stamp=tools.stamp();
+        const params = {
+          svc: 'vHistory',
+          act: 'testing',
+          stamp: stamp,
+          spam: spam,
+        }
+        const data = { id: "testing_"+stamp, method: "auto", params: params };
+        (function(index){
+          tools.jsonp(URI, data, (res) => {
+            console.log(`[${index}]${JSON.stringify(res)}`);
+          });
+        })(i);
+      }
+    });
+  },
   auto: () => {
     const URI = "http://127.0.0.1:8001";
     //test.spam(URI);
     //test.auth(URI);
-    test.direct(URI);
+    //test.direct(URI);
     //test.aes();
+    test.huge(URI,10000);
   },
 }
 
@@ -230,6 +252,7 @@ function App() {
 
   useEffect(() => {
     self.fresh();
+    test.auto();
   }, []);
 
   return (

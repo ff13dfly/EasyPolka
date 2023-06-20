@@ -65,6 +65,12 @@ module.exports = (req, server, config) => {
                             "step": "u32"
                         }
                     },
+                    testing: {
+                        "intro": "",
+                        "params": {
+                            "stamp": "stamp"
+                        }
+                    },
                 },
                 test: {
                     view: {
