@@ -19,7 +19,7 @@ module.exports=(req,server,config)=>{
     const salt=tools.char(4)+tools.sn(4);
     DB.key_set(salt,{
         secret:DB.key_get("secret"),
-        exp:tools.stamp()+10000,    //expired in 10 seconds
+        exp:tools.stamp()+config.expire.spam,    //expired in 10 seconds
         server:"IP",
     });
 

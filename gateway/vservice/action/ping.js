@@ -92,5 +92,5 @@ module.exports = (config) => {
         });
         console.log(config.theme.success,`---------------------------- auto fresh ----------------------------\n`)
     //},3000);
-    },config.fresh);
+    },config.timer.ping);
 };

@@ -29,6 +29,5 @@ module.exports = (config) => {
         console.log(`Will expire in 2 minutes at ${new Date(tools.stamp()+config.interlval)}`);
         console.log(config.theme.success,`---------------------------- secret code ----------------------------\n`)
 
-    },config.interlval);
-    //},2000);
+    },config.timer.secret);
 };

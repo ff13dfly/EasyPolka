@@ -26,9 +26,15 @@ const config = {
         locker:tools.char(22),  //DB key: response locker, when response the Hub data request, hold 500ms to retry
     },
     port:       4501,
-    interlval:  120000,         //2 minutes
-    fresh:      130000,          //9 minutes ( 540000 ) to fresh token and AES salt
+    fresh:      130000,          
     polka:      'ws://127.0.0.1:9944',
+    expire:{
+        spam:10000,
+    },
+    timer:{
+        secret:120000,      //2 minutes ( 120000 ) to fresh dock secret
+        ping:540000,        //9 minutes ( 540000 ) to fresh token and AES salt
+    },
 };
 
 console.log(config.theme.dark,`\nAnchor Gateway vService demo ( v1.0 ) running...`);
@@ -59,6 +65,7 @@ const me={
     },
     "mod":{
         "view":require("./mod/view.js"),
+        "testing":require("./mod/testing.js"),  //multi testing
     },
 };
 
@@ -145,16 +152,6 @@ self.auto(()=>{
         const token=req.params.token;
         const hub=DB.key_get(token);
         if(hub===null) return ctx.body=self.exportJSON({error:"illigle token"},req.id);
-
-        // const hubs=DB.hash_all(config.keys.hubs);
-        // for(var uri in hubs){
-        //     const row=hubs[uri];
-        //     if(row.active===token){
-        //         pass=true;
-        //         break;
-        //     }
-        // }
-        // if(!pass) return ctx.body=self.exportJSON({error:"illigle token"},req.id);
 
         const result= await me.mod[req.method](req.method,req.params,req.id,config);
         ctx.body= self.exportJSON(!result.error?result.data:result,req.id);
