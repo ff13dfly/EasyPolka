@@ -255,7 +255,6 @@ router.get("/", async (ctx) => {
     if (method !== 'spam') {
         if (!jsonp.request.params.spam) return ctx.body = self.export({ error: "no spam" }, jsonp.request.id, jsonp.callback);
         const spam = jsonp.request.params.spam;
-        
         const spamResult = self.checkSpam(spam, IP);
         if (spamResult !== true) {
             return ctx.body = self.export({ error: spamResult }, jsonp.request.id, jsonp.callback);
@@ -267,6 +266,13 @@ router.get("/", async (ctx) => {
     if (!method || !exposed.call[method]) {
         return ctx.body = self.export({ error: "unkown call" }, jsonp.request.id, jsonp.callback);
     }
+
+    //TODO,here to solve the high TPV problem
+    // if (method !== 'spam') {
+    //     ctx.body = self.export({data:{stamp:tools.stamp(),num:tools.rand(1,2000)}}, jsonp.request.id, jsonp.callback);
+    //     return true;
+    // }
+    
 
     const env = { IP: IP };
     const result = await exposed.call[method](method, jsonp.request.params, jsonp.request.id, config, env);

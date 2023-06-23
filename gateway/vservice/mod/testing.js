@@ -10,6 +10,7 @@ module.exports=(method,params,id,config)=>{
                 data:{
                     response:stamp,
                     request:params.stamp,
+                    index:params.index,
                     cost:stamp-params.stamp,
                 },
                 success:true,

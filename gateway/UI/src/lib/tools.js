@@ -5,7 +5,7 @@ const self={
         if(data.method) uri += `method=${data.method}&`;
         for(var k in data.params) uri += `${k}=${data.params[k]}&`;
         uri+='callback=?';
-        //console.log(`${uri}`);
+        console.log(`${uri}`);
 
         window.$.getJSON({
             type:'get',
