@@ -27,7 +27,7 @@
 
 ## Backend
 
-- This implement of loader is to load applications which can run on `node.js` enviment. The latest version is [release/loader_nodejs.min.js](release/loader_nodejs.min.js).
+- This implement of loader is to load applications which can run on `node.js` enviment. The latest version is [release/loader.nodejs.js](release/loader.nodejs.js).
 
 - Backend loader relies on `node` to input the parameters.
 
@@ -50,5 +50,24 @@
     1. Build the react project and copy the built files to target directory, such as `package`.
     2. Run the converter. The converter will write the Anchor automatelly.
 
+- Parameters
+
+    ```Javascript
+    {  
+        "name":"plinth",                        //app name
+        "version":"0.1.2",                      //app version
+        "related":{                             //related anchors, will create automatelay
+            "js":"p_js",
+            "css":"p_css",
+            "resource":"p_res"
+        },
+        "libs":["polkadot","anchorjs","easy"],  //support libs on chain
+        "account":{
+
+        },
+        "password":"",
+        "seed":""
+    }
+    ```
 
 ### Native

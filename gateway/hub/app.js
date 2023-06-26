@@ -9,6 +9,10 @@
 // node app.js ss58_address port cfg_anchor
 // node app.js 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw
 
+//########## LOADER ##########
+// node hub.min.js 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw 8001
+// node loader.nodejs.js anchor://gateway_hub/ ws://127.0.0.1:9944 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw 8001
+
 //JSON RPC 2.0
 //https://www.jsonrpc.org/specification#response_object
 

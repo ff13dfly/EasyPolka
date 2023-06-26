@@ -69,7 +69,7 @@ self.auto(()=>{
     //console.log(startAPI);
     easyRun(linker,startAPI,(result) => {
         let code=result.code;
-        //console.log(result);
+        //console.log(result.data.hub_617.protocol);
         if(result.libs && result.libs.order && result.libs.order.length!==0){
             const funs={};
             for(let i=0;i<result.libs.order.length;i++){
@@ -117,10 +117,10 @@ self.auto(()=>{
             },
         };
         if(config.check) file.save("check.js",code);
+        //console.log(code);
         try {
             console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);
             eval(code);
-            
         } catch (error) {
             console.log(config.error, `Error: failed to load application from ${linker}.`);
             console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);

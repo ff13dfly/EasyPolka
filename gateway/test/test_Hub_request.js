@@ -31,12 +31,13 @@ const self = {
     },
 }
 
-//var url_spam='http://localhost:8001?id=system_spam_id&method=spam&callback=?';
-const url_spam = 'http://localhost:8001?id=system_spam_id&method=spam';
+const args = process.argv.slice(2);
+const count=!args[0]?100:args[0];
 
+const url_spam = 'http://localhost:8001?id=system_spam_id&method=spam';
 self.curl(url_spam,(res)=>{
     const spam=res.result.spam;
     console.log(spam);
 
-    self.multi(spam,1000);
+    self.multi(spam,count);
 });
