@@ -99,8 +99,6 @@ init.run();
 const koa = require("koa");
 const bodyParser = require("koa-bodyparser");
 const koaRouter = require("koa-router");
-const { JSONRPCServer } = require("json-rpc-2.0");
-
 
 /*****************************************************/
 /*********** koa.js to run the http server ***********/

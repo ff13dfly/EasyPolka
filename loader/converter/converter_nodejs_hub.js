@@ -22,6 +22,11 @@ const config = {
     name:       "XxX",                   //node.js lib replacement name
 };
 
+
+// const koa = require("koa");
+// const bodyParser = require("koa-bodyparser");
+// const koaRouter = require("koa-router");
+
 const xConfig={
     "name":"node_test",
     "libs":{
@@ -45,6 +50,14 @@ const xConfig={
             "file":"../../../package/node/koa-router.node",     //ref way
             "anchor":"node_koa_router",                         //import or require way
         },
+        "koa-bodyparser":{             //npm lib name
+            "file":"../../../package/node/koa-bodyparser.node",     //ref way
+            "anchor":"node_koa_bodyparser",                         //import or require way
+        },
+        "crypto-js":{
+            "file":"../../../package/node/crypto-js.node",     //ref way
+            "anchor":"node_crypto",                             //import or require way
+        }
     }
 };
 

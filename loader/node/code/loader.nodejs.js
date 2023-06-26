@@ -9,8 +9,6 @@
 //########## BUILD ##########
 //../node_modules/.bin/esbuild loader.nodejs.js --minify --outfile=runner.min.js --platform=node
 
-
-
 //basic config for Loader
 const config = {
     error:      '\x1b[36m%s\x1b[0m',
@@ -23,12 +21,12 @@ console.log(config.success, `\n********************** Anchor Network Loader proc
 const fs=require('fs');
 
 //arguments
-//TODO, shift loader args to the running code
+//TODO, shift loader args to the running code, two params needed
+//TODO, decode the server address by Anchor Linker
 const args = process.argv.slice(2);
 if(!args[0]) return console.log(config.error, `Error: no input Anchor Link.`);
 const linker=args[0];
-const server=!args[1]?"ws://127.0.0.1:9944":args[1];
-
+const server=!args[1]?"ws://127.0.0.1:9944":args[1];        
 
 //library needed
 const anchorJS= require('../../../package/node/anchor.node.js');
