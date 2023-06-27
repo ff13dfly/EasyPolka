@@ -157,6 +157,16 @@
             #./node_modules/esbuild/bin/esbuild node_modules/axios/index.js --bundle --minify --outfile=./node/axios.node.js --platform=node
         ```
 
+    8. crypto-js, encry lib
+
+        ```BASH
+            # install the package
+            yarn add crypto-js
+
+            # build the package  
+            ./node_modules/esbuild/bin/esbuild node_modules/crypto-js/index.js --bundle --minify --outfile=./node/crypto.node.js --platform=node
+        ```
+
 - How to load from Anchor. Copy the code to run, or get it [demo_require.js](test/demo_require.js) here directly.
 
     ```Javascript
