@@ -51,7 +51,7 @@ const config = {
         vservice:9000000,            //vService acitve exipred time, 15 mins
     },
 }
-console.log(config.theme.dark, `\nAnchor Gateway Hub ( v1.0 ) running...`);
+console.log(config.theme.dark, `Anchor Gateway HubAnchor Gateway Hub ( v1.0 ) running...`);
 
 // arguments
 const args = process.argv.slice(2);
@@ -282,7 +282,7 @@ router.get("/", async (ctx) => {
 
     const end = tools.stamp();
     console.log(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success, `---------------------------- request end ----------------------------\n`);
+    console.log(config.theme.success, `---------------------------- request end ----------------------------`);
 });
 
 
@@ -322,7 +322,7 @@ router.get("/manage", async (ctx) => {
 
     const end = tools.stamp();
     console.log(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success, `---------------------------- request end ----------------------------\n`);
+    console.log(config.theme.success, `---------------------------- request end ----------------------------`);
 });
 
 // vService APIs
@@ -346,7 +346,7 @@ router.post("/service", async (ctx) => {
 
     const end = tools.stamp();
     console.log(`[ service ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success, `---------------------------- request end ----------------------------\n`);
+    console.log(config.theme.success, `---------------------------- request end ----------------------------`);
 });
 
 // start hub application
@@ -366,5 +366,5 @@ app.listen(port, () => {
 
     console.log(`Testing command lines:`);
     console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'`)
-    console.log(config.theme.success, `Enjoy the Anchor Gateway Micro-service System.\n`)
+    console.log(config.theme.success, `Enjoy the Anchor Gateway Micro-service System.`)
 });

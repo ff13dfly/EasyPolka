@@ -7,6 +7,8 @@
 //koa demo
 //https://www.jianshu.com/p/2b135f798d46
 
+//../../node_modules/.bin/esbuild gateway.js --bundle --minify --outfile=koa.min.js --platform=node
+
 const fs=require('fs');
 const file={
     read:(target,ck,)=>{

@@ -118,7 +118,11 @@ self.auto(()=>{
         //console.log(code);
         try {
             console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);
-            eval(code);
+            //eval(code);
+            //console.log(result);
+            const str=`(function(){${code};return module.exports;})()`;
+            eval(str);
+            
         } catch (error) {
             console.log(config.error, `Error: failed to load application from ${linker}.`);
             console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);
