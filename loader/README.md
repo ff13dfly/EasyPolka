@@ -36,6 +36,14 @@
         node loader.nodejs.js anchor://node_me/ ws://127.0.0.1:9944
     ```
 
+- Run Gateway system
+
+    ```BASH
+        # node loader_nodejs.min.js [anchor link] [node]
+        node loader.nodejs.js anchor://gateway_hub/ 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw 8001
+        node loader.nodejs.js anchor://vs_test/ 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw 4405
+    ```
+
 ## Converter
 
 ### React
