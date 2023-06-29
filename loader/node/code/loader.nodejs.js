@@ -26,7 +26,20 @@ const fs=require('fs');
 const args = process.argv.slice(2);
 if(!args[0]) return console.log(config.error, `Error: no input Anchor Link.`);
 const linker=args[0];
-const server=!args[1]?"ws://127.0.0.1:9944":args[1];        
+
+//const server=!args[1]?"ws://127.0.0.1:9944":args[1];
+const server=checkServer();
+process.argv.shift();
+
+function checkServer(){
+    let svc="ws://127.0.0.1:9944";
+    if(!args[1]) return svc;
+    if(args[1].substring(0,5)==="ws://" || args[1].substring(0,6)==="wss://"){
+        svc=args[1];
+        process.argv.shift();
+    }
+    return svc;
+}
 
 //library needed
 const anchorJS= require('../../../package/node/anchor.node.js');
@@ -118,8 +131,7 @@ self.auto(()=>{
         //console.log(code);
         try {
             console.log(config.success, `********************* Anchor Network Loader proccess finished *********************\n`);
-            //eval(code);
-            //console.log(result);
+            //need to add the wrapper to run properly.
             const str=`(function(){${code};return module.exports;})()`;
             eval(str);
             
