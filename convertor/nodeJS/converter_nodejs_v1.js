@@ -1,56 +1,36 @@
 //!important, This is the convertor of node.js application.
 
 //########## USAGE ##########
-//node converter_nodejs_v1.js xconfig.json
+//node converter_nodejs_v1.js node_config.json
 
 //########## BUILD ##########
 //package command, `esbuild` needed.
 //yarn add esbuild
 //../node_modules/.bin/esbuild koa/gateway.js --minify --outfile=koa/gateway.min.js --platform=node
 
-const anchorJS= require('../../package/node/anchor.node');
-const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { Keyring } = require('@polkadot/api');
+const theme = {
+    error: '\x1b[31m%s\x1b[0m',
+    success: '\x1b[36m%s\x1b[0m',
+    primary: '\x1b[33m%s\x1b[0m',
+    dark: '\x1b[90m%s\x1b[0m',
+};
+const end=()=>{
+    console.log(theme.dark,`************************* NodeJS Convertor End *************************\n`);
+};
+
+console.log(theme.dark,`\n********** NodeJS convertor for Anchor Network, version 1.0.0 **********`);
+const args = process.argv.slice(2);
+if(!args[0]){
+    console.log(theme.error,`No config file to convert project.\n`);
+    return end();
+}
+
 const fs=require('fs');
+const anchorJS= require('../../package/node/anchor.node');
+const { ApiPromise, WsProvider } = require('../../package/node/polkadot.node');
+const { Keyring } = require('../../package/node/polkadot.node');
 
-const config = {
-    error:      '\x1b[36m%s\x1b[0m',
-    success:    '\x1b[36m%s\x1b[0m',
-    server:     "ws://127.0.0.1:9944",
-    libs:       ["node_koa"],
-    symbol:     ["%{{%","%}}%"],
-    name:       "XxX",                   //node.js lib replacement name
-};
-
-
-
-const xConfig={
-    "name":"node_test",
-    "libs":{
-        // "@polkadot/api":{
-        //     "file":"../../../package/node/polkadot.node",
-        //     "anchor":"node_polkadot",
-        // },
-        // "anchorjs":{
-        //     "file":"../../../package/node/anchor.node",
-        //     "anchor":"node_anchorjs",
-        // },
-        // "easy":{
-        //     "file":"../../../package/node/easy.node",
-        //     "anchor":"node_easy",
-        // },
-        "koa":{             //npm lib name
-            "file":"../../../package/node/koa.node",        //ref way
-            "anchor":"node_koa",                            //import or require way
-        },
-        "koa-router":{             //npm lib name
-            "file":"../../../package/node/koa-router.node",     //ref way
-            "anchor":"node_koa_router",                         //import or require way
-        },
-    }
-};
-
-// file reader
+const cfile=args[0];
 const file={
     read:(target,ck,toJSON,toBase64)=>{
         fs.stat(target,(err,stats)=>{
@@ -73,18 +53,16 @@ const file={
 };
 
 let websocket=null;
-
 const self={
-    auto: (ck) => {
+    auto: (config,ck) => {
+        if(!config.autowrite) return ck && ck();
         if(websocket!==null) return ck && ck();
         const server=config.server;
-        console.log(`Ready to link to server ${server}.`);
-        
-        ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
-            console.log(config.success,`Linker to node [${server}] created.`);
 
+        console.log(`Ready to link to server ${server}.`);
+        ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
+            console.log(theme.success,`Linker to node [${server}] created.`);
             websocket = api;
-            
             anchorJS.set(api);
             anchorJS.setKeyring(Keyring);
             return ck && ck();
@@ -121,8 +99,36 @@ const self={
         }
         str+='};';
         return str;
-    }
+    },
+    getTarget:(obj)=>{
+        if(obj.single) return obj.single;
+        if(obj.folder && obj.folder) return obj.folder+obj.folder;
+        return false;
+    },
 }
+
+// convertor logical
+return file.read(cfile,(config)=>{
+    if(config.error){
+        console.log(theme.error,config.error);
+        return end();
+    } 
+    self.auto(config,()=>{
+        const target=self.getTarget(config.target);
+        file.read(target,(code)=>{
+            if(code.error){
+                console.log(theme.error,code.error);
+                return end();
+            } 
+            
+
+
+        });
+    });
+    
+},true)
+
+return false;
 
 const target="./koa/gateway.min.js"
 file.read(target,(code)=>{
