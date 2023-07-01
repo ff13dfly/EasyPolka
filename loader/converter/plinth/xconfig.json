@@ -8,8 +8,8 @@
     },
     "libs":["polkadot","anchorjs","easy"],
     "account":{
-
-    },
-    "password":"",
-    "seed":""
+        "seed":"",
+        "file":"",
+        "password":""
+    }
 }

@@ -1,0 +1,34 @@
+{
+    "target":{
+        "folder":"package/demo/",
+        "entry":"index.js",
+        "single":"single.min.js"
+    },
+    "anchor":"node_test",
+    "server":"ws://127.0.0.1:9944",
+    "version":"1.0.0",
+    "autowrite":true,
+    "libs":{
+        "koa":{
+            "file":"../../../package/node/koa.node",
+            "anchor":"node_koa"
+        },
+        "koa-router":{
+            "file":"../../../package/node/koa-router.node",
+            "anchor":"node_koa_router"
+        },
+        "easy":{
+
+        },
+        "anchorJS":{
+
+        }
+    },
+    "symbol":["%{{%","%}}%"],
+    "replace":"XxX",
+    "account":{
+        "seed":"",
+        "file":"encry_json_file.json",
+        "password":""
+    }
+}
