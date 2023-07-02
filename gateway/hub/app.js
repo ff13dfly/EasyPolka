@@ -240,6 +240,43 @@ const self = {
     },
 }
 
+const {WebSocketServer} =require('ws');
+const wss = new WebSocketServer({ port: port+1 });
+const clients={};
+wss.on('connection', function connection(ws,request, client) {
+    const uid=tools.char(12);
+    clients[uid]=ws;
+
+    ws.send(JSON.stringify({"spam":uid}));
+
+    ws.on('error', console.error);
+  
+    ws.on('message', function message(data) {
+        console.log(data.toString());
+        //console.log('received: %s', data);
+        try {
+            const json=JSON.parse(data);
+            if(json.id && json.params && json.params.spam){
+                const data={
+                    time:tools.stamp,
+                    spam:json.params.spam,
+                }
+                clients[json.params.spam].send(JSON.stringify(data));
+            }
+        } catch (error) {
+            console.log(error);
+            console.log("not json data");
+        }
+    });
+  
+    
+  
+    // setInterval(function(){
+    //   const data={"hello":"from nodejs server."};
+    //   ws.send(JSON.stringify(data));
+    // },3000);
+});
+
 // Router of hub, API calls, for web jsonp
 router.get("/", async (ctx) => {
     const params = self.getParams(ctx.request.url);
@@ -284,8 +321,6 @@ router.get("/", async (ctx) => {
     console.log(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
     console.log(config.theme.success, `---------------------------- request end ----------------------------`);
 });
-
-
 
 router.get("/manage", async (ctx) => {
     const params = self.getParams(ctx.request.url, "/manage");
