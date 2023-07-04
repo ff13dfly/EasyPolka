@@ -50,6 +50,12 @@ const file={
             });
         });
     },
+    save:(target,data,ck)=>{
+        fs.writeFile(target, data,'utf8',function (err) {
+            if (err) return ck && ck({error:err});
+            return ck && ck(true);
+        });
+    },
 };
 
 let websocket=null;
@@ -105,6 +111,23 @@ const self={
         if(obj.folder && obj.folder) return obj.folder+obj.folder;
         return false;
     },
+    getPair:(account,ck)=>{
+        let pair=null;
+        const ks = new Keyring({ type: 'sr25519' });
+        if(account.seed){
+            const seed=account.seed;
+            pair= ks.addFromUri(`//${seed}`);
+            return ck && ck(pair);
+        }else{
+            const jfile=account.file;
+            const password=account.password;
+            file.read(jfile,(acc)=>{
+                pair = keyring.createFromJson(acc);
+                pair.decodePkcs8(config.password);
+                return ck && ck(pair);
+            });
+        }
+    },
 }
 
 // convertor logical
@@ -119,54 +142,48 @@ return file.read(cfile,(config)=>{
             if(code.error){
                 console.log(theme.error,code.error);
                 return end();
-            } 
-            
+            }
 
+            //1.prepare the basic struct
+            const libs=config.libs;
+            const pre=self.getPrepair(libs,config.replace,config.symbol);
+            let final=pre+code;
 
+            //2.replace libs to target reference
+            const alist=[];
+            for(var k in libs){
+                const lib=libs[k];
+                const replace=`${config.replace}["${k}"]`;
+                final=final.replace(`require("${lib.file}")`,replace);
+                alist.push(lib.anchor);
+            }
+
+            //3.get the target anchor data
+            const protocol={
+                "type": "app",
+                "fmt": "js",
+                "lib":alist,
+                "ver":"1.0.1",
+                "tpl":"nodejs"
+            }
+            const anchor={name:config.anchor,raw:final,protocol:protocol}
+
+            //4.write to file or save
+            if(!config.autowrite){
+                const final_file=`${config.anchor}.anchor`;
+                file.save(final_file,JSON.stringify(anchor));
+                console.log(theme.success,`Write to file : ${final_file}`);
+                end();
+            }else{
+                const list=[];
+                list.push(anchor);
+                self.getPair(config.account,(pair)=>{
+                    self.multi(list,()=>{
+                        console.log(`Done, the target Anchor is "${config.name}"`);
+                        end();
+                    },pair);
+                })
+            }
         });
     });
-    
 },true)
-
-return false;
-
-const target="./koa/gateway.min.js"
-file.read(target,(code)=>{
-    //console.log(code);
-
-    const libs=xConfig.libs;
-
-    const Gname=config.name;
-    const pre=self.getPrepair(libs,Gname,config.symbol);
-    let final=pre+code;
-
-    const alist=[];
-    for(var k in libs){
-        const lib=libs[k];
-        const replace=`${config.name}["${k}"]`;
-        final=final.replace(`require("${lib.file}")`,replace);
-        alist.push(lib.anchor);
-    }
-    console.log(final);
-    console.log(alist);
-
-    const list=[];
-    const protocol={
-        "type": "app",
-        "fmt": "js",
-        "lib":alist,
-        "ver":"1.0.1",
-        "tpl":"nodejs"
-    }
-    list.push({name:xConfig.name,raw:final,protocol:protocol});
-
-    self.auto(()=>{
-        const seed='Dave';
-        const ks = new Keyring({ type: 'sr25519' });
-        const pair= ks.addFromUri(`//${seed}`);
-
-        self.multi(list,()=>{
-            console.log(`Done, the target Anchor is "${xConfig.name}"`);
-        },pair);
-    });
-});

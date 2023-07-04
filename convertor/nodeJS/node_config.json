@@ -16,18 +16,12 @@
         "koa-router":{
             "file":"../../../package/node/koa-router.node",
             "anchor":"node_koa_router"
-        },
-        "easy":{
-
-        },
-        "anchorJS":{
-
         }
     },
     "symbol":["%{{%","%}}%"],
     "replace":"XxX",
     "account":{
-        "seed":"",
+        "seed":"Dave",
         "file":"encry_json_file.json",
         "password":""
     }
