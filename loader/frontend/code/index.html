@@ -33,14 +33,26 @@
         <script src="../../../package/loader/polkadot.loader.js"></script>
         <script src="../../../package/loader/anchor.loader.js"></script>
         <script src="../../../package/loader/easy.loader.js"></script>
+        <style>
+            #step{
+                margin: 0 auto;
+                max-width: 790px;
+                padding: 20px 10px 20px 10px;
+                background: #222222;
+                color:#FFFFFF;
+                height: 100%;
+            }
+        </style>
     </head>
     <body >
         <noscript>You need to enable JavaScript to run this Loader.</noscript>
-        <div id="info">Loading [ <span id="target"></span> ] from Anchor Network ... </div>
+        <!-- <div id="info">Loading [ <span id="target"></span> ] from Anchor Network [ <span id="endpoint"></span> ] ... </div> -->
+        <div id="step"></div>
         <div id="root"></div>
         <div id="footer">
             <span id="more"></span> Anchor Network Web Loader v1.0.0 Copyright 2023 by Fuu ( metanchor@gmail.com )
         </div>
     </body>
-    <script src="loader.min.js"></script>
+    <!-- <script src="loader.min.js"></script> -->
+    <script src="react_loader.js"></script>
 </html>

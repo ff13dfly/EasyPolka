@@ -14,6 +14,7 @@ const config = {
     success:    '\x1b[36m%s\x1b[0m',
     anchor:     'plinth',
     server:     'ws://127.0.0.1:9944',
+    step:       300,
 };
 
 //get the global
@@ -26,13 +27,14 @@ let websocket=null;
 const self={
     auto: (ck) => {
         if(websocket!==null) return ck && ck();
-        self.html(`Ready to link to server ${server}.`,"more");
-        ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
-            self.html(`Linker to node [${server}] created.`,"more");
-            websocket = api;
-            anchorJS.set(api);
-            //anchorJS.setKeyring(Keyring);
-            return ck && ck();
+        self.step(`Ready to link to server ${server}.`,()=>{
+            ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
+                self.step(`Linker to node [${server}] created.`,()=>{
+                    websocket = api;
+                    anchorJS.set(api);
+                    return ck && ck();
+                });
+            });
         });
     },
     decoder:(hash)=>{
@@ -61,80 +63,92 @@ const self={
     hide:(id)=>{
         const ele=document.getElementById(id);
         ele.style.display = "none";
-    },  
+    },
+    step:(txt,ck)=>{
+        //if(config.step===0) return ck && ck();
+        const id="step";
+        const ele=document.getElementById(id);
+        const info=document.createTextNode(txt);
+        const br = document.createElement("br");
+        ele.appendChild(info);
+        ele.appendChild(br);
+        setTimeout(ck,config.step);
+    },
 }
 const result=self.decoder(location.hash);
 const linker=`anchor://${result.anchor}/`;
 const server=result.server;
 
-self.html(result.anchor,"target");
-
-//console.log(config.success,`Ready to decode Anchor Link : ${linker} .`);
-self.auto(()=>{
-    const startAPI = {
-        common: {
-            "latest": anchorJS.latest,
-            "target": anchorJS.target,
-            "history": anchorJS.history,
-            "owner": anchorJS.owner,
-            "subcribe": anchorJS.subcribe,
-            "block": anchorJS.block,
-        }
-    };
-    
-    easyRun(linker,startAPI,(res) => {
-        console.log(res);
-        if(res.error && res.error.length!==0){
-            let txt='';
-            for(let i=0;i<res.error.length;i++){
-                const row=res.error[i];
-                txt+=`${row.level?(row.level+":"):""}${row.error}`;
-            }
-            
-            self.html(txt,"info");
-            delete res.error;
-            self.html(`${JSON.stringify(res)}`,"root");
-            return false;
-        }
-        
-        if(res.libs && res.libs.js){
-            const js=res.libs.js;
-            try {
-                const capp=new Function("API","input","errs",js+(res.code?res.code:""));
-                const input={
-                    container:"root",
-                    from:null,
-                    params:{},
-                    node:result.server,
+self.step(`Info: Anchor Network server ${server}`,()=>{
+    self.step(`Info: ready to load ${result.anchor}`,()=>{
+        self.auto(()=>{
+            const startAPI = {
+                common: {
+                    "latest": anchorJS.latest,
+                    "target": anchorJS.target,
+                    "history": anchorJS.history,
+                    "owner": anchorJS.owner,
+                    "subcribe": anchorJS.subcribe,
+                    "block": anchorJS.block,
                 }
-                const APIs={
-                    anchorJS:anchorJS,
-                }
-                capp(APIs,input,[]);
-            } catch (error) {
-                console.log(error);
-            }
+            };
             
-        }
+            easyRun(linker,startAPI,(res) => {
+                self.step(`Info: anchor decoded, ready to load.`,()=>{
+                    if(res.error && res.error.length!==0){
+                        let txt='';
+                        for(let i=0;i<res.error.length;i++){
+                            const row=res.error[i];
+                            txt+=`${row.level?(row.level+":"):""}${row.error}`;
+                        }
+                        
+                        //self.html(txt,"info");
+                        self.step(txt);
+                        delete res.error;
+                        self.html(`${JSON.stringify(res)}`,"root");
+                        return false;
+                    }
+                    self.step(`Info: Ready to load css libs`,()=>{
+                        if(res.libs && res.libs.css){
+                            const css=res.libs.css;
+                            const head = document.getElementsByTagName('head')[0];
+                            const style = document.createElement('style');
+                            const cmap = document.createTextNode(css);
+                            style.appendChild(cmap);
+                            head.appendChild(style);
+                        }
 
-        if(res.libs && res.libs.css){
-            const css=res.libs.css;
-            const head = document.getElementsByTagName('head')[0];
-		    const style = document.createElement('style');
-		    const cmap = document.createTextNode(css);
-		    style.appendChild(cmap);
-		    head.appendChild(style);
-        }
+                        self.step(`Info: Ready to load on-chain application`,()=>{
+                            self.step(`Info: Ready to show details`,()=>{
+                                const block=res.location[1],name=res.location[0];
+                                const key=`${name}_${block}`;
+                                const anchor=res.data[key];
+                                self.html(`${name} on ${block.toLocaleString()}, signed by ${anchor.signer}`,"more");
+                                //self.hide("step");
+                            });
 
-        //3.app code
-        
-
-        
-        //4.information output
-        const block=res.location[1],name=res.location[0];
-        const key=`${name}_${block}`;
-        const anchor=res.data[key];
-        self.html(`${name} on ${block.toLocaleString()}, signed by ${anchor.signer}`,"more");
-        self.hide("info");
+                            if(res.libs && res.libs.js){
+                                const js=res.libs.js;
+                                try {
+                                    const capp=new Function("API","input","errs",js+(res.code?res.code:""));
+                                    const input={
+                                        container:"root",
+                                        from:null,
+                                        params:{},
+                                        node:result.server,
+                                    }
+                                    const APIs={
+                                        anchorJS:anchorJS,
+                                    }
+                                    capp(APIs,input,[]);
+                                } catch (error) {
+                                    console.log(error);
+                                }
+                            }
+                        });
+                    });
+                });
+            });
+        });
     });
 });
