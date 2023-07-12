@@ -1,0 +1,15 @@
+{  
+    "name":"homepage",
+    "version":"0.1.2",
+    "related":{
+        "js":"hh_js",
+        "css":"hh_css",
+        "resource":"hh_res"
+    },
+    "libs":["jquery"],
+    "account":{
+        "seed":"",
+        "file":"",
+        "password":""
+    }
+}

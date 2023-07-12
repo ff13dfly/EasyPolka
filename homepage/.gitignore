@@ -9,9 +9,3 @@
 package-lock.json
 yarn.lock
 yarn-error.log
-
-react/package/
-plinth/package/
-gateway/package/
-saying/package/
-homepage/package/
