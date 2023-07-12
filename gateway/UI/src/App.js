@@ -94,6 +94,16 @@ const test = {
     //test.direct(URI);
     //test.aes();
     //test.huge(URI,1);
+
+    // const data={id:"abc",method:"spam"}
+    // const URL="http://127.0.0.1:8001";
+    // test.jsonp(URL,data,(res)=>{
+    //   console.log(res);
+    //     const data={id:"address_ss58",method:"auto",params:{v:"vhistory",a:"view",spam:res.result.spam}}
+    //     test.jsonp(URL,data,(res)=>{
+    //       console.log(res);
+    //     });
+    // });
   },
 }
 

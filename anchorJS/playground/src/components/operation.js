@@ -50,8 +50,7 @@ function Operation(props) {
 
   const op_null='';
   const op_normal=(
-    <Row>
-      
+    <Row>    
       <Col lg={10} xs={12} className="pt-2" >
         <Form.Select aria-label="Default select" disabled={free} onChange={(ev) => { self.changeAccount(ev) }}>
           {Accounts.map((item,index) => (
