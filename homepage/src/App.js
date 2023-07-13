@@ -5,6 +5,7 @@ import Navigator from './components/navigator';
 import Slide from './components/slide';
 import Points from './components/points';
 import Protocol from './components/protocol';
+import Plinth from './components/plinth';
 import Loader from './components/loader';
 import Join from './components/join';
 
@@ -22,6 +23,7 @@ function App() {
       <Slide/>
       <Points />
       <Protocol />
+      <Plinth />
       <Loader />
       <Join />
       <Footer />

@@ -2,7 +2,7 @@ import { Container, Row, Col, Nav } from 'react-bootstrap';
 
 function Protocol() {
   return (
-    <div expand="lg" className="bg-body-tertiary pt-4" id="footer_nav">
+    <div expand="lg" className="bg-body-tertiary pt-4" id="protocol">
       <Container>
         <Row>
           <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>

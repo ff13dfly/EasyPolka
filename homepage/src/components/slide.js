@@ -10,8 +10,8 @@ function Slide() {
           alt="First slide"
         />
         <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          <h3>Self Bootstrap Web3.0 Network</h3>
+          <p>You can access the whole Web3.0 world by single loader.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
@@ -22,8 +22,8 @@ function Slide() {
         />
 
         <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <h3>No-finance Blockchain</h3>
+          <p>This is a blockchain network to deploy the dApp UI and SDK, without Smart Contract.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
@@ -34,10 +34,8 @@ function Slide() {
         />
 
         <Carousel.Caption>
-          <h3>Third slide label</h3>
-          <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
-          </p>
+          <h3>Free To Join Web3.0</h3>
+          <p>Free to browser the data on chain and easy to join fether.</p>
         </Carousel.Caption>
       </Carousel.Item>
     </Carousel>

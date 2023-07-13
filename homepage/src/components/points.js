@@ -2,7 +2,7 @@ import { Container, Row, Col, Card,Button } from 'react-bootstrap';
 
 function Points() {
   return (
-    <Container>
+    <Container id="anchor">
       <Row className='pb-4'>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
@@ -10,8 +10,7 @@ function Points() {
             <Card.Body>
               <Card.Title>Name Service</Card.Title>
               <Card.Text>
-                Some quick example text to build on the card title and make up the
-                bulk of the card's content.
+                Unique name as domain on blockchain network, new digital asset.
               </Card.Text>
               <Button variant="primary">Go somewhere</Button>
             </Card.Body>
@@ -23,8 +22,7 @@ function Points() {
             <Card.Body>
               <Card.Title>Key-value Storage</Card.Title>
               <Card.Text>
-                Some quick example text to build on the card title and make up the
-                bulk of the card's content.
+                Easy way to use blockchain. Then blockchain network become a DB.
               </Card.Text>
               <Button variant="primary">Go somewhere</Button>
             </Card.Body>
@@ -36,8 +34,7 @@ function Points() {
             <Card.Body>
               <Card.Title>On-Chain Linked List</Card.Title>
               <Card.Text>
-                Some quick example text to build on the card title and make up the
-                bulk of the card's content.
+                New way to use the historical data on-chain, not just droppable data.
               </Card.Text>
               <Button variant="primary">Go somewhere</Button>
             </Card.Body>
@@ -49,8 +46,7 @@ function Points() {
             <Card.Body>
               <Card.Title>Anchor Link</Card.Title>
               <Card.Text>
-                Some quick example text to build on the card title and make up the
-                bulk of the card's content.
+                Similar as HTTP link, make the data on-chain to be a complex net.
               </Card.Text>
               <Button variant="primary">Go somewhere</Button>
             </Card.Body>
@@ -62,8 +58,7 @@ function Points() {
             <Card.Body>
               <Card.Title>Easy Protocol</Card.Title>
               <Card.Text>
-                Some quick example text to build on the card title and make up the
-                bulk of the card's content.
+                Solving the relationship between data on chain. 
               </Card.Text>
               <Button variant="primary">Go somewhere</Button>
             </Card.Body>
@@ -73,10 +68,9 @@ function Points() {
           <Card>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-              <Card.Title>On Chian Totally</Card.Title>
+              <Card.Title>Totally Blockchain</Card.Title>
               <Card.Text>
-                Some quick example text to build on the card title and make up the
-                bulk of the card's content.
+                All data on-chain even the dApp UI and SDK.
               </Card.Text>
               <Button variant="primary">Go somewhere</Button>
             </Card.Body>
