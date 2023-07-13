@@ -10,8 +10,9 @@ function Navigator() {
           <Nav className="me-auto">
             <Nav.Link href="#home">Home</Nav.Link>
             <Nav.Link href="#anchor">Anchor</Nav.Link>
-            <Nav.Link href="#plinth">Plinth</Nav.Link>
             <Nav.Link href="#protocol">Protocol</Nav.Link>
+            <Nav.Link href="#plinth">Plinth</Nav.Link>
+            <Nav.Link href="#gateway">Gateway</Nav.Link>
             <NavDropdown title="Document" id="basic-nav-dropdown">
               <NavDropdown.Item href="#">Anchor Pallet</NavDropdown.Item>
               <NavDropdown.Item href="#">AnchorJS</NavDropdown.Item>

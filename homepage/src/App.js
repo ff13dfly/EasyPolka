@@ -8,7 +8,10 @@ import Protocol from './components/protocol';
 import Demo from './components/demo';
 import Plinth from './components/plinth';
 import Loader from './components/loader';
+import Backend from './components/backend';
+import Frontend from './components/frontend';
 import Join from './components/join';
+import Gateway from './components/gateway';
 
 import Footer from './components/footer';
 
@@ -25,8 +28,11 @@ function App() {
       <Points />
       <Protocol />
       <Loader />
+      <Frontend />
+      <Backend />
       <Plinth />
       <Demo />
+      <Gateway />
       <Join />
       <Footer />
     </div>

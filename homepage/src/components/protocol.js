@@ -7,9 +7,10 @@ function Protocol() {
         <Row>
           <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
             <h3>Easy Protocol</h3>
-            <p>A simple way to unit Web3.0</p>
+            <p>A simple way to group Web3.0 resource.</p>
           </Col>
           <Col md={8} lg={8} xl={8} xxl={8} className='pt-4'>
+            <h3>Self Bootstrap</h3>
             <h3>Anchor Link</h3>
             <h3>Declared Hide</h3>
           </Col>

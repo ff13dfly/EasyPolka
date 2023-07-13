@@ -8,9 +8,11 @@ function Loader() {
           <Card>
             <Card.Img variant="top" src="imgs/point_01.png" />
             <Card.Body>
-              <Card.Title>Chian Application</Card.Title>
+              <Card.Title>Chain Application</Card.Title>
               <Card.Text>
-                Load application on chain directly.
+                One single html file.
+                Easy deploy, only http server needed.
+                Meanful hash.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -21,7 +23,8 @@ function Loader() {
             <Card.Body>
               <Card.Title>NodeJS</Card.Title>
               <Card.Text>
-                Easy way to run on-chian nodeJS application.
+                Anchor link support.
+                Parameters from command line.
               </Card.Text>
             </Card.Body>
           </Card>
