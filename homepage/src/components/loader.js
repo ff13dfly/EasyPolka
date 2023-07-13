@@ -1,4 +1,4 @@
-import { Container, Row, Col, Card,Button } from 'react-bootstrap';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 
 function Loader() {
   return (
@@ -6,7 +6,7 @@ function Loader() {
       <Row className='pb-4'>
         <Col md={6} lg={6} xl={6} xxl={6} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="holder.js/100px180" />
+            <Card.Img variant="top" src="imgs/point_01.png" />
             <Card.Body>
               <Card.Title>Chian Application</Card.Title>
               <Card.Text>
@@ -17,7 +17,7 @@ function Loader() {
         </Col>
         <Col md={6} lg={6} xl={6} xxl={6} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="holder.js/100px180" />
+            <Card.Img variant="top" src="imgs/point_01.png" />
             <Card.Body>
               <Card.Title>NodeJS</Card.Title>
               <Card.Text>

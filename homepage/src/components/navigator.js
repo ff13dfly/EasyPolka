@@ -12,6 +12,16 @@ function Navigator() {
             <Nav.Link href="#anchor">Anchor</Nav.Link>
             <Nav.Link href="#plinth">Plinth</Nav.Link>
             <Nav.Link href="#protocol">Protocol</Nav.Link>
+            <NavDropdown title="Document" id="basic-nav-dropdown">
+              <NavDropdown.Item href="#">Anchor Pallet</NavDropdown.Item>
+              <NavDropdown.Item href="#">AnchorJS</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="#">Easy Protocol</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="#">Gateway</NavDropdown.Item>
+              <NavDropdown.Item href="#">Gateway Hub</NavDropdown.Item>
+              <NavDropdown.Item href="#">Gateway vService</NavDropdown.Item>
+            </NavDropdown>
             <NavDropdown title="Demo" id="basic-nav-dropdown">
               <NavDropdown.Item href="https://polkadot.js.org/apps/?rpc=wss://dev.metanchor.net">Dev Network</NavDropdown.Item>
               <NavDropdown.Item href="https://playground.metanchor.net">Playground</NavDropdown.Item>
