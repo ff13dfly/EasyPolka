@@ -8,7 +8,7 @@ function Points() {
           <Card>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>Name Service</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up the
                 bulk of the card's content.
@@ -21,7 +21,7 @@ function Points() {
           <Card>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>Key-value Storage</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up the
                 bulk of the card's content.
@@ -34,7 +34,7 @@ function Points() {
           <Card>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>On-Chain Linked List</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up the
                 bulk of the card's content.
@@ -47,7 +47,7 @@ function Points() {
           <Card>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>Anchor Link</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up the
                 bulk of the card's content.
@@ -60,7 +60,7 @@ function Points() {
           <Card>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>Easy Protocol</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up the
                 bulk of the card's content.
@@ -73,7 +73,7 @@ function Points() {
           <Card>
             <Card.Img variant="top" src="holder.js/100px180" />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>On Chian Totally</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up the
                 bulk of the card's content.
