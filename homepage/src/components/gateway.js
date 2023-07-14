@@ -1,12 +1,17 @@
 import { Container, Row, Col } from 'react-bootstrap';
 
 function Gateway() {
+  const cmap={
+    background:'url("imgs/003.svg") no-repeat center center',
+    'background-size': 'cover',
+    'min-height':'600px',
+  };
   return (
-    <div expand="lg" className="bg-body-tertiary pt-4" id="gateway">
+    <div expand="lg" className="bg-body-tertiary pt-4" id="gateway" style={cmap}>
       <Container>
         <Row>
           <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
-            <h3>Gateway of Anchro</h3>
+            <h3>Gateway of Anchor</h3>
             <p>The micro-server framework on Anchor network.</p>
             <p>Three parts: UI, Hub and vService.</p>
           </Col>

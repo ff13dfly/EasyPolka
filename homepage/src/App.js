@@ -12,6 +12,7 @@ import Backend from './components/backend';
 import Frontend from './components/frontend';
 import Join from './components/join';
 import Gateway from './components/gateway';
+import Sample from './components/sample';
 
 import Footer from './components/footer';
 
@@ -33,6 +34,7 @@ function App() {
       <Plinth />
       <Demo />
       <Gateway />
+      <Sample />
       <Join />
       <Footer />
     </div>

@@ -1,8 +1,13 @@
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 
 function Frontend() {
+  const cmap={
+    background:'url("imgs/003.svg") no-repeat center center',
+    'background-size': 'cover',
+    'min-height':'450px',
+  };
   return (
-    <Container>
+    <Container style={cmap}>
       <Row className='pb-4'>
         <Col md={6} lg={6} xl={6} xxl={6} className='pt-4'>
           <ul>

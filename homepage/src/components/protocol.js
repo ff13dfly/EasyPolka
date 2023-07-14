@@ -1,8 +1,15 @@
 import { Container, Row, Col, Nav } from 'react-bootstrap';
 
+
 function Protocol() {
+
+  const cmap={
+    background:'url("imgs/003.svg") no-repeat center center',
+    'background-size': 'cover',
+    'min-height':'600px',
+  };
   return (
-    <div expand="lg" className="bg-body-tertiary pt-4" id="protocol">
+    <div expand="lg" className="bg-body-tertiary pt-4" id="protocol" style={cmap}>
       <Container>
         <Row>
           <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
