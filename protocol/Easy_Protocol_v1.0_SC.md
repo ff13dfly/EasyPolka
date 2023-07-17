@@ -6,7 +6,7 @@
 
 - `Easy Protocol`是用来实现全链应用程序的协议，基于简单易读的JSON，现在的版本是`v1.0`。`Easy Protocol`着力解决链上数据的关系，建立一个可以自启动的区块链网络（Anchor Network），这样，就可以通过单一的去中心化的入口来访问Web3.0的世界。
 
-![a image show the relationship of Anchors]()
+    ![The purpose of Easy Protocol](./diagram/Purpose.png)
 
 - `Easy Protocol`的协议主体大小写不敏感，最大长度是256字节。`Easy Protocol`不对运行的代码进行限定。为方便描述，以下将采用Javascript和JSON的形式进行代码说明。
 
@@ -70,7 +70,9 @@
      ```SHELL
         # "hello" sample
         anchor://hello
+        anchor://hello/
         anchor://hello/1886
+        anchor://hello/1886/
         anchor://hello/1886?tpl=dark&title=today
         anchor://hello/1886?tpl=dark&title=today@testnet
     ```
@@ -81,57 +83,72 @@
 
 ### 授权
 
+- 基于区块链的Web3.0世界是一个开发的世界，数据开放是其底层特征。`Easy Protocol`建立一种基于透明数据的授权关系，建立关于数据访问的权限关系。
+
+- `Easy Protocol`的授权处理两种关系，一是数据和账户之间的，另一种是数据和数据之间的。
+
 #### 账户授权
 
-- Follow the latest anchor data to confirm the authority.
+- 在链锚的协议部分，使用`auth`关键字，通过直接写入和链锚的方式，对账户进行授权，定义如下。
 
-- `账号 -> 区块号`的方式来设置，当区块号为0，为无限时授权
+    ``` javascript
+        {
+            "ACCOUNT":"BLOCK_NUMBER",       //当BLOCK_NUMBER为0时，为无限时授权
+        }
+    ```
+
+- 直接写入以最新的数据为准，链锚方式，接受全部的数据。按照最新写入的数据进行授权限制。
 
 #### 链锚授权
 
-- `Anchor -> 区块号`的方式来设置，当区块号为0，为无限时授权
+- 在链锚的协议部分，使用`trust`关键字，通过直接写入和链锚的方式，对账户进行授权
 
-#### 授权时限
+    ``` javascript
+        {
+            "ANCHOR_NAME":"BLOCK_NUMBER",       //当BLOCK_NUMBER为0时，为无限时授权
+        }
+    ```
 
-- 采用授权到区块号的方式，0为无限时授权。
+- 直接写入以最新的数据为准，链锚方式，接受全部的数据。按照最新写入的数据进行授权限制。
 
-#### 重复授权处理
+#### 授权时限及重复授权
+
+- 采用授权到区块号的方式，0为无限时授权。注意，由于出块时间的不确定性，和现实世界的时间无法精确匹配。
 
 - 重复授权是指，对于Anchor，如果未被授权，但是写入Anchor的address确是被授权的。采取账号授权优先的原则。换言之，账号授权的权限是大雨anchor授权的。
 
 ### 申明删除（ Declared Hidden ）
 
-- Follow the latest anchor data to confirm the hidden list.
+- 基于区块链的特性，链上的数据是无法删除的，`Easy Protocol`建立一种基于透明数据的申明删除方式，实现指定数据的隐藏。这让遵循`Easy Protocol`建立的应用程序，可以模拟删除操作，衔接现有的开发模式。
 
-#### 直接申明
+- `Easy Protocol`的申明删除，只能对自己实现，使用`hidden`关键字来实现。
 
-```Javascript
-    {
-        "hidden":[ BLOCK_NUMBER , BLOCK_NUMBER , ... ]
-        ...
-    }
-```
+- 直接申明删除，此方式下，仅使用最新的数据
 
-#### 链锚申明
+    ```Javascript
+        {
+            "hidden":[ BLOCK_NUMBER , BLOCK_NUMBER , ... ]
+            ...
+        }
+    ```
 
-```Javascript
-    {
-        "hidden": "ANCHOR_NAME"
-        ...
-    }
-```
+- 链锚申明删除，此方式下，仅使用最新的数据
 
-### 运行代码
+    ```Javascript
+        {
+            "hidden": "ANCHOR_NAME"
+            ...
+        }
 
-- Anchor Raw Data is used to storage code.
-
-- The max Anchor Raw data length is 4MB max.
+        //ANCHOR_NAME 数据样式
+        [ BLOCK_NUMBER , BLOCK_NUMBER , ... ]
+    ```
 
 ## 关键字
 
 ### 基本情况
 
-- 使用JSON对协议进行表达
+- `Easy Protocol`使用`JSON`格式，基本样例如下：
 
     ```JSON
         {
@@ -143,7 +160,7 @@
         }
     ```
 
-- 数据字符串化后的最大长度为256字节，便于方便的保存在链上。
+- `Easy Protocol`数据字符串化后的最大长度为256字节，便于存储于链上，
 
 ### 关键字分类
 
