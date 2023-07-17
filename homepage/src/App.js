@@ -29,8 +29,8 @@ function App() {
       <Points />
       <Protocol />
       <Loader />
-      <Frontend />
-      <Backend />
+      {/* <Frontend />
+      <Backend /> */}
       <Plinth />
       <Demo />
       <Gateway />

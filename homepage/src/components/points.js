@@ -1,12 +1,15 @@
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
 function Points() {
+  //sample icon url
+  //https://www.iconfont.cn/illustrations_3d/detail?spm=a313x.7781069.1998910419.d9df05512&cid=45524
+  
   return (
     <Container id="anchor">
       <Row className='pb-4'>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/P_01.png" />
             <Card.Body>
               <Card.Title>Name Service</Card.Title>
               <Card.Text>
@@ -18,7 +21,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/P_02.png" />
             <Card.Body>
               <Card.Title>Key-value Storage</Card.Title>
               <Card.Text>
@@ -30,7 +33,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/P_03.png" />
             <Card.Body>
               <Card.Title>On-Chain Linked List</Card.Title>
               <Card.Text>
@@ -42,7 +45,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/P_04.png" />
             <Card.Body>
               <Card.Title>Anchor Link</Card.Title>
               <Card.Text>
@@ -54,7 +57,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/P_05.png" />
             <Card.Body>
               <Card.Title>Easy Protocol</Card.Title>
               <Card.Text>
@@ -66,7 +69,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/P_06.png" />
             <Card.Body>
               <Card.Title>Totally Blockchain</Card.Title>
               <Card.Text>

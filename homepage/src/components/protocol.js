@@ -4,7 +4,7 @@ import { Container, Row, Col, Nav } from 'react-bootstrap';
 function Protocol() {
 
   const cmap={
-    background:'url("imgs/003.svg") no-repeat center center',
+    background:'url("imgs/protocol.png") no-repeat center center',
     'background-size': 'cover',
     'min-height':'600px',
   };

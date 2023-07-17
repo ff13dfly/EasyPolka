@@ -6,7 +6,7 @@ function Slide() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="imgs/001.svg"
+          src="imgs/Banner_01.png"
           alt="First slide"
         />
         <Carousel.Caption>
@@ -17,7 +17,7 @@ function Slide() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="imgs/002.svg"
+          src="imgs/Banner_02.png"
           alt="Second slide"
         />
 
@@ -29,7 +29,7 @@ function Slide() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="imgs/003.svg"
+          src="imgs/Banner_03.png"
           alt="Third slide"
         />
 
