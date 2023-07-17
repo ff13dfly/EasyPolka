@@ -4,63 +4,78 @@
 
 ## 概述
 
-- `Easy Protocol`是用来实现链上应用程序的协议，基于简单易读的JSON，现在的版本是`v1.0`。`Easy Protocol`着力解决链上数据的关系，建立一个可以自启动的区块链网络，通过单一的入口就可以进入整个Web3.0的世界。
+- `Easy Protocol`是用来实现全链应用程序的协议，基于简单易读的JSON，现在的版本是`v1.0`。`Easy Protocol`着力解决链上数据的关系，建立一个可以自启动的区块链网络（Anchor Network），这样，就可以通过单一的去中心化的入口来访问Web3.0的世界。
 
 ![a image show the relationship of Anchors]()
 
-- `Easy Protocol`大小写不敏感，最大协议长度是256字节。`Easy Protocol`不对运行的代码进行限定。为方便描述说明问题，以下将采用Javascript和JSON的方式进行描述说明。
+- `Easy Protocol`的协议主体大小写不敏感，最大长度是256字节。`Easy Protocol`不对运行的代码进行限定。为方便描述，以下将采用Javascript和JSON的形式进行代码说明。
 
-- `Easy Protocol`基于`Anchor Network`的特性来实现。
+- `Easy Protocol`是如何实现可自启动的Web3.0的呢？是基于以下两个特性
+    1. 数据全上链。当所有数据都在链上的时候，就可以实现链上启动Web3.0的功能，只需要一个加载器来引导到对应的入口程序。
+    2. 链上数据可组织。对链上的资源进行简单和固定方式进行定位和访问，是组织大型程序的基础，同时，还要处理好资源之间的有效性、授权关系。
+
+- 以下章节将介绍`Easy Protocol`的特性，简介如下：
+    1.`词汇表`:涉及到的概念，协议中的定义及特性说明
+    2.`数据结构`:协议主要构成部分，说明了协议的存储结构，数据关联的锚链接，以及链锚的授权关系和申明删除
+    3.`关键字`:详解协议中各个关键字的定义及使用方法
+    4.`错误处理`:协议中出现的各种错误的说明及状态码
+    5.`启动器`:从链上实现程序启动的启动器
 
 ## 词汇表
 
-1. Anchor，链锚，一种存储在链上的KV数据系统，使用Anchor名称来唯一标定链上的资源。
-2. Anchor Linker，类似于URI的链上资源链接
-3. Declared Hidden，数据所有者通过显性的申明，隐藏指定的链上数据
-4. Launcher，加载其他cApp的入口程序，可以对账号等进行管理
-5. Booter，从链上启动的加载程序，对API进行管理
+1. Anchor，链锚，`Easy Protocol`协议使用的链上数据存储方式，既是高效的KV链上储存，也是可回溯的线上链表储存。
+2. Anchor Linker，类似于URI的链上资源链接，可以直接标定链锚数据。
+3. Declared Hidden，数据所有者通过显性的申明，隐藏指定的链上数据，是一种伪删除。
+4. Authorty，链锚数据之间的相互信任关系
+5. Loader，从链上启动程序的加载器，通过该加载器即可浏览整个链的内容，类似于计算机系统的BIOS。
 
 ## 数据结构
 
-### 链锚（ Anchor ）
+### 数据存储 （链锚）
 
-- Anchor data sample as follow. On-chain data is trustable, linked list way can save the storage and make every step of development meanful.
+- `Easy Protocol`的数据由4部分组成，`name`用来标识唯一性，`raw`是存储部分，`protocol`是数据的协议部分，`pre`用来建立链上数据的连接关系。可以表述成如下的数据关系：
 
     ```Javascript
         {
-            "name":"",        //unique name, called `Anchor Name`
-            "raw":"",         //code or customized data
-            "protocol":{      //Easy Protocol content
+            "name":"UNIQUE_NAME",       //unique name, called `Anchor Name`
+            "raw":"CUSTOMIZE_DATA",     //code or customized data
+            "protocol":{                //Easy Protocol content
                 ...
             }
-            "pre":0,          //block number of previouse anchor data
+            "pre":0,                    //block number of previouse anchor data
         }
     ```
 
-    | Keywords | Type | Min | Max |
-    | ------ | ----------- |----------- |----------- |
-    | name | `string` | 0 | 40 |
-    | raw | `vec<u8>` | 0 | 4MB|
-    | protocol | `vec<u8>` | 0 | 256 |
-    | pre | `u128` |0 | * |
+    | Keywords | Type | Min | Max | Notes
+    | ------ | ----------- |----------- |----------- | ----------- |
+    | name | `string` | 0 | 40 | `?` reversed
+    | raw | `vec<u8>` | 0 | 4MB| suggest |
+    | protocol | `vec<u8>` | 0 | 256 | suggest |
+    | pre | `u128` |0 | * | |
 
-- Ownership. Anchor must be owned to single one account. Only the owner can modify the Anchor, and every modification must be storaged.Ownership can be transfered, but the history data must be linked to the owner when data was updating.
+- 将Anchor写入到链上（例如 Anchor Network），就确定了其所有者，即对数据进行了保护。一来数据被写入链上，已经处于无法篡改的状态；二来数据的更新，也必须要所有者权限才能进行。链锚的数据通过`pre`进行关联，形成链上链表的数据结构，历史数据也可以方便的进行获取。
 
-- Unique Anchor name. Like Domain Name, Anchor Name is unique on blockchain network.
-
-- On-chain Linked List.
+- `Easy Protocol`链上数据储存的状态如下图所示, 链上状态只需要记录最后一个区块数据"6782"即可。
+    ![Linked List Diagram](diagram/LinkedList.png)
 
 ### 锚链接（ Anchor Link ）
 
-- `?`作为锚链接的参数分割符，对于用于`Easy Protocol`的链锚名称里不应该包含。
+- 锚链接是类似于URI的链上数据定位字符串，可以唯一的定位链上的资源。其完整格式如下所示意。
 
-- 锚链接是类似于URI的链上数据定位字符串，可以唯一的定位链上的资源。暂不支持白皮书里的`@`网络定位符。
-
-    ```TEXT
-        anchor://{name}[/][{block}][/][?][{key}={val}&{key}={val}]
+    ```SHELL
+        # Format of Anchor Link
+        anchor://{name}[/][{block}][/][?][{key}={val}&{key}={val}][@][network]
     ```
 
-- Charactor `?` is reversed, the name which including `?` is not supported by `Easy Protocol`.
+     ```SHELL
+        # "hello" sample
+        anchor://hello
+        anchor://hello/1886
+        anchor://hello/1886?tpl=dark&title=today
+        anchor://hello/1886?tpl=dark&title=today@testnet
+    ```
+
+- `?`作为锚链接的参数分割符，对于用于`Easy Protocol`的链锚名称里不应该包含。
 
 - 参数覆盖问题，anchor数据上可以设置参数，而外部也可以穿入参数，如果出现冲突，传入的参数优先。
 
@@ -90,7 +105,21 @@
 
 #### 直接申明
 
+```Javascript
+    {
+        "hidden":[ BLOCK_NUMBER , BLOCK_NUMBER , ... ]
+        ...
+    }
+```
+
 #### 链锚申明
+
+```Javascript
+    {
+        "hidden": "ANCHOR_NAME"
+        ...
+    }
+```
 
 ### 运行代码
 
@@ -170,100 +199,3 @@
 #### 权限类错误
 
 #### 其他错误
-
-
-- **------------------------以下部分为原来的，需要调整---------------------------------**
-
-## 实现细节
-
-### How To Launch
-
-- The reversed keyword `type` is treated as the start of `Easy Protocol`, when the `protocol` data is a JSON string and the keyword is one of the JSON key. Then it is a `Easy Protocol` anchor.
-
-![Easy Protocol Decode Map](../images/on_chain_linked_list.png)
-
-- Anchor data will be checked as follow.
-
-    1. Check Anchor `protocol`, if it is `JSON` format and do have the keyword `type`.
-    2. By `type`, Anchor will be treated as three types, `DATA`, `APP` and `LIB`.
-    3. Public support functions. `hide`,`auth` and `salt`.
-    4. `APP` support functions. `call` and `push`.
-
-- Anchor link checking need to read Anchor network data.
-
-### Reversed Keywords
-
-- Depending on different type, the reversed keywords group as following table.
-
-    | Type | All | Public | Extend |
-    | ------ | ----------- |----------- |----------- |
-    | App | type,fmt,ver| [hide],[auth],[salt] | [lib] |
-    | Data | type,fmt|[hide],[auth],[salt]|[code],[call],[push],[args]|
-    | Lib | type,fmt | [hide],[auth],[salt]| [code],[lib],[ext] |
-
-## Types of Anchor
-
-### Data
-
-- `type`, must be `data`.
-- `fmt`
-- `hide`
-- `auth`
-- `salt`
-- `call`
-- `args`
-- `code`
-- `push`
-
-### App
-
-- `type`, must be `app`.
-- `fmt`
-- `ver`
-- `hide`
-- `auth`
-- `salt`
-- `lib`
-
-### Lib
-
-- `type`, must be `lib`.
-- `fmt`
-- `hide`
-- `auth`
-- `salt`
-- `lib`, the cycle calling problem.
-- `ext`
-- `code`
-
-## Extend Functions
-
-### Hide Target Anchor History
-
-- If there is `hide` keyword in protocol, will check the target anchor `hide`.
-
-- If theer is `salt` keyword in protocol, will check the target `hash( anchor + salt[1] )` to check hide block list. It is to avoid the same hash result.
-
-- Important, the `hide` Anchor can be not owned to the owner of original Anchor. It means that the owner of Anchor can modify the target `hide` Anchor, in these cases, the same Anchor can act differently.
-
-- Will use the latest anchor `hide`, historical ones can be used to track.
-
-#### Authrity of Anchor
-
-- If there is `auth` keyword in protocol, will check the target anchor `auth`.
-
-- If theer is `salt` keyword in protocol, will check the target `hash( anchor + salt[0] )` to check authority list.
-
-- Important, the `hide` Anchor can be not owned to the owner of original Anchor.
-
-- Will use the latest anchor `auth`, historical ones can be used to track.
-
-#### Library Management
-
-- Easy Protocol support full on-chain application.
-
-## Glossary
-
-- Anchor
-- Anchor Name
-- Anchor Link
