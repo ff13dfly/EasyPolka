@@ -6,7 +6,7 @@ function Demo() {
       <Row className='pb-4'>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/demo_01.png" />
             <Card.Body>
               <Card.Title>Plinth</Card.Title>
               <Card.Text>
@@ -18,7 +18,7 @@ function Demo() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/demo_01.png" />
             <Card.Body>
               <Card.Title>FreeSaying</Card.Title>
               <Card.Text>
@@ -30,7 +30,7 @@ function Demo() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/point_01.png" />
+            <Card.Img variant="top" src="imgs/demo_01.png" />
             <Card.Body>
               <Card.Title>Virtual Block World</Card.Title>
               <Card.Text>
