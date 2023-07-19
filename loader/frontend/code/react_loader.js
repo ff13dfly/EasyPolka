@@ -146,7 +146,7 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                                     const APIs = {
                                         anchorJS: anchorJS,
                                     }
-                                    self.step(`Application loaded, run in 10s.`, () => {
+                                    self.step(`Application loaded, run in 3s.`, () => {
                                         if (res.libs && res.libs.css) {
                                             const css = res.libs.css;
                                             const head = document.getElementsByTagName('head')[0];
@@ -157,7 +157,7 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                                         }
                                         self.hide(["step", "info"]);
                                         capp(APIs, input, []);
-                                    }, 10000);
+                                    }, 3000);
                                 } catch (error) {
                                     console.log(error);
                                 }
