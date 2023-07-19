@@ -12,6 +12,9 @@ code {
     monospace;
 }
 
-#protocol { color :#FFF}
-#plinth { color :#FFF}
-#gateway { color :#FFF}
+#protocol { color :#f4de71}
+#protocol h3{font-size: 66px;color :#f4de71;}
+#plinth { color :#f4de71;font-size: 24px;}
+#plinth h3{font-size: 66px;color :#f4de71;}
+#gateway { color :#f4de71}
+#gateway h3{font-size: 66px;color :#f4de71;}

@@ -2,7 +2,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 
 function Plinth() {
   const cmap={
-    background:'url("imgs/Plinth.png") no-repeat center center',
+    background:'url("imgs/plinth.jpg") no-repeat center center',
     'background-size': 'cover',
     'min-height':'600px',
   };

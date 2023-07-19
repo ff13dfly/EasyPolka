@@ -6,7 +6,7 @@ function Slide() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="imgs/Banner_01.png"
+          src="imgs/Banner_01.jpg"
           alt="First slide"
         />
         <Carousel.Caption>
@@ -17,7 +17,7 @@ function Slide() {
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="imgs/Banner_02.png"
+          src="imgs/Banner_02.jpg"
           alt="Second slide"
         />
 
@@ -26,18 +26,6 @@ function Slide() {
           <p>This is a blockchain network to deploy the dApp UI and SDK, without Smart Contract.</p>
         </Carousel.Caption>
       </Carousel.Item>
-      {/* <Carousel.Item>
-        <img
-          className="d-block w-100"
-          src="imgs/Banner_03.png"
-          alt="Third slide"
-        />
-
-        <Carousel.Caption>
-          <h3>Free To Join Web3.0</h3>
-          <p>Free to browser the data on chain and easy to join fether.</p>
-        </Carousel.Caption>
-      </Carousel.Item> */}
     </Carousel>
   );
 }

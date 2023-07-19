@@ -2,7 +2,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 
 function Gateway() {
   const cmap={
-    background:'url("imgs/Gateway.png") no-repeat center center',
+    background:'url("imgs/gateway.jpg") no-repeat center center',
     'background-size': 'cover',
     'min-height':'600px',
   };

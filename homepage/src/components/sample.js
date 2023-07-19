@@ -6,7 +6,7 @@ function Sample() {
       <Row className='pb-4'>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/sample_01.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_07.jpg" />
             <Card.Body>
               <Card.Title>Gateway UI</Card.Title>
               <Card.Text>
@@ -18,7 +18,7 @@ function Sample() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/sample_01.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_08.jpg" />
             <Card.Body>
               <Card.Title>Gate Hub</Card.Title>
               <Card.Text>
@@ -30,7 +30,7 @@ function Sample() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/sample_01.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_09.jpg" />
             <Card.Body>
               <Card.Title>Gateway vService</Card.Title>
               <Card.Text>

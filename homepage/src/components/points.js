@@ -9,7 +9,7 @@ function Points() {
       <Row className='pb-4'>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/P_01.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_01.jpg" />
             <Card.Body>
               <Card.Title>Name Service</Card.Title>
               <Card.Text>
@@ -21,7 +21,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/P_02.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_02.jpg" />
             <Card.Body>
               <Card.Title>Key-value Storage</Card.Title>
               <Card.Text>
@@ -33,7 +33,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/P_03.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_03.jpg" />
             <Card.Body>
               <Card.Title>On-Chain Linked List</Card.Title>
               <Card.Text>
@@ -45,7 +45,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/P_04.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_04.jpg" />
             <Card.Body>
               <Card.Title>Anchor Link</Card.Title>
               <Card.Text>
@@ -57,7 +57,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/P_05.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_05.jpg" />
             <Card.Body>
               <Card.Title>Easy Protocol</Card.Title>
               <Card.Text>
@@ -69,7 +69,7 @@ function Points() {
         </Col>
         <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
           <Card>
-            <Card.Img variant="top" src="imgs/P_06.png" />
+            <Card.Img variant="top" src="imgs/small_thumb_06.jpg" />
             <Card.Body>
               <Card.Title>Totally Blockchain</Card.Title>
               <Card.Text>
