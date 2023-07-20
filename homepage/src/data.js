@@ -6,7 +6,7 @@ module.exports={
       thumb:"imgs/Banner_01.jpg",
     },
     {
-      title:"Deploy Blockchain of dApp",
+      title:"Single Pole of dApps",
       desc:"This is a blockchain network to deploy the dApp UI and SDK, without Smart Contract.",
       thumb:"imgs/Banner_02.jpg",
     },
@@ -64,10 +64,29 @@ module.exports={
       },
     ]
   },
+  loader:{
+    subject:{
+      desc:[
+        "Easy Protocol is a simple way to group the resource of Web3.0 world. The only thing you need to remember is the Anchor name.",
+        "By this way, you can load application or storage data on Anchor Network."
+      ],
+      background:"imgs/loader.png",
+    },
+    frontend:{
+      title:"Frontend",
+      desc:"By deploy the loader of frontend, you can run Anchor application directly by html hash. It is a simple way, the url as follow :",
+      code:"loader.html#hello@wss://dev.metanchor.net",
+    },
+    backend:{
+      title:"Backend",
+      desc:"The backend need NodeJS support, please make sure your system can run NodeJS properly.",
+      code:"node loader.js anchor://hello/",
+    }
+  },
   plinth:{
     subject:{
       title:"Plinth",
-      desc:"Your Web3.0 browser",
+      desc:"Your Web3.0",
       background:"imgs/plinth.jpg",
     },
     list:[
@@ -105,8 +124,17 @@ module.exports={
       link:"http://loader.metanchor.net/#vbw@wss://dev.metanchor.net",
     },
   ],
+  gateway:{
+    title:"Gateway Micro-service",
+    details:[
+      "The micro-server framework for Anchor network.",
+      "Javascript is the only language you need to know.",
+      "Easy to deploy and recover the whole system.",
+    ],
+    background:"imgs/gateway.jpg",
+  },
   sample:{
-    desc:"With the support of Easy Protol, the application can be deployed on chain, either the frontend UI or the backend server.",
+    desc:"Benifit from Easy Protol, the application can be deployed on chain, either the frontend UI or the backend server.",
     list:[
       {
         title:"Gateway UI",
@@ -114,13 +142,13 @@ module.exports={
         thumb:"imgs/gateway_ui.jpg",
       },
       {
-        title:"FreeSaying",
-        desc:"Social App base on Anchor network totally. Free module of Anchor Network.",
+        title:"Gate Hub",
+        desc:"The entry application to organize the vService and expose APIs to dApps.",
         thumb:"imgs/gateway_hub.jpg",
       },
       {
-        title:"Virtual Block World",
-        desc:"A total Web3.0 virtual world, even the world structure.",
+        title:"Gateway vService",
+        desc:" Micro-service, the implement of complex logical, simple and stable.",
         thumb:"imgs/gateway_vservice.jpg",
       },
     ]

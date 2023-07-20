@@ -11,27 +11,21 @@ import Loader from './components/loader';
 import Join from './components/join';
 import Gateway from './components/gateway';
 import Sample from './components/sample';
-
 import Footer from './components/footer';
 
 import data from './data';
 
 function App() {
-
-  // useEffect(() => {
-
-  // }, []);
-
   return (
     <div>
       <Navigator />
       <Slide list={data.slide}/>
       <Points list={data.points}/>
       <Protocol subject={data.protocol.subject} list={data.protocol.list}/>
-      <Loader />
+      <Loader subject={data.loader.subject} backend={data.loader.backend} frontend={data.loader.frontend} />
       <Plinth subject={data.plinth.subject} list={data.plinth.list}/>
       <Demo list={data.demo}/>
-      <Gateway />
+      <Gateway subject={data.gateway}/>
       <Sample list={data.sample.list} desc={data.sample.desc}/>
       <Join />
       <Footer />
