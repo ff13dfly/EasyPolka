@@ -2,7 +2,7 @@ module.exports={
   slide:[
     {
       title:"Self Bootstrap Web3.0 Network",
-      desc:"You can access the whole Web3.0 world by single loader.",
+      desc:"You can access the whole Web3.0 via Anchor Network base on Substrate.",
       thumb:"imgs/Banner_01.jpg",
     },
     {
@@ -38,7 +38,7 @@ module.exports={
       thumb:"imgs/p_easy_protocol.jpg",
     },
     {
-      title:"Full Blockchain",
+      title:"Base on Substrate",
       desc:"All data on-chain even the dApp UI and SDK.",
       thumb:"imgs/p_full_chain.jpg",
     }
@@ -52,15 +52,15 @@ module.exports={
     list:[
       {
         title:"Self Bootstrap",
-        sub:"",
+        sub:"Only loader needed to run the dApps.",
       },
       {
         title:"Anchor Link",
-        sub:"",
+        sub:"Pretty simple way to link resource on chain.",
       },
       {
         title:"Declared Hide",
-        sub:"",
+        sub:"A way to hide blockchain data.",
       },
     ]
   },

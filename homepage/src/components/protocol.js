@@ -21,7 +21,10 @@ function Protocol(props) {
           </Col>
           <Col md={5} lg={5} xl={5} xxl={5} className='pt-4'>
             {list.map((item, key) => (
-              <h4 key={key}>{item.title}</h4>
+              <div key={key}>
+                <h4 >{item.title}</h4>
+                <p>{item.sub}</p>
+              </div>
             ))}
           </Col>
         </Row>

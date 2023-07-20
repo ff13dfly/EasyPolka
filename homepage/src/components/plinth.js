@@ -21,10 +21,10 @@ function Plinth(props) {
         <Row className='pt-4'>
           <Col md={cols.right} lg={cols.right} xl={cols.right} xxl={cols.right} className='pt-4'>
             {list.map((item, key) => (
-              <p key={key}>
+              <div key={key}>
                 <h4 >{item.title}</h4>
                 <p>{item.sub}</p>
-              </p>
+              </div>
             ))}
           </Col>
           <Col md={cols.mid} lg={cols.mid} xl={cols.mid} xxl={cols.mid} className='pt-4'></Col>

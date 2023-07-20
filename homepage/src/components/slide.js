@@ -1,7 +1,6 @@
 import { Carousel } from 'react-bootstrap';
 
 function Slide(props) {
-  console.log(props);
   return (
     <Carousel id="slide">
       {props.list.map((item, key) => (
