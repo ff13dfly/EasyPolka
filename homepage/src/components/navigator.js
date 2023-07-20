@@ -5,7 +5,7 @@ function Navigator() {
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
         <Navbar.Brand href="#home">Anchor Network</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" >
           <Nav className="me-auto">
             <Nav.Link href="#home">Home</Nav.Link>
@@ -14,14 +14,12 @@ function Navigator() {
             <Nav.Link href="#plinth">Plinth</Nav.Link>
             <Nav.Link href="#gateway">Gateway</Nav.Link>
             <NavDropdown title="Document" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#">Anchor Pallet</NavDropdown.Item>
-              <NavDropdown.Item href="#">AnchorJS</NavDropdown.Item>
+              <NavDropdown.Item href="https://github.com/ff13dfly/Anchor/tree/main/README.md">Anchor Pallet</NavDropdown.Item>
+              <NavDropdown.Item href="https://github.com/ff13dfly/EasyPolka/tree/main/anchorJS/README.md">AnchorJS</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#">Easy Protocol</NavDropdown.Item>
+              <NavDropdown.Item href="https://github.com/ff13dfly/EasyPolka/tree/main/protocol/README.md">Easy Protocol</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#">Gateway</NavDropdown.Item>
-              <NavDropdown.Item href="#">Gateway Hub</NavDropdown.Item>
-              <NavDropdown.Item href="#">Gateway vService</NavDropdown.Item>
+              <NavDropdown.Item href="https://github.com/ff13dfly/EasyPolka/tree/main/gateway/README.md#">Gateway</NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title="Demo" id="basic-nav-dropdown">
               <NavDropdown.Item href="https://polkadot.js.org/apps/?rpc=wss://dev.metanchor.net">Dev Network</NavDropdown.Item>
@@ -32,7 +30,7 @@ function Navigator() {
               <NavDropdown.Item href="https://gateway.metanchor.net">Gateway UI</NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title="Github" id="basic-nav-dropdown">
-            <NavDropdown.Item href="https://github.com/ff13dfly/Anchor">
+              <NavDropdown.Item href="https://github.com/ff13dfly/Anchor">
                 Anchor Pallet
               </NavDropdown.Item>
               <NavDropdown.Item href="https://github.com/ff13dfly/EasyPolka/tree/main/anchorJS">
@@ -40,9 +38,6 @@ function Navigator() {
               </NavDropdown.Item>
               <NavDropdown.Item href="https://playground.metanchor.net">Playground</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="https://github.com/ff13dfly/plinth">
-                Plinth
-              </NavDropdown.Item>
               <NavDropdown.Item href="https://github.com/ff13dfly/EasyPolka/tree/main/protocol">
                 Easy Protocol
               </NavDropdown.Item>
@@ -51,6 +46,9 @@ function Navigator() {
               </NavDropdown.Item>
               <NavDropdown.Item href="https://github.com/ff13dfly/EasyPolka/tree/main/convertor">
                 Convertor
+              </NavDropdown.Item>
+              <NavDropdown.Item href="https://github.com/ff13dfly/plinth">
+                Plinth
               </NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item href="https://github.com/ff13dfly/EasyPolka/tree/main/gateway/UI">

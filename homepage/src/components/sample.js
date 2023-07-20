@@ -7,7 +7,9 @@ function Sample(props) {
     <Container>
       <Row id="intro_gateway">
         <Col md={12} lg={12} xl={12} xxl={12} className='pt-4'>
-          <p>{desc}</p>
+          {desc.map((item, key) => (
+            <p key={key}>{item}</p>
+          ))}
         </Col>
       </Row>
       <Row className='pb-4'>

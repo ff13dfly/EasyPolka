@@ -134,7 +134,10 @@ module.exports={
     background:"imgs/gateway.jpg",
   },
   sample:{
-    desc:"Benifit from Easy Protol, the application can be deployed on chain, either the frontend UI or the backend server.",
+    desc:[
+      "Benifit from Easy Protol, the application can be deployed on chain, either the frontend UI or the backend server.",
+      "Mirco-service is a good way to solve the complex of Web3.0 world. Decentralize is another problem need to solve. You can recover your system from Anchor Network very fast.",
+    ],
     list:[
       {
         title:"Gateway UI",
