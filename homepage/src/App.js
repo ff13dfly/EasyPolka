@@ -8,13 +8,13 @@ import Protocol from './components/protocol';
 import Demo from './components/demo';
 import Plinth from './components/plinth';
 import Loader from './components/loader';
-import Backend from './components/backend';
-import Frontend from './components/frontend';
 import Join from './components/join';
 import Gateway from './components/gateway';
 import Sample from './components/sample';
 
 import Footer from './components/footer';
+
+import data from './data';
 
 function App() {
 
@@ -25,16 +25,14 @@ function App() {
   return (
     <div>
       <Navigator />
-      <Slide/>
-      <Points />
-      <Protocol />
+      <Slide list={data.slide}/>
+      <Points list={data.points}/>
+      <Protocol subject={data.protocol.subject} list={data.protocol.list}/>
       <Loader />
-      {/* <Frontend />
-      <Backend /> */}
-      <Plinth />
-      <Demo />
+      <Plinth subject={data.plinth.subject} list={data.plinth.list}/>
+      <Demo list={data.demo}/>
       <Gateway />
-      <Sample />
+      <Sample list={data.sample.list} desc={data.sample.desc}/>
       <Join />
       <Footer />
     </div>

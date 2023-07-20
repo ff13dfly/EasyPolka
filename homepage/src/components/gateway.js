@@ -3,8 +3,8 @@ import { Container, Row, Col } from 'react-bootstrap';
 function Gateway() {
   const cmap={
     background:'url("imgs/gateway.jpg") no-repeat center center',
-    'background-size': 'cover',
-    'min-height':'600px',
+    'backgroundSize': 'cover',
+    'minHeight':'600px',
   };
   return (
     <div expand="lg" className="bg-body-tertiary pt-4" id="gateway" style={cmap}>

@@ -1,12 +1,14 @@
 import { Container, Row, Col, Nav } from 'react-bootstrap';
 
 
-function Protocol() {
+function Protocol(props) {
+  const subject = props.subject;
+  const list = props.list;
 
-  const cmap={
-    background:'url("imgs/protocol.jpg") no-repeat center center',
-    'background-size': 'cover',
-    'min-height':'600px',
+  const cmap = {
+    background: `url("${subject.background}") no-repeat center center`,
+    'backgroundSize': 'cover',
+    'minHeight': '600px',
   };
 
   return (
@@ -14,16 +16,15 @@ function Protocol() {
       <Container>
         <Row>
           <Col md={7} lg={7} xl={7} xxl={7} className='pt-4'>
-            <h3>Easy Protocol</h3>
-            <p>A simple protocol to group Web3.0 resource.</p>
+            <h3>{subject.title}</h3>
+            <p>{subject.desc}</p>
           </Col>
           <Col md={5} lg={5} xl={5} xxl={5} className='pt-4'>
-            <h4>Self Bootstrap</h4>
-            <h4>Anchor Link</h4>
-            <h4>Declared Hide</h4>
+            {list.map((item, key) => (
+              <h4 key={key}>{item.title}</h4>
+            ))}
           </Col>
         </Row>
-        
       </Container>
     </div>
   );

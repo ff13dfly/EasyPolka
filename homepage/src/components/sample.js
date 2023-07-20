@@ -1,47 +1,27 @@
-import { Container, Row, Col,Card } from 'react-bootstrap';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 
-function Sample() {
+function Sample(props) {
+  const desc = props.desc;
+  const list = props.list;
   return (
     <Container>
       <Row id="intro_gateway">
-          <Col md={12} lg={12} xl={12} xxl={12} className='pt-4'>
-            <p>With the support of Easy Protol, the application can be deployed on chain, either the frontend UI or the backend server.</p>
-          </Col>
-        </Row>
+        <Col md={12} lg={12} xl={12} xxl={12} className='pt-4'>
+          <p>{desc}</p>
+        </Col>
+      </Row>
       <Row className='pb-4'>
-        <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
-          <Card>
-            <Card.Img variant="top" src="imgs/gateway_ui.jpg" />
-            <Card.Body>
-              <Card.Title>Gateway UI</Card.Title>
-              <Card.Text>
-                The UI of Gateway to manage the whole micro-service system.
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
-          <Card>
-            <Card.Img variant="top" src="imgs/gateway_hub.jpg" />
-            <Card.Body>
-              <Card.Title>Gate Hub</Card.Title>
-              <Card.Text>
-                The entry application to organize the vService and expose APIs to dApps.
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
-          <Card>
-            <Card.Img variant="top" src="imgs/gateway_vservice.jpg" />
-            <Card.Body>
-              <Card.Title>Gateway vService</Card.Title>
-              <Card.Text>
-                Micro-service, the implement of complex logical, simple and stable.
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
+        {list.map((item, key) => (
+          <Col md={4} lg={4} xl={4} xxl={4} className='pt-4' key={key}>
+            <Card>
+              <Card.Img variant="top" src={item.thumb} />
+              <Card.Body>
+                <Card.Title>{item.title}</Card.Title>
+                <Card.Text>{item.desc}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
       </Row>
     </Container>
   );

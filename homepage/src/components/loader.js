@@ -3,7 +3,6 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 function Loader() {
   return (
     <Container>
-
       <Row id="intro_protocol">
           <Col md={5} lg={5} xl={5} xxl={5} className='pt-4'>
             <p>With the support of Easy Protol, the application can be deployed on chain, either the frontend UI or the backend server.</p>
@@ -22,9 +21,9 @@ function Loader() {
               <Card.Text>
                 By deploy the loader of frontend, you can run Anchor application directly by html hash.
                 It is a simple way, the url as follow :
-                <div id="code_shell">
+                <p id="code_shell">
                   loader.html#hello@wss://dev.metanchor.net
-                </div>
+                </p>
               </Card.Text>
             </Card.Body>
           </Card>
@@ -35,9 +34,9 @@ function Loader() {
               <Card.Title>Backend</Card.Title>
               <Card.Text>
                 The backend need NodeJS support, please make sure your system can run NodeJS properly.
-                <div id="code_node">
+                <p id="code_node">
                   node loader.js anchor://hello/
-                </div>
+                </p>
               </Card.Text>
             </Card.Body>
           </Card>
