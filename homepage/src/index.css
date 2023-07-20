@@ -11,16 +11,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-#slide h3{color :#f3e447;font-size: 66px;box-shadow: #f3e447;}
-#slide p{font-size: 24px;}
-#protocol { color :#f3e447}
-#protocol h3{font-size: 66px;color :#f3e447;}
-#protocol h4{font-size: 48px;color :#f3e447;}
-#protocol p{font-size: 24px;color :#f3e447;}
+#slide h3{color :#f3e447;font-size: 66px;box-shadow: #f3e447;text-shadow: 2px 0px 5px #666666}
+#slide p{font-size: 24px;color: #000;}
+#protocol { color :#f3e447;}
+#protocol h3{font-size: 66px;color :#f3e447;text-shadow: 5px 0px 5px #000000}
+#protocol h4{font-size: 48px;color :#f3e447;text-shadow: 5px 0px 5px #000000}
+#protocol p{font-size: 24px;color :#f3e447;text-shadow: 2px 0px 5px #000000}
 #plinth { color :#f3e447;font-size: 24px;}
-#plinth h3{font-size: 66px;color :#f3e447;}
+#plinth h3{font-size: 66px;color :#f3e447;text-shadow: 5px 0px 5px #000000}
+#plinth h4{font-size: 48px;color :#f3e447;text-shadow: 5px 0px 5px #000000}
+#plinth p{text-shadow: 2px 0px 5px #000000}
 #gateway { color :#f3e447}
-#gateway h3{font-size: 66px;color :#f3e447;}
-#gateway p{font-size: 24px;color :#f3e447;}
+#gateway h3{font-size: 66px;color :#f3e447;text-shadow: 5px 0px 5px #000000}
+#gateway p{font-size: 24px;color :#f3e447;text-shadow: 2px 0px 5px #000000}
 #intro_protocol {font-size: 24px;}
 #intro_gateway {font-size: 24px;}
+
+#code_shell{width: 100%;background: #f3e447;color :#000000;font-weight: bold;
+  border-radius: 8px;padding: 10px 10px 10px 10px;margin: 10px 0px 10px 0px;
+}
+
+#code_node{width: 100%;background: #f3e447;color :#000000;font-weight: bold;
+  border-radius: 8px;padding: 10px 10px 10px 10px;margin: 10px 0px 10px 0px;
+}

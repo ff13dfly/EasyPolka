@@ -18,11 +18,13 @@ function Loader() {
         <Col md={6} lg={6} xl={6} xxl={6} className='pt-4'>
           <Card>
             <Card.Body>
-              <Card.Title>Chain Application</Card.Title>
+              <Card.Title>Frontend</Card.Title>
               <Card.Text>
-                One single html file.
-                Easy deploy, only http server needed.
-                Meanful hash.
+                By deploy the loader of frontend, you can run Anchor application directly by html hash.
+                It is a simple way, the url as follow :
+                <div id="code_shell">
+                  loader.html#hello@wss://dev.metanchor.net
+                </div>
               </Card.Text>
             </Card.Body>
           </Card>
@@ -30,10 +32,12 @@ function Loader() {
         <Col md={6} lg={6} xl={6} xxl={6} className='pt-4'>
           <Card>
             <Card.Body>
-              <Card.Title>NodeJS</Card.Title>
+              <Card.Title>Backend</Card.Title>
               <Card.Text>
-                Anchor link support.
-                Parameters from command line.
+                The backend need NodeJS support, please make sure your system can run NodeJS properly.
+                <div id="code_node">
+                  node loader.js anchor://hello/
+                </div>
               </Card.Text>
             </Card.Body>
           </Card>
