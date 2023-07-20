@@ -2,7 +2,7 @@ import { Carousel } from 'react-bootstrap';
 
 function Slide() {
   return (
-    <Carousel>
+    <Carousel id="slide">
       <Carousel.Item>
         <img
           className="d-block w-100"
@@ -22,7 +22,7 @@ function Slide() {
         />
 
         <Carousel.Caption>
-          <h3>No-finance Blockchain</h3>
+          <h3>Deploy Blockchain of dApp</h3>
           <p>This is a blockchain network to deploy the dApp UI and SDK, without Smart Contract.</p>
         </Carousel.Caption>
       </Carousel.Item>

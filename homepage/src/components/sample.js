@@ -15,7 +15,7 @@ function Sample() {
             <Card.Body>
               <Card.Title>Gateway UI</Card.Title>
               <Card.Text>
-                The UI of Gateway.
+                The UI of Gateway to manage the whole micro-service system.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -26,7 +26,7 @@ function Sample() {
             <Card.Body>
               <Card.Title>Gate Hub</Card.Title>
               <Card.Text>
-                Exposed entry.
+                The entry application to organize the vService and expose APIs to dApps.
               </Card.Text>
             </Card.Body>
           </Card>
@@ -37,7 +37,7 @@ function Sample() {
             <Card.Body>
               <Card.Title>Gateway vService</Card.Title>
               <Card.Text>
-                Function modules, implement the ideas.
+                Micro-service, the implement of complex logical, simple and stable.
               </Card.Text>
             </Card.Body>
           </Card>
