@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@polkadot/api": "^10.9.1",
     "moleculer": "^0.14.29"
   }
 }

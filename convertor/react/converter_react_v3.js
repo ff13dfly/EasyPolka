@@ -2,24 +2,23 @@
 //!important, By dealing with the built package, React project can be deployed to Anchor Network
 
 
-//node transform_react_v2.js xconfig.json [password_for_account]
+//node converter_react_v2.js xconfig.json [password_for_account]
 
 //########## USAGE ##########
-//node transform_react_v2.js xconfig.json 
+//node converter_react_v2.js xconfig.json 
 
 //########## BUILD ##########
 //package command, `esbuild` needed.
 //yarn add esbuild
 //../../node_modules/.bin/esbuild transform_react.js --bundle --minify --outfile=reactTransform.js --platform=node
 
-//TODO, need to single one, convert by `xconfig.json`. Multi implement is confused.
-
 //!important, React Setting Needed.
 
 const anchorJS= require('../../package/node/anchor.node');
-const fs=require('fs');
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/api');
+
+const fs=require('fs');
 
 //basic config for Loader
 const config = {
@@ -27,34 +26,13 @@ const config = {
     success:    '\x1b[36m%s\x1b[0m',
     setting:    'xconfig.json',
     folder:     'package',                //default project folder
-    ignor:{     //ignore default files, add addtional files to resource
-        files:{
-            "asset-manifest.json":true,
-            "favicon.ico":true,
-            "index.html":true,
-            "manifest.json":true,
-            "logo192.png":true,
-            "logo512.png":true,
-            "robots.txt":true,
-            ".DS_Store":true,
-            "anchor.min.js":true,
-            "easy.min.js":true,
-            "polkadot.min.js":true,
-        },
-        foler:{
-            "js":true,
-            "css":true,
-        },
-    },
-    globalVars:["Polkadot","AnchorJS","Easy"],
-    server:"ws://127.0.0.1:9944",
-    //server:"wss://dev.metanchor.net",
 };
 
 //arguments
 const args = process.argv.slice(2);
 const cfgFile=!args[0]?config.setting:args[0];
-const folder=!args[1]?config.folder:args[1];
+//const folder=!args[1]?config.folder:args[1];
+//console.log(`args[1]:${args[1]}`)
 
 // file reader
 const file={
@@ -91,21 +69,19 @@ const self={
         const arr=str.split(".");
         return arr.pop();
     },
-    load:(list,ck)=>{
+    load:(list,folder,ck)=>{
         if(list.length===0) return ck && ck();
         const row=list.pop();
-        
         file.read(`${folder}/${row}`,(str)=>{
-            //console.log(str);
             const suffix=self.getSuffix(row);
             cache[suffix].push(str);
-            return self.load(list,ck);
+            return self.load(list,folder,ck);
         },false);
     },
-    resource:(folder,ck)=>{
+    resource:(folder,ignor,ck)=>{
         const todo=[];
-        const igsFiles=config.ignor.files;
-        const igsDirs=config.ignor.foler;
+        const igsFiles=ignor.files;
+        const igsDirs=ignor.foler;
 
         //1.get all resource of public folder
         if( fs.existsSync(folder) ) {
@@ -141,7 +117,6 @@ const self={
         return self.getTodo(todo,ck);
     },
     getTodo:(list,ck)=>{
-        //console.log(list);
         if(list.length===0) return ck && ck();
         const row=list.pop();
         console.log(row);
@@ -178,9 +153,8 @@ const self={
         if(img[check]) return img[check];
         return 'application';
     },
-    auto: (ck) => {
+    auto: (server,ck) => {
         if(websocket!==null) return ck && ck();
-        const server=config.server;
         console.log(`Ready to link to server ${server}.`);
         
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
@@ -215,18 +189,18 @@ file.read(cfgFile,(xcfg)=>{
     if(xcfg.error) return console.log(xcfg.error, `Error: failed to load config file "${cfgFile}".`);
 
     //2.read React asset file
-    const asset="asset-manifest.json";
-    const target=`${folder}/${asset}`;
+    const target=`${xcfg.directory}/${xcfg.asset}`;
     file.read(target,(react)=>{
         if(react.error) return console.log(`Can not load "${asset}".`);
         
         //3.get target css and js file
         const entry=react.entrypoints;
-        self.load(entry,()=>{
+        console.log(entry);
+        self.load(entry,xcfg.directory,()=>{
 
             //4.check the public folder to get resouce and convert to Base64
             // result will be storaged on `cache`
-            self.resource(folder,()=>{
+            self.resource(xcfg.directory,xcfg.ignor,()=>{
                 console.log(`Resource is transformed.`);
                 //return false;
                 //5.write React project to Anchor Network
@@ -266,24 +240,24 @@ file.read(cfgFile,(xcfg)=>{
                 }
 
                 //b.replace the global 
-                const g_list=config.globalVars;
+                const g_list=xcfg.globalVars;
                 for(let i=0;i<g_list.length;i++){
                     const row=g_list[i];
-                   // console.log(`window.${row}`);
                     const reg=new RegExp(`window.${row}`,"g");
                     code_js=code_js.replace(reg,row);
                 }
                 
                 list.push({name:xcfg.name,raw:code_js,protocol:protocol});
 
-                self.auto(()=>{
-                    const seed='Dave';
-                    const ks = new Keyring({ type: 'sr25519' });
-                    const pair= ks.addFromUri(`//${seed}`);
+                self.auto(xcfg.server,()=>{
+                    console.log("here");
+                    // const seed='Dave';
+                    // const ks = new Keyring({ type: 'sr25519' });
+                    // const pair= ks.addFromUri(`//${seed}`);
 
-                    self.multi(list,()=>{
-                        console.log(`Done, the target Anchor is "${xcfg.name}"`);
-                    },pair);
+                    // self.multi(list,()=>{
+                    //     console.log(`Done, the target Anchor is "${xcfg.name}"`);
+                    // },pair);
                 });
             });
         });

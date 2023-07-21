@@ -3,12 +3,31 @@
     "framework":"frame_react.js",
     "version":"1.0.2",
     "related":{
-        "js":"react_js_demo",
-        "css":"react_css_demo",
-        "resource":"react_resource_demo"
+        "js":"home_js",
+        "css":"home_js",
+        "resource":"home_res"
     },
+    "directory":"package/homepage",
+    "globalVars":["Polkadot","AnchorJS","Easy"],
+    "ignor":{
+        "files":{
+            "asset-manifest.json":true,
+            "favicon.ico":true,
+            "index.html":true,
+            "manifest.json":true,
+            "logo192.png":true,
+            "logo512.png":true,
+            "robots.txt":true,
+            ".DS_Store":true
+        },
+        "foler":{
+            "js":true,
+            "css":true
+        }
+    },
+    "server":"ws://127.0.0.1:9944",
     "account":{
         "password":"",
-        "seed":""
+        "seed":"Alice"
     }
 }
