@@ -20,7 +20,7 @@
             "robots.txt":true,
             ".DS_Store":true
         },
-        "foler":{
+        "folder":{
             "js":true,
             "css":true
         }

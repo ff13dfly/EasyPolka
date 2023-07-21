@@ -124,8 +124,8 @@ const self={
                 if(!igsDirs[dir]){
                     const target=`${sub}/${dir}`;
                     const ts = fs.readdirSync(target);
-                    for(let i=0;i<ts.length;i++){
-                        const row=ts[i];
+                    for(let j=0;j<ts.length;j++){
+                        const row=ts[j];
                         const tmp=row.split('.');
                         const suffix=tmp.pop();
                         todo.push({file:`${sub}/${dir}/${row}`,suffix:suffix,replace:`static/${dir}/${row}`});

@@ -1,40 +1,45 @@
-//!important, This is the transformer of React object.
-//!important, By dealing with the built package, React project can be deployed to Anchor Network
-
-
-//node converter_react_v2.js xconfig.json [password_for_account]
+//!important, This is the transformer of React project. 
+//!important, By dealing with the built package, React project can be deployed to Anchor Network.
+//!important, The resource will also be deployed on chain.
 
 //########## USAGE ##########
-//node converter_react_v2.js xconfig.json 
+//node converter_react_v2.js package/config_homepage.json 
 
-//########## BUILD ##########
-//package command, `esbuild` needed.
-//yarn add esbuild
-//../../node_modules/.bin/esbuild transform_react.js --bundle --minify --outfile=reactTransform.js --platform=node
-
-//!important, React Setting Needed.
-
-const anchorJS= require('../../package/node/anchor.node');
-const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { Keyring } = require('@polkadot/api');
-
-const fs=require('fs');
-
-//basic config for Loader
-const config = {
+const theme = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
-    setting:    'xconfig.json',
-    folder:     'package',                //default project folder
+    dark:   '\x1b[33m%s\x1b[0m',
+};
+const output=(ctx,type)=>{
+    const stamp=()=>{return new Date();};
+    if(!type || !theme[type]){
+        console.log(`[${stamp()}] `+ctx);
+    }else{
+        console.log(theme[type],`[${stamp()}] `+ctx);
+    }
 };
 
 //arguments
 const args = process.argv.slice(2);
-const cfgFile=!args[0]?config.setting:args[0];
-//const folder=!args[1]?config.folder:args[1];
-//console.log(`args[1]:${args[1]}`)
+if(!args[0]) return output("No config file to convert React project.",'error');
+const cfgFile=args[0];
+output(`Get the config file path, ready to start.`,'dark');
 
-// file reader
+
+const { ApiPromise, WsProvider } = require('@polkadot/api');
+const { Keyring } = require('@polkadot/api');
+const anchorJS= require('../../package/node/anchor.node');
+const fs=require('fs');
+output(`Support libraries checked.`,'dark');
+
+const cache={
+    "css":[],
+    "js":[],
+    "resource":{},
+}
+let websocket=null;
+
+// file functions
 const file={
     read:(target,ck,toJSON,toBase64)=>{
         fs.stat(target,(err,stats)=>{
@@ -56,14 +61,7 @@ const file={
     },
 };
 
-const cache={
-    "css":[],
-    "js":[],
-    "resource":{},
-}
-
-let websocket=null;
-
+//convertor functions
 const self={
     getSuffix:(str)=>{
         const arr=str.split(".");
@@ -79,23 +77,31 @@ const self={
         },false);
     },
     resource:(folder,ignor,ck)=>{
-        const todo=[];
+        const todo=[],more=[];
         const igsFiles=ignor.files;
-        const igsDirs=ignor.foler;
+        const igsDirs=ignor.folder;
+        output(`Ready to load resouce from '${folder}'`);
 
         //1.get all resource of public folder
+        let root=0,static=0;
         if( fs.existsSync(folder) ) {
             const files = fs.readdirSync(folder);
             for(let i=0;i<files.length;i++){
                 const fa=files[i];
-                if(!igsFiles[fa] && !fs.statSync(`${folder}/${fa}`).isDirectory()){
+                const isDir=fs.statSync(`${folder}/${fa}`).isDirectory();
+                if(isDir && !igsDirs[fa] && fa!='static'){
+                    more.push(fa);
+                }
+                if(!igsFiles[fa] && !isDir){
                     const tmp=fa.split('.');
                     const suffix=tmp.pop();
                     todo.push({file:`${folder}/${fa}`,suffix:suffix,replace:fa});
                 }
             }
+            root=todo.length;
+            output(`Resource in root folder loaded, total ${root} files.`);
         }
-
+    
         //2.get all resource of `static`
         const sub=`${folder}/static`;
         if( fs.existsSync(sub) ) {
@@ -105,24 +111,36 @@ const self={
                 if(!igsDirs[dir]){
                     const target=`${sub}/${dir}`;
                     const ts = fs.readdirSync(target);
-                    for(let i=0;i<ts.length;i++){
-                        const row=ts[i];
+                    for(let j=0;j<ts.length;j++){
+                        const row=ts[j];
                         const tmp=row.split('.');
                         const suffix=tmp.pop();
                         todo.push({file:`${sub}/${dir}/${row}`,suffix:suffix,replace:`static/${dir}/${row}`});
                     }
                 }
             }
+            static=todo.length-root;
+            output(`Resource in 'static' loaded, total ${static} files.`);
         }
+
+        //3.check other folder
+        if(more.length!==0){
+            output(`Find resouce folders ${JSON.stringify(more)}`,'success');
+
+            for(let i=0;i<more.length;i++){
+                const mdir=`${folder}/${more[i]}`;
+                const mfa = fs.readdirSync(mdir);
+                console.log(mfa);
+            }
+        }
+        output(`Cache resource, total ${todo.length} files.`);
         return self.getTodo(todo,ck);
     },
     getTodo:(list,ck)=>{
         if(list.length===0) return ck && ck();
+       
         const row=list.pop();
-        console.log(row);
-
         file.read(row.file,(res)=>{
-            //console.log(res);
             switch (row.suffix) {
                 case 'css':
                     cache.css.push(res);
@@ -154,14 +172,13 @@ const self={
         return 'application';
     },
     auto: (server,ck) => {
-        if(websocket!==null) return ck && ck();
-        console.log(`Ready to link to server ${server}.`);
+        if(websocket!==null) return ck && ck()
+        output(`Ready to link to server ${server}.`,'dark');
         
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
-            console.log(config.success,`Linker to node [${server}] created.`);
+            output(`Linker to node [${server}] created.`,'dark');
 
             websocket = api;
-            
             anchorJS.set(api);
             anchorJS.setKeyring(Keyring);
             return ck && ck();
@@ -186,23 +203,26 @@ const self={
 
 //1.read xconfig.json to get setting
 file.read(cfgFile,(xcfg)=>{
-    if(xcfg.error) return console.log(xcfg.error, `Error: failed to load config file "${cfgFile}".`);
-
+    if(xcfg.error) return output(`Error: failed to load config file "${cfgFile}".`,'error');
+    output(`Read the config file successful.`,'success');
     //2.read React asset file
     const target=`${xcfg.directory}/${xcfg.asset}`;
+    output(`Read to get asset file '${target}'`);
     file.read(target,(react)=>{
-        if(react.error) return console.log(`Can not load "${asset}".`);
-        
+        if(react.error) return output(`Can not load "${asset}".`,'error');;
+        output(`Read asset file '${target}' successful.`,'success');
+
         //3.get target css and js file
         const entry=react.entrypoints;
-        console.log(entry);
+        output(`Read asset entrypoints : ${JSON.stringify(entry)}`);
+
         self.load(entry,xcfg.directory,()=>{
+            output(`Asset is cached successful.`,'success');
 
             //4.check the public folder to get resouce and convert to Base64
             // result will be storaged on `cache`
             self.resource(xcfg.directory,xcfg.ignor,()=>{
-                console.log(`Resource is transformed.`);
-                //return false;
+            
                 //5.write React project to Anchor Network
                 const list=[];
                 const related=xcfg.related;
@@ -250,7 +270,7 @@ file.read(cfgFile,(xcfg)=>{
                 list.push({name:xcfg.name,raw:code_js,protocol:protocol});
 
                 self.auto(xcfg.server,()=>{
-                    console.log("here");
+                    //console.log(cache);
                     // const seed='Dave';
                     // const ks = new Keyring({ type: 'sr25519' });
                     // const pair= ks.addFromUri(`//${seed}`);
