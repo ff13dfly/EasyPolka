@@ -126,17 +126,28 @@ const self={
         //3.check other folder
         if(more.length!==0){
             output(`Find resouce folders ${JSON.stringify(more)}`,'success');
-
+            const sysFiles=ignor.system;
             for(let i=0;i<more.length;i++){
                 const mdir=`${folder}/${more[i]}`;
                 const mfa = fs.readdirSync(mdir);
-                console.log(mfa);
+                let count=0;
+                for(let j=0;j<mfa.length;j++){
+                    const row=mfa[j];
+                    if(sysFiles[row]) continue;
+                    const tmp=row.split('.');
+                    const suffix=tmp.pop();
+                    count++;
+                    //console.log({file:`${mdir}/${row}`,suffix:suffix,replace:`${more[i]}/${row}`});
+                    todo.push({file:`${mdir}/${row}`,suffix:suffix,replace:`${mdir}/${row}`});
+                }
+                output(`Resource in '${more[i]}' loaded, total ${count} files.`);
             }
         }
         output(`Cache resource, total ${todo.length} files.`);
         return self.getTodo(todo,ck);
     },
     getTodo:(list,ck)=>{
+        //return false;
         if(list.length===0) return ck && ck();
        
         const row=list.pop();
@@ -198,6 +209,14 @@ const self={
             }
         });
     },
+    calcResource:()=>{
+        let count=0,len=0;
+        for(let k in cache.resource){
+            count++;
+            len+=cache.resource[k].length;
+        }
+        return {amount:count,length:len}
+    },
 };
 
 
@@ -222,7 +241,10 @@ file.read(cfgFile,(xcfg)=>{
             //4.check the public folder to get resouce and convert to Base64
             // result will be storaged on `cache`
             self.resource(xcfg.directory,xcfg.ignor,()=>{
-            
+                output(`Resource loaded, css ${cache.css[0].length} bytes, js ${cache.js[0].length} bytes.`,'success');
+                //console.log(cache.resource);
+                const rres=self.calcResource();
+                output(`Resource loaded, more ${rres.amount} files, ${rres.length} bytes.`,'success');
                 //5.write React project to Anchor Network
                 const list=[];
                 const related=xcfg.related;

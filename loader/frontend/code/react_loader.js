@@ -23,6 +23,15 @@ const Polkadot = LP, ApiPromise = Polkadot.ApiPromise, WsProvider = Polkadot.WsP
 const anchorJS = LA;
 const easyRun = LE.easyRun;
 
+// const output=(ctx,type)=>{
+//     const stamp=()=>{return new Date();};
+//     if(!type || !theme[type]){
+//         console.log(`[${stamp()}] `+ctx);
+//     }else{
+//         console.log(theme[type],`[${stamp()}] `+ctx);
+//     }
+// };
+
 //websocket link to server
 let websocket = null;
 const self = {
@@ -85,12 +94,15 @@ const self = {
         //if(config.step===0) return ck && ck();
         const id = "step";
         const ele = document.getElementById(id);
-        const info = document.createTextNode(txt);
+        const info = document.createTextNode(`[${self.stamp()}] ${txt}`);
         const br = document.createElement("br");
         ele.appendChild(info);
         ele.appendChild(br);
         setTimeout(ck, !at ? config.step : at);
     },
+    stamp:()=>{
+        return new Date().toLocaleString();
+    }
 }
 const result = self.decoder(location.hash);
 const linker = `anchor://${result.anchor}/`;
