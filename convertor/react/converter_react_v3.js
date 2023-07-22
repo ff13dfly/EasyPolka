@@ -250,6 +250,66 @@ const self={
         return nlist;
     },
 
+    overRangeCheck:(todo,max)=>{
+        const cut=[];
+        for(let i=0;i<todo.length;i++){
+            const row=todo[i];
+            if(row.len>max) cut.push(i);
+        }
+        const list=[];
+        for(let i=0;i<cut.length;i++){
+            list.push(todo[cut[i]]);
+        }
+        return list;
+    },
+    cutResource:(cut,max)=>{
+        const list=[];
+        for(let i=0;i<cut.length;i++){
+            const row=cut[i];
+
+            const div=Math.ceil(row.len/max);
+            for(let j=0;j<div;j++){
+                //section information
+                list.push({
+                    file:row.file,
+                    suffix:row.suffix,
+                    replace:row.replace,
+                    hash:row.hash,
+                    len:(j===(div-1)?row.len-max*j:max),
+                    sum:div,
+                    order:j
+                });
+                cache.resource[`${row.replace}_${j}`]=cache.resource[row.replace].substr(max*j,max);
+                //console.log(cache.resource[`${row.replace}_${j}`].length);
+            }
+            delete cache.resource[row.replace];
+            //console.log(`file ${row.hash} : ${row.len}, max : ${max}, divide to ${div}`);
+        }
+        return list;
+    },
+
+    mixTodo:(cut,todo)=>{
+        const list=[];
+        const map={};
+        for(let i=0;i<cut.length;i++){
+            const row=cut[i];
+            if(!map[row.hash])map[row.hash]=[];
+            map[row.hash].push(row);
+        }
+        //console.log(map);
+        for(let i=0;i<todo.length;i++){
+            const row=todo[i];
+            if(!map[row.hash]){
+                list.push(row);
+            }else{
+                for(let j=0;j<map[row.hash].length;j++){
+                    list.push(map[row.hash][j]);
+                }
+            }
+        }
+        return list;
+    },
+
     //"blockmax":3670016,           //3.5MB
     groupResouce:(todo,max)=>{
         //TODO, if single file length < max, should divide to small files, order by hash
@@ -257,15 +317,23 @@ const self={
         // loader will combine the file
 
         //if sort, the result is better
-        const nlist=self.sortList(todo);    //get the list order by length
+        let nlist=self.sortList(todo);    //get the list order by length
         const lenStruct=6                   //`"":"",`, key-value structure length
         const base=2;                       //`{}`, JSON format length
 
+        const cut=self.overRangeCheck(nlist,max);
+        if(cut.length!==0){
+            const mtodo=self.cutResource(cut,max);
+            nlist=self.mixTodo(mtodo,nlist);
+        }
+
+        //if cut, regroup the todo list
+
+        //1.put everyone in group by length
         const group=[{ids:[],len:base}];
         for(let i=0;i<nlist.length;i++){
             const atom=nlist[i],alen=atom.len+lenStruct+atom.hash.length;
             let arranged=false;
-
             for(let j=0;j<group.length;j++){
                 if(group[j].len+alen<max){
                     group[j].ids.push(i);
@@ -274,7 +342,6 @@ const self={
                     break;
                 }
             }
-
             if(!arranged){
                 group.push({ids:[],len:base});
                 group[group.length-1].ids.push(i);
@@ -282,12 +349,13 @@ const self={
             }
         }
 
+        //2.group the really files.
         const rlist=[];
         for(let i=0;i<group.length;i++){
             const row=group[i];
             const gp=[]
             for(let j=0;j<row.ids.length;j++){
-                gp.push(todo[row.ids[j]]);
+                gp.push(nlist[row.ids[j]]);
             }
             rlist.push(gp);
         }
@@ -331,6 +399,7 @@ file.read(cfgFile,(xcfg)=>{
                 output(`Resource loaded, more ${todo.length} files, ${rlen} bytes.`,'success');
 
                 const group=self.groupResouce(todo,xcfg.blockmax);
+                console.log(group);
                 output(`Resource analysisted, ${group.length} groups, max ${xcfg.blockmax} bytes.`,'success');
                 
                 //5.write React project to Anchor Network
