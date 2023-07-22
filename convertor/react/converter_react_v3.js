@@ -8,8 +8,9 @@
 const theme = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
-    dark:   '\x1b[33m%s\x1b[0m',
+    dark:       '\x1b[33m%s\x1b[0m',
 };
+
 const output=(ctx,type)=>{
     const stamp=()=>{return new Date();};
     if(!type || !theme[type]){
@@ -138,7 +139,13 @@ const self={
                     const suffix=tmp.pop();
                     count++;
                     //console.log({file:`${mdir}/${row}`,suffix:suffix,replace:`${more[i]}/${row}`});
-                    todo.push({file:`${mdir}/${row}`,suffix:suffix,replace:`${mdir}/${row}`});
+                    //console.log(`${more[i]}/${row}`);
+                    todo.push({
+                        file:`${mdir}/${row}`,
+                        suffix:suffix,
+                        replace:`${more[i]}/${row}`,
+                        hash:self.char(12,'RS'),
+                    });
                 }
                 output(`Resource in '${more[i]}' loaded, total ${count} files.`);
             }
@@ -146,28 +153,33 @@ const self={
         output(`Cache resource, total ${todo.length} files.`);
         return self.getTodo(todo,ck);
     },
-    getTodo:(list,ck)=>{
-        //return false;
-        if(list.length===0) return ck && ck();
+    getTodo:(list,ck,backup)=>{
+        if(backup===undefined) backup=[];
+        if(list.length===0) return ck && ck(backup);
        
         const row=list.pop();
+       
         file.read(row.file,(res)=>{
             switch (row.suffix) {
                 case 'css':
                     cache.css.push(res);
+                    row.len=res.length;
                     break;
     
                 case 'js':
                     cache.js.push(res);
+                    row.len=res.length;
                     break;
     
                 default:
                     const type=self.getType(row.suffix);
                     const bs64=`data:${type};base64,${res}`;
                     cache.resource[row.replace]=bs64;
+                    row.len=bs64.length;
                     break;
             }
-            return self.getTodo(list,ck);
+            backup.push(row);
+            return self.getTodo(list,ck,backup);
         },false,(row.suffix!=='js'&&row.suffix!=='css')?true:false);
     },
     getType:(suffix)=>{
@@ -209,13 +221,77 @@ const self={
             }
         });
     },
-    calcResource:()=>{
-        let count=0,len=0;
-        for(let k in cache.resource){
-            count++;
-            len+=cache.resource[k].length;
+    calcResource:(todo)=>{
+        let len=0;
+        for(let i=0;i<todo.length;i++){
+            const row=todo[i];
+            len+=row.len;
         }
-        return {amount:count,length:len}
+        return len;
+    },
+    sortList:(todo)=>{
+        const list=[];
+        const map={};
+        for(let i=0;i<todo.length;i++){
+            const row=todo[i];
+            list.push(row.len);
+            map[row.len]=i;
+        } 
+        list.sort((x,y)=>y-x);
+
+        const nlist=[]
+        for(let i=0;i<list.length;i++){
+            const key=list[i];
+            nlist.push(todo[map[key]]);
+        }
+        return nlist;
+    },
+
+    //"blockmax":3670016,           //3.5MB
+    groupResouce:(todo,max)=>{
+        //TODO, if single file length < max, should divide to small files, order by hash
+        // RSiQtOfXmDaKvS will be [ RSiQtOfXmDaKvS_0, RSiQtOfXmDaKvS_1 ]
+        // loader will combine the file
+
+        //if sort, the result is better
+        const nlist=self.sortList(todo);    //get the list order by length
+        const lenStruct=6                   //`"":"",`, key-value structure length
+        const base=2;                       //`{}`, JSON format length
+
+        const group=[{ids:[],len:base}];
+        console.log(nlist[0]);
+
+        for(let i=0;i<nlist.length;i++){
+            const atom=nlist[i],alen=atom.len+lenStruct+atom.hash.length;
+            let arranged=false;
+
+            for(let j=0;j<group.length;j++){
+                if(group[j].len+alen<max){
+                    group[j].ids.push(i);
+                    group[j].len+=alen;
+                    arranged=true;
+                    break;
+                }
+            }
+
+            if(!arranged){
+                group.push({ids:[],len:base});
+                group[group.length-1].ids.push(i);
+                group[group.length-1].len+=alen;
+            }
+        }
+
+        const rlist=[];
+        for(let i=0;i<group.length;i++){
+
+        }
+        console.log(group);
+    },
+    rand:(m,n)=>{return Math.round(Math.random() * (m-n) + n);},
+    char:(n,pre)=>{
+        n=n||7;pre=pre||'';
+        for(let i=0;i<n;i++)pre+=i%2?String.fromCharCode(self.rand(65,90)):String.fromCharCode(self.rand(97,122));
+        return pre;
     },
 };
 
@@ -240,11 +316,14 @@ file.read(cfgFile,(xcfg)=>{
 
             //4.check the public folder to get resouce and convert to Base64
             // result will be storaged on `cache`
-            self.resource(xcfg.directory,xcfg.ignor,()=>{
+            self.resource(xcfg.directory,xcfg.ignor,(todo)=>{
+                //console.log(todo);
                 output(`Resource loaded, css ${cache.css[0].length} bytes, js ${cache.js[0].length} bytes.`,'success');
-                //console.log(cache.resource);
-                const rres=self.calcResource();
-                output(`Resource loaded, more ${rres.amount} files, ${rres.length} bytes.`,'success');
+                const rlen=self.calcResource(todo);
+                output(`Resource loaded, more ${todo.length} files, ${rlen} bytes.`,'success');
+
+                const group=self.groupResouce(todo,xcfg.blockmax);
+
                 //5.write React project to Anchor Network
                 const list=[];
                 const related=xcfg.related;
@@ -282,13 +361,15 @@ file.read(cfgFile,(xcfg)=>{
                 }
 
                 //b.replace the global 
-                const g_list=xcfg.globalVars;
-                for(let i=0;i<g_list.length;i++){
-                    const row=g_list[i];
-                    const reg=new RegExp(`window.${row}`,"g");
-                    code_js=code_js.replace(reg,row);
+                if(xcfg.globalVars){
+                    const g_list=xcfg.globalVars;
+                    for(let i=0;i<g_list.length;i++){
+                        const row=g_list[i];
+                        const reg=new RegExp(`window.${row}`,"g");
+                        code_js=code_js.replace(reg,row);
+                    }
                 }
-                
+
                 list.push({name:xcfg.name,raw:code_js,protocol:protocol});
 
                 self.auto(xcfg.server,()=>{
