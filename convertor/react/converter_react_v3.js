@@ -262,8 +262,9 @@ const self={
         }
         return list;
     },
-    cutResource:(cut,max)=>{
+    cutResource:(cut,section,fix)=>{
         const list=[];
+        const max=section-(fix===undefined?15:fix);
         for(let i=0;i<cut.length;i++){
             const row=cut[i];
 
@@ -332,7 +333,8 @@ const self={
         //1.put everyone in group by length
         const group=[{ids:[],len:base}];
         for(let i=0;i<nlist.length;i++){
-            const atom=nlist[i],alen=atom.len+lenStruct+atom.hash.length;
+            const atom=nlist[i];
+            const alen=atom.len+lenStruct+(atom.sum?(atom.hash+'_'+atom.order).length:atom.hash.length);
             let arranged=false;
             for(let j=0;j<group.length;j++){
                 if(group[j].len+alen<max){
@@ -359,8 +361,6 @@ const self={
             }
             rlist.push(gp);
         }
-        //console.log(group);
-        //console.log(rlist);
         return rlist;
     },
     rand:(m,n)=>{return Math.round(Math.random() * (m-n) + n);},
@@ -391,23 +391,38 @@ file.read(cfgFile,(xcfg)=>{
             output(`Asset is cached successful.`,'success');
 
             //4.check the public folder to get resouce and convert to Base64
-            // result will be storaged on `cache`
             self.resource(xcfg.directory,xcfg.ignor,(todo)=>{
                 //console.log(todo);
                 output(`Resource loaded, css ${cache.css[0].length} bytes, js ${cache.js[0].length} bytes.`,'success');
                 const rlen=self.calcResource(todo);
                 output(`Resource loaded, more ${todo.length} files, ${rlen} bytes.`,'success');
 
-                const group=self.groupResouce(todo,xcfg.blockmax);
-                console.log(group);
-                output(`Resource analysisted, ${group.length} groups, max ${xcfg.blockmax} bytes.`,'success');
+                const groups=self.groupResouce(todo,xcfg.blockmax);
+                output(`Resource analysisted, ${groups.length} groups, max ${xcfg.blockmax} bytes.`,'success');
                 
-                //5.write React project to Anchor Network
+                //console.log(JSON.stringify(groups));
+
+                //4.1.write resouce to Anchor Network.
                 const list=[];
                 const related=xcfg.related;
-                const ver=xcfg.version;
+                for(let i=0;i<groups.length;i++){
+                    const group=groups[i];
+                    const resKV={};
+                    for(let j=0;j<group.length;j++){
+                        const row=group[j];
+                        const key=!row.sum?row.hash:`${row.hash}_${row.order}`;
+                        const rkey=!row.sum?row.replace:`${row.replace}_${row.order}`;
+                        resKV[key]=cache.resource[rkey];
+                    }
+                    const protocol_res={"type": "data","fmt": "b64"};
+                    list.push({name:related.res,raw:JSON.stringify(resKV),protocol:protocol_res});
+                }
 
+                console.log(list.length);
+
+                //5.write React project to Anchor Network
                 //5.1.write css lib
+                const ver=xcfg.version;
                 const protocol_css={"type": "lib","fmt": "css","ver":ver}
                 let code_css=cache.css.join(" ");
                 code_css=code_css.replace("sourceMappingURL=","")
