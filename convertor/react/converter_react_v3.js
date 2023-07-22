@@ -7,7 +7,13 @@
 
 //########## USAGE ##########
 //node converter_react_v3.js package/config_homepage.json 
+
+//"blockmax":3670016,           //3.5MB
+
+console.clear();
+
 const convert_version="1.0.0";
+const block_interval=60;
 const theme = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
@@ -23,9 +29,7 @@ const output=(ctx,type,skip)=>{
         console.log(theme[type],`[${stamp()}] `+ctx);
     }
 };
-console.clear();
 
-//"blockmax":3670016,           //3.5MB
 output(`-------------------------------- React project convertror ( v${convert_version} ) --------------------------------`,"",true);
 output("\n-- Deploy the React project on Anchor Network.","",true);
 output("-- Node.js needed, run this convertor by node, then the deployment will be done.","",true);
@@ -35,7 +39,7 @@ output("-- node converter_react_v3.js react_config.json","success",true);
 output("-- Config file details : https://github.com/ff13dfly/EasyPolka/blob/main/convertor/react/README.md ","",true);
 output("\n---------------------------------------- Proccess start ---------------------------------------------\n","",true);
 
-//arguments
+//arguments proccess
 const args = process.argv.slice(2);
 if(!args[0]) return output("No config file to convert React project.",'error');
 const cfgFile=args[0];
@@ -49,14 +53,7 @@ const anchorJS= require('../../anchorJS/publish/anchor');
 const fs=require('fs');
 output(`Support libraries checked.`,'dark');
 
-const cache={
-    "css":[],
-    "js":[],
-    "resource":{},
-}
-let websocket=null;
-
-// file functions
+//file functions
 const file={
     read:(target,ck,toJSON,toBase64)=>{
         fs.stat(target,(err,stats)=>{
@@ -79,6 +76,8 @@ const file={
 };
 
 //convertor functions
+const cache={"css":[],"js":[],"resource":{}}
+let websocket=null;
 const self={
     getSuffix:(str)=>{
         const arr=str.split(".");
@@ -142,7 +141,7 @@ const self={
 
         //3.check other folder
         if(more.length!==0){
-            output(`Find resouce folders ${JSON.stringify(more)}`,'success');
+            output(`Find resouce folders ${JSON.stringify(more)}`,'dark');
             const sysFiles=ignor.system;
             for(let i=0;i<more.length;i++){
                 const mdir=`${folder}/${more[i]}`;
@@ -215,30 +214,46 @@ const self={
         output(`Ready to link to server ${server}.`,'dark');
         
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
-            output(`Linker to node [${server}] created.`,'dark');
+            output(`Linker to node [${server}] created.`,'success');
 
             websocket = api;
             anchorJS.set(api);
             anchorJS.setKeyring(Keyring);
-            return ck && ck();
+
+            const seed='Dave';
+            const ks = new Keyring({ type: 'sr25519' });
+            const pair= ks.addFromUri(`//${seed}`);
+
+            return ck && ck(pair);
         });
     },
     multi:(list,ck,pair,done)=>{
         if(done===undefined) done=[];
+        //return ck && ck(done);
         if(list.length===0) return ck && ck(done);
-        const row=list.shift();
-        console.log(`\nWriting lib anchor : ${row.name}`);
-        const strProto=typeof(row.protocol)=='string'?row.protocol:JSON.stringify(row.protocol);
-        const raw=typeof(row.raw)=='string'?row.raw:JSON.stringify(row.raw);
-        anchorJS.write(pair,row.name,raw,strProto,(res)=>{
-
-            console.log(`Processing : ${row.name}, protocol ( ${strProto.length} bytes ) :${strProto}`);
-            console.log(res);
-
-            if(res.step==="Finalized"){
-                done.push([row.name]);
-                self.multi(list,ck,pair,done);
-            }
+        anchorJS.block((block)=>{
+            const row=list.shift();
+            output(`Writing lib anchor : ${row.name}, current block number : ${block.toLocaleString()}`,'dark');
+    
+            const strProto=typeof(row.protocol)=='string'?row.protocol:JSON.stringify(row.protocol);
+            const raw=typeof(row.raw)=='string'?row.raw:JSON.stringify(row.raw);
+            anchorJS.write(pair,row.name,raw,strProto,(res)=>{
+                output(`Processing [ ${res.step} ] : ${row.name}, protocol ( ${strProto.length} bytes ) :${strProto}`);
+                
+                if(res.step==="Ready"){
+                    output(`Please hold, waiting 0~${block_interval}s for the next step.`);
+                }else if(res.step==="InBlock"){
+                    output(`Please hold, waiting ${block_interval*3}s for the next step.`);
+                }else{
+                    output(`Please hold, waiting ${block_interval}s for the next step.`);
+                }
+                
+                if(res.step==="Finalized"){
+                    done.push([row.name,block+1]);
+                    output(`Processing done, data is written on chain.`,'success');
+                    self.multi(list,ck,pair,done);
+                }
+            });
         });
     },
     calcResource:(todo)=>{
@@ -407,15 +422,12 @@ file.read(cfgFile,(xcfg)=>{
 
             //4.check the public folder to get resouce and convert to Base64
             self.resource(xcfg.directory,xcfg.ignor,(todo)=>{
-                //console.log(todo);
                 output(`Resource loaded, css ${cache.css[0].length.toLocaleString()} bytes, js ${cache.js[0].length.toLocaleString()} bytes.`,'success');
                 const rlen=self.calcResource(todo);
                 output(`Resource loaded, more ${todo.length} files, ${rlen.toLocaleString()} bytes.`,'success');
 
                 const groups=self.groupResouce(todo,xcfg.blockmax);
                 output(`Resource analysisted, ${groups.length} groups, max ${xcfg.blockmax.toLocaleString()} bytes.`,'success');
-                
-                //console.log(JSON.stringify(groups));
 
                 //4.1.write resouce to Anchor Network.
                 const list=[];
@@ -439,67 +451,68 @@ file.read(cfgFile,(xcfg)=>{
                 }
                 output(`Resource task ready, ${amount_res} taskes, total ${list.length}`);
 
-                //5.write React project to Anchor Network
-                //5.1.write css lib
-                const ver=xcfg.version;
-                const protocol_css={"type": "lib","fmt": "css","ver":ver}
-                let code_css=cache.css.join(" ");
-                code_css=code_css.replace("sourceMappingURL=","")
-                list.push({name:related.css,raw:code_css,protocol:protocol_css});
-                output(`CSS task ready, 1 taske, total ${list.length}`,);
+                //4.2.write resouce then get the anchor location.
+                self.auto(xcfg.server,(pair)=>{
+                    
+                    self.multi(list,(done)=>{
+                        output(`Resource is written on chain. Anchor data : ${JSON.stringify(done)}`,'success');
 
-                //5.2.write app anchor
-                const ls=[];
-                if(xcfg.libs){
-                    for(let i=0;i<xcfg.libs.length;i++){
-                        ls.push(xcfg.libs[i]);
-                    }
-                }
-                ls.push(related.css);
-                const protocol={
-                    "type": "app",
-                    "fmt": "js",
-                    "lib":ls,
-                    "ver":ver,
-                    "tpl":"react"
-                }
+                        //5.write React project to Anchor Network
+                        //5.1.write css lib
+                        const ver=xcfg.version;
+                        const protocol_css={"type": "lib","fmt": "css","ver":ver}
+                        let code_css=cache.css.join(" ");
+                        code_css=code_css.replace("sourceMappingURL=","")
+                        list.push({name:related.css,raw:code_css,protocol:protocol_css});
+                        output(`CSS task ready, 1 taske, total ${list.length}`);
 
-                //5.3.clean and merge the code
-                //a.remove sourceMapping support
-                let code_js=cache.js.join(";");
-                code_js=code_js.replace("sourceMappingURL=","")
-                for(var k in cache.resource){
-                    const reg=new RegExp(`${k}`,"g");
-                    code_js=code_js.replace(reg,cache.resource[k]);
-                }
+                        //5.2.write app anchor
+                        const ls=[];
+                        if(xcfg.libs){
+                            for(let i=0;i<xcfg.libs.length;i++){
+                                ls.push(xcfg.libs[i]);
+                            }
+                        }
+                        ls.push(related.css);
+                        const protocol={
+                            "type": "app",
+                            "fmt": "js",
+                            "lib":ls,
+                            "ver":ver,
+                            "tpl":"react"
+                        }
 
-                //b.replace the global 
-                if(xcfg.globalVars){
-                    const g_list=xcfg.globalVars;
-                    for(let i=0;i<g_list.length;i++){
-                        const row=g_list[i];
-                        const reg=new RegExp(`window.${row}`,"g");
-                        code_js=code_js.replace(reg,row);
-                    }
-                }
+                        //5.3.clean and merge the code
+                        //a.remove sourceMapping support
+                        let code_js=cache.js.join(";");
+                        code_js=code_js.replace("sourceMappingURL=","")
+                        for(var k in cache.resource){
+                            const reg=new RegExp(`${k}`,"g");
+                            code_js=code_js.replace(reg,cache.resource[k]);
+                        }
 
-                //c.replace the resource
-                //!important, extend the Anchor link `|`, format `anchor://{name}|{key[start,end]}`
-                //!important, if the Anchor Data is JSON format, the string after `|` is used as key
+                        //b.replace the global 
+                        if(xcfg.globalVars){
+                            const g_list=xcfg.globalVars;
+                            for(let i=0;i<g_list.length;i++){
+                                const row=g_list[i];
+                                const reg=new RegExp(`window.${row}`,"g");
+                                code_js=code_js.replace(reg,row);
+                            }
+                        }
 
-                //TODO, here to replace the resource hash `anchor://{home_res}|{RSiQtOfXmDaKvS}`
+                        //c.replace the resource
+                        //!important, extend the Anchor link `|`, format `anchor://{name}|{key[start,end]}`
+                        //!important, if the Anchor Data is JSON format, the string after `|` is used as key
 
-                list.push({name:xcfg.name,raw:code_js,protocol:protocol});
-                output(`JS task ready, 1 taske, total ${list.length}`,);
+                        //TODO, here to replace the resource hash `anchor://{home_res}|{RSiQtOfXmDaKvS}`
 
-                self.auto(xcfg.server,()=>{
-                    // const seed='Dave';
-                    // const ks = new Keyring({ type: 'sr25519' });
-                    // const pair= ks.addFromUri(`//${seed}`);
-                    // self.multi(list,()=>{
-                    //     console.log(`Done, the target Anchor is "${xcfg.name}"`);
-                    // },pair);
-                    output("\n---------------------------------------- Proccess done ----------------------------------------------\n","",true);
+                        list.push({name:xcfg.name,raw:code_js,protocol:protocol});
+                        output(`JS task ready, 1 taske, total ${list.length}`,);
+                        
+                        output("\n---------------------------------------- Proccess done ----------------------------------------------\n","",true);
+
+                    },pair);
                 });
             });
         });
