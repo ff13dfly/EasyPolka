@@ -313,7 +313,7 @@ const self={
 
     //"blockmax":3670016,           //3.5MB
     groupResouce:(todo,max)=>{
-        //TODO, if single file length < max, should divide to small files, order by hash
+        //!important, if single file length < max, should divide to small files, order by hash
         // RSiQtOfXmDaKvS will be [ RSiQtOfXmDaKvS_0, RSiQtOfXmDaKvS_1 ]
         // loader will combine the file
 
@@ -405,20 +405,24 @@ file.read(cfgFile,(xcfg)=>{
                 //4.1.write resouce to Anchor Network.
                 const list=[];
                 const related=xcfg.related;
+                let amount_res=0;
                 for(let i=0;i<groups.length;i++){
                     const group=groups[i];
                     const resKV={};
+                    console.log(`Group ${i}:`);
                     for(let j=0;j<group.length;j++){
                         const row=group[j];
                         const key=!row.sum?row.hash:`${row.hash}_${row.order}`;
                         const rkey=!row.sum?row.replace:`${row.replace}_${row.order}`;
                         resKV[key]=cache.resource[rkey];
+                        console.log(`${key}:${cache.resource[rkey].length}`);
+                        //if(!cache.resource[rkey]) console.log('Error: no such resource.');
                     }
-                    const protocol_res={"type": "data","fmt": "b64"};
+                    const protocol_res={"type": "data","fmt": "json"};
+                    amount_res++;
                     list.push({name:related.res,raw:JSON.stringify(resKV),protocol:protocol_res});
                 }
-
-                console.log(list.length);
+                output(`Resource task ready, ${amount_res} taskes, total ${list.length}`,);
 
                 //5.write React project to Anchor Network
                 //5.1.write css lib
@@ -427,6 +431,7 @@ file.read(cfgFile,(xcfg)=>{
                 let code_css=cache.css.join(" ");
                 code_css=code_css.replace("sourceMappingURL=","")
                 list.push({name:related.css,raw:code_css,protocol:protocol_css});
+                output(`CSS task ready, 1 taske, total ${list.length}`,);
 
                 //5.2.write app anchor
                 const ls=[];
@@ -463,7 +468,14 @@ file.read(cfgFile,(xcfg)=>{
                     }
                 }
 
+                //c.replace the resource
+                //!important, extend the Anchor link `|`, format `anchor://{name}|{key[start,end]}`
+                //!important, if the Anchor Data is JSON format, the string after `|` is used as key
+
+                //TODO, here to replace the resource hash `anchor://{home_res}|{RSiQtOfXmDaKvS}`
+
                 list.push({name:xcfg.name,raw:code_js,protocol:protocol});
+                output(`JS task ready, 1 taske, total ${list.length}`,);
 
                 self.auto(xcfg.server,()=>{
                     //console.log(cache);
