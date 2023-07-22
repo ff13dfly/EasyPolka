@@ -24,6 +24,7 @@ export type keywords={
     "trust"?:authTrust|anchorLocation,
     "salt"?:[string,string,string],
     "args"?:string,
+    //"res"?:string,
 };
 
 //anchor data object, input from anchorJS
@@ -121,6 +122,7 @@ export type appProtocol={
     "auth"?:authAddress|anchorLocation; // the list of auth anchor;when anchorLocation, map storage there.
     "trust"?:string[];                  // trust anchor list
     "salt"?:string[2];                  // related to auth and hide, to aviod the same md5 hash. [auth(3),hide(3)]
+    //"res"?:anchorLocation;              // resouce map
 }
 
 //lib type object

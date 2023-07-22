@@ -186,8 +186,9 @@
 - `hide`,直接的hide数据，或者指向到存储的anchor
 - `auth`,直接的auth数据，或者指向到存储的anchor
 - `trust`,直接的trust数据，或者指向到存储的anchor
-- `lib`,程序引用的链上资源库
-- `ext`, 程序扩展引用的链上资源库
+- `lib`, 程序引用的链上资源库，前置加载
+- `ext`, 程序扩展引用的链上资源库，后置加载
+- `res`, 资源引用部分，可以进行自动替换，完全的资源库，引用历史记录 {"res":"anchor_name"}，采用Anchor Location来定位
 
 #### 资源类型 ( lib )
 

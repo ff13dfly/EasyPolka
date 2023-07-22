@@ -7,21 +7,33 @@
 
 //########## USAGE ##########
 //node converter_react_v3.js package/config_homepage.json 
-
+const convert_version="1.0.0";
 const theme = {
     error:      '\x1b[36m%s\x1b[0m',
     success:    '\x1b[36m%s\x1b[0m',
     dark:       '\x1b[33m%s\x1b[0m',
 };
-
-const output=(ctx,type)=>{
+const output=(ctx,type,skip)=>{
     const stamp=()=>{return new Date().toLocaleString();};
     if(!type || !theme[type]){
+        if(skip) return console.log(ctx);
         console.log(`[${stamp()}] `+ctx);
     }else{
+        if(skip) return console.log(theme[type],ctx);
         console.log(theme[type],`[${stamp()}] `+ctx);
     }
 };
+console.clear();
+
+//"blockmax":3670016,           //3.5MB
+output(`-------------------------------- React project convertror ( v${convert_version} ) --------------------------------`,"",true);
+output("\n-- Deploy the React project on Anchor Network.","",true);
+output("-- Node.js needed, run this convertor by node, then the deployment will be done.","",true);
+output("-- Config file needed, use the file name as the second parameter.","",true);
+output("-- Shell : ","",true);
+output("-- node converter_react_v3.js react_config.json","success",true);
+output("-- Config file details : https://github.com/ff13dfly/EasyPolka/blob/main/convertor/react/README.md ","",true);
+output("\n---------------------------------------- Proccess start ---------------------------------------------\n","",true);
 
 //arguments
 const args = process.argv.slice(2);
@@ -32,7 +44,8 @@ output(`Get the config file path, ready to start.`,'dark');
 
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/api');
-const anchorJS= require('../../package/node/anchor.node');
+//const anchorJS= require('../../package/node/anchor.node');
+const anchorJS= require('../../anchorJS/publish/anchor');
 const fs=require('fs');
 output(`Support libraries checked.`,'dark');
 
@@ -210,17 +223,21 @@ const self={
             return ck && ck();
         });
     },
-    multi:(list,ck,pair)=>{
-        if(list.length===0) return ck && ck();
+    multi:(list,ck,pair,done)=>{
+        if(done===undefined) done=[];
+        if(list.length===0) return ck && ck(done);
         const row=list.shift();
         console.log(`\nWriting lib anchor : ${row.name}`);
         const strProto=typeof(row.protocol)=='string'?row.protocol:JSON.stringify(row.protocol);
         const raw=typeof(row.raw)=='string'?row.raw:JSON.stringify(row.raw);
         anchorJS.write(pair,row.name,raw,strProto,(res)=>{
+
             console.log(`Processing : ${row.name}, protocol ( ${strProto.length} bytes ) :${strProto}`);
             console.log(res);
+
             if(res.step==="Finalized"){
-                self.multi(list,ck,pair);
+                done.push([row.name]);
+                self.multi(list,ck,pair,done);
             }
         });
     },
@@ -310,8 +327,6 @@ const self={
         }
         return list;
     },
-
-    //"blockmax":3670016,           //3.5MB
     groupResouce:(todo,max)=>{
         //!important, if single file length < max, should divide to small files, order by hash
         // RSiQtOfXmDaKvS will be [ RSiQtOfXmDaKvS_0, RSiQtOfXmDaKvS_1 ]
@@ -393,12 +408,12 @@ file.read(cfgFile,(xcfg)=>{
             //4.check the public folder to get resouce and convert to Base64
             self.resource(xcfg.directory,xcfg.ignor,(todo)=>{
                 //console.log(todo);
-                output(`Resource loaded, css ${cache.css[0].length} bytes, js ${cache.js[0].length} bytes.`,'success');
+                output(`Resource loaded, css ${cache.css[0].length.toLocaleString()} bytes, js ${cache.js[0].length.toLocaleString()} bytes.`,'success');
                 const rlen=self.calcResource(todo);
-                output(`Resource loaded, more ${todo.length} files, ${rlen} bytes.`,'success');
+                output(`Resource loaded, more ${todo.length} files, ${rlen.toLocaleString()} bytes.`,'success');
 
                 const groups=self.groupResouce(todo,xcfg.blockmax);
-                output(`Resource analysisted, ${groups.length} groups, max ${xcfg.blockmax} bytes.`,'success');
+                output(`Resource analysisted, ${groups.length} groups, max ${xcfg.blockmax.toLocaleString()} bytes.`,'success');
                 
                 //console.log(JSON.stringify(groups));
 
@@ -409,20 +424,20 @@ file.read(cfgFile,(xcfg)=>{
                 for(let i=0;i<groups.length;i++){
                     const group=groups[i];
                     const resKV={};
-                    console.log(`Group ${i}:`);
+                    let str=`Group ${i}: { `;
                     for(let j=0;j<group.length;j++){
                         const row=group[j];
                         const key=!row.sum?row.hash:`${row.hash}_${row.order}`;
                         const rkey=!row.sum?row.replace:`${row.replace}_${row.order}`;
                         resKV[key]=cache.resource[rkey];
-                        console.log(`${key}:${cache.resource[rkey].length}`);
-                        //if(!cache.resource[rkey]) console.log('Error: no such resource.');
+                        str+=`${key}: ${cache.resource[rkey].length.toLocaleString()} bytes, `;
                     }
+                    output(str.substring(0,str.length-2)+' }');
                     const protocol_res={"type": "data","fmt": "json"};
                     amount_res++;
-                    list.push({name:related.res,raw:JSON.stringify(resKV),protocol:protocol_res});
+                    list.push({name:related.resource,raw:JSON.stringify(resKV),protocol:protocol_res});
                 }
-                output(`Resource task ready, ${amount_res} taskes, total ${list.length}`,);
+                output(`Resource task ready, ${amount_res} taskes, total ${list.length}`);
 
                 //5.write React project to Anchor Network
                 //5.1.write css lib
@@ -478,14 +493,13 @@ file.read(cfgFile,(xcfg)=>{
                 output(`JS task ready, 1 taske, total ${list.length}`,);
 
                 self.auto(xcfg.server,()=>{
-                    //console.log(cache);
                     // const seed='Dave';
                     // const ks = new Keyring({ type: 'sr25519' });
                     // const pair= ks.addFromUri(`//${seed}`);
-
                     // self.multi(list,()=>{
                     //     console.log(`Done, the target Anchor is "${xcfg.name}"`);
                     // },pair);
+                    output("\n---------------------------------------- Proccess done ----------------------------------------------\n","",true);
                 });
             });
         });
