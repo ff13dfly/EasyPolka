@@ -158,18 +158,26 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                                     const APIs = {
                                         anchorJS: anchorJS,
                                     }
-                                    self.step(`Application loaded, run in 3s.`, () => {
-                                        if (res.libs && res.libs.css) {
-                                            const css = res.libs.css;
-                                            const head = document.getElementsByTagName('head')[0];
-                                            const style = document.createElement('style');
-                                            const cmap = document.createTextNode(css);
-                                            style.appendChild(cmap);
-                                            head.appendChild(style);
+
+                                    let count=3;
+                                    self.step(`Application loaded, run in ${count}s.`);
+                                    const ttt=setInterval(()=>{
+                                        count--;
+                                        self.step(`Application loaded, run in ${count}s.`);
+                                        if(count<0){
+                                            clearInterval(ttt);
+                                            if (res.libs && res.libs.css) {
+                                                const css = res.libs.css;
+                                                const head = document.getElementsByTagName('head')[0];
+                                                const style = document.createElement('style');
+                                                const cmap = document.createTextNode(css);
+                                                style.appendChild(cmap);
+                                                head.appendChild(style);
+                                            }
+                                            self.hide(["step", "info"]);
+                                            capp(APIs, input, []);
                                         }
-                                        self.hide(["step", "info"]);
-                                        capp(APIs, input, []);
-                                    }, 3000);
+                                    },1000);
                                 } catch (error) {
                                     console.log(error);
                                 }

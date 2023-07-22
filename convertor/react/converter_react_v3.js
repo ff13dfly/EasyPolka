@@ -2,8 +2,11 @@
 //!important, By dealing with the built package, React project can be deployed to Anchor Network.
 //!important, The resource will also be deployed on chain.
 
+//!important, Depth is the addtional parameters to limit the resouce, then we can reuse the same Anchor.
+//!important, {"dep":[start,end]}, this is the format
+
 //########## USAGE ##########
-//node converter_react_v2.js package/config_homepage.json 
+//node converter_react_v3.js package/config_homepage.json 
 
 const theme = {
     error:      '\x1b[36m%s\x1b[0m',
@@ -12,7 +15,7 @@ const theme = {
 };
 
 const output=(ctx,type)=>{
-    const stamp=()=>{return new Date();};
+    const stamp=()=>{return new Date().toLocaleString();};
     if(!type || !theme[type]){
         console.log(`[${stamp()}] `+ctx);
     }else{
@@ -259,8 +262,6 @@ const self={
         const base=2;                       //`{}`, JSON format length
 
         const group=[{ids:[],len:base}];
-        console.log(nlist[0]);
-
         for(let i=0;i<nlist.length;i++){
             const atom=nlist[i],alen=atom.len+lenStruct+atom.hash.length;
             let arranged=false;
@@ -283,9 +284,16 @@ const self={
 
         const rlist=[];
         for(let i=0;i<group.length;i++){
-
+            const row=group[i];
+            const gp=[]
+            for(let j=0;j<row.ids.length;j++){
+                gp.push(todo[row.ids[j]]);
+            }
+            rlist.push(gp);
         }
-        console.log(group);
+        //console.log(group);
+        //console.log(rlist);
+        return rlist;
     },
     rand:(m,n)=>{return Math.round(Math.random() * (m-n) + n);},
     char:(n,pre)=>{
@@ -323,7 +331,8 @@ file.read(cfgFile,(xcfg)=>{
                 output(`Resource loaded, more ${todo.length} files, ${rlen} bytes.`,'success');
 
                 const group=self.groupResouce(todo,xcfg.blockmax);
-
+                output(`Resource analysisted, ${group.length} groups, max ${xcfg.blockmax} bytes.`,'success');
+                
                 //5.write React project to Anchor Network
                 const list=[];
                 const related=xcfg.related;
