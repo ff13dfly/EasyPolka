@@ -108,19 +108,19 @@ module.exports={
     {
       title:"Plinth",
       desc:"Browser on Anchor network,only tool you need to explorer Web3.0",
-      thumb:"imgs/d_plinth.png",
+      thumb:"imgs/d_plinth.jpg",
       link:"http://loader.metanchor.net/#plinth@wss://dev.metanchor.net",
     },
     {
       title:"FreeSaying",
       desc:"Social App base on Anchor network totally. Free module of Anchor Network.",
-      thumb:"imgs/d_freesaying.png",
+      thumb:"imgs/d_freesaying.jpg",
       link:"http://loader.metanchor.net/#freesaying@wss://dev.metanchor.net",
     },
     {
       title:"Virtual Block World",
       desc:"A total Web3.0 virtual world, even the world structure.",
-      thumb:"imgs/d_vbw.png",
+      thumb:"imgs/d_vbw.jpg",
       link:"http://loader.metanchor.net/#vbw@wss://dev.metanchor.net",
     },
   ],
