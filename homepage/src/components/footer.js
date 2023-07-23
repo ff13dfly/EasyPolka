@@ -1,23 +1,18 @@
-import { Container, Row, Col, Nav } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 
 function Footer() {
   return (
-    <div expand="lg" className="bg-body-tertiary pt-4" id="footer_nav">
+    <div expand="lg" className="bg-body-tertiary" id="footer_nav">
       <Container>
         <Row>
-          <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
-            <Nav defaultActiveKey="/home" className="flex-column">
-              <Nav.Link href="/home">Active</Nav.Link>
-              <Nav.Link eventKey="link-1">Substrate</Nav.Link>
-              <Nav.Link eventKey="link-2">Polkadot</Nav.Link>
-              <Nav.Link eventKey="link-2">Grants</Nav.Link>
-              <Nav.Link eventKey="disabled" disabled>
-                Disabled
-              </Nav.Link>
-            </Nav>
+          <Col md={3} lg={3} xl={3} xxl={3} className='pt-4'>
+            <h2>Anchor Network</h2>
           </Col>
-          <Col md={8} lg={8} xl={8} xxl={8} className='pt-4'>
+          <Col md={3} lg={3} xl={3} xxl={3} className='pt-4'>
 
+          </Col>
+          <Col md={6} lg={6} xl={6} xxl={6} className='pt-4 text-end'>
+            <h4 className='pt-1'>© 2023 Metanchor Studio</h4>
           </Col>
         </Row>
       </Container>

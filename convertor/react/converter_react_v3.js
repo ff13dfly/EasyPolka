@@ -236,7 +236,7 @@ const self={
     },
     multi:(list,ck,pair,done)=>{
         if(done===undefined) done=[];
-        return ck && ck(done);
+        //return ck && ck(done);
         if(list.length===0){
             output(`Result of writing: ${JSON.stringify(done)}`,'success');
             return ck && ck(done);

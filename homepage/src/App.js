@@ -27,7 +27,7 @@ function App() {
       <Demo list={data.demo}/>
       <Gateway subject={data.gateway}/>
       <Sample list={data.sample.list} desc={data.sample.desc}/>
-      <Join />
+      {/* <Join /> */}
       <Footer />
     </div>
   );
