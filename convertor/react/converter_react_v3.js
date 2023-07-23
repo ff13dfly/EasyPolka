@@ -249,7 +249,7 @@ const self={
                 }
                 
                 if(res.step==="Finalized"){
-                    done.push([row.name,block+1]);
+                    done.push([row.name,block]);
                     output(`Processing done, data is written on chain.`,'success');
                     self.multi(list,ck,pair,done);
                 }
