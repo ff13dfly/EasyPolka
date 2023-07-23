@@ -73,6 +73,13 @@ const file={
             });
         });
     },
+    save:(name,data,ck)=>{
+        const target=`./${name}`;
+        fs.writeFile(target, data,'utf8',function (err) {
+            if (err) return ck && ck({error:err});
+            return ck && ck();
+        });
+    },
 };
 
 //convertor functions
@@ -229,8 +236,11 @@ const self={
     },
     multi:(list,ck,pair,done)=>{
         if(done===undefined) done=[];
-        //return ck && ck(done);
-        if(list.length===0) return ck && ck(done);
+        return ck && ck(done);
+        if(list.length===0){
+            output(`Result of writing: ${JSON.stringify(done)}`,'success');
+            return ck && ck(done);
+        } 
         anchorJS.block((block)=>{
             const row=list.shift();
             output(`Writing lib anchor : ${row.name}, current block number : ${block.toLocaleString()}`,'dark');
@@ -313,10 +323,10 @@ const self={
                     order:j
                 });
                 cache.resource[`${row.replace}_${j}`]=cache.resource[row.replace].substr(max*j,max);
-                //console.log(cache.resource[`${row.replace}_${j}`].length);
+                output(cache.resource[`${row.replace}_${j}`].length);
             }
             delete cache.resource[row.replace];
-            //console.log(`file ${row.hash} : ${row.len}, max : ${max}, divide to ${div}`);
+            output(`file ${row.hash} : ${row.len}, max : ${max}, divide to ${div}`);
         }
         return list;
     },
@@ -430,7 +440,7 @@ file.read(cfgFile,(xcfg)=>{
                 output(`Resource analysisted, ${groups.length} groups, max ${xcfg.blockmax.toLocaleString()} bytes.`,'success');
 
                 //4.1.write resouce to Anchor Network.
-                const list=[];
+                let list=[];
                 const related=xcfg.related;
                 let amount_res=0;
                 for(let i=0;i<groups.length;i++){
@@ -451,11 +461,14 @@ file.read(cfgFile,(xcfg)=>{
                 }
                 output(`Resource task ready, ${amount_res} taskes, total ${list.length}`);
 
+                //console.log(groups);
                 //4.2.write resouce then get the anchor location.
                 self.auto(xcfg.server,(pair)=>{
-                    
                     self.multi(list,(done)=>{
-                        output(`Resource is written on chain. Anchor data : ${JSON.stringify(done)}`,'success');
+                        //4.3.write the res result to resoucre ref anchor
+                        list=[];        //clean the list
+                        const protocol_ref={"type": "data","fmt": "json"}
+                        list.push({name:related.resource_ref,raw:done,protocol:protocol_ref});
 
                         //5.write React project to Anchor Network
                         //5.1.write css lib
@@ -478,6 +491,7 @@ file.read(cfgFile,(xcfg)=>{
                             "type": "app",
                             "fmt": "js",
                             "lib":ls,
+                            "res":related.resource_ref,
                             "ver":ver,
                             "tpl":"react"
                         }
@@ -486,10 +500,7 @@ file.read(cfgFile,(xcfg)=>{
                         //a.remove sourceMapping support
                         let code_js=cache.js.join(";");
                         code_js=code_js.replace("sourceMappingURL=","")
-                        for(var k in cache.resource){
-                            const reg=new RegExp(`${k}`,"g");
-                            code_js=code_js.replace(reg,cache.resource[k]);
-                        }
+                        
 
                         //b.replace the global 
                         if(xcfg.globalVars){
@@ -505,13 +516,25 @@ file.read(cfgFile,(xcfg)=>{
                         //!important, extend the Anchor link `|`, format `anchor://{name}|{key[start,end]}`
                         //!important, if the Anchor Data is JSON format, the string after `|` is used as key
 
-                        //TODO, here to replace the resource hash `anchor://{home_res}|{RSiQtOfXmDaKvS}`
+                        // for(var k in cache.resource){
+                        //     const reg=new RegExp(`${k}`,"g");
+                        //     code_js=code_js.replace(reg,cache.resource[k]);
+                        // }
+
+                        for(let i=0;i<todo.length;i++){
+                            const row=todo[i];
+                            const reg=new RegExp(`${row.replace}`,"g");
+                            code_js=code_js.replace(reg,`anchor://${related.resource}|${row.hash}`);
+                        }
+                        file.save("hello.js",code_js);
 
                         list.push({name:xcfg.name,raw:code_js,protocol:protocol});
-                        output(`JS task ready, 1 taske, total ${list.length}`,);
-                        
-                        output("\n---------------------------------------- Proccess done ----------------------------------------------\n","",true);
+                        output(`JS task ready, 1 task, total ${list.length}`);
 
+
+                        self.multi(list,(bks)=>{
+                            output("\n---------------------------------------- Proccess done ----------------------------------------------\n","",true);
+                        },pair);
                     },pair);
                 });
             });
