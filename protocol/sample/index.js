@@ -32,17 +32,16 @@ var res = aaa("hello");
 console.log(res);
 //TODO error test await way to code
 //await testing
-try {
-    var awaitResult = await mock_a();
-    console.log(awaitResult);
-}
-catch (error) {
-    console.log(error);
-}
-function mock_a() {
-    return new Promise(function (resolve, reject) {
-        setTimeout(function () {
-            resolve('mock_A');
-        }, 500);
-    });
-}
+// try {
+//     const awaitResult=await mock_a();
+//     console.log(awaitResult);
+// } catch (error) {
+//     console.log(error);
+// }
+// function mock_a(){
+//     return new Promise((resolve, reject) => {
+//         setTimeout(() => {
+//             resolve('mock_A');
+//         }, 500);
+//     });
+// }

@@ -143,6 +143,11 @@ const self={
         const protocol=data.protocol;
         cObject.code=data.raw;
 
+        //TODO, here to load resource anchors
+        if(protocol!==null && protocol.res){
+            console.log(protocol.res);
+        }
+
         if(protocol!==null && protocol.lib){
             self.getLibs(protocol.lib,(dt:any,order:any)=>{
                 const combine=Group(dt,order);
