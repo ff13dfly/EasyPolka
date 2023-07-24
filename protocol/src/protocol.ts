@@ -201,6 +201,8 @@ export type easyResult={
     code?:string|null;          //cApp code,
     call?:anchorLocation;       //call the cApp
     libs?:Object;               //lib list
+    resource?:string;           //resource anchor name
+    raw?:anchorObject[];        //resource anchor data list
 
     auth?:authAddress;          //authority information
     trust?:authTrust;           //trust anchor list

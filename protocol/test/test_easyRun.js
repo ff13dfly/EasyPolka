@@ -13,6 +13,7 @@ var API = {
         "owner": anchorJS.owner,
         "subcribe": anchorJS.subcribe,
         "block": anchorJS.block,
+        "multi": anchorJS.multi,
     },
 };
 var self = {
@@ -61,11 +62,12 @@ self.prepare(server, function () {
     var linker_declared_hide_complex = "anchor://hide_last_9627/20685/";
     var linker_node_hello = "anchor://node_hello/";
     var linker_node_simple = "anchor://node_simple/";
+    var linker_node_resource = "anchor://react_demo/";
     console.log("\n");
-    (0, interpreter_1.easyRun)(linker_node_simple, API, function (result) {
+    (0, interpreter_1.easyRun)(linker_node_resource, API, function (result) {
         console.log("\n-----------------result of ".concat(linker_full_caller, "-----------------"));
         console.log(result);
-        //console.log(JSON.stringify(result));
+        //console.log(result.resource);
         console.log("\n\n");
         // easyRun(linker_declared_hide_complex,API,(result:any)=>{
         //     console.log(`\n-----------------result of ${linker_declared_hide_complex}-----------------`);

@@ -83,7 +83,7 @@
 
 - 锚链接支持对JSON的key-value方式的定位，使用`|`进行分割，这样可以直接调取data类型下的数据。
 
-- 锚链接支持对多块数据进行合并的支持，使用`-`来实现。
+- 锚链接支持对多块数据进行合并的支持，使用`~`来实现。
 
     ```SHELL
         # get the latest anchor data to get key_name
@@ -93,10 +93,10 @@
         anchor://{name}/{block}|{key_name}
 
         # get combined data from history data
-        anchor://{name}/{block_start}-{block_end}
+        anchor://{name}/{block_start}~{block_end}
 
         # get the combined data then get key_name
-        anchor://{name}/{block_start}-{block_end}|{key_name}
+        anchor://{name}/{block_start}~{block_end}|{key_name}
     ```
 
 ### 授权

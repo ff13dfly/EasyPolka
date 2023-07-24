@@ -29,7 +29,7 @@ type hideResult={
 };
 type mergeResult={
     "hide":number[]|null,       //if hide data, merge to here.
-    "auth":authAddress|null,        //if auth data, merge to here.
+    "auth":authAddress|null,    //if auth data, merge to here.
     "trust":authTrust|null,
     "error":errorObject[],      //collect errors here
     "index":[anchorLocation|null,anchorLocation|null,anchorLocation|null],    //collect anchor locations here
@@ -68,7 +68,6 @@ const cache:any={
         cache.data={};
     },
 }
-//before: 500~700ms
 /*************************debug part****************************/
 
 
@@ -136,8 +135,6 @@ const self={
     },
 
     decodeApp:(cObject:easyResult,ck:Function)=>{
-        //console.log(`Decode app anchor`);
-
         cObject.type=rawType.APP;
         const data=cObject.data[`${cObject.location[0]}_${cObject.location[1]}`];
         const protocol=data.protocol;
@@ -145,7 +142,7 @@ const self={
 
         //TODO, here to load resource anchors
         if(protocol!==null && protocol.res){
-            console.log(protocol.res);
+            cObject.resource=protocol.res;
         }
 
         if(protocol!==null && protocol.lib){
@@ -672,12 +669,9 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
 
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
-    //console.log(`Hidden list checking...`);
-    //console.log(hlist);
 
     //0.get the latest declared hidden list
     if(hlist===undefined){
-        //console.log(`Checking the hide list`);
         return self.getLatestDeclaredHidden(target.location,(lastHide:number[]|errorObject,lastAnchor:anchorObject)=>{
             let cObject:easyResult={
                 type:rawType.NONE,
@@ -687,25 +681,18 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                 index:[<anchorLocation|null>null,<anchorLocation|null>null,<anchorLocation|null>null],
             }
 
-            //console.log(lastHide);
-            //console.log(lastAnchor);
-
             const res=<errorObject>lastHide;
-            //console.log(res);
             if(res!==undefined && res.error){
                 cObject.error.push(res);
                 return run(linker,API,ck,[]);
             } 
         
             const hResult=<number[]>lastHide;
-            //console.log(`Hidden list...`);
-            //console.log(hResult);
             return run(linker,API,ck,hResult);
         });
     }
 
-    //1.decode the `Anchor Link`, prepare the result object.
-    
+    //1.decode the `Anchor Link`, prepare the result object
     let cObject:easyResult={
         type:rawType.NONE,
         location:[target.location[0],target.location[1]!==0?target.location[1]:0],
@@ -713,12 +700,8 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         data:{},
         index:[<anchorLocation|null>null,<anchorLocation|null>null,<anchorLocation|null>null],
         hide:hlist,
-        //trust:{},
     }
     if(target.param) cObject.parameter=target.param;
-
-    //console.log(`Continue...`);
-    //console.log(target);
 
     //2.Try to get the target `Anchor` data.
     self.getAnchor(target.location,(resAnchor:anchorObject|errorObject)=>{
@@ -757,14 +740,22 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         }else{
             return getResult(type);
         }
+
+        function checkFence(resFirst:easyResult,ck:any,fence?:boolean){
+            if(resFirst.call && !fence){
+                const app_link=linkCreator(resFirst.call,resFirst.parameter===undefined?{}:resFirst.parameter);
+                return run(app_link,API,(resApp:easyResult)=>{
+                    return self.checkAuthority(resFirst,resApp,ck);
+                },hlist,true);
+            }else{
+                return ck && ck(resFirst);
+            }
+        }
         
         //inline function to avoid the repetitive code.
         function getResult(type:string){
-            //console.log(`Getting result...`);
 
             self.merge(data.name,<keywords>data.protocol,(mergeResult:mergeResult)=>{
-                //console.log(`Merging...`);
-                //console.log(mergeResult);
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
                 if(mergeResult.trust!==null) cObject.trust=mergeResult.trust;
                 if(mergeResult.hide!=null && mergeResult.hide.length!==0){
@@ -790,13 +781,40 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                 }
     
                 return decoder[type](cObject,(resFirst:easyResult)=>{
-                    if(resFirst.call && !fence){
-                        const app_link=linkCreator(resFirst.call,resFirst.parameter===undefined?{}:resFirst.parameter);
-                        return run(app_link,API,(resApp:easyResult)=>{
-                            return self.checkAuthority(resFirst,resApp,ck);
-                        },hlist,true);
+                    if(!resFirst.resource){
+                        //1.if no more resource to load, export the result
+
+                        return checkFence(resFirst,ck,fence);
                     }else{
-                        return ck && ck(resFirst);
+                        //2.load the target anchor resource and combine together;
+                        //console.log(resFirst.resource)
+                        self.getAnchor([resFirst.resource,0],(resResource:anchorObject|errorObject)=>{
+                            const err=<errorObject>resResource;
+                            if(err.error){
+                                cObject.error.push(err);
+                               // return ck && ck(resFirst);
+                                return checkFence(resFirst,ck,fence);
+                            }
+
+                            const data=<anchorObject>resResource;
+                            resFirst.data[`${data.name}_${data.block}`]=data;
+
+                            if(data.raw!==null){
+                                const res_list=JSON.parse(data.raw);
+                                if(API!==null && API.common.multi!==undefined){
+                                    API.common.multi(res_list,(resData:anchorObject[]|errorObject)=>{
+                                        const err=<errorObject>resData;
+                                        if(err.error){
+                                            cObject.error.push(err);
+                                            return ck && ck(resFirst);
+                                        }
+                                        const data_list=<anchorObject[]>resData;
+                                        resFirst.raw=data_list;
+                                        return checkFence(resFirst,ck,fence);
+                                    });
+                                }
+                            }
+                        });
                     }
                 });
             });

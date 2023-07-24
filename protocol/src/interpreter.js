@@ -14,7 +14,7 @@ var API = null;
 /*************************debug part****************************/
 //debug data to improve the development
 var debug = {
-    disable: true,
+    disable: false,
     cache: true,
     search: [],
     start: 0,
@@ -37,7 +37,6 @@ var cache = {
         cache.data = {};
     },
 };
-//before: 500~700ms
 /*************************debug part****************************/
 var self = {
     /**************************************************************************/
@@ -100,11 +99,14 @@ var self = {
         return ck && ck(cObject);
     },
     decodeApp: function (cObject, ck) {
-        //console.log(`Decode app anchor`);
         cObject.type = protocol_1.rawType.APP;
         var data = cObject.data["".concat(cObject.location[0], "_").concat(cObject.location[1])];
         var protocol = data.protocol;
         cObject.code = data.raw;
+        //TODO, here to load resource anchors
+        if (protocol !== null && protocol.res) {
+            cObject.resource = protocol.res;
+        }
         if (protocol !== null && protocol.lib) {
             self.getLibs(protocol.lib, function (dt, order) {
                 var combine = Group(dt, order);
@@ -624,11 +626,8 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
     var target = (0, decoder_1.linkDecoder)(linker);
     if (target.error)
         return ck && ck(target);
-    //console.log(`Hidden list checking...`);
-    //console.log(hlist);
     //0.get the latest declared hidden list
     if (hlist === undefined) {
-        //console.log(`Checking the hide list`);
         return self.getLatestDeclaredHidden(target.location, function (lastHide, lastAnchor) {
             var cObject = {
                 type: protocol_1.rawType.NONE,
@@ -637,21 +636,16 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                 data: {},
                 index: [null, null, null],
             };
-            //console.log(lastHide);
-            //console.log(lastAnchor);
             var res = lastHide;
-            //console.log(res);
             if (res !== undefined && res.error) {
                 cObject.error.push(res);
                 return run(linker, API, ck, []);
             }
             var hResult = lastHide;
-            //console.log(`Hidden list...`);
-            //console.log(hResult);
             return run(linker, API, ck, hResult);
         });
     }
-    //1.decode the `Anchor Link`, prepare the result object.
+    //1.decode the `Anchor Link`, prepare the result object
     var cObject = {
         type: protocol_1.rawType.NONE,
         location: [target.location[0], target.location[1] !== 0 ? target.location[1] : 0],
@@ -659,12 +653,9 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
         data: {},
         index: [null, null, null],
         hide: hlist,
-        //trust:{},
     };
     if (target.param)
         cObject.parameter = target.param;
-    //console.log(`Continue...`);
-    //console.log(target);
     //2.Try to get the target `Anchor` data.
     self.getAnchor(target.location, function (resAnchor) {
         //2.1.error handle.
@@ -703,13 +694,21 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
         else {
             return getResult(type);
         }
+        function checkFence(resFirst, ck, fence) {
+            if (resFirst.call && !fence) {
+                var app_link = (0, decoder_1.linkCreator)(resFirst.call, resFirst.parameter === undefined ? {} : resFirst.parameter);
+                return run(app_link, API, function (resApp) {
+                    return self.checkAuthority(resFirst, resApp, ck);
+                }, hlist, true);
+            }
+            else {
+                return ck && ck(resFirst);
+            }
+        }
         //inline function to avoid the repetitive code.
         function getResult(type) {
-            //console.log(`Getting result...`);
             self.merge(data.name, data.protocol, function (mergeResult) {
                 var _a;
-                //console.log(`Merging...`);
-                //console.log(mergeResult);
                 if (mergeResult.auth !== null)
                     cObject.auth = mergeResult.auth;
                 if (mergeResult.trust !== null)
@@ -733,14 +732,38 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                     cObject.data[k] = mergeResult.map[k];
                 }
                 return decoder[type](cObject, function (resFirst) {
-                    if (resFirst.call && !fence) {
-                        var app_link = (0, decoder_1.linkCreator)(resFirst.call, resFirst.parameter === undefined ? {} : resFirst.parameter);
-                        return run(app_link, API, function (resApp) {
-                            return self.checkAuthority(resFirst, resApp, ck);
-                        }, hlist, true);
+                    if (!resFirst.resource) {
+                        //1.if no more resource to load, export the result
+                        return checkFence(resFirst, ck, fence);
                     }
                     else {
-                        return ck && ck(resFirst);
+                        //2.load the target anchor resource and combine together;
+                        //console.log(resFirst.resource)
+                        self.getAnchor([resFirst.resource, 0], function (resResource) {
+                            var err = resResource;
+                            if (err.error) {
+                                cObject.error.push(err);
+                                // return ck && ck(resFirst);
+                                return checkFence(resFirst, ck, fence);
+                            }
+                            var data = resResource;
+                            resFirst.data["".concat(data.name, "_").concat(data.block)] = data;
+                            if (data.raw !== null) {
+                                var res_list = JSON.parse(data.raw);
+                                if (API !== null && API.common.multi !== undefined) {
+                                    API.common.multi(res_list, function (resData) {
+                                        var err = resData;
+                                        if (err.error) {
+                                            cObject.error.push(err);
+                                            return ck && ck(resFirst);
+                                        }
+                                        var data_list = resData;
+                                        resFirst.raw = data_list;
+                                        return checkFence(resFirst, ck, fence);
+                                    });
+                                }
+                            }
+                        });
                     }
                 });
             });

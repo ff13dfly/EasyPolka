@@ -100,7 +100,7 @@ const self = {
         ele.appendChild(br);
         setTimeout(ck, !at ? config.step : at);
     },
-    stamp:()=>{
+    stamp: () => {
         return new Date().toLocaleString();
     }
 }
@@ -137,7 +137,7 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                         self.html(`${JSON.stringify(res)}`, "root");
                         return false;
                     }
-                    
+
                     self.step(`Info: Ready to show details`, () => {
                         const block = res.location[1], name = res.location[0];
                         const key = `${name}_${block}`;
@@ -145,42 +145,41 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                         self.html(`${name} on ${block.toLocaleString()}, signed by ${anchor.signer}`, "more");
 
                         self.step(`Load successful,ready to run.`, () => {
-                            if (res.libs && res.libs.js) {
-                                const js = res.libs.js;
-                                try {
-                                    const capp = new Function("API", "input", "errs", js + (res.code ? res.code : ""));
-                                    const input = {
-                                        container: "root",
-                                        from: null,
-                                        params: {},
-                                        node: result.server,
-                                    }
-                                    const APIs = {
-                                        anchorJS: anchorJS,
-                                    }
-
-                                    let count=3;
-                                    self.step(`Application loaded, run in ${count}s.`);
-                                    const ttt=setInterval(()=>{
-                                        count--;
-                                        self.step(`Application loaded, run in ${count}s.`);
-                                        if(count<0){
-                                            clearInterval(ttt);
-                                            if (res.libs && res.libs.css) {
-                                                const css = res.libs.css;
-                                                const head = document.getElementsByTagName('head')[0];
-                                                const style = document.createElement('style');
-                                                const cmap = document.createTextNode(css);
-                                                style.appendChild(cmap);
-                                                head.appendChild(style);
-                                            }
-                                            self.hide(["step", "info"]);
-                                            capp(APIs, input, []);
-                                        }
-                                    },1000);
-                                } catch (error) {
-                                    console.log(error);
+                            const js = (res.libs && res.libs.js) ? res.libs.js : "";
+                            try {
+                                const capp = new Function("API", "input", "errs", js + (res.code ? res.code : ""));
+                                const input = {
+                                    container: "root",
+                                    from: null,
+                                    params: {},
+                                    node: result.server,
                                 }
+                                const APIs = {
+                                    anchorJS: anchorJS,
+                                }
+
+                                let count = 3;
+                                self.step(`Application loaded, run in ${count}s.`);
+                                const ttt = setInterval(() => {
+                                    count--;
+                                    self.step(`Application loaded, run in ${count}s.`);
+                                    if (count < 0) {
+                                        clearInterval(ttt);
+                                        if (res.libs && res.libs.css) {
+                                            const css = res.libs.css;
+                                            const head = document.getElementsByTagName('head')[0];
+                                            const style = document.createElement('style');
+                                            const cmap = document.createTextNode(css);
+                                            style.appendChild(cmap);
+                                            head.appendChild(style);
+                                        }
+                                        self.hide(["step", "info"]);
+                                        capp(APIs, input, []);
+                                    }
+                                }, 1000);
+                            } catch (error) {
+                                self.step(`Failed to load cApp.`);
+                                self.step(`Error: ${JSON.stringify(error)}`);
                             }
                         });
                     });
