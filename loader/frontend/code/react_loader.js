@@ -102,7 +102,40 @@ const self = {
     },
     stamp: () => {
         return new Date().toLocaleString();
-    }
+    },
+    groupResource:(list)=>{
+        const raw={},group={};
+        for(let i=0;i<list.length;i++){
+            const row=list[i];
+            if(row.raw!==null){
+                try {
+                    const json=JSON.parse(row.raw);
+                    for(var k in json){
+                        raw[k]=json[k];
+                        const arr=k.split("_");
+                        if(arr.length===2){
+                            if(!group[k]) group[k]=[];
+                            group[k].push(parseInt(arr[1]));
+                        }else{
+                            group[k]=true;
+                        }
+                    }
+                } catch (error) {
+                    
+                }
+            }
+        }
+
+        const map={}
+        for(let k in group){
+            if(group[k]===true){
+                map[k]=raw[k];
+            }else{
+
+            }
+        }
+        return map;
+    },
 }
 const result = self.decoder(location.hash);
 const linker = `anchor://${result.anchor}/`;
@@ -125,7 +158,7 @@ self.step(`Info: Anchor Network server ${server}`, () => {
             };
             self.step(`Info: anchor decoded, ready to load.`, () => {
                 easyRun(linker, startAPI, (res) => {
-                    console.log(res);
+                    //console.log(res);
                     if (res.error && res.error.length !== 0) {
                         let txt = '';
                         for (let i = 0; i < res.error.length; i++) {
@@ -146,8 +179,19 @@ self.step(`Info: Anchor Network server ${server}`, () => {
 
                         self.step(`Load successful,ready to run.`, () => {
                             const js = (res.libs && res.libs.js) ? res.libs.js : "";
+                            let code=res.code ? res.code : "";
+                            //console.log(code);
+                            if(res.resource && res.raw){
+                                self.step(`Combining the resouce files to application.`);
+                                const kv=self.groupResource(res.raw);
+                                const name=res.raw[0].name;
+                                for(var k in kv){
+                                    code = code.replace(`anchor://${name}|${k}`, kv[k]);
+                                }
+                            }
+
                             try {
-                                const capp = new Function("API", "input", "errs", js + (res.code ? res.code : ""));
+                                const capp = new Function("API", "input", "errs", js + code);
                                 const input = {
                                     container: "root",
                                     from: null,
