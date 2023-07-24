@@ -119,19 +119,19 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                     "history": anchorJS.history,
                     "owner": anchorJS.owner,
                     "subcribe": anchorJS.subcribe,
+                    "multi":anchorJS.multi,
                     "block": anchorJS.block,
                 }
             };
             self.step(`Info: anchor decoded, ready to load.`, () => {
                 easyRun(linker, startAPI, (res) => {
+                    console.log(res);
                     if (res.error && res.error.length !== 0) {
                         let txt = '';
                         for (let i = 0; i < res.error.length; i++) {
                             const row = res.error[i];
                             txt += `${row.level ? (row.level + ":") : ""}${row.error}`;
                         }
-
-                        //self.html(txt,"info");
                         self.step(txt);
                         delete res.error;
                         self.html(`${JSON.stringify(res)}`, "root");
