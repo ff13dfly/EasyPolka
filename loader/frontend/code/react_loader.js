@@ -104,7 +104,7 @@ const self = {
         return new Date().toLocaleString();
     },
     groupResource:(list)=>{
-        const raw={},group={};
+        const raw={},group={},divide={}
         for(let i=0;i<list.length;i++){
             const row=list[i];
             if(row.raw!==null){
@@ -114,24 +114,29 @@ const self = {
                         raw[k]=json[k];
                         const arr=k.split("_");
                         if(arr.length===2){
-                            if(!group[k]) group[k]=[];
-                            group[k].push(parseInt(arr[1]));
+                            if(!group[arr[0]]) group[arr[0]]=[];
+                            group[arr[0]].push(parseInt(arr[1]));
+                            divide[arr[0]]=row.name;
                         }else{
-                            group[k]=true;
+                            group[k]=row.name;
                         }
                     }
                 } catch (error) {
-                    
+                    console.log(error);
                 }
             }
         }
 
         const map={}
         for(let k in group){
-            if(group[k]===true){
-                map[k]=raw[k];
+            if(!Array.isArray(group[k])){
+                map[`${group[k]}|${k}`]=raw[k];
             }else{
-
+                let str='';
+                for(let i=0;i<group[k].length;i++){
+                    str+=raw[`${k}_${i}`]
+                }
+                map[`${divide[k]}|${k}`]=str;
             }
         }
         return map;
@@ -184,9 +189,9 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                             if(res.resource && res.raw){
                                 self.step(`Combining the resouce files to application.`);
                                 const kv=self.groupResource(res.raw);
-                                const name=res.raw[0].name;
+                                //console.log(kv);
                                 for(var k in kv){
-                                    code = code.replace(`anchor://${name}|${k}`, kv[k]);
+                                    code = code.replace(`anchor://${k}`, kv[k]);
                                 }
                             }
 
