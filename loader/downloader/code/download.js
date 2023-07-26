@@ -26,38 +26,39 @@ const easyRun = LE.easyRun;
 //websocket link to server
 let websocket = null;
 const self = {
-    auto: (ck) => {
+    auto: (server,ck) => {
         if (websocket !== null) return ck && ck();
-        self.step(`Ready to link to server ${server}.`, () => {
-            ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
-                self.step(`Linker to node [${server}] created.`, () => {
-                    websocket = api;
-                    anchorJS.set(api);
-                    return ck && ck();
-                });
-            });
+        ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
+            websocket = api;
+            anchorJS.set(api);
+            return ck && ck();
         });
     },
-    step: (txt, ck, at) => {
-        //if(config.step===0) return ck && ck();
-        const id = "step";
+    html: (id, txt) => {
         const ele = document.getElementById(id);
-        const info = document.createTextNode(`[${self.stamp()}] ${txt}`);
-        const br = document.createElement("br");
+        const info = document.createTextNode(txt);
         ele.appendChild(info);
-        ele.appendChild(br);
-        setTimeout(ck, !at ? config.step : at);
+    },
+    value:(id)=>{
+        const ele = document.getElementById(id);
+        return ele.value;
+    },
+    stamp: () => {
+        return new Date().toLocaleString();
+    },
+    getServer: () => {
+        return config.server;
     },
 }
-const result = self.decoder(location.hash);
-const linker = `anchor://${result.anchor}/`;
-const server = result.server;
 
-self.version(config.version, "ver");
-self.step(`Info: Anchor Network server ${server}`, () => {
-    self.step(`Info: ready to load ${result.anchor}`, () => {
-        self.auto(() => {
-           
+
+
+const evs={
+    onClick:(id)=>{
+        const val=self.value(id);
+        const server = self.getServer();
+        self.auto(server,() => {
+            self.html("output","Linked to websocket");
         });
-    });
-});
+    }
+}

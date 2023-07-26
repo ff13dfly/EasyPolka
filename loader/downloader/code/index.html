@@ -11,11 +11,86 @@
         <script src="../../../package/loader/anchor.loader.js"></script>
         <script src="../../../package/loader/easy.loader.js"></script>
     </head>
+    <style>
+        #info{
+            margin: 0 auto;
+            max-width: 790px;
+            color:#444444;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            padding-top: 15px;
+        }
+        #container{
+            margin: 0 auto;
+            max-width: 790px;
+            color:#444444;
+            font-size: 18px;
+            margin-bottom: 5px;
+            padding: 15px 10px 15px 10px;
+        }
+        #anchor_name{
+            margin: 0 auto;
+            height: 40px;
+            line-height: 40px;
+            min-width: 500px;
+            border-color: #444444;
+            border-radius: 10px;
+            font-size: 18px; 
+            padding-left: 15px;
+        }
+        #anchor_name:focus{
+            border: 2px solid #fabb1d;
+        }
+        #anchor_name::-webkit-input-placeholder { 
+            font-size: 18px; 
+            color: #999;
+        } 
+
+        #btn_search{
+            margin: 0 auto;
+            height: 46px;
+            line-height: 46px;
+            border-radius: 10px;
+            border-color: #444444;
+            background-color: #fabb1d;
+            /* background-color: #365FC8; */
+            padding: 0px 15px 0px 15px;
+            cursor: pointer;
+        }
+        #btn_search:hover{
+            background-color: #ffd771;
+            color:#ffffff
+        }
+        #output{
+
+        }
+    </style>
+    
     <body >
         <noscript>You need to enable JavaScript to run this Loader.</noscript>
         <div id="info">Anchor Network Data Downloader v<span class="ver">1.0.0</span></div>
-       
+        <div id="container">
+            <script src="download.js"></script>
+            <table style="min-width: 750px;">
+                <tr>
+                    <td>
+                        <input id="anchor_name" type="text" value="" placeholder="Please input the Anchor you want to download" />
+                    </td>
+                    <td style="text-align: right;">
+                        <button id="btn_search" onclick="evs.onClick('anchor_name')">DOWNLOAD</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="output"></div>
+                    </td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <div id="list"></div>
     </body>
     <!-- <script src="loader.min.js"></script> -->
-    <script src="download.js"></script>
+    
 </html>
