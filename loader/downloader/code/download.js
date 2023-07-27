@@ -64,7 +64,6 @@ const self = {
         if(!hash || hash.length===1) return data;
         const arr=hash.split("@");
         if(arr.length>2) return data;
-        console.log(arr);
         if(arr.length===2){
             data.server=arr[1];
             data.anchor=arr[0].substring(1);
@@ -87,6 +86,10 @@ const self = {
             const cls="down_row";
             for(let i=0;i<list.length;i++){
                 const row=list[i];
+                const details=row.raw.length<500?`<tr>
+                    <td>Raw Data</td>
+                    <td>${row.raw}</td>
+                </tr>`:"";
                 dom+=`<li>
                     [${row.protocol.type}] <a href="#" class="${cls}" data="anchor://${row.name}/${row.block}">
                         anchor://${row.name}/${row.block}
@@ -104,6 +107,7 @@ const self = {
                             <td>Row length</td>
                             <td>${row.raw.length.toLocaleString()} bytes</td>
                         </tr>
+                        ${details}
                         <tr>
                             <td>Protocol</td>
                             <td>${JSON.stringify(row.protocol)}</td>

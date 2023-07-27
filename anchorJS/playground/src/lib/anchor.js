@@ -644,7 +644,7 @@ const self = {
 	 * @param {string}	str		//Hex string need to convert
 	*/
 	decodeUTF8:(str) => {
-		if(str.substr(0, 2).toLowerCase()==='0x') str=tr.slice(2);
+		if(str.substr(0, 2).toLowerCase()==='0x') str=str.slice(2);
 		const arr=str.replace(/\s+/g, '').split("");
 		let final='';
 		for(let i=0;i<arr.length;i+=2){
