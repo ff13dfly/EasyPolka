@@ -28,6 +28,7 @@ let websocket = null;
 const self = {
     auto: (server,ck) => {
         if (websocket !== null) return ck && ck();
+        $("#output").html("Linked to websocket.");
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             websocket = api;
             anchorJS.set(api);
@@ -40,8 +41,12 @@ const self = {
     getServer: () => {
         return config.server;
     },
+    clear:()=>{
+        $("#output").html("");
+        $("#list").html("");
+    },
     easyAnchor:(linker,ck)=>{
-        const startAPI = {
+        const SDK = {
             common: {
                 "latest": anchorJS.latest,
                 "target": anchorJS.target,
@@ -52,7 +57,13 @@ const self = {
                 "block": anchorJS.block,
             }
         };
-        easyRun(linker, startAPI,ck);
+        easyRun(linker,SDK,ck);
+    },
+    downloadData:(easy)=>{
+        const down = document.createElement("a");
+        down.href = easy.code;
+        down.download =`${easy.location[0]}.html`;
+        down.click();
     },
     getHistory:(name,ck)=>{
         anchorJS.history(name,(list)=>{
@@ -61,12 +72,11 @@ const self = {
             const cls="down_row";
             for(let i=0;i<list.length;i++){
                 const row=list[i];
-                console.log(row);
                 dom+=`<li>
                     [${row.protocol.type}] <a href="#" class="${cls}" data="anchor://${row.name}/${row.block}">
                         anchor://${row.name}/${row.block}
                     </a>
-                    <table>
+                    <table class="details">
                         <tr>
                             <td>Date</td>
                             <td>${new Date(row.stamp).toLocaleString()}</td>
@@ -77,7 +87,7 @@ const self = {
                         </tr>
                         <tr>
                             <td>Row length</td>
-                            <td>${row.raw.length.toLocaleString()}</td>
+                            <td>${row.raw.length.toLocaleString()} bytes</td>
                         </tr>
                         <tr>
                             <td>Protocol</td>
@@ -92,7 +102,7 @@ const self = {
                 $(`.${cls}`).off("click").on("click",function(){
                     const k=$(this).attr("data");
                     self.easyAnchor(k,(res)=>{
-                        console.log(res);
+                        self.downloadData(res);
                     });
                 });
             }
