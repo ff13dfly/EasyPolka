@@ -320,10 +320,10 @@ const self = {
                     order: j
                 });
                 cache.resource[`${row.replace}_${j}`] = cache.resource[row.replace].substr(max * j, max);
-                output(cache.resource[`${row.replace}_${j}`].length);
+                //output(cache.resource[`${row.replace}_${j}`].length);
             }
             delete cache.resource[row.replace];
-            output(`file ${row.hash} : ${row.len}, max : ${max}, divide to ${div}`);
+            output(`Resource ${row.hash} : ${row.len}, max : ${max}, divide to ${div}`);
         }
         return list;
     },
@@ -429,36 +429,39 @@ file.read(cfgFile, (xcfg) => {
 
             //4.check the public folder to get resouce and convert to Base64
             self.resource(xcfg.directory, xcfg.ignor, (todo) => {
+                const related = xcfg.related;
+                let list = [];
+
                 output(`Resource loaded, css ${cache.css[0].length.toLocaleString()} bytes, js ${cache.js[0].length.toLocaleString()} bytes.`, 'success');
                 const rlen = self.calcResource(todo);
-                output(`Resource loaded, more ${todo.length} files, ${rlen.toLocaleString()} bytes.`, 'success');
+                if (todo.length !== 0) {
+                    output(`Resource loaded, more ${todo.length} files, ${rlen.toLocaleString()} bytes.`, 'success');
+                    const groups = self.groupResouce(todo, xcfg.blockmax);
+                    output(`Resource analysisted, ${groups.length} groups, max ${xcfg.blockmax.toLocaleString()} bytes.`, 'success');
 
-                const groups = self.groupResouce(todo, xcfg.blockmax);
-                output(`Resource analysisted, ${groups.length} groups, max ${xcfg.blockmax.toLocaleString()} bytes.`, 'success');
-
-                //4.1.write resouce to Anchor Network.
-                let list = [];
-                const related = xcfg.related;
-                let amount_res = 0;
-                for (let i = 0; i < groups.length; i++) {
-                    const group = groups[i];
-                    const resKV = {};
-                    let str = `Group ${i}: { `;
-                    for (let j = 0; j < group.length; j++) {
-                        const row = group[j];
-                        const key = !row.sum ? row.hash : `${row.hash}_${row.order}`;
-                        const rkey = !row.sum ? row.replace : `${row.replace}_${row.order}`;
-                        resKV[key] = cache.resource[rkey];
-                        str += `${key}: ${cache.resource[rkey].length.toLocaleString()} bytes, `;
+                    //4.1.write resouce to Anchor Network.
+                    let amount_res = 0;
+                    for (let i = 0; i < groups.length; i++) {
+                        const group = groups[i];
+                        const resKV = {};
+                        let str = `Group ${i}: { `;
+                        for (let j = 0; j < group.length; j++) {
+                            const row = group[j];
+                            const key = !row.sum ? row.hash : `${row.hash}_${row.order}`;
+                            const rkey = !row.sum ? row.replace : `${row.replace}_${row.order}`;
+                            resKV[key] = cache.resource[rkey];
+                            str += `${key}: ${cache.resource[rkey].length.toLocaleString()} bytes, `;
+                        }
+                        output(str.substring(0, str.length - 2) + ' }');
+                        const protocol_res = { "type": "data", "fmt": "json" };
+                        amount_res++;
+                        list.push({ name: related.resource, raw: JSON.stringify(resKV), protocol: protocol_res });
                     }
-                    output(str.substring(0, str.length - 2) + ' }');
-                    const protocol_res = { "type": "data", "fmt": "json" };
-                    amount_res++;
-                    list.push({ name: related.resource, raw: JSON.stringify(resKV), protocol: protocol_res });
+                    output(`Resource task ready, ${amount_res} taskes, total ${list.length}`);
                 }
-                output(`Resource task ready, ${amount_res} taskes, total ${list.length}`);
 
-                //console.log(groups);
+                //return false;
+
                 //4.2.write resouce then get the anchor location.
                 self.auto(xcfg.server, (pair) => {
                     self.multi(list, (done) => {
@@ -488,10 +491,10 @@ file.read(cfgFile, (xcfg) => {
                             "type": "app",
                             "fmt": "js",
                             "lib": ls,
-                            "res": related.resource_ref,
                             "ver": ver,
                             "tpl": "react"
                         }
+                        if (todo.length !== 0) protocol.res = related.resource_ref;
 
                         //5.3.clean and merge the code
                         //a.remove sourceMapping support
