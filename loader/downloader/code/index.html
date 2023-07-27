@@ -8,7 +8,7 @@
         <style>
             #info{
                 margin: 0 auto;
-                max-width: 790px;
+                max-width: 840px;
                 color:#444444;
                 font-size: 18px;
                 font-weight: 500;
@@ -17,7 +17,7 @@
             }
             #container{
                 margin: 0 auto;
-                max-width: 790px;
+                max-width: 840px;
                 color:#444444;
                 font-size: 18px;
                 margin-bottom: 5px;
@@ -65,11 +65,11 @@
                 text-align: center;
             }
             #struct{
-                min-width: 750px;
+                min-width: 800px;
             }
             #list{
                 margin: 0 auto;
-                max-width: 790px;
+                max-width: 840px;
             }
             .float_right{
                 text-align: right;
@@ -89,7 +89,7 @@
                     const val=$("#anchor_name").val();
                     if(!val) return $("#output").html("Please input the anchor name.");
                     $("#btn_search").prop("disabled",true);
-                    const server = self.getServer();
+                    
                     self.auto(server,() => {
                         self.getHistory(val,(res)=>{
                             $("#btn_search").prop("disabled",false);
@@ -106,12 +106,21 @@
                         $("#btn_search").trigger("click");
                     }
                 });
+
+                const data=self.decodeHash(location.hash);
+                const server = !data.server?self.getServer():data.server;
+                $("#server").html(server);
+
+                if(data.anchor){
+                    $("#anchor_name").val(data.anchor);
+                    $("#btn_search").trigger("click");
+                }
             });
         </script>
     </head>
     <body >
         <noscript>You need to enable JavaScript to run this Loader.</noscript>
-        <div id="info">Anchor Network Data Downloader v<span class="ver">1.0.0</span></div>
+        <div id="info">Anchor Network Data Downloader v<span class="ver">1.0.0</span> ( Node <span id="server"></span> )</div>
         <div id="container">
             <table id="struct">
                 <tr>
@@ -132,7 +141,9 @@
         </div>
         <div id="list"></div>
         <div id="intro">
-            <p>This downloader is following the Easy Protocol (v1). <br />The details is here : <a href="https://github.com/ff13dfly/EasyPolka/tree/main/protocol" target="_blank">https://github.com/ff13dfly/EasyPolka/tree/main/protocol</a></p>
+            <p>
+                This downloader is following the Easy Protocol (v1). <br />
+                Details here : <a href="https://github.com/ff13dfly/EasyPolka/tree/main/protocol" target="_blank">https://github.com/ff13dfly/EasyPolka/tree/main/protocol</a></p>
         </div>
     </body>
 </html>

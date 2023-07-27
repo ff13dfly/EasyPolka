@@ -59,6 +59,21 @@ const self = {
         };
         easyRun(linker,SDK,ck);
     },
+    decodeHash:(hash)=>{
+        const data={anchor:"",server:""}
+        if(!hash || hash.length===1) return data;
+        const arr=hash.split("@");
+        if(arr.length>2) return data;
+        console.log(arr);
+        if(arr.length===2){
+            data.server=arr[1];
+            data.anchor=arr[0].substring(1);
+        }
+        if(arr.length===1){
+            data.anchor=arr[0].substring(1);
+        }
+        return data;
+    },
     downloadData:(easy)=>{
         const down = document.createElement("a");
         down.href = easy.code;
