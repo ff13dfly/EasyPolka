@@ -34,31 +34,69 @@ const self = {
             return ck && ck();
         });
     },
-    html: (id, txt) => {
-        const ele = document.getElementById(id);
-        const info = document.createTextNode(txt);
-        ele.appendChild(info);
-    },
-    value:(id)=>{
-        const ele = document.getElementById(id);
-        return ele.value;
-    },
     stamp: () => {
         return new Date().toLocaleString();
     },
     getServer: () => {
         return config.server;
     },
-}
-
-
-
-const evs={
-    onClick:(id)=>{
-        const val=self.value(id);
-        const server = self.getServer();
-        self.auto(server,() => {
-            self.html("output","Linked to websocket");
+    easyAnchor:(linker,ck)=>{
+        const startAPI = {
+            common: {
+                "latest": anchorJS.latest,
+                "target": anchorJS.target,
+                "history": anchorJS.history,
+                "owner": anchorJS.owner,
+                "subcribe": anchorJS.subcribe,
+                "multi":anchorJS.multi,
+                "block": anchorJS.block,
+            }
+        };
+        easyRun(linker, startAPI,ck);
+    },
+    getHistory:(name,ck)=>{
+        anchorJS.history(name,(list)=>{
+            if(list===false) return ck && ck(list);
+            let dom="<ul>";
+            const cls="down_row";
+            for(let i=0;i<list.length;i++){
+                const row=list[i];
+                console.log(row);
+                dom+=`<li>
+                    [${row.protocol.type}] <a href="#" class="${cls}" data="anchor://${row.name}/${row.block}">
+                        anchor://${row.name}/${row.block}
+                    </a>
+                    <table>
+                        <tr>
+                            <td>Date</td>
+                            <td>${new Date(row.stamp).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td>Signer</td>
+                            <td>${row.signer}</td>
+                        </tr>
+                        <tr>
+                            <td>Row length</td>
+                            <td>${row.raw.length.toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td>Protocol</td>
+                            <td>${JSON.stringify(row.protocol)}</td>
+                        </tr>
+                    </table>
+                    <p></p>
+                </li>`;
+            }
+            dom+="</ul>";
+            const fun=function(){
+                $(`.${cls}`).off("click").on("click",function(){
+                    const k=$(this).attr("data");
+                    self.easyAnchor(k,(res)=>{
+                        console.log(res);
+                    });
+                });
+            }
+            ck && ck({dom:dom,fun:fun})
         });
-    }
+    },
 }
