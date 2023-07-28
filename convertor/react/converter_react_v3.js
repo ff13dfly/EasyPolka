@@ -118,7 +118,12 @@ const self = {
                 if (!igsFiles[fa] && !isDir) {
                     const tmp = fa.split('.');
                     const suffix = tmp.pop();
-                    todo.push({ file: `${folder}/${fa}`, suffix: suffix, replace: fa });
+                    todo.push({ 
+                        file: `${folder}/${fa}`, 
+                        suffix: suffix, 
+                        replace: fa,
+                        hash: self.char(12, 'RS'),
+                    });
                 }
             }
             root = todo.length;
@@ -180,7 +185,6 @@ const self = {
         if (list.length === 0) return ck && ck(backup);
 
         const row = list.pop();
-
         file.read(row.file, (res) => {
             switch (row.suffix) {
                 case 'css':
@@ -198,9 +202,9 @@ const self = {
                     const bs64 = `data:${type};base64,${res}`;
                     cache.resource[row.replace] = bs64;
                     row.len = bs64.length;
+                    backup.push(row);
                     break;
             }
-            backup.push(row);
             return self.getTodo(list, ck, backup);
         }, false, (row.suffix !== 'js' && row.suffix !== 'css') ? true : false);
     },
@@ -274,6 +278,8 @@ const self = {
     sortList: (todo) => {
         const list = [];
         const map = {};
+
+        //1. put length to an array, then sort
         for (let i = 0; i < todo.length; i++) {
             const row = todo[i];
             list.push(row.len);
@@ -281,6 +287,7 @@ const self = {
         }
         list.sort((x, y) => y - x);
 
+        //2. sort the data
         const nlist = []
         for (let i = 0; i < list.length; i++) {
             const key = list[i];
@@ -353,7 +360,7 @@ const self = {
         //!important, if single file length < max, should divide to small files, order by hash
         // RSiQtOfXmDaKvS will be [ RSiQtOfXmDaKvS_0, RSiQtOfXmDaKvS_1 ]
         // loader will combine the file
-
+        
         //if sort, the result is better
         let nlist = self.sortList(todo);    //get the list order by length
         const lenStruct = 6                   //`"":"",`, key-value structure length
@@ -366,7 +373,6 @@ const self = {
         }
 
         //if cut, regroup the todo list
-
         //1.put everyone in group by length
         const group = [{ ids: [], len: base }];
         for (let i = 0; i < nlist.length; i++) {
@@ -432,8 +438,11 @@ file.read(cfgFile, (xcfg) => {
                 const related = xcfg.related;
                 let list = [];
 
+                //console.log(todo);
+
                 output(`Resource loaded, css ${cache.css[0].length.toLocaleString()} bytes, js ${cache.js[0].length.toLocaleString()} bytes.`, 'success');
                 const rlen = self.calcResource(todo);
+                
                 if (todo.length !== 0) {
                     output(`Resource loaded, more ${todo.length} files, ${rlen.toLocaleString()} bytes.`, 'success');
                     const groups = self.groupResouce(todo, xcfg.blockmax);

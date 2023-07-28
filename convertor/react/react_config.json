@@ -8,7 +8,9 @@
         "resource":"home_res"
     },
     "directory":"package/homepage",
-    "globalVars":["Polkadot","AnchorJS","Easy"],
+    "globalLibs":{
+
+    },
     "ignor":{
         "files":{
             "asset-manifest.json":true,
