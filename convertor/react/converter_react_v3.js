@@ -115,6 +115,7 @@ const self = {
                 if (isDir && !igsDirs[fa] && fa != 'static') {
                     more.push(fa);
                 }
+
                 if (!igsFiles[fa] && !isDir) {
                     const tmp = fa.split('.');
                     const suffix = tmp.pop();
@@ -193,6 +194,7 @@ const self = {
                     break;
 
                 case 'js':
+
                     cache.js.push(res);
                     row.len = res.length;
                     break;
@@ -490,6 +492,11 @@ file.read(cfgFile, (xcfg) => {
 
                         //5.2.write app anchor
                         const ls = [];
+                        if (xcfg.globalVars) {
+                            for (let i = 0; i < xcfg.globalVars.length; i++) {
+                                ls.push(xcfg.globalVars[i].toLocaleLowerCase());
+                            }
+                        }
                         if (xcfg.libs) {
                             for (let i = 0; i < xcfg.libs.length; i++) {
                                 ls.push(xcfg.libs[i]);
@@ -508,7 +515,7 @@ file.read(cfgFile, (xcfg) => {
                         //5.3.clean and merge the code
                         //a.remove sourceMapping support
                         let code_js = cache.js.join(";");
-                        code_js = code_js.replace("sourceMappingURL=", "")
+                        code_js = code_js.replaceAll("sourceMappingURL=", "")
 
 
                         //b.replace the global 
@@ -516,8 +523,7 @@ file.read(cfgFile, (xcfg) => {
                             const g_list = xcfg.globalVars;
                             for (let i = 0; i < g_list.length; i++) {
                                 const row = g_list[i];
-                                const reg = new RegExp(`window.${row}`, "g");
-                                code_js = code_js.replace(reg, row);
+                                code_js = code_js.replaceAll(`window.${row}`, row);
                             }
                         }
 

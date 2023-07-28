@@ -175,6 +175,7 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                         self.html(`${JSON.stringify(res)}`, "root");
                         return false;
                     }
+                    console.log(res);
 
                     self.step(`Info: Ready to show details`, () => {
                         const block = res.location[1], name = res.location[0];
@@ -189,7 +190,6 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                             if(res.resource && res.raw){
                                 self.step(`Combining the resouce files to application.`);
                                 const kv=self.groupResource(res.raw);
-                                //console.log(kv);
                                 for(var k in kv){
                                     code = code.replace(`anchor://${k}`, kv[k]);
                                 }
@@ -228,7 +228,7 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                                 }, 1000);
                             } catch (error) {
                                 self.step(`Failed to load cApp.`);
-                                self.step(`Error: ${JSON.stringify(error)}`);
+                                self.step(`Error: ${error}`);
                             }
                         });
                     });
