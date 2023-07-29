@@ -23,6 +23,9 @@ var debug = {
         return new Date().getTime();
     },
 };
+var agent = {
+    process: null,
+};
 //anchor cache to avoid duplicate request.
 var cache = {
     data: {},
@@ -579,6 +582,11 @@ var self = {
             });
         }
     },
+    export: function (txt) {
+        if (agent.process !== null)
+            return agent.process(txt);
+        return true;
+    },
     /**************************************************************************/
     /****************************Basic functions*******************************/
     /**************************************************************************/
@@ -623,11 +631,18 @@ decoder[protocol_1.rawType.LIB] = self.decodeLib;
 var run = function (linker, inputAPI, ck, hlist, fence) {
     if (API === null && inputAPI !== null)
         API = inputAPI;
+    if (inputAPI !== null && inputAPI.agent !== undefined) {
+        if (inputAPI.agent.process !== undefined)
+            agent.process = inputAPI.agent.process;
+    }
     var target = (0, decoder_1.linkDecoder)(linker);
     if (target.error)
         return ck && ck(target);
+    if (hlist === undefined)
+        self.export("Ready to decode Anchor linker: ".concat(linker));
     //0.get the latest declared hidden list
     if (hlist === undefined) {
+        self.export("Try to check declared hidden.");
         return self.getLatestDeclaredHidden(target.location, function (lastHide, lastAnchor) {
             var cObject = {
                 type: protocol_1.rawType.NONE,
@@ -638,10 +653,12 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
             };
             var res = lastHide;
             if (res !== undefined && res.error) {
+                self.export("Failed to get declared hidden Anchor data.");
                 cObject.error.push(res);
                 return run(linker, API, ck, []);
             }
             var hResult = lastHide;
+            self.export("Get the declared hidden.");
             return run(linker, API, ck, hResult);
         });
     }
@@ -657,11 +674,13 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
     if (target.param)
         cObject.parameter = target.param;
     //2.Try to get the target `Anchor` data.
+    self.export("Try to get target Anchor data.");
     self.getAnchor(target.location, function (resAnchor) {
         //2.1.error handle.
         var err = resAnchor;
         if (err.error) {
             cObject.error.push(err);
+            self.export("Failed to get target Anchor.");
             return ck && ck(cObject);
         }
         var data = resAnchor;
@@ -680,6 +699,7 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
             return ck && ck(cObject);
         }
         //3. check wether the latest anchor. If not, need to get latest hide data.
+        self.export("Checking validity of Anchor data.");
         if (data.protocol) {
             self.isValidAnchor(hlist, data, function (validLink, errs, overload) {
                 var _a;
@@ -688,6 +708,7 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                     return ck && ck(cObject);
                 if (validLink !== null)
                     return run(validLink, API, ck, hlist);
+                self.export("Valid Anchor data.");
                 return getResult(type);
             }, cObject.parameter === undefined ? {} : cObject.parameter);
         }
@@ -695,8 +716,10 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
             return getResult(type);
         }
         function checkFence(resFirst, ck, fence) {
+            self.export("Checking calling of Anchor.");
             if (resFirst.call && !fence) {
                 var app_link = (0, decoder_1.linkCreator)(resFirst.call, resFirst.parameter === undefined ? {} : resFirst.parameter);
+                self.export("Call Anchor: ".concat(resFirst.call));
                 return run(app_link, API, function (resApp) {
                     return self.checkAuthority(resFirst, resApp, ck);
                 }, hlist, true);
@@ -707,8 +730,10 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
         }
         //inline function to avoid the repetitive code.
         function getResult(type) {
+            self.export("Anchor type: ".concat(type, " , ready to decode."));
             self.merge(data.name, data.protocol, function (mergeResult) {
                 var _a;
+                self.export("Anchor data merged.");
                 if (mergeResult.auth !== null)
                     cObject.auth = mergeResult.auth;
                 if (mergeResult.trust !== null)
@@ -731,24 +756,27 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                 for (var k in mergeResult.map) {
                     cObject.data[k] = mergeResult.map[k];
                 }
+                self.export("Anchor data grouped.");
                 return decoder[type](cObject, function (resFirst) {
+                    self.export("Anchor data decoded.");
                     if (!resFirst.resource) {
                         //1.if no more resource to load, export the result
                         return checkFence(resFirst, ck, fence);
                     }
                     else {
                         //2.load the target anchor resource and combine together;
-                        //console.log(resFirst.resource)
+                        self.export("Need to load resource listed by Anchor ".concat(resFirst.resource));
                         self.getAnchor([resFirst.resource, 0], function (resResource) {
                             var err = resResource;
                             if (err.error) {
                                 cObject.error.push(err);
-                                // return ck && ck(resFirst);
+                                self.export("Failed to load resource Anchor ".concat(resFirst.resource));
                                 return checkFence(resFirst, ck, fence);
                             }
                             var data = resResource;
                             resFirst.data["".concat(data.name, "_").concat(data.block)] = data;
                             if (data.raw !== null) {
+                                self.export("Loading resource Anchor list ".concat(data.raw));
                                 var res_list = JSON.parse(data.raw);
                                 if (API !== null && API.common.multi !== undefined) {
                                     API.common.multi(res_list, function (resData) {
@@ -759,6 +787,7 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                                         }
                                         var data_list = resData;
                                         resFirst.raw = data_list;
+                                        self.export("Resource loaded.");
                                         return checkFence(resFirst, ck, fence);
                                     });
                                 }

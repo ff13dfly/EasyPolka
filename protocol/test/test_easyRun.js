@@ -15,11 +15,17 @@ var API = {
         "block": anchorJS.block,
         "multi": anchorJS.multi,
     },
+    "agent": {
+        "process": function (txt) {
+            console.log(txt);
+        },
+    }
 };
 var self = {
     prepare: function (node, ck) {
         try {
             //console.log({node});
+            console.log("Linking to server: ".concat(node));
             var provider = new api_1.WsProvider(node);
             api_1.ApiPromise.create({ provider: provider }).then(function (api) {
                 if (!anchorJS.set(api)) {
@@ -48,6 +54,7 @@ var self = {
     },
 };
 var server = "ws://127.0.0.1:9944";
+//const server="wss://dev.metanchor.net";
 self.prepare(server, function () {
     var linker_params = "anchor://entry_app/?hello=world&me=fuu";
     var linker_target = "anchor://entry_app/3/?hello=world&me=fuu";
@@ -62,11 +69,11 @@ self.prepare(server, function () {
     var linker_declared_hide_complex = "anchor://hide_last_9627/20685/";
     var linker_node_hello = "anchor://node_hello/";
     var linker_node_simple = "anchor://node_simple/";
-    var linker_node_resource = "anchor://react_demo/";
+    var linker_node_resource = "anchor://react_demo";
     console.log("\n");
     (0, interpreter_1.easyRun)(linker_node_resource, API, function (result) {
         console.log("\n-----------------result of ".concat(linker_full_caller, "-----------------"));
-        console.log(result);
+        //console.log(result);
         //console.log(result.resource);
         console.log("\n\n");
         // easyRun(linker_declared_hide_complex,API,(result:any)=>{

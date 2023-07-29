@@ -159,7 +159,12 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                     "subcribe": anchorJS.subcribe,
                     "multi":anchorJS.multi,
                     "block": anchorJS.block,
-                }
+                },
+                agent:{
+                    "progress":(txt)=>{
+                        self.step(txt);
+                    },
+                },
             };
             self.step(`Info: anchor decoded, ready to load.`, () => {
                 easyRun(linker, startAPI, (res) => {

@@ -54,6 +54,10 @@ const debug:any={
 	},
 }
 
+const agent:any={
+    process:null,
+}
+
 //anchor cache to avoid duplicate request.
 const cache:any={
     data:{},
@@ -613,7 +617,10 @@ const self={
             });
         }
     },
-
+    export:(txt:string)=>{
+        if(agent.process!==null) return agent.process(txt);
+        return true;
+    },
     /**************************************************************************/
     /****************************Basic functions*******************************/
     /**************************************************************************/ 
@@ -666,12 +673,17 @@ decoder[rawType.LIB]=self.decodeLib;
  * */
 const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:number[],fence?:boolean)=>{
     if(API===null && inputAPI!==null) API=inputAPI;
+    if(inputAPI!==null && inputAPI.agent!==undefined){
+        if(inputAPI.agent.process!==undefined) agent.process=inputAPI.agent.process;
+    }
 
     const target=linkDecoder(linker);
     if(target.error) return ck && ck(target);
+    if(hlist===undefined) self.export(`Ready to decode Anchor linker: ${linker}`);
 
     //0.get the latest declared hidden list
     if(hlist===undefined){
+        self.export(`Try to check declared hidden.`);
         return self.getLatestDeclaredHidden(target.location,(lastHide:number[]|errorObject,lastAnchor:anchorObject)=>{
             let cObject:easyResult={
                 type:rawType.NONE,
@@ -683,11 +695,13 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
 
             const res=<errorObject>lastHide;
             if(res!==undefined && res.error){
+                self.export(`Failed to get declared hidden Anchor data.`);
                 cObject.error.push(res);
                 return run(linker,API,ck,[]);
             } 
         
             const hResult=<number[]>lastHide;
+            self.export(`Get the declared hidden.`);
             return run(linker,API,ck,hResult);
         });
     }
@@ -704,11 +718,13 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
     if(target.param) cObject.parameter=target.param;
 
     //2.Try to get the target `Anchor` data.
+    self.export(`Try to get target Anchor data.`);
     self.getAnchor(target.location,(resAnchor:anchorObject|errorObject)=>{
         //2.1.error handle.
         const err=<errorObject>resAnchor;
         if(err.error){
             cObject.error.push(err);
+            self.export(`Failed to get target Anchor.`);
             return ck && ck(cObject);
         }
 
@@ -730,11 +746,13 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         }
 
         //3. check wether the latest anchor. If not, need to get latest hide data.
+        self.export(`Checking validity of Anchor data.`);
         if(data.protocol){
             self.isValidAnchor(hlist,data,(validLink:string|null,errs:errorObject[],overload?:boolean)=>{
                 cObject.error.push(...errs);
                 if(overload) return ck && ck(cObject);
                 if(validLink!==null) return run(validLink,API,ck,hlist);
+                self.export(`Valid Anchor data.`);
                 return getResult(type);
             },cObject.parameter===undefined?{}:cObject.parameter);
         }else{
@@ -742,8 +760,10 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         }
 
         function checkFence(resFirst:easyResult,ck:any,fence?:boolean){
+            self.export(`Checking calling of Anchor.`);
             if(resFirst.call && !fence){
                 const app_link=linkCreator(resFirst.call,resFirst.parameter===undefined?{}:resFirst.parameter);
+                self.export(`Call Anchor: ${resFirst.call}`);
                 return run(app_link,API,(resApp:easyResult)=>{
                     return self.checkAuthority(resFirst,resApp,ck);
                 },hlist,true);
@@ -754,8 +774,9 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
         
         //inline function to avoid the repetitive code.
         function getResult(type:string){
-
+            self.export(`Anchor type: ${type} , ready to decode.`);
             self.merge(data.name,<keywords>data.protocol,(mergeResult:mergeResult)=>{
+                self.export(`Anchor data merged.`);
                 if(mergeResult.auth!==null) cObject.auth=mergeResult.auth;
                 if(mergeResult.trust!==null) cObject.trust=mergeResult.trust;
                 if(mergeResult.hide!=null && mergeResult.hide.length!==0){
@@ -779,20 +800,21 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                 for(let k in mergeResult.map){
                     cObject.data[k]= mergeResult.map[k];
                 }
-    
+                self.export(`Anchor data grouped.`);
                 return decoder[type](cObject,(resFirst:easyResult)=>{
+                    self.export(`Anchor data decoded.`);
                     if(!resFirst.resource){
                         //1.if no more resource to load, export the result
 
                         return checkFence(resFirst,ck,fence);
                     }else{
                         //2.load the target anchor resource and combine together;
-                        //console.log(resFirst.resource)
+                        self.export(`Need to load resource listed by Anchor ${resFirst.resource}`);
                         self.getAnchor([resFirst.resource,0],(resResource:anchorObject|errorObject)=>{
                             const err=<errorObject>resResource;
                             if(err.error){
                                 cObject.error.push(err);
-                               // return ck && ck(resFirst);
+                                self.export(`Failed to load resource Anchor ${resFirst.resource}`);
                                 return checkFence(resFirst,ck,fence);
                             }
 
@@ -800,6 +822,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                             resFirst.data[`${data.name}_${data.block}`]=data;
 
                             if(data.raw!==null){
+                                self.export(`Loading resource Anchor list ${data.raw}`);
                                 const res_list=JSON.parse(data.raw);
                                 if(API!==null && API.common.multi!==undefined){
                                     API.common.multi(res_list,(resData:anchorObject[]|errorObject)=>{
@@ -810,6 +833,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                                         }
                                         const data_list=<anchorObject[]>resData;
                                         resFirst.raw=data_list;
+                                        self.export(`Resource loaded.`);
                                         return checkFence(resFirst,ck,fence);
                                     });
                                 }

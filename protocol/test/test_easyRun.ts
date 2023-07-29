@@ -15,12 +15,18 @@ const API={
         "block":anchorJS.block,
         "multi":anchorJS.multi,
     },
+    "agent":{
+        "process":(txt:string)=>{
+            console.log(txt);
+        },
+    }
 }
 
 const self={
     prepare:(node:string,ck:Function)=>{
         try {
             //console.log({node});
+            console.log(`Linking to server: ${node}`);
             const provider = new WsProvider(node);
             ApiPromise.create({ provider: provider }).then((api) => {
                 if(!anchorJS.set(api)){
@@ -50,6 +56,7 @@ const self={
 }
 
 const server="ws://127.0.0.1:9944";
+//const server="wss://dev.metanchor.net";
 self.prepare(server,()=>{
     const linker_params="anchor://entry_app/?hello=world&me=fuu";
     const linker_target="anchor://entry_app/3/?hello=world&me=fuu";
@@ -64,12 +71,12 @@ self.prepare(server,()=>{
     const linker_declared_hide_complex="anchor://hide_last_9627/20685/"
     const linker_node_hello="anchor://node_hello/"
     const linker_node_simple="anchor://node_simple/"
-    const linker_node_resource="anchor://react_demo/"
+    const linker_node_resource="anchor://react_demo"
 
     console.log(`\n`);
     easyRun(linker_node_resource,API,(result:any)=>{
         console.log(`\n-----------------result of ${linker_full_caller}-----------------`);
-        console.log(result);
+        //console.log(result);
         //console.log(result.resource);
         console.log(`\n\n`);
 

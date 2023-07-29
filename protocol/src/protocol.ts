@@ -185,7 +185,10 @@ export type APIObject={
     "gateway"?:{  
         "auto":(svc:string,fun:string,param:object,ck:Function) => any|errorObject;
         "health":(ck:Function)=>any|errorObject;
-    }
+    },
+    "agent"?:{
+        "process"?:(txt: string)=>void
+    },
 }|null;
 
 /********************************/
