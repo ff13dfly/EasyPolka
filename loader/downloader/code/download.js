@@ -73,10 +73,89 @@ const self = {
         }
         return data;
     },
+    groupResource:(list)=>{
+        const raw={},group={},divide={}
+        for(let i=0;i<list.length;i++){
+            const row=list[i];
+            if(row.raw!==null){
+                try {
+                    const json=JSON.parse(row.raw);
+                    for(var k in json){
+                        raw[k]=json[k];
+                        const arr=k.split("_");
+                        if(arr.length===2){
+                            if(!group[arr[0]]) group[arr[0]]=[];
+                            group[arr[0]].push(parseInt(arr[1]));
+                            divide[arr[0]]=row.name;
+                        }else{
+                            group[k]=row.name;
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+
+        const map={}
+        for(let k in group){
+            if(!Array.isArray(group[k])){
+                map[`${group[k]}|${k}`]=raw[k];
+            }else{
+                let str='';
+                for(let i=0;i<group[k].length;i++){
+                    str+=raw[`${k}_${i}`]
+                }
+                map[`${divide[k]}|${k}`]=str;
+            }
+        }
+        return map;
+    },
+    groupEasyData:(easy)=>{
+        const result={
+            code:"",
+            title:"",
+            name:"",
+            css:"",
+        }
+        result.name=easy.location[0];
+        if(easy.libs && easy.libs.css) result.css+=easy.libs.css;
+        if(easy.libs && easy.libs.js) result.code+=easy.libs.js;
+        if(easy.code) result.code+=easy.code;
+
+        if(easy.resource && easy.raw){
+            const kv=self.groupResource(easy.raw);
+            for(var k in kv){
+                result.code = result.code.replaceAll(`anchor://${k}`, kv[k]);
+            }
+        }
+        return result;
+    },
+    getReactTemplate:(name,title,code,css)=>{
+        return `<!doctype html><html lang="en">
+            <head>
+                <meta charset="utf-8"/>
+                <link rel="icon" href="./favicon.ico"/>
+                <meta name="viewport" content="width=device-width,initial-scale=1"/>
+                <meta name="theme-color" content="#000000"/>
+                <meta name="description" content="Web application ${name} from Anchor Network"/>
+                <title>${title}</title>
+                <style>${css}</style>
+            </head>
+            <body>
+                <noscript>You need to enable JavaScript to run this app.</noscript>
+                <div id="root"></div>
+            </body>
+            <script>${code}</script>
+        </html>`;
+    },
     downloadData:(easy)=>{
+        const replace=self.groupEasyData(easy);
+        const tpl=self.getReactTemplate(replace.name,replace.title,replace.code,replace.css);
+        const pre='data:text/plain;charset=utf-8,';
         const down = document.createElement("a");
-        down.href = easy.code;
-        down.download =`${easy.location[0]}.html`;
+        down.setAttribute("href",pre+encodeURIComponent(tpl));
+        down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.html`);
         down.click();
     },
     getHistory:(name,ck)=>{
@@ -91,7 +170,7 @@ const self = {
                     <td>${row.raw}</td>
                 </tr>`:"";
                 dom+=`<li>
-                    [${row.protocol.type}] <a href="#" class="${cls}" data="anchor://${row.name}/${row.block}">
+                    [${row.protocol.type}] <a href="#${row.name}" class="${cls}" data="anchor://${row.name}/${row.block}">
                         anchor://${row.name}/${row.block}
                     </a>
                     <table class="details">

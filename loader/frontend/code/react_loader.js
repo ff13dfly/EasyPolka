@@ -194,7 +194,7 @@ self.step(`Anchor Network server ${server}`, () => {
                                 self.step(`Combining the resouce files to application.`);
                                 const kv=self.groupResource(res.raw);
                                 for(var k in kv){
-                                    code = code.replace(`anchor://${k}`, kv[k]);
+                                    code = code.replaceAll(`anchor://${k}`, kv[k]);
                                 }
                             }
 
