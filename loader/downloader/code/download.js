@@ -152,16 +152,16 @@ const self = {
     downloadData:(easy)=>{
         const down = document.createElement("a");
         const pre='data:text/plain;charset=utf-8,';
+        const anchor=easy.data[`${easy.location[0]}_${easy.location[1]}`];
         switch (easy.type) {
             case "app":
                 const replace=self.groupEasyData(easy);
                 const tpl=self.getReactTemplate(replace.name,replace.title,replace.code,replace.css);
                 down.setAttribute("href",pre+encodeURIComponent(tpl));
-                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.html`);
+                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}_v${anchor.protocol.ver}.html`);
                 
                 break;
             case "data":
-                const anchor=easy.data[`${easy.location[0]}_${easy.location[1]}`];
                 const data={
                     raw:anchor.raw,
                     protocol:anchor.protocol,
@@ -172,13 +172,14 @@ const self = {
                 break;
 
             case "lib":
-                const adata=easy.data[`${easy.location[0]}_${easy.location[1]}`];
                 const fmt=!adata.protocol.fmt?"json":adata.protocol.fmt;
-                down.setAttribute("href",pre+encodeURIComponent(adata.raw));
-                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.${fmt}`);
+                down.setAttribute("href",pre+encodeURIComponent(anchor.raw));
+                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}_v${anchor.protocol.ver}.${fmt}`);
                 break;
 
             default:
+                down.setAttribute("href",pre+encodeURIComponent(JSON.stringify(anchor)));
+                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.txt`);
                 break;
         }
         down.click();
