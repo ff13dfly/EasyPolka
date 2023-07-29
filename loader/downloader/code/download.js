@@ -234,3 +234,37 @@ const self = {
         });
     },
 }
+
+$(()=>{
+    $("#btn_search").off("click").on("click",()=>{
+        self.clear();
+        const val=$("#anchor_name").val();
+        if(!val) return $("#output").html("Please input the anchor name.");
+        $("#btn_search").prop("disabled",true);
+        
+        self.auto(server,() => {
+            self.getHistory(val,(res)=>{
+                $("#btn_search").prop("disabled",false);
+                if(res===false) return $("#output").html(`No such anchor : ${val}`);
+                if(res.dom)$("#list").html(res.dom);
+                if(res.fun)res.fun();
+            });
+        });
+    });
+
+    $("#anchor_name").off("keyup").on("keyup",(ev)=>{
+        const code=ev.keyCode;
+        if(code===13){
+            $("#btn_search").trigger("click");
+        }
+    });
+
+    const data=self.decodeHash(location.hash);
+    const server = !data.server?self.getServer():data.server;
+    $("#server").html(server);
+
+    if(data.anchor){
+        $("#anchor_name").val(data.anchor);
+        $("#btn_search").trigger("click");
+    }
+});
