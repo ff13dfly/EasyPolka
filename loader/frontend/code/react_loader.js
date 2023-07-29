@@ -147,8 +147,8 @@ const linker = `anchor://${result.anchor}/`;
 const server = result.server;
 
 self.version(config.version, "ver");
-self.step(`Info: Anchor Network server ${server}`, () => {
-    self.step(`Info: ready to load ${result.anchor}`, () => {
+self.step(`Anchor Network server ${server}`, () => {
+    self.step(`Ready to load ${result.anchor}`, () => {
         self.auto(() => {
             const startAPI = {
                 common: {
@@ -161,14 +161,13 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                     "block": anchorJS.block,
                 },
                 agent:{
-                    "progress":(txt)=>{
+                    "process":(txt)=>{
                         self.step(txt);
                     },
                 },
             };
-            self.step(`Info: anchor decoded, ready to load.`, () => {
+            self.step(`Anchor decoded, ready to load.`, () => {
                 easyRun(linker, startAPI, (res) => {
-                    //console.log(res);
                     if (res.error && res.error.length !== 0) {
                         let txt = '';
                         for (let i = 0; i < res.error.length; i++) {
@@ -177,12 +176,11 @@ self.step(`Info: Anchor Network server ${server}`, () => {
                         }
                         self.step(txt);
                         delete res.error;
-                        self.html(`${JSON.stringify(res)}`, "root");
+                        self.step(`Result: ${JSON.stringify(res)}`);
                         return false;
                     }
-                    console.log(res);
 
-                    self.step(`Info: Ready to show details`, () => {
+                    self.step(`Ready to show details`, () => {
                         const block = res.location[1], name = res.location[0];
                         const key = `${name}_${block}`;
                         const anchor = res.data[key];

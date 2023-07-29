@@ -824,6 +824,7 @@ const run=(linker:string,inputAPI:APIObject,ck:(res:easyResult) => void,hlist?:n
                             if(data.raw!==null){
                                 self.export(`Loading resource Anchor list ${data.raw}`);
                                 const res_list=JSON.parse(data.raw);
+                                if(res_list.length>2) self.export(`May take a bit long time, too much resource to load.`);
                                 if(API!==null && API.common.multi!==undefined){
                                     API.common.multi(res_list,(resData:anchorObject[]|errorObject)=>{
                                         const err=<errorObject>resData;

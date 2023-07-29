@@ -778,6 +778,8 @@ var run = function (linker, inputAPI, ck, hlist, fence) {
                             if (data.raw !== null) {
                                 self.export("Loading resource Anchor list ".concat(data.raw));
                                 var res_list = JSON.parse(data.raw);
+                                if (res_list.length > 2)
+                                    self.export("May take a bit long time, too much resource to load.");
                                 if (API !== null && API.common.multi !== undefined) {
                                     API.common.multi(res_list, function (resData) {
                                         var err = resData;
