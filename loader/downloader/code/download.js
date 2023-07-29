@@ -150,12 +150,37 @@ const self = {
         </html>`;
     },
     downloadData:(easy)=>{
-        const replace=self.groupEasyData(easy);
-        const tpl=self.getReactTemplate(replace.name,replace.title,replace.code,replace.css);
-        const pre='data:text/plain;charset=utf-8,';
         const down = document.createElement("a");
-        down.setAttribute("href",pre+encodeURIComponent(tpl));
-        down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.html`);
+        const pre='data:text/plain;charset=utf-8,';
+        switch (easy.type) {
+            case "app":
+                const replace=self.groupEasyData(easy);
+                const tpl=self.getReactTemplate(replace.name,replace.title,replace.code,replace.css);
+                down.setAttribute("href",pre+encodeURIComponent(tpl));
+                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.html`);
+                
+                break;
+            case "data":
+                const anchor=easy.data[`${easy.location[0]}_${easy.location[1]}`];
+                const data={
+                    raw:anchor.raw,
+                    protocol:anchor.protocol,
+                };
+                const suffix=!anchor.protocol.fmt?"json":anchor.protocol.fmt;
+                down.setAttribute("href",pre+encodeURIComponent(JSON.stringify(data)));
+                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.${suffix}`);
+                break;
+
+            case "lib":
+                const adata=easy.data[`${easy.location[0]}_${easy.location[1]}`];
+                const fmt=!adata.protocol.fmt?"json":adata.protocol.fmt;
+                down.setAttribute("href",pre+encodeURIComponent(adata.raw));
+                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}.${fmt}`);
+                break;
+
+            default:
+                break;
+        }
         down.click();
     },
     getHistory:(name,ck)=>{
