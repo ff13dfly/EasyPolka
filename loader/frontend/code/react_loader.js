@@ -186,6 +186,14 @@ self.step(`Anchor Network server ${server}`, () => {
                         const anchor = res.data[key];
                         self.html(`${name} on ${block.toLocaleString()}, signed by ${anchor.signer}`, "more");
 
+
+                        if(!res.call && anchor.type!=='app'){
+                            return self.step(`Not application Anchor, the data as follow: `, () => {
+                                self.step(`${JSON.stringify(anchor)}`);
+                            });
+                        }
+                        
+
                         self.step(`Load successful,ready to run.`, () => {
                             const js = (res.libs && res.libs.js) ? res.libs.js : "";
                             let code=res.code ? res.code : "";
