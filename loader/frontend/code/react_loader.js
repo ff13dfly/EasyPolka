@@ -186,8 +186,9 @@ self.step(`Anchor Network server ${server}`, () => {
                         const anchor = res.data[key];
                         self.html(`${name} on ${block.toLocaleString()}, signed by ${anchor.signer}`, "more");
 
-
-                        if(!res.call && anchor.type!=='app'){
+                        if(res.call!==undefined || anchor.protocol.type ==='app'){
+                            
+                        }else{
                             return self.step(`Not application Anchor, the data as follow: `, () => {
                                 self.step(`${JSON.stringify(anchor)}`);
                             });
