@@ -1,8 +1,4 @@
-# Web3.0应用平台的构想
-
-- 参考的波卡白皮书：[https://www.cnblogs.com/coderzjz/p/15284943.html](https://www.cnblogs.com/coderzjz/p/15284943.html)
-- 智能合约说明，[https://zhuanlan.zhihu.com/p/142585903](https://zhuanlan.zhihu.com/p/142585903)
-- 安全性问题的概述，[https://101blockchains.com/web3-risks/](https://101blockchains.com/web3-risks/)
+# Anchor网络白皮书，一种可以自启动的Web3.0网络
 
 ## 摘要 ( Overview )
 
@@ -37,9 +33,13 @@
 
 - 单一开发语言。Javascript是一个蓬勃发展具有丰富工具链的语言，Anchor Network可以实现完全基于Javascript的全链上系统。JS已经通过旺盛的生命力证明了自己，也被应用到了区块链开发的很多领域，甚至智能合约的开发语言Solidity也是类JS的。对于非智能合约开发，JS也是具备天生的优势，有丰富的框架和工具可以使用，帮助这些框架快速上链，将是Anchor Network的一个主要方向。
 
-------TODO: 更新到这里了------
-
 ### 现有应用的上链
+
+- Dapps所倡导的去中心化理念，在目前的实践中碰到了现实的困难。主流的实现方式，是“Web3.0部署的智能合约”+“Web1.0/Web2.0部署的UI”，当没有了“Web1.0/Web2.0部署的UI”后，普通用户几乎无法使用“Web3.0部署的智能合约”，也就是说，先有的Dapps严重依赖于中心化部署的UI，而UI端的运行和安全，完全依赖于其开发者。即使想要运行比特币的终端，你也需要去比特币的官方网站，下载比特币的应用程序来运行，这也是完全的传统方式。
+
+- IPFS是一种去中心化的储存尝试，
+
+------TODO: 更新到这里了------
 
 - Dapps变成了”中心化平台的智能合约“+”非去中心化的UI“。你会发现一个有趣的现象，就是Web3.0公司在表现形式上，只是更透明一些。就像在Web1.0时代，从事Web1.0事业的公司，不是用一个网站来介绍自己的业务，而是给了你厚厚的一本介绍材料。应对这种挑战，也未让终端用户更便利，就像Google之于Web1.0网站，需要一个方便的入口来访问越来越多的Web3.0应用。
     ![两种发布方式的比较]()
@@ -330,3 +330,7 @@
 - [Substrate](https://substrate.io)
 - [Polkadot](https://polkadot.network)
 - [Anchor Network](https://metanchor.net)
+
+- 参考的波卡白皮书：[https://www.cnblogs.com/coderzjz/p/15284943.html](https://www.cnblogs.com/coderzjz/p/15284943.html)
+- 智能合约说明，[https://zhuanlan.zhihu.com/p/142585903](https://zhuanlan.zhihu.com/p/142585903)
+- 安全性问题的概述，[https://101blockchains.com/web3-risks/](https://101blockchains.com/web3-risks/)

@@ -1,5 +1,5 @@
-# Bootstrap Web3.0 Network
+# Anchor Network White Paper, A Bootstrap Web3.0 Network
 
 ## Overview
 
-- Solve the autoload problem of Web3.0 .
+- Bootstrap Web3.0 Network.Solve the autoload problem of Web3.0 .
