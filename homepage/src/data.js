@@ -6,8 +6,8 @@ module.exports={
       thumb:"imgs/Banner_01.jpg",
     },
     {
-      title:"Single Pole of dApps",
-      desc:"This is a blockchain network to deploy the dApp UI and SDK, without Smart Contract.",
+      title:"Deployment Network for Dapps",
+      desc:"This is a blockchain network to deploy the dApp UI and SDK, then full on-chain.",
       thumb:"imgs/Banner_02.jpg",
     },
   ],
