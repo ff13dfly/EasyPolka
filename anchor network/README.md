@@ -2,5 +2,5 @@
 
 A Bootstrap Web3.0 Network base on Polkadot/Substrate.
 
-- [English version](Anchor_Network_Whitepager_EN.md)
-- [Simple Chinese version](Anchor_Network_Whitepager_SC.md)
+- [English version](Anchor_Network_White_Paper_EN.md)
+- [Simple Chinese version](Anchor_Network_White_Paper_SC.md)
