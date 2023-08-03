@@ -26,10 +26,6 @@ Gateway is the EasyPolka micro service system.
 
 - Request to `Gateway` to identify the `Service` is alive.
 
-### notice
-
-- Sent the notice to `Gateway`.
-
 ## Libs needed
 
 - JWT (JSON Web Tokens) is used to register the service to gateway.

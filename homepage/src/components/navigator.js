@@ -25,9 +25,9 @@ function Navigator() {
               <NavDropdown.Item href="https://polkadot.js.org/apps/?rpc=wss://dev.metanchor.net">Dev Network</NavDropdown.Item>
               <NavDropdown.Item href="https://playground.metanchor.net">Playground</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="https://plinth.metanchor.net">Plinth</NavDropdown.Item>
+              <NavDropdown.Item href="http://plinth.metanchor.net">Plinth</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="https://gateway.metanchor.net">Gateway UI</NavDropdown.Item>
+              <NavDropdown.Item href="http://gateway.metanchor.net">Gateway UI</NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title="Github" id="basic-nav-dropdown">
               <NavDropdown.Item href="https://github.com/ff13dfly/Anchor">
