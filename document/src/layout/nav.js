@@ -1,4 +1,6 @@
-function Nav() {
+function Nav(props) {
+  const list=props.data;
+  
   return (
     <div id="nav">
       <ul>
