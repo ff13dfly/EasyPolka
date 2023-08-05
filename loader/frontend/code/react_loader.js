@@ -51,18 +51,25 @@ const self = {
         const result = {
             anchor: config.anchor,
             server: config.server,
+            block:0,
         }
         if (!hash) return result;
         const arr = hash.split('@');
         if (arr.length === 1) {
             result.anchor = arr[0].substring(1);
-            return result;
         } else {
             result.server = arr.pop();
             const str = arr.join("@");
             result.anchor = str.substring(1);
-            return result;
         }
+
+        const tmp = hash.split('|');
+        if (tmp.length === 2) {
+            const block=parseInt(tmp[1]);
+            if(!isNaN(block) && block>0)result.block=block;
+            result.anchor=tmp[0].substring(1);
+        }
+        return result;
     },
     html: (txt, id) => {
         const ele = document.getElementById(id);
@@ -143,8 +150,10 @@ const self = {
     },
 }
 const result = self.decoder(location.hash);
-const linker = `anchor://${result.anchor}/`;
+let linker = `anchor://${result.anchor}/`;
+if(result.block!==0) linker+=result.block;
 const server = result.server;
+console.log(linker);
 
 self.version(config.version, "ver");
 self.step(`Anchor Network server ${server}`, () => {
