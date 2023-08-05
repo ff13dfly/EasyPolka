@@ -1,6 +1,7 @@
-function Crumbs() {
+function Crumbs(props) {
+  //console.log(props);
   return (
-    <p> Title / Sub Title / Article</p>
+    <p id="crumbs"> Title / Sub Title / Article</p>
   );
 }
 

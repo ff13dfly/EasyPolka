@@ -1,12 +1,14 @@
 function Nav(props) {
-  const list=props.data;
-  
+  const list = props.data;
+
   return (
-    <div id="nav">
-      <ul>
-        <li>Overview</li>
-      </ul>
-    </div>
+    <ul>
+      {list.map((item, key) => (
+        <li key={key} onClick={() => {
+          props.update(key);
+        }}>{item.title}</li>
+      ))}
+    </ul>
   );
 }
 

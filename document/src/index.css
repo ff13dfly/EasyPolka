@@ -14,16 +14,30 @@ code {
 
 @media screen and (max-width: 768px) {
   #container{width: 100%;margin: 0 auto;}
+  #nav{width: 200px;float: left;margin: 0 auto;padding: 15px 15px 15px 15px;}
+  #body{width: 568px;float: right;margin: 0 auto;padding: 15px 15px 15px 15px;}
 }
 
 @media screen and (min-width: 769px)  and (max-width: 992px) {
   #container{width:760px;margin: 0 auto;}
+  #nav{width: 30%;}
+  #body{width: 70%;}
 }
 
 @media screen and (min-width: 993px)  and (max-width: 1200px) {
   #container{width:980px;margin: 0 auto;}
+  #nav{width: 30%;}
+  #body{width: 70%;}
 }
 
 @media screen and (min-width: 1200px){
   #container{width:1080px;margin: 0 auto;}
+  #nav{width:240px;float: left;margin: 0 auto;background: #EEEEEE;padding: 15px 10px 15px 10px;}
+  #body{width:800px;float: right;margin: 0 auto;background: #AAAAAA;padding: 15px 10px 15px 10px;} 
 }
+
+#nav{font-size: 21px;}
+#nav ul li{cursor: pointer;padding: 5px 0px 5px 0px;}
+#nav ul li:hover{opacity: 0.7;}
+#logo img{width: 100%;}
+#crumbs {color:#BBAAFF;background: #FFFFFF;padding: 3px 0px 3px 0px;cursor: pointer;}

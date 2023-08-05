@@ -208,13 +208,13 @@ Anchor Network分为数据层、协议层两部分。数据层，运行在区块
 
 - 基于Anchor Network的功能，它是一个慢速网络，出块的时间为60秒。
 
-#### SDK（AnchorJS）
+#### 存储SDK（AnchorJS）
 
 - Anchor Network的基础存取协议，可以实现Anchor的全部功能。
 
 - AnchorJS是Javascript的SDK，可以实现Anchor Pallet的所有操作，需要@Polkadot/api的支持。
 
-#### 交互协议（Easy Protocol）
+#### 协议SDK（Easy Protocol）
 
 - 交互协议可以基于Anchor Pallet的操作，实现应用程序的链上启动，建立链上资源的复杂关系，从而可以形成自洽的Web3.0全链运行化境。
 
@@ -260,18 +260,10 @@ Anchor Network分为数据层、协议层两部分。数据层，运行在区块
 
 - 通用的开放微服务，对于基础应用，提供即插即用的微服务，降低开发者的门槛。
 
---------------------- TODO: 正在这里修改 ---------------------
-
-## 相关内容
-
-### Polkadot/Substrate
-
-### 资源链接
+## 相关资源链接
 
 - [Substrate](https://substrate.io)
 - [Polkadot](https://polkadot.network)
-- [Anchor Network](https://metanchor.net)
-
-- 参考的波卡白皮书：[https://www.cnblogs.com/coderzjz/p/15284943.html](https://www.cnblogs.com/coderzjz/p/15284943.html)
-- 智能合约说明，[https://zhuanlan.zhihu.com/p/142585903](https://zhuanlan.zhihu.com/p/142585903)
-- 安全性问题的概述，[https://101blockchains.com/web3-risks/](https://101blockchains.com/web3-risks/)
+- [Anchor Network Homepage](https://metanchor.net)
+- [Anchor Pallet](https://github.com/ff13dfly/Anchor)
+- [EasyPolka Github](https://github.com/ff13dfly/EasyPolka)
