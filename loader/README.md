@@ -22,7 +22,9 @@
 - Frontend loader decodes URL hash to get the `Anchor` name and node to link. By defalt, the Anchor is "plinth" and the node is "ws://127.0.0.1:9944".
 
     ```TEXT
-        loader_web.min.js#ppp@ws://127.0.0.1:9944
+        loader_web.min.js#anchor_name#
+        loader_web.min.js#anchor_name|888#
+        loader_web.min.js#anchor_name|888@ws://127.0.0.1:9944#
     ```
 
 ## Backend

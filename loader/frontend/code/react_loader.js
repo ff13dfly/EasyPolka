@@ -23,15 +23,6 @@ const Polkadot = LP, ApiPromise = Polkadot.ApiPromise, WsProvider = Polkadot.WsP
 const anchorJS = LA;
 const easyRun = LE.easyRun;
 
-// const output=(ctx,type)=>{
-//     const stamp=()=>{return new Date();};
-//     if(!type || !theme[type]){
-//         console.log(`[${stamp()}] `+ctx);
-//     }else{
-//         console.log(theme[type],`[${stamp()}] `+ctx);
-//     }
-// };
-
 //websocket link to server
 let websocket = null;
 const self = {
@@ -53,14 +44,18 @@ const self = {
             server: config.server,
             block:0,
         }
-        if (!hash) return result;
+        const last=hash.charAt(hash.length-1);
+        if (!hash || last!=="#") return result;
         const arr = hash.split('@');
         if (arr.length === 1) {
             result.anchor = arr[0].substring(1);
+            result.anchor=result.anchor.substring(0,result.anchor.length-1);
         } else {
             result.server = arr.pop();
+            result.server=result.server.substring(0,result.server.length-1);
             const str = arr.join("@");
             result.anchor = str.substring(1);
+            //result.anchor=result.anchor.substring(0,result.anchor.length-1);
         }
 
         const tmp = hash.split('|');
@@ -69,6 +64,8 @@ const self = {
             if(!isNaN(block) && block>0)result.block=block;
             result.anchor=tmp[0].substring(1);
         }
+        result.anchor=decodeURIComponent(result.anchor);
+        
         return result;
     },
     html: (txt, id) => {
@@ -157,7 +154,10 @@ console.log(linker);
 
 self.version(config.version, "ver");
 self.step(`Anchor Network server ${server}`, () => {
-    self.step(`Ready to load ${result.anchor}`, () => {
+    const ready_text=result.block!==0?
+        `Ready to load ${result.anchor} on ${result.block}`:
+        `Ready to load the latest ${result.anchor}`;
+    self.step(ready_text, () => {
         self.auto(() => {
             const startAPI = {
                 common: {
