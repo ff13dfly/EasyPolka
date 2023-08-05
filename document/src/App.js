@@ -5,6 +5,7 @@ import Crumbs from './layout/crumbs';
 import Content from './layout/content';
 import Footer from './layout/footer';
 
+import getMKTitles from './lib/tree';
 
 //1.load Anchor then decode them
 //2.sent to the components 
@@ -74,7 +75,25 @@ function App() {
     updateNavIndex:(link)=>{
       setLink(link);
     },
+    // getTitle:(mkContent)=>{
+    //   console.log(mkContent);
+    //   var nav = []
+    //   mkContent.replace(/```/g, function () {
+    //     return '\f'
+    //   }).replace(/\f[^\f]*?\f/g,function (match) {
+    //     return ''
+    //   }).replace(/\r|\n+/g, function (match) { 
+    //     return '\n'
+    //   }).replace(/(#+)[^\n]*?(?:\n)/g, function (match, m1, m2) {
+    //     var title = match.replace('\n', '').replace(/^#+/, '').replace(/\([^)]*?\)/, '');
+    //     nav.push(title)
+    //   });
+    //   return nav;
+    // }
   }
+
+  const ts=getMKTitles(md);
+  console.log(ts);
 
   useEffect(() => {
     setNavs(list);
