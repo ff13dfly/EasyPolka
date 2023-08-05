@@ -1,21 +1,31 @@
 import { useEffect } from 'react';
 
-import Cherry from 'cherry-markdown';
+import Cherry from 'cherry-markdown/dist/cherry-markdown.core';
+require('cherry-markdown/dist/cherry-markdown.min.css');
+
+let cherryInstance=null;
 
 function Content(props) {
-  console.log(props.data);
+  
+  if(cherryInstance!==null){
+    cherryInstance.setValue(props.link);
+  }
+
   useEffect(() => {
-    const cherryInstance = new Cherry({
+    cherryInstance = new Cherry({
       id: "md_container",
-      value: props.data,
+      value: "loading...",
       forceAppend:true,
+      editor: {
+        defaultModel: 'previewOnly',
+      }
     });
-    const tree=cherryInstance.getToc();
-    props.update(tree);
   }, []);
 
   return (
-    <div id="md_container"></div>
+    <div>
+      <div id="md_container"></div>
+    </div>
   );
 }
 

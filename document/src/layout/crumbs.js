@@ -1,7 +1,9 @@
 function Crumbs(props) {
-  //console.log(props);
   return (
-    <p id="crumbs"> Title / Sub Title / Article</p>
+    <div>
+      <p id="crumbs"> Title / Sub Title / Article</p>
+      <p id="ownship"> Anchor: "name", owner: </p>
+    </div>
   );
 }
 

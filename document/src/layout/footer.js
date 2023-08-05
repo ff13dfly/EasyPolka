@@ -2,7 +2,8 @@ function Footer(props) {
   //console.log(props);
   return (
     <div id="footer">
-      footer information
+      <span id="pre">Previous</span>
+      <span id="next">Next</span>
     </div>
   );
 }

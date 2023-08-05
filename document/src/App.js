@@ -49,33 +49,46 @@ const md=`#hello
 - hahahah
 ### what to do
 ### how to do
+**today** is a good day
 ## bad day
 - topic 1
 - topic 2
-`
+`+'```hello world```'
 let more=[];
 
-const self={
-  freshNav:()=>{
 
-  },
-  updateTopics:(topics)=>{
-    console.log(topics);
-    more=topics;
-  },
-  updateNavIndex:(id)=>{
-    console.log(id);
-    console.log(more);
-  },
-}
 
 function App() {
   let [navs, setNavs] = useState([]);
   let [content, setContent] = useState("Loading...");
+  let [link, setLink] = useState("");
+
+  const self={
+    getAnchorData:(link)=>{
+  
+    },
+    updateTopics:(topics)=>{
+      console.log(topics);
+      more=topics;
+    },
+    updateNavIndex:(link)=>{
+      setLink(link);
+    },
+  }
 
   useEffect(() => {
     setNavs(list);
-    setContent(<Content data={md} update={self.updateTopics}/>)
+    setLink(list[0].link);
+    // setContent(`#hello
+    // ## good day
+    // - hahahah
+    // ### what to do
+    // ### how to do
+    // **today** is a good day
+    // ## bad day
+    // - topic 1
+    // - topic 2
+    // `+'```hello world```');
   }, []);
 
   return (
@@ -83,13 +96,13 @@ function App() {
       <div id="nav">
         <div id="logo">
           <img src="logo.png" alt="Plinth logo" className='img-fluid' />
-          <small className='text-secondary'>Your Slogon here</small>
+          <p><small className='text-secondary'>Your Slogon here</small></p>
         </div>
         <Nav data={navs} update={self.updateNavIndex} />
       </div>
       <div id="body">
         <Crumbs />
-        {content}
+        <Content link={link}/>
         <Footer pre={0} next={0}/>
       </div>
     </div>
