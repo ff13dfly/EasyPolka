@@ -9,10 +9,10 @@ import getMKTitles from './lib/tree';
 
 //1.load Anchor then decode them
 //2.sent to the components 
-
 const APIs={
-  AnchorJS:"",
-  Easy:"",
+  AnchorJS:window.AnchorJS,
+  Easy:window.Easy,
+  Polkadot:window.Polkadot,
 }
 
 const config={
@@ -30,10 +30,11 @@ const config={
       background:"",
     },
   },
+  server:"ws://127.0.0.1:9944",
 };
 
 const list=[
-  {title:"AnchorJS SDK",link:"anchor://anchorjs",children:[]},
+  {title:"AnchorJS SDK",link:"anchor://anchorjs_md",children:[]},
   {title:"Loader",link:"anchor://loader",children:[
     {title:"Convertor",link:"anchor://convertor",children:[]},
     {title:"Downloader",link:"anchor://downloader",children:[]},
@@ -69,45 +70,20 @@ function App() {
   
     },
     updateTopics:(topics)=>{
-      console.log(topics);
+      //console.log(topics);
       more=topics;
     },
     updateNavIndex:(link)=>{
       setLink(link);
     },
-    // getTitle:(mkContent)=>{
-    //   console.log(mkContent);
-    //   var nav = []
-    //   mkContent.replace(/```/g, function () {
-    //     return '\f'
-    //   }).replace(/\f[^\f]*?\f/g,function (match) {
-    //     return ''
-    //   }).replace(/\r|\n+/g, function (match) { 
-    //     return '\n'
-    //   }).replace(/(#+)[^\n]*?(?:\n)/g, function (match, m1, m2) {
-    //     var title = match.replace('\n', '').replace(/^#+/, '').replace(/\([^)]*?\)/, '');
-    //     nav.push(title)
-    //   });
-    //   return nav;
-    // }
   }
 
-  const ts=getMKTitles(md);
-  console.log(ts);
+  //const ts=getMKTitles(md);
+  //console.log(ts);
 
   useEffect(() => {
     setNavs(list);
     setLink(list[0].link);
-    // setContent(`#hello
-    // ## good day
-    // - hahahah
-    // ### what to do
-    // ### how to do
-    // **today** is a good day
-    // ## bad day
-    // - topic 1
-    // - topic 2
-    // `+'```hello world```');
   }, []);
 
   return (
@@ -121,7 +97,7 @@ function App() {
       </div>
       <div id="body">
         <Crumbs />
-        <Content link={link}/>
+        <Content link={link} API={APIs} config={config}/>
         <Footer pre={0} next={0}/>
       </div>
     </div>
