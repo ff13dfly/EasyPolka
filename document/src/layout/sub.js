@@ -1,29 +1,28 @@
 import { useEffect } from 'react';
-import Sub from './sub';
-
-function Nav(props) {
-
+function Sub(props) {
   const list = props.data;
   const active=props.active;
+  //console.log(props);
+  //console.log(props);
+  //console.log(active);
   useEffect(() => {
 
   }, []);
 
   return (
-    <ul>
+    <dt>
       {list.map((item, key) => (
-        <li key={key} 
+        <dl key={key} 
           id={item.link.substring(9,item.link.length)} 
           className={active===item.link.substring(9,item.link.length)?"active":""} 
-          onClick={(ev) => {
+          onClick={(ev)=> {
             props.update(ev.target);
           }}>
           {item.title}
-          <Sub data={item.children} active={active} update={props.update} />
-        </li>
+        </dl>
       ))}
-    </ul>
+    </dt>
   );
 }
 
-export default Nav;
+export default Sub;

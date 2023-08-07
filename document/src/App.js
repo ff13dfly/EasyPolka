@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import Nav from './layout/nav';
-import Crumbs from './layout/crumbs';
+//import Crumbs from './layout/crumbs';
 import Content from './layout/content';
 import Footer from './layout/footer';
 
-import getMKTitles from './lib/tree';
+//import getMKTitles from './lib/tree';
 
 //1.load Anchor then decode them
 //2.sent to the components 
@@ -36,14 +36,14 @@ const config={
 const list=[
   {title:"AnchorJS SDK",link:"anchor://anchorjs_md",children:[]},
   {title:"Loader",link:"anchor://loader_md",children:[
-    {title:"Convertor",link:"anchor://convertor",children:[]},
-    {title:"Downloader",link:"anchor://downloader",children:[]},
+    {title:"Convertor",link:"anchor://convertor_md"},
+    {title:"Downloader",link:"anchor://downloader_md"},
   ]},
   {title:"Easy Protocol",link:"anchor://easy_md",children:[]},
   {title:"Gateway",link:"anchor://gateway_md",children:[
-    {title:"Hub",link:"anchor://g_hub",children:[]},
-    {title:"Service",link:"anchor://g_service",children:[]},
-    {title:"UI",link:"anchor://g_ui",children:[]},
+    {title:"Hub",link:"anchor://g_hub"},
+    {title:"Service",link:"anchor://g_service"},
+    {title:"UI",link:"anchor://g_ui"},
   ]},
 ]
 
@@ -60,29 +60,36 @@ function App() {
     updateTopics:(topics)=>{
       setSub(topics);
     },
-    updateNavIndex:(target,link)=>{
+    updateNavIndex:(target)=>{
+      //console.log(target.id);
       setActive(target.id);
-      setLink(link);
+      setLink(self.getDefaultLink(list,target.id));
       window.location.hash="#"+target.id;
     },
 
-    getListMap:(list,map)=>{
-      if(!map) map={};
-      if(list.length===0) return map;
-      const row=list.pop();
-      
-    },
-
     getDefaultLink:(list,anchor)=>{
+      console.log(`Get link by name ${anchor}`)
       if(list.length===0) return "";
-
-      return list[0].link;
+      if(!anchor) return list[0].link;
+      
+      for(let i=0;i<list.length;i++){
+        const row=list[i];
+        if(row.link===`anchor://${anchor}`) return row.link
+        if(row.children.length!==0){
+          for(let j=0;j<row.children.length;j++){
+            const sub=row.children[j];
+            if(sub.link===`anchor://${anchor}`) return sub.link
+          }
+        }
+      }
+      console.log(anchor);
+      return "";
     },
   }
 
   useEffect(() => {
-    setNavs(list);
     const anchor=window.location.hash.substring(1);
+    setNavs(list);
     setActive(anchor);
     setLink(self.getDefaultLink(list,anchor));
   }, [list]);

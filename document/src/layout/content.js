@@ -34,7 +34,8 @@ function Content(props) {
       }
     };
     self.auto(() => {
-      if(!props.link) return false;
+      console.log(props.link);
+      //if(cherryInstance!==null) cherryInstance.setValue('loading...');
       if(cherryInstance===null){
         cherryInstance = new Cherry({
           id: "md_container",
@@ -45,9 +46,11 @@ function Content(props) {
           }
         });
       }
+      if(!props.link) return false;
+      
       
       API.Easy.easyRun(props.link, startAPI, (res) => {
-        if (res.error.length !== 0) return cherryInstance.setValue(JSON.stringify(res.error));
+        if (res.error.length !== 0) return cherryInstance.setValue(`${props.link}:\n${JSON.stringify(res.error)}`);
         const data = res.data[`${res.location[0]}_${res.location[1]}`];
         cherryInstance.setValue(data.raw);
         window.scrollTo(0, 0);
