@@ -35,7 +35,7 @@ const config={
 
 const list=[
   {title:"AnchorJS SDK",link:"anchor://anchorjs_md",children:[]},
-  {title:"Loader",link:"anchor://loader",children:[
+  {title:"Loader",link:"anchor://loader_md",children:[
     {title:"Convertor",link:"anchor://convertor",children:[]},
     {title:"Downloader",link:"anchor://downloader",children:[]},
   ]},
@@ -46,45 +46,38 @@ const list=[
     {title:"UI",link:"anchor://g_ui",children:[]},
   ]},
 ]
-const md=`#hello
-## good day
-- hahahah
-### what to do
-### how to do
-**today** is a good day
-## bad day
-- topic 1
-- topic 2
-`+'```hello world```'
-let more=[];
-
-
 
 function App() {
   let [navs, setNavs] = useState([]);
-  let [content, setContent] = useState("Loading...");
+  let [sub, setSub ]= useState([]);
   let [link, setLink] = useState("");
+  let [active, setActive] = useState("");
 
   const self={
     getAnchorData:(link)=>{
   
     },
     updateTopics:(topics)=>{
-      //console.log(topics);
-      more=topics;
+      setSub(topics);
     },
-    updateNavIndex:(link)=>{
+    updateNavIndex:(target,link)=>{
+      setActive(target.id);
       setLink(link);
+      window.location.hash="#"+target.id;
+    },
+
+    getDefaultLink:(list)=>{
+      
+      return list[0].link;
     },
   }
 
-  //const ts=getMKTitles(md);
-  //console.log(ts);
-
   useEffect(() => {
     setNavs(list);
-    setLink(list[0].link);
-  }, []);
+    const anchor=window.location.hash.substring(1);
+    setActive(anchor);
+    setLink(`anchor://${anchor}`);
+  }, [list]);
 
   return (
     <div id="container">
@@ -93,11 +86,11 @@ function App() {
           <img src="logo.png" alt="Plinth logo" className='img-fluid' />
           <p><small className='text-secondary'>Your Slogon here</small></p>
         </div>
-        <Nav data={navs} update={self.updateNavIndex} />
+        <Nav data={navs} sub={sub} active={active} update={self.updateNavIndex}/>
       </div>
       <div id="body">
-        <Crumbs />
-        <Content link={link} API={APIs} config={config}/>
+        {/* <Crumbs /> */}
+        <Content link={link} API={APIs} config={config} update={self.updateTopics} />
         <Footer pre={0} next={0}/>
       </div>
     </div>

@@ -1,22 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 function Nav(props) {
 
-  let [subs, setSubs] = useState([]);
   const list = props.data;
-  
-  const ss=[];
-  for(let i=0;i<list.length;i++)ss.push("");
-
+  const active=props.active;
+  console.log(active);
   useEffect(() => {
-    
+
   }, []);
 
   return (
     <ul>
       {list.map((item, key) => (
-        <li key={key} onClick={() => {
-          props.update(item.link);
-        }}>{item.title}</li>
+        <li key={key} 
+          id={item.link.substring(9,item.link.length)} 
+          className={active===item.link.substring(9,item.link.length)?"active":""} 
+          onClick={(ev) => {
+            props.update(ev.target,item.link);
+          }}>
+        {item.title}
+        </li>
       ))}
     </ul>
   );

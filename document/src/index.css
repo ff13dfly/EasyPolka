@@ -36,10 +36,11 @@ code {
   #body{width:950px;float: right;margin: 0 auto;background: #FFFFFF;padding: 15px 10px 15px 10px;} 
 }
 
-#nav{font-size: 21px;}
+#nav{font-size: 21px;position: fixed;top:0px;}
 #nav ul{padding: 0px 0px 0px 0px;text-align: left;}
-#nav ul li{cursor: pointer;padding: 5px 0px 5px 0px;list-style: none;margin: 0 auto;}
+#nav ul li{cursor: pointer;padding: 5px 0px 5px 10px;list-style: none;margin: 0 auto;}
 #nav ul li:hover{opacity: 0.7;}
+#nav ul li:focus{background: #BBAA33;}
 #logo img{width: 60%;margin: 0 auto;}
 #logo p{margin: 0 auto;}
 #crumbs {color:#BBAAFF;background: #FFFFFF;padding: 3px 0px 3px 0px;cursor: pointer;}
@@ -47,3 +48,5 @@ code {
 #footer{padding-top: 15px;font-size: 24px;}
 #pre{margin: 0 auto;float: left;}
 #next{margin: 0 auto;float: right;}
+
+.active{background: #999999;color: #FFFFFF;}
