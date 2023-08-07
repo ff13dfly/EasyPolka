@@ -39,8 +39,8 @@ const list=[
     {title:"Convertor",link:"anchor://convertor",children:[]},
     {title:"Downloader",link:"anchor://downloader",children:[]},
   ]},
-  {title:"Easy Protocol",link:"anchor://easy",children:[]},
-  {title:"Gateway",link:"anchor://gateway",children:[
+  {title:"Easy Protocol",link:"anchor://easy_md",children:[]},
+  {title:"Gateway",link:"anchor://gateway_md",children:[
     {title:"Hub",link:"anchor://g_hub",children:[]},
     {title:"Service",link:"anchor://g_service",children:[]},
     {title:"UI",link:"anchor://g_ui",children:[]},
@@ -66,8 +66,16 @@ function App() {
       window.location.hash="#"+target.id;
     },
 
-    getDefaultLink:(list)=>{
+    getListMap:(list,map)=>{
+      if(!map) map={};
+      if(list.length===0) return map;
+      const row=list.pop();
       
+    },
+
+    getDefaultLink:(list,anchor)=>{
+      if(list.length===0) return "";
+
       return list[0].link;
     },
   }
@@ -76,7 +84,7 @@ function App() {
     setNavs(list);
     const anchor=window.location.hash.substring(1);
     setActive(anchor);
-    setLink(`anchor://${anchor}`);
+    setLink(self.getDefaultLink(list,anchor));
   }, [list]);
 
   return (

@@ -50,8 +50,8 @@ function Content(props) {
         if (res.error.length !== 0) return cherryInstance.setValue(JSON.stringify(res.error));
         const data = res.data[`${res.location[0]}_${res.location[1]}`];
         cherryInstance.setValue(data.raw);
-
-        //const target=window.location.hash;
+        window.scrollTo(0, 0);
+        
         setTimeout(() => {
           //window.location.hash=target;
           //const tps = cherryInstance.getToc();
