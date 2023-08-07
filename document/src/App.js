@@ -68,7 +68,6 @@ function App() {
     },
 
     getDefaultLink:(list,anchor)=>{
-      console.log(`Get link by name ${anchor}`)
       if(list.length===0) return "";
       if(!anchor) return list[0].link;
       
@@ -92,6 +91,7 @@ function App() {
     setNavs(list);
     setActive(anchor);
     setLink(self.getDefaultLink(list,anchor));
+    
   }, [list]);
 
   return (

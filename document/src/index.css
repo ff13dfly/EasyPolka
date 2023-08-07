@@ -56,5 +56,5 @@ code {
 #pre{margin: 0 auto;float: left;}
 #next{margin: 0 auto;float: right;}
 
-/* #nav ul .active{background: #4861ac;color: #FFFFFF;} */
+#nav ul .active{color: #4861ac;font-weight: 600;}
 #nav dt .active{background: #4861ac;color: #FFFFFF;}
