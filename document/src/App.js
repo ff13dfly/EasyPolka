@@ -16,8 +16,8 @@ const APIs={
 }
 
 const config={
-  logo:"",
-  title:"",
+  logo:"logo.png",
+  title:"Easy Blockchain Network",
   theme:{
     nav:{
       h1:"",
@@ -91,15 +91,15 @@ function App() {
     setNavs(list);
     setActive(anchor);
     setLink(self.getDefaultLink(list,anchor));
-    
+
   }, [list]);
 
   return (
     <div id="container">
       <div id="nav">
         <div id="logo">
-          <img src="logo.png" alt="Plinth logo" className='img-fluid' />
-          <p><small className='text-secondary'>Your Slogon here</small></p>
+          <img src={config.logo} alt="Plinth logo" className='img-fluid' />
+          <p><small className='text-secondary'>{config.title}</small></p>
         </div>
         <Nav data={navs} sub={sub} active={active} update={self.updateNavIndex}/>
       </div>
