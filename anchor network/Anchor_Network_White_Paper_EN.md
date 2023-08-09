@@ -1,5 +1,8 @@
 # Anchor Network White Paper, A Bootstrap Web3.0 Network
 
+Author: Billy Fu, Victor
+Date: Augest 2023
+
 ## Overview
 
 - The Blockchain brought by **Bitcoin** has been thriving for a period of p time, and **Ethereum Smart Contract** have also enriched the blockchain. But until today, normal user only hear of Bitcoin, as Web3.0 applications, it is mainly **Trade Market**. For normal user **uselessness** and **hard-to-use** are the main obstacle.Various of `Web3.0` Dapps are only concentrating in finance such as Defi and NFT, and non-financial Dapps is not popular totally. Although from tech view, the intrinsic attribute of blockchain can indeed benefit non-financial Dapps, such as immutable features, stable decentralized networks, and robust account systems.
@@ -16,11 +19,11 @@
 
 ## Vocabulary
 
-- `Web3.0`, decentralized network with ownership attributes.
 - `Anchor Network`,a bootstrap Web3.0 network base on Polkadot/Substrate.
 - `Anchor`，the primitive data structure on Anchor Network.
 - `Anchor Name`, the name to access Anchor linked-chain data on Anchor Network, utf-8 supported.
 - `Anchor Link`，URL way to locate the on-chain data.
+- `Web3.0`, decentralized network with ownership attributes.
 - `Trust`, relationship between Anchors.
 - `Authority`，relationship between Anchor and account.
 - `Declared Hidden`, the way of hiding Anchor, Dapps following this will not display the data.
@@ -31,7 +34,6 @@
 - `Plinth`, Anchor data browser.
 - `Easy Protocol`, declaring relationship between on-chain data and on-chain application protocol default supported by Anchor Network.
 
-### Purpose and Solution
+### Solution
 
 - A simple entrance. After the hard work of Web3.0 colleagues, currently Web3.0 has become much simpler, but compared to the development of Web2.0/Web1.0, the threshold is still much higher. Both in terms of development tools and paradigms, Web3.0 has many gaps, especially in the development of non-financial development applications and the saline alkali land of Web3.0. Anchor Network uses name services to solve this problem, using simple and easy to remember chain names as key values and structured chain anchors as data carriers. The concept is very simple and consistent with traditional KV storage systems. With only minor modifications, existing applications can have the ability to access and write to blockchain.
-

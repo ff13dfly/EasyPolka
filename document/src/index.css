@@ -43,7 +43,7 @@ code {
 #nav ul li:focus{background: #BBAA33;}
 #nav dt{padding: 9px 0px 0px 10px;text-align: left;background: #FFFFFF;}
 #nav dt dl{cursor: pointer;padding: 5px 0px 5px 10px;list-style: none;margin: 0 auto;}
-#nav dt dl:hover{opacity: 0.6;}
+#nav dt dl:hover{opacity: 0.8;}
 #nav dt dl:focus{background: #BBAA33;}
 /* #nav dt .active{cursor: pointer;padding: 5px 0px 5px 10px;list-style: none;margin: 0 auto;}
 #nav dt .active:hover{opacity: 0.6;}
@@ -51,10 +51,11 @@ code {
 #logo img{width: 60%;margin: 0 auto;}
 #logo p{margin: 0 auto;}
 #crumbs {color:#BBAAFF;background: #FFFFFF;padding: 3px 0px 3px 0px;cursor: pointer;}
+#comment{padding: 20px 0px 20px 0px;margin: 0 auto;}
 
 #footer{padding-top: 15px;font-size: 24px;}
 #pre{margin: 0 auto;float: left;}
 #next{margin: 0 auto;float: right;}
 
-#nav ul .active{color: #4861ac;font-weight: 600;}
-#nav dt .active{background: #4861ac;color: #FFFFFF;}
+#nav ul .active{color: #ee9c18;font-weight: 600;}
+#nav dt .active{color: #ee9c18;font-weight: 600;}

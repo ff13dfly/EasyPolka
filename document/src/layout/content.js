@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+//import Comment from './comment';
 
 import Cherry from 'cherry-markdown/dist/cherry-markdown.core';
 require('cherry-markdown/dist/cherry-markdown.min.css');
@@ -65,7 +66,10 @@ function Content(props) {
   }, [props.link]);
 
   return (
-    <div id="md_container"></div>
+    <div>
+      <div id="md_container"></div>
+      {/* <Comment /> */}
+    </div>
   );
 }
 
