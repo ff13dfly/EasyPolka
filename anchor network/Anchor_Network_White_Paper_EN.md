@@ -1,7 +1,7 @@
 # Anchor Network White Paper, A Bootstrap Web3.0 Network
 
 Author: Billy Fu, Victor
-Date: Augest 2023
+Date: August 2023
 
 ## Overview
 
@@ -34,6 +34,22 @@ Date: Augest 2023
 - `Plinth`, Anchor data browser.
 - `Easy Protocol`, declaring relationship between on-chain data and on-chain application protocol default supported by Anchor Network.
 
-### Solution
+## Solution
 
-- A simple entrance. After the hard work of Web3.0 colleagues, currently Web3.0 has become much simpler, but compared to the development of Web2.0/Web1.0, the threshold is still much higher. Both in terms of development tools and paradigms, Web3.0 has many gaps, especially in the development of non-financial development applications and the saline alkali land of Web3.0. Anchor Network uses name services to solve this problem, using simple and easy to remember chain names as key values and structured chain anchors as data carriers. The concept is very simple and consistent with traditional KV storage systems. With only minor modifications, existing applications can have the ability to access and write to blockchain.
+- **Single entry**. Currently `Web3.0` development has become much simpler, but compared to the development of `Web2.0/Web1.0`, it is still much higher. Web3.0 has many gaps, such as dispersed tool chain and alternative development partern, that will be more difficult in non-financial Dapps devepolment. `Anchor Network` treat the blockchain as a simple key-value storage systems, Dapp can read/write on sinlge `Anchor Name`. The `Anchor Data` is orginazed as **linked list** on chain. Either `Web3.0` or `Web2.0/Web1.0` benifit from this single entry way, no more concern about the blockchain complexity.
+
+- **Simple economics**. As everything tokenized, the various of tokens has become increasingly complex, then it is pretty hard to understand and join, especially for beginners. `Anchor Network` do have simple and understandable economic logic, that is **storage cost** and **free to sell**.  This simple logic is already common knowledge in the real world and can be easily caught. The complex token is left to the professional third party on `Anchor Network`, just call the APIs of them. `Anchor Network` is trying this simple economics to establish a self consistent network in the Web3.0 world.
+
+- **Full on chain**. Popular Smart Contract has brought about the flourishing of Dapp, as more and more Dapp on live, the centralized deployment trending is on the table. Dapps are deployed by developers on their respective servers, althought the support Smart Contract is running on decentralized blockchain network, we can not call this is a decentralized way. This centralized control brings the risk of user account exposure and the inability of Dapp review. For example, a centralized exchange market has a clear understanding of user behavior. `Anchor Network` solve this by putting the whole Dapps on chain even the UI publicly, developer can store the data to the `Anchor Name`, then the Dapp is decentralized totally.
+
+- **Single Javascript**. Javascript has proven itself through its strong vitality and has been applied to many parts of blockchain development, even the Solidity for Smart Contract is similar to Javascript. For non-financial development, Javascript also has inherent advantages, such as plenty of framework and tools can be used. `Anchor Network` will help these frameworks on chain to make Web3.0 development easy.
+
+### Existing Web Application
+
+-
+
+### New Full On Chain Application
+
+### Issues
+
+
