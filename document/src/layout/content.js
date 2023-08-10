@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 //import Comment from './comment';
+import History from './history';
 
 import Cherry from 'cherry-markdown/dist/cherry-markdown.core';
 require('cherry-markdown/dist/cherry-markdown.min.css');
@@ -7,6 +8,8 @@ require('cherry-markdown/dist/cherry-markdown.min.css');
 let websocket = null;
 let cherryInstance=null;
 function Content(props) {
+
+  let [anchor, setAnchor ]= useState("");
 
   const API = props.API;
   const anchorJS = API.AnchorJS;
@@ -55,6 +58,8 @@ function Content(props) {
         const data = res.data[`${res.location[0]}_${res.location[1]}`];
         cherryInstance.setValue(data.raw);
         window.scrollTo(0, 0);
+        console.log(res.location[0]);
+        setAnchor(res.location[0]);
         
         setTimeout(() => {
           //window.location.hash=target;
@@ -67,7 +72,8 @@ function Content(props) {
 
   return (
     <div>
-      <div id="md_container"></div>
+      <History API={API} anchor={anchor}/>
+      <div id="md_container" anchor={anchor}></div>
       {/* <Comment /> */}
     </div>
   );

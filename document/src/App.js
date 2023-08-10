@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import Nav from './layout/nav';
 //import Crumbs from './layout/crumbs';
+
 import Content from './layout/content';
 import Footer from './layout/footer';
 

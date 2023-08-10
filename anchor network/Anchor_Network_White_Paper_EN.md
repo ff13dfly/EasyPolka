@@ -40,20 +40,42 @@ Date: August 2023
 
 - **Simple economics**. As everything tokenized, the various of tokens has become increasingly complex, then it is pretty hard to understand and join, especially for beginners. `Anchor Network` do have simple and understandable economic logic, that is **storage cost** and **free to sell**.  This simple logic is already common knowledge in the real world and can be easily caught. The complex token is left to the professional third party on `Anchor Network`, just call the APIs of them. `Anchor Network` is trying this simple economics to establish a self consistent network in the Web3.0 world.
 
+- **Your Web3.0**. Anchor Network fully embodies an important feature of Web3.0. The chain name and anchor have clear ownership, even if you have no knowledge of Web3.0, you can still have a chain name to truly experience Web3.0 ownership, rather than being a bystander and participating through reading news. Meanwhile, for the development of Dapp, owning it brings great convenience, allowing different programs to run on the same network, establishing rules for data interaction without damaging data. Anchor Network is such a blockchain network.
+
 - **Full on chain**. Popular Smart Contract has brought about the flourishing of Dapp, as more and more Dapp on live, the centralized deployment trending is on the table. Dapps are deployed by developers on their respective servers, althought the support Smart Contract is running on decentralized blockchain network, we can not call this is a decentralized way. This centralized control brings the risk of user account exposure and the inability of Dapp review. For example, a centralized exchange market has a clear understanding of user behavior. `Anchor Network` solve this by putting the whole Dapps on chain even the UI publicly, developer can store the data to the `Anchor Name`, then the Dapp is decentralized totally.
 
 - **Single Javascript**. Javascript has proven itself through its strong vitality and has been applied to many parts of blockchain development, even the Solidity for Smart Contract is similar to Javascript. For non-financial development, Javascript also has inherent advantages, such as plenty of framework and tools can be used. `Anchor Network` will help these frameworks on chain to make Web3.0 development easy.
 
-### Existing Web Application
+- **Out of the box**.
 
--
+### Current Situation
 
-### New Full On Chain Application
+- ****,
+
+- ****,
+
+- ****,
 
 ### Issues
 
+- **Execution efficiency problem**.
+
+- **Code safety to care about**.
 
 ## Architecture
+
+    ```
+        Loader -->  Data    -->  APIs  -->  Web3.0/Web2.0
+                    |             |                        
+                    | on-chain    | on-chain      
+                    |             |                      
+                    V             V          
+        -------------------Protocol---------------------      
+                    |             |                          
+                    V             V           
+        -------------------Anchor-----------------------
+        -------------------Polkadot---------------------
+    ```
 
 ### Data Lay
 
