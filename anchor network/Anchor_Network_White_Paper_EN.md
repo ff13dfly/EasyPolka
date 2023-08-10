@@ -53,3 +53,54 @@ Date: August 2023
 ### Issues
 
 
+## Architecture
+
+### Data Lay
+
+#### Storage
+
+#### Data Trade
+
+### Protocol Lay
+
+#### Location
+
+#### Relationship
+
+#### Authority And Trust
+
+#### Declared Hidden
+
+## Security
+
+### Summary
+
+### Supervision On Chain
+
+## Components
+
+### Anchor Pallet
+
+### Default Protocol
+
+#### Bootstrap
+
+#### Chain Application
+
+### Toolbox
+
+#### Local Simulator
+
+#### Anchor SDK
+
+#### Convertor
+
+#### Loader
+
+#### Downloader
+
+#### Plinth
+
+#### Gateway
+
+## Resource
