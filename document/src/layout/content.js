@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 //import Comment from './comment';
-import History from './history';
+//import History from './history';
 
 import Cherry from 'cherry-markdown/dist/cherry-markdown.core';
 require('cherry-markdown/dist/cherry-markdown.min.css');
@@ -52,7 +52,6 @@ function Content(props) {
       }
       if(!props.link) return false;
       
-      
       API.Easy.easyRun(props.link, startAPI, (res) => {
         if (res.error.length !== 0) return cherryInstance.setValue(`${props.link}:\n${JSON.stringify(res.error)}`);
         const data = res.data[`${res.location[0]}_${res.location[1]}`];
@@ -71,11 +70,7 @@ function Content(props) {
   }, [props.link]);
 
   return (
-    <div>
-      <History API={API} anchor={anchor}/>
-      <div id="md_container" anchor={anchor}></div>
-      {/* <Comment /> */}
-    </div>
+    <div id="md_container" anchor={anchor}></div>
   );
 }
 

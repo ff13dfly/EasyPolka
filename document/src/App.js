@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import Nav from './layout/nav';
-//import Crumbs from './layout/crumbs';
+import Crumbs from './layout/crumbs';
+//import History from './layout/history';
 
 import Content from './layout/content';
 import Footer from './layout/footer';
@@ -105,7 +106,7 @@ function App() {
         <Nav data={navs} sub={sub} active={active} update={self.updateNavIndex}/>
       </div>
       <div id="body">
-        {/* <Crumbs /> */}
+        <Crumbs API={APIs} anchor={active} />
         <Content link={link} API={APIs} config={config} update={self.updateTopics} />
         <Footer pre={0} next={0}/>
       </div>
