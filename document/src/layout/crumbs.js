@@ -21,7 +21,7 @@ function Crumbs(props) {
   }, [props.anchor]);
 
   return (
-    <p id="ownship"> Anchor Name: {props.anchor} on {block.toLocaleString()} signer: {owner}</p>
+    <p id="ownship"> Anchor Name: {props.anchor} on {!block?0:block.toLocaleString()} signer: {owner}</p>
   );
 }
 
