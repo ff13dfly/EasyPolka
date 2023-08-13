@@ -184,7 +184,7 @@
 
 - `Anchor Network` support `Easy Protocol` as default to achieve various expected goals. This is a simple human-being readable protocol that uses JSON as the format. `Easy Protocol` solves the problems of on-chain data location and relationship, orginize the on-chain resource as a scalable framework, then is can support complex **Dapp**. `Easy Protocol` is an extensible protocol that reserves possibilities for more diverse applications in the future.
 
-#### Loader
+#### Bootstrap Support
 
 - `Loader` is an important **Dapp** of `Anchor Network`. Its main function is to connect to `Anchor Network` node, parse `Anchor Data`, then load **Dapp** to run. Meanwhile, the `Loader` itself can also be deployed on `Anchor Network`. At this point, a `Downloader` is needed to get the raw data of `Loader`. It looks like the egg-chicken problem. But on `Anchor Network`, whether you have the chicken or the egg in your hand, you can successfully connect to the network and fully utilize various resources and **Dapp**. The `Loader` is supported for both the front-end and back-end, by using Javascript, and the back-end needs to run with **Node.js**.
 
@@ -194,49 +194,49 @@
 
 #### Full On Chain Dapp
 
-- Non modifiable on chain deployment` One of the main advantages of full chain applications is that they can be deployed transparently and publicly. Although this increases the requirements for release, it requires more thorough testing or a good separation of the program and configuration. That is to say, by deploying on chain, the application will be more robust. At the same time, it also left an indelible footprint in the world of 'Web3.0', seeing your contributions to a better 'Web3.0'.
+- Immutability Deployment. One of the main advantages of full on chain Dapp is that they can be deployed transparently and publicly. Although this increases the requirements for release, it requires more thorough testing or a good separation of the program and configuration. That is to say, by deploying on chain, the application will be more robust. At the same time, it also an indelible footprint in `Web3.0`, and your contributions to a better `Web3.0`.
 
-- Support the implementation of complex logic. It can be found that fully functional APIs can empower developers to connect to various existing services, whether they are 'Web3.0' or * * Web2.0/Web1.0 * *. At the same time, Anchor Network also has easy-to-use online linked lists to store data. By combining the two, many complex functions can be achieved, supporting the development and release of non-financial 'full chain applications'.
+- Complex logic support. You can find that fully functional APIs can empower developers to connect to various existing services, whether they are `Web3.0` or **Web2.0/Web1.0**. On the other hand, it is easy to storage on `Anchor Network` with the benifit of `Anchor` the on-chain linked list. Then complex functions can be achieved, supporting the development and deployment of non-financial `full on chain Dapp`.
 
-- Flexible authorization methods` Full chain applications need to be able to support flexible authorization methods to establish a healthy environment and enable developers to focus more on functional implementation. Authorization can be divided into account authorization and chain name authorization, and the authorization period can be unlimited or authorized to a specified block number.
+- Flexible authorization. The support of flexible authorization can establish a healthy development economic cycle, help developers to focus on the functional implementation. Authorization can be divided into account authorization and  `Anchor Name` authorization, and the authorization period can be unlimited or authorized to a specified block number.
 
-- Extremely low development threshold. No need to consider complex token economics anymore, focusing on solving various problems in the 'Web3.0' model. When 'Anchor Network' is considered a feasible runtime environment for 'full chain applications', using its SDK development will be very convenient. It only takes about one day of learning, and you can start developing your own' full chain applications'.
+- Extremely low development threshold. No need to consider complex token economic anymore, focusing on solving various problems in the `Web3.0` world. When `Anchor Network` is considered as a feasible runtime environment for `full on chain Dapp`, development will be very convenient by using its SDK. Only takes about one-day learning, you can start developing your own `full on chain Dapp` on `Anchor Network`.
 
-- Full chain applications that can be traded. This is a great convenience brought by the 'Anchor Network', where you can trade with the Anchor at any time, and endogenously support the realization of 'full chain applications', not just through the business model established by the' full chain applications' themselves to make money. This is a problem that non-financial 'full chain applications' must solve, forming a sustainable and profitable closed-loop, rather than creating a drumming and flower spreading environment.
+- Easy to trade. Your `full on chain Dapp` can be traded pretty easy. This is a great convenience brought by `Anchor Network`. You can sell `Anchor` any time to make money, what is a real working **Dapp**, instead of token. This is a problem that non-financial `full on chain Dapp` must solve, forming a sustainable and profitable self-loop, rather than creating a sell to the next start environment.
 
 ### EasyPolka Toolbox
 
 #### Local Simulator
 
-- `The local testing program for Anchor Network is a fast network with a block output speed 10 times that of the main network of Anchor Network, making it convenient for local debugging. It can run with just one command line and has exactly the same functionality as' Anchor Network '.
+- The local testing node for `Anchor Network`.  It is set up as a fast network 10X speed than the real `Anchor Network`, making it convenient for local debugging. It can run with just one command line and is exactly the same as `Anchor Network`.
 
-- Local testing network is very important for debugging. Based on the characteristics of 'Anchor Network', the deployment of 'full chain applications' needs to be cautious. After thorough testing, it is a good way to release, which can save tokens and reflect your professional demeanor.
+- The local testing node is very important for debugging. Based on the feathers of `Anchor Network`, the deployment of `full on chain Dapp` needs to be cautious. After thorough testing, it is a good way to release, which can save coins and reflect your professional demeanor.
 
 #### Anchor SDK
 
-- `The basic access protocol of Anchor Network can achieve all the functions of chain anchor, mainly including two parts: storage and transaction. At the same time, it is also necessary to support account verification and access to basic network information.
+- The basic SDK libraray for `Anchor Network`. It achieve all the functions of `Anchor Network`, for both storage and trade. It is also necessary to support account verification and access to basic network information.
 
-- **AnchorJS * * is an SDK for Javascript that can implement all operations of Anchor Pallet and requires support from '@ Polkadot/api'.
+- **AnchorJS** is an SDK of Javascript that can implement all operations with Anchor Pallet and requires support from **@Polkadot/api**.
 
 #### Convertor
 
-- `Converter is a tool that converts existing applications into full chain applications that can be deployed on Anchor Network, and can be developed based on any language. This can help developers quickly experience the similarities and differences between 'Web3.0' full chain applications and * * Web2.0/1.0 * * applications. It can also quickly convert many existing tasks into 'full chain applications', such as various UIs of * * Dapp * *.
+- Converter is a tool that converts existing web applications to `full on chain Dapp` which can be  deployed on `Anchor Network`. This can help developers quickly experience the similarities and differences between `Web3.0` `full on chain Dapp` and **Web2.0/1.0** applications. It can also convert many existing applicatios to be `full on chain Dapp` quickly, such as various UIs of **Dapp**.
 
-- `The converter itself is also deployed on the Anchor Network and can be obtained using the Downloader. The conversion process is implemented locally by the customer, and there is a problem of whether the usage environment matches. Special attention should be paid when using it` Converters can be developed in different languages, and the conversion objects can also be different application programs.
+- The converter itself is also deployed on `Anchor Network` and can be obtained by the `Downloader`. The conversion process is implemented locally by the customer, and there is a problem of whether the user environment matches.Converters can be developed in different languages, and the conversion objects can also be different application programs.
 
 #### Loader
 
-- `The function of the loader is to read the on chain data of the Anchor Network, form executable applications or data, and then run it` The loader can establish a secure sandbox environment to further improve the security of full chain applications, mainly through two aspects. One is to provide account verification and on chain interaction functions, which are passed to the 'full chain application' through parameters; The second is to provide regulatory functions, read regulatory data, and provide prompts for the security of 'full chain applications'.
+- `Loader` can read the data on `Anchor Network` to form executable application properly, after checking supervision system, run the target Dapp. The loader can establish a secure sandbox environment to improve the security of `full on chain Dapp`, mainly through two aspects. One is to provide account verification and on chain interaction functions, which are passed to the `full on chain Dapp` through parameters; The second is to provide regulatory functions, read regulatory data, and provide prompts for the security of `full on chain Dapp`.
 
-- From the perspective of application scenarios, it can be divided into front-end loaders and back-end loaders. The front-end loader is implemented based on a browser, mainly for Javascript applications, which can be executed in a browser environment. For the backend, 'Anchor Network' recommends using Node.js, so that the entire 'Web3.0' program can be built with just Javascript.
+- Both front-end and back-end support. From the perspective of application scenarios, the front-end loader is implemented based on a browser, mainly for Javascript applications, which can be executed in a browser environment. For the backend, `Anchor Network` recommends Node.js, so that the entire `Web3.0` **Dapp** can be built just by Javascript.
 
-- `The loader supports external input parameters and can easily configure 'full chain applications', improving the convenience of using' full chain applications'.
+- External input parameters support. By this way, `Loader` can sent configure to `full on chain Dapp` easily and conveniently.
 
 #### Downloader
 
-- `The downloader is a tool that integrates the on chain data of the Anchor Network according to the protocol and packages it into a single file for download. The main function is to download the on chain program that needs to run locally, so its security is extremely important, otherwise it will not be able to obtain the correct on chain program.
+- Download the `full on chain Dapp` of `Anchor Network`. The main function is to read and package the `full on chain Dapp` that needs to run locally. Its security is extremely important, otherwise it will not be able to obtain the correct `full on chain Dapp`.
 
-- `The downloader is also a full chain application, deployed on the Anchor Network, creating an interesting loop. You can run the 'downloader' through the 'loader' or obtain the 'loader' through the 'downloader'. Therefore, just ensure that you have one of the two, and you can use 'Anchor Network' to link to the entire 'Web3.0' network.
+- `Downloader` is also a `full on chain Dapp`. It is pretty interesting that you can run the `Downloader` through the `Loader` or obtain the `Loader` through the `Downloader`. Therefore, just ensure that you have one of them, and you can access to `Anchor Network` to link to the entire `Web3.0` world.
 
 #### Plinth
 
@@ -253,17 +253,17 @@
     ----------------------------Polkadot---------------------------
 ```
 
-- `Plinth 'is a' Anchor Network 'browser that allows for easy viewing and running of various data on the' Anchor Network ', and can be used as an entry point to' Web3.0 '` Plinth 'is also a' full chain application 'that only requires a' loader 'to run without the need for local execution.
+- `Plinth` is a browser for `Anchor Network`. It is convenience for user to review the `Anchor Data` and to run various of `full on chain Dapp`. You can treat it as the entry of `Web3.0` world. `Plinth` is also a `Plinth` which can be run by the `Loader`.
 
-- `Plinth provides a data search function that facilitates the retrieval and viewing of detailed data on the Anchor Network, tracing the history of the data.
+- `Plinth` searching function. The data searching function that facilitates the retrieval and viewing of detailed data on `Anchor Network`, tracing the history of `Anchor`.
 
-- `Plinth also provides a sandbox environment for running 'full chain applications', making it easy for you to grasp the running status of' full chain applications',
+- `Plinth` sandbox environment. Running `full on chain Dapp` in `Plinth`, making it easy for you to grasp the running status of it.
 
 #### Gateway
 
-- `Gateway is a rapidly deployable full chain microservice framework provided by Anchor Network, helping developers develop complex full chain applications. This framework only requires a backend 'loader' to run the entire microservice system, whether it is a variety of different microservices or a configured running environment. This can liberate operations and maintenance, as long as you can connect to the 'Anchor Network', the backend system of this application can run normally, possibly with just one command line.
+- `Gateway` is a rapidly deployable full chain microservice framework provided by `Anchor Network`. It is for developing complex `full on chain Dapp`. This framework only requires a backend `Loader` to run the entire microservice system, whether it is a variety of different micro service or a configured running environment. The devops is pretty easy, as long as you can connect to the `Anchor Network`, the system can be run possibly with just one command line.
 
-- A universal open microservice that provides plug and play microservices for basic applications, reducing the threshold for developers. For example, Anchor's data caching, account compression services, and managed account writing services. This will greatly improve the user experience of 'full chain a
+- Plug and play microservices. A universal open microservice that provides plug and play microservices for basic functions, reducing the threshold for developers. For example, **Anchor Data Caching**, **Account Compression Service**, and **Managed Account Writing Service**. This will greatly improve the user experience of `full on chain Dapp` development.
 
 ## Resource
 
