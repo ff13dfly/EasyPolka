@@ -1,7 +1,7 @@
 # Anchor Network White Paper, A Bootstrap Web3.0 Network
 
-Author: Billy Fu, Victor
-Date: August 2023
+- Author: Billy Fu, Victor
+- Date: August 2023
 
 ## Overview
 
@@ -9,7 +9,7 @@ Date: August 2023
 
 - Either from the spillover of blockchain or the increasingly prosperous financial Dapps, the breakpoint of non-financial Web3.0 is not far away. Where and how to break is becoming a question. `Anchor Network` is the result of such thinking, making the access to `Web3.0` much more simple, the development part especially. This way, more developers will join Web3.0 trying to break through. 
 
-- `Anchor Network` is based on **Polkadot/Substrate** which is an ecosystem do have ability to connect to other blockchain networks. By another hand, Anchor Network can be used for Web3.0 Dapp deployment, these Dapps do connect to various blockchain networks transparently. It is a Dapp level cross-blockchain way which is new way to develop cross-blockchain Dapps.
+- `Anchor Network` is a blockchain network based on **Polkadot/Substrate** which is an ecosystem do have ability to connect to other blockchain networks. By another hand, `Anchor Network` can be used for Web3.0 `Dapp` deployment, these Dapps do connect to various blockchain networks transparently. It is a Dapp level cross-blockchain way which is new way to develop cross-blockchain Dapps.
 
 - `Anchor Network` make use of `Anchor` as the primitive data structure, which is a piece of on-chain data, orginaized by block number and can be accessed by `Anchor Name` taking place of blockchain hash. `Anchor Link` is a simple way to locate the on-chain data the same as **URL**. By this way, the data on chain can be grouped organically to support complex Dapp. `Anchor Network` provides a convenient SDK to avoid the complex concepts of `Web3.0` and full toolchain (including protocols, loaders, microservice frameworks, etc.). It make one-day leaning to join Web3.0 possible.
 
@@ -136,63 +136,63 @@ Date: August 2023
 
 #### Declared Hidden
 
-- `Declaring 'hidden' is a supplement to the tamper proof feature of blockchain. With the expansion of blockchain application scope, * * deletion * * is an unavoidable problem, such as an incorrect message or application that should be deleted, but this is difficult to achieve on the blockchain network` Anchor Network introduces the method of 'declaration concealment' to solve this problem, where the owner of the information hides the specified data through explicit declaration. Although this is not physically deleting data, in applications that follow the protocol, these 'declared hidden' data are indeed hidden and invisible.
+- `Declared Hidden` is a supplement of blockchain. As the expansion of **Dapp**, **deletion** is an unavoidable problem, such as an incorrect message or application that should be deleted, but this is unable to achieve on blockchain network. `Anchor Network` introduces the way of `Declared Hidden` to solve this problem, the deletion is explicit declaration in `Anchor Data`. Although this is not physically deletion, but by following the protocol, these `Declared Hidden` data are indeed hidden and invisible.
 
-- `Declaring 'hidden' is a supplement to the tamper proof feature of blockchain. With the expansion of blockchain application scope, * * deletion * * is an unavoidable problem, such as an incorrect message or application that should be deleted, but this is difficult to achieve on the blockchain network` Anchor Network introduces the method of 'declaration concealment' to solve this problem, where the owner of the information hides the specified data through explicit declaration. Although this is not physically deleting data, in applications that follow the protocol, these 'declared hidden' data are indeed hidden and invisible.
+- Defined in `Anchor Data`. The content that is declared to be hidden is published through `Anchor Data` transparently.It is even possible to hide the previously hidden data in subsequent declarations. This is similar to the common recycling box in computer operating systems, where we can put files into the recycling box. Even if these files still exist, they cannot be used or started unless you perform a restore operation. But remember that, the data in the world of blockchain can not be removed once it was created, `Declared Hidden` is a protocol level function to implement the deletion.
 
 ## Security
 
-### Summary
+### Security Overview
 
-- `The security of anchor network data itself is based on the basic security provided by * * Polkadot/Substrate * *, while ownership ensures the security of writes. The basic security for data storage has been established, and this system has been running stably for a long time. Practice has also proven the security of PoS` Anchor Network is a self starting network that supports the deployment and operation of * * Dapp * *, which has higher security requirements than simple data storage. We will compare the security of 'Anchor Network' from two aspects: one is compared to traditional centralized deployment, and the other is compared to other on chain storage solutions.
+- `Anchor Network` is base on **Polkadot/Substrate** which is pretty security already, either in network or in writing function. The basic security for data storage has been established, and **Polkadot Network** has been running stably for a long time. `Anchor Network` is a bootstrap blockchain network that supports the deployment and operation of **Dapp**, which need higher security requirements than simple data storage. We will compare the security of `Anchor Network` from two aspects, one is comparing to traditional centralized deployment, the other is comparing to other blockchain storage solution network.
 
-- Compared to traditional merchant self deployment, the * * Dapp * * deployed by 'Anchor Network' is more secure. Through the execution path below, it can be found that for * * Dapp * * deployed on the 'Anchor Network', it is only necessary to ensure that the 'loader' is secure and can be used with confidence. The immutability of running code also ensures the interests of merchants, avoiding the occurrence of operations and maintenance deleting libraries and running away, and even eliminating the need for operations personnel to maintain the availability of * * Dapp * *.
+- Compared to traditional centralized deployment. Deploying **Dapp** on `Anchor Network` is much security.  From the execution flow of **Dapp**, it can be found that for **Dapp** deployed on the `Anchor Network`, the single key is to ensure the `Loader` is secure. The immutability of running code also ensures the interests of merchants, avoiding the occurrence of devops, and even eliminating the need of operationor to maintain the availability of **Dapp**.
 
-    ```
-          不可控      重点部分     不可控      监督系统       监督系统
-            |           |          |          |             |
-            |           |          |          |             |
-            V           V          V          V             V
-        用户运行环境 --> 加载器 --> 访问链路 --> 链上应用 --> 其他区块链网络
-    ```
+```
+      Key           Key        The same  Regulatory    Regulatory
+        |           |          |          |             |
+        |           |          |          |             |
+        V           V          V          V             V
+    Client Env --> Loader --> Access --> Dapps --> Blockchain Networks
+```
 
-- Compared to current on chain storage solutions, the main solution is * * IPFS * *. For * * IPFS * *, using independent hashes to calibrate files requires us to confirm that each file is executing a secure * * Dapp * *, and where to obtain these secure hashes becomes another issue` Anchor Network can continuously monitor * * Dapp * * through the method of 'chain name', not only establishing technical security, but also establishing trust in the security of 'chain name' through historical version tracing. Unlike the file storage of * * IPFS * *, 'chain anchors' can also organize resources on the chain, separating various dependencies of * * Dapp * *, and more conveniently ensuring the security of each component.
+- Compared to current blockchain storage solutions. The main solution is **IPFS**. By **IPFS** way, using independent hashes to calibrate files requires us to confirm that each file is executing a secure **Dapp**. And where to obtain these secure hashes becomes another issue. `Anchor Network` can continuously monitor **Dapp** by checking `Anchor Name`. It is a way not only establishing technical security, but also establishing trust in the security of `Anchor Name` through historical version tracing. Unlike the file storage of **IPFS**, separating various dependencies of **Dapp** is supported by `Anchor Network`, then we can ensure the security of each components conveniently. It is better to ensure the security of **Dapp**.
 
-- As * * Dapp * * becomes increasingly complex, it will inevitably face more and more security issues. Ensuring security by limiting functionality is an effective way to process core financial data, which has also created the thriving 'Web3.0' world. However, with the expansion of application fields, 'Web3.0' requires a new security mechanism to ensure basic security requirements and also to cope with future problems` Anchor Network will make an in-depth attempt in this area, and the first step that can be achieved is to publish the * * Dapp * * itself in a tamper proof version, and subsequent measures can be based on this.
+- As **Dapp** become more and more complex, it will inevitably face more and more security issues. Ensuring security by limiting functionality is an effective way to process core financial data, which has also created the thriving `Web3.0` world. But it is not logical that we solve all the issues right now before it happen, `Web3.0` requires a new security mechanism to ensure basic security requirements and also to cope with future issues. `Anchor Network` will make an in-depth attempt in this area, and the first step that can be achieved is to publish **Dapp** itself on chain, and the future security method can be based on this.
 
 ### Supervision On Chain
 
-- `Anchor Network will establish a transparent monitoring system based on chain name. We believe that with the continuous development of 'Web3.0', there will be more and more malicious programs, and blindly blocking them will not be able to cope. 'Anchor Network' adopts a 'sparse' approach, and will assist in establishing a secure on chain * * Dapp * * ecosystem through transparent disclosure of * * white list * * and * * black list * *.
+- `Anchor Network` will establish a transparent monitoring system based on `Anchor Name`. There will be more and more malicious **Dapps** as the `Web3.0` improving. Because of the immutability, blocking the malicious **Dapps** is not a proper way. `Anchor Network` will assist in establishing a secure on-chain **Dapp** supervision system by publishing **white list** and **black list**. Before you run a **Dapp**, check it first.
 
-- **The whitelist * * is the 'chain name' of a trusted and verified * * Dapp * *, especially the 'loader' that is extremely important for security. It is recommended that users only use applications recommended by the whitelist. The whitelist can be maintained by different organizations, forming decentralized management. As the entire data history is recorded in the 'chain name', it is also convenient for users to understand and judge.
+- The **white list** is the `Anchor` list of trusted and verified **Dapp**. It is recommended that users only run **Dapp** recommended by the **white list**. The whitelist can be maintained by different organizations, forming decentralized management. As the entire data history is recorded in the `Anchor Name`, it is also convenient for users to review and make the decision to run **Dapp** especially the `Loader` that is extremely important for security.
 
-- **Blacklist * * refers to the publication of discovered malicious * * Dapp * * and * * malicious accounts * *` The loader uses a blacklist to indicate the operational risks of * * Dapp * * for users to make their own judgments. The blacklist is maintained by different organizations, forming decentralized management. For * * Dapp * * deployed on the Anchor Network, institutions or individuals maintaining blacklists can evaluate and judge the application as soon as possible, providing valuable information to users.
+- The **black list** is the `Anchor` list of discovered malicious **Dapp** or a list of malicious **accounts**. The `Loader` should use a **black list** to indicate the operational risks of **Dapp** for users to make their own decision. The **black list** is maintained by different organizations, forming decentralized management. For **Dapp** deployed on the `Anchor Network`, institutions or individuals maintaining **black list** can evaluate and judge the application as soon as possible, providing valuable information to users.
 
-- Establishing a 'Web3.0' world that relies entirely on algorithmic security is equivalent to looking at the future from the current perspective, which will limit future development` Anchor Network establishes the smallest open supervision mechanism through * * on chain supervision * *, forming * * white list * * and * * black list * *, without increasing the complexity of Anchor Network and ensuring that future problems can be solved in the future.
+- Establishing a `Web3.0` world that relies entirely on algorithmic security is equivalent to looking at the future from the current perspective, which will limit future development and high cost. `Anchor Network` establishes a small open supervision mechanism, forming **white list** and **black list**, without increasing the complexity of `Anchor Network`` and ensuring that future issues can be solved in the future.
 
 ## Components
 
 ### Anchor Pallet
 
-- Data storage. The function of writing 'anchor' data onto the chain is based on * * Polkadot/Substrate * * to build a blockchain system using Anchor Pallet's setAnchor single method to store all on chain data.
+- Data storage function implement. The function of writing `Anchor Data`  onto the chain is based on **Polkadot/Substrate** pallet. By **Anchor Pallet** *setAnchor* function, you can storage data on blockchain.
 
-- Data transactions. Trading on 'chain names' supports two methods:' free trading 'and' targeted trading ', with the owner pricing independently to achieve the trading function. No need for third-party intervention, relying solely on sellAnchor, buyAnchor, and unsellAnchor in Anchor Pallet to achieve a complete transaction loop.
+- Data trade function implement. No need for third-party intervention, relying on *sellAnchor*, *buyAnchor*, and *unsellAnchor* functions in **Anchor Pallet**, you can do trade `Anchor Name` successful.
 
-### Default Protocol
+### Easy Protocol
 
-- `The Anchor Network supports custom running protocols, but the network itself is only responsible for storing protocol data, and protocol execution relies on third-party libraries. Of course, this third-party JS library can be stored on the Anchor Network itself** The data of Dapp * * is stored on the 'Anchor Network', and when the on chain program running by the 'loader' starts, it can completely rely on the on chain data, which is the * * self bootable blockchain network * *.
+- `Anchor Network` supports customize protocols, it should be third-party protocol, as the network only support `Anchor Data` storage and `Anchor Name` trade. Of course, this third-party JS library can be stored on the `Anchor Network` to make code public. When both the **Dapp** data and application itself are on chain, `Anchor Network` is a self bootable network, or can be call **Bootstrap Blockchain Network**.
 
-- `Anchor Network uses' Easy Protocol 'by default to achieve various expected goals. This is a simple human-machine readable protocol that uses JSON as the protocol data format` Easy Protocol solves the problems of on chain data positioning and on chain data relationships, integrating on chain resources into a scalable framework, laying a solid foundation for establishing complex 'full chain applications'` Easy Protocol 'is an extensible protocol that reserves possibilities for more diverse applications in the future.
+- `Anchor Network` support `Easy Protocol` as default to achieve various expected goals. This is a simple human-being readable protocol that uses JSON as the format. `Easy Protocol` solves the problems of on-chain data location and relationship, orginize the on-chain resource as a scalable framework, then is can support complex **Dapp**. `Easy Protocol` is an extensible protocol that reserves possibilities for more diverse applications in the future.
 
-#### Bootstrap
+#### Loader
 
-- The 'Anchor Network' is a self bootable blockchain network that requires a 'loader' to start. Its main function is to connect to network nodes, parse chain anchors, obtain data, and then start applications. Meanwhile, the 'loader' itself can also be published to the 'Anchor Network'. At this point, a 'downloader' is needed to obtain it. This seems to have formed the problem of whether the existing chicken or the egg came first. On the Anchor Network, whether you have a chicken or an egg in your hand, you can successfully connect to the network and fully utilize various resources and applications on the chain. The loader needs to achieve complete support for both the front-end and back-end, both using Javascript, and the back-end needs to run with Node.js.
+- `Loader` is an important **Dapp** of `Anchor Network`. Its main function is to connect to `Anchor Network` node, parse `Anchor Data`, then load **Dapp** to run. Meanwhile, the `Loader` itself can also be deployed on `Anchor Network`. At this point, a `Downloader` is needed to get the raw data of `Loader`. It looks like the egg-chicken problem. But on `Anchor Network`, whether you have the chicken or the egg in your hand, you can successfully connect to the network and fully utilize various resources and **Dapp**. The `Loader` is supported for both the front-end and back-end, by using Javascript, and the back-end needs to run with **Node.js**.
 
-- `The 'Downloader' is a program used to download applications on the chain, which can download applications on the 'Anchor Network' locally. When you first encounter 'Anchor Network', this is the first stepping stone. After obtaining the 'loader' through the 'downloader', you can enjoy your 'Web3.0'.
+- `Downloader` is a **Dapp** to download **Dapp** on `Anchor Network`. When you first encounter `Anchor Network`, this is the first stepping stone. After obtaining the `Loader` through the `Downloader`, you can enjoy your `Web3.0`.
 
-- `The existence of loaders can improve the security of full chain applications` The loader passes restricted APIs to the full chain program, which brings two benefits: firstly, it can enhance some security, and secondly, it improves the development efficiency of the full chain program. In the future, the functionality of the loader can be implemented on the browser side to form a more secure sandbox environment, with a system level sandbox environment provided by the browser.
+- More security to run **Dapp**. `Loader` passes restricted APIs to **Dapp**, which brings two benefits: firstly, it can enhance security, and secondly, it improves the development efficiency of **Dapp**. In the future, the functionality of `Loader` can be implemented on the browser side to form a more secure sandbox environment which is system level security.
 
-#### Chain Application
+#### Full On Chain Dapp
 
 - Non modifiable on chain deployment` One of the main advantages of full chain applications is that they can be deployed transparently and publicly. Although this increases the requirements for release, it requires more thorough testing or a good separation of the program and configuration. That is to say, by deploying on chain, the application will be more robust. At the same time, it also left an indelible footprint in the world of 'Web3.0', seeing your contributions to a better 'Web3.0'.
 
@@ -204,7 +204,7 @@ Date: August 2023
 
 - Full chain applications that can be traded. This is a great convenience brought by the 'Anchor Network', where you can trade with the Anchor at any time, and endogenously support the realization of 'full chain applications', not just through the business model established by the' full chain applications' themselves to make money. This is a problem that non-financial 'full chain applications' must solve, forming a sustainable and profitable closed-loop, rather than creating a drumming and flower spreading environment.
 
-### Toolbox, called EasyPolka
+### EasyPolka Toolbox
 
 #### Local Simulator
 
