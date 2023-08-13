@@ -8,6 +8,8 @@ Anchor Network hompage is the website relying on React which is a popular framew
 
 - The homepage application is base on React. The convertor tools is base on NodeJS.
 
+- Parameters, which can be sent to application. `#${anchor_name}[?][key=value]#`
+
 ## Deployment
 
 - You need **Convertor** to help you to do the job. It is pretty simple, just one setting file to modify and one command line to run it.

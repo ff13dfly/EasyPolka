@@ -25,7 +25,10 @@
         loader_web.min.js#anchor_name#
         loader_web.min.js#anchor_name|888#
         loader_web.min.js#anchor_name|888@ws://127.0.0.1:9944#
+   
     ```
+
+- Parameters, which can be sent to application. `#{anchor_name}[@][node_address][?][key=value]#`
 
 ## Backend
 

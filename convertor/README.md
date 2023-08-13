@@ -6,7 +6,7 @@
 
 - It is follow the Easy Protocol.
 
-## Framework
+## Front-end
 
 ### React
 
@@ -39,5 +39,11 @@
         "seed":""
     }
     ```
+
+### Vue
+
+### Normal Web Application
+
+## Back-end
 
 ### Node.js
