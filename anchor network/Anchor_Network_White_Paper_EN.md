@@ -52,85 +52,87 @@ Date: August 2023
 
 - **Centralized Way**. The mainstream implementation method is `Web3.0 Smart Contract` plus `Web1.0/Web2.0 UI`. Without `Web1.0/Web2.0 UI`, ordinary users are almost unable to use `Web3.0 Smart Contract`. That is to say, the existing **Dapp** relies on centralized deployed UI heavily, but the maintenance and security of the UI end completely depend on its developers.Take Bitcoin as example, even if you want to run a Bitcoin terminal, you still need to go to the official Bitcoin website and download the Bitcoin application to run it, which is also a completely traditional way. The concept of decentralization deployment has encountered difficulties today.
 
-- **Part of eecentralized way**. It is a decentralized storage method with the goal of distributed data storage, which solves the problem of distributed storage of large amounts of data, such as large files such as images and videos. There is also a problem of difficulty in use, as the hash used for labeling cannot be accessed solely by memory. With the widespread application of 'Web3.0' in the future, a chain name system that can calibrate 'Web3.0' resources, that is, the domain name system of the 'Web3.0' world, is also emerging. However, * * IPFS * * cannot support this approach.
+- **Part of eecentralized way**. **IPFS** is a decentralized storage network with the goal of distributed storage, such as large files such as images and videos. **IPFS** is the most popular decentralized storage right now. But the difficulty is hard to orginize the stucture data, unique hash is used to label the decentralized file which is not human-being way to remember. The files is isolated, Dapps need extra effects to put them together to implement complex functions. With the widespread application of `Web3.0` in the future, Name System that can calibrate `Web3.0` resources is also emerging , as the domain name of `Web3.0`. However, **IPFS** cannot support this.
 
----------TODO, modified here-----------
-
-- **High operation and maintenance costs**. Deploying full chain applications based on existing methods, whether it is * * Dapp * * development or deployment operation and maintenance, requires a huge investment of manpower and high chain up costs. The blockchain system, which mainly handles financial transactions, has very limited storage space. If the data is stored throughout the entire chain, it will bring huge upchain costs` Anchor Network, as a blockchain system specifically designed for deploying * * Dapp * *, has been optimized to address this situation, providing complete toolchain support for 'full chain applications' and allowing for low-cost deployment of * * Dapp * * on the chain. At the same time, the 'full chain application' eliminates the hassle of operation and maintenance, once again reducing the development cost of * * Dapp * *.
+- **High operation and maintenance costs**. Deploying full on-chain Dapp today, both the **Dapp** development and  DevOps, require huge manpower and high on-chain fee. Blockchain network, which is designed for financial transactions mainly, has very limited storage. That's why the cost is pretty high when you want to deploy the Dapp full on chain.`Anchor Network` is designed to support Full-chain Dapps, make the deployment on chain much cheap. The DevOps will also be easy as the data and application grouped on `Anchor Name`.
 
 ### Issues
 
-- **Execution efficiency problem**. Due to the fact that all data exists on the chain, there will be complex access issues, which directly lead to a decrease in execution efficiency and an additional process of retrieving and downloading data. It can be solved through a trusted caching server. The so-called trusted cache server refers to a server program where all code is published on the chain and can be run directly, thus avoiding security issues with intermediate servers. When the server program started by oneself is trusted, the front-end program using this service is also trusted, which can safely use cached data and improve execution efficiency. This method can also quickly deploy distributed systems to meet system response requirements.
+- **Execution efficiency problem**. Due to the fact that data is public storaged on chain, the access problem will be complex,  which directly lead to a decrease in execution efficiency and an additional process of retrieving and downloading data. This problem can be solved through a trusted caching server. The so-called Trusted Cache Server is Dapp full on chain and can be run directly, thus avoiding security issues with intermediate servers. When the server program started by yourself is trusted, the front-end application using this service is also trusted, this improves execution efficiency. This method can also be used to  deploy huge distributed systems quickly, meet system response requirements.
 
-- **Code safety to care about**. Code security` The execution of applications on Anchor Network relies on the client and is also a more complex operation. Compared to services or smart contracts running on server nodes, security is significantly reduced, facing at least three challenges.
-    1. Security of obtaining data
+- **Code safety to care about**. The full on chain Dapp which is more complex than fincial Dapps right now will be run at client side, there will be more breakpoint than the Smart Contract running on server. Facing at least three challenges. 
+    1. Security download
     2. Safety during execution
     3. Security of external requests
 
-Therefore, we can find that there are two best practices in the 'Anchor Network'.
-    1. Just consider 'Anchor Network' as a deployment site, similar to Javascript package management.
-    2. Use 'chain anchors' for program development, storing data directly in the' Anchor Network '.
+    Therefore, we can find that there are two best practices on `Anchor Network`.
+    1. Just treat `Anchor Network` as a deployment server, similar to Javascript package management.
+    2. Full on chain development base on `Anchor Network`, storage all data on chain.
 
 ## Architecture
 
-- `Anchor Network is divided into two parts: data layer and protocol layer. Data layer, running on blockchain nodes, i.e. [Anchor Pallet]（ https://github.com/ff13dfly/Anchor ）Complete the reading and writing of the 'chain anchor' and the transaction of the 'chain name'. The protocol layer is the * * protocol * * field of the 'chain anchor', used to define the operation mode and data association of the data on the chain. This can support the full chain * * Dapp * * release, and through the 'loader', a self starting blockchain network, the 'Anchor Network', can be achieved.
+- `Anchor Network` is combined by two parts: `Storage Lay` and `Protocol Lay`. The storage part, running on Anchor Network nodes, can read/write data on chain and trade the `Anchor Name`. The protocol part, defined the data on chain and relationship of the data, support full on chain Dapps. With the `Loader` suppot such protocol, `Anchor Network` is a bootstrap blockchain network.
+
+`Anchor Network` running workflow
     ```
         Loader -->  Data    -->  APIs  -->  Web3.0/Web2.0
-                    |             |                        
-                    | on-chain    | on-chain      
-                    |             |                      
-                    V             V          
-        -------------------Protocol---------------------      
-                    |             |                          
-                    V             V           
+                    |             |
+                    | on-chain    | on-chain
+                    |             |
+                    V             V
+        -------------------Protocol---------------------
+                    |             |
+                    V             V
         -------------------Anchor-----------------------
         -------------------Polkadot---------------------
     ```
 
-### Data Lay
+### Storage Lay
 
 #### Storage
 
-- `Anchor Network organizes data using * * on chain linked lists * *, retrieves data using KV's approach, and provides customizable atomic data structures, known as' chain anchors'. Adopting this approach mainly solves two problems: firstly, all on chain data can be regarded as a KV storage, with extremely low understanding threshold; The second is to reduce the overhead of on chain states through linked lists, laying the foundation for long-term operation` The data storage of chain anchor is divided into two parts, * * data * * and * * protocol * *, which balance storage and data parsing. Currently, it has been implemented through Pallet, [Anchor Pallet]（ https://github.com/ff13dfly/Anchor ）
+- `Anchor` is the basic data structure of `Anchor Network`. It is an `On-chain Linked List` which can be accessed by `Anchor Name`, thus you can tread `Anchor Network` as a `Key-value Storage System`. Adopting this approach solves two problems: first ofa all, on-chain data can be regarded as a KV storage, extremely easy to understanding; Secondly, this way reduce the overhead of on-chain states through **Linked List** to avoid **state explosion**. Currently, it has been implemented through [Anchor Pallet](https://github.com/ff13dfly/Anchor).
+![Anchor Data structure]()
 
-- `Anchor Networ uses' chain name 'to solve the problem of memory of resources on the chain. Blockchain has brought hashing to the public and made them aware of this secret learning product. However, for humans, hashing is almost impossible to remember, as we have seen on exchanges. You can remember the abbreviations corresponding to smart contracts, such as Poka's DOT, but it is almost impossible to remember the contract address. So 'Anchor Network' uses a name service similar to a domain name to solve this problem. For example, if we name the on chain resource browser 'Plinth', you can access and run it on the 'Anchor Network' using this simple and memorable name.
+- Memorable `Anchor Name` is a great feature of `Anchor Network`. Blockchain has brought **Hash** to the public and made them aware of this cryptographic concept, However, for human beings, **Hash** is almost impossible to remember. As we can seen on exchange market, you can remember the abbreviations corresponding to Smart Contract, such as **DOT**, but it is almost impossible to remember the contract hash address. By `Anchor Name` way, `Anchor Network` solve this problem as the domain system did to IP address. For example, we name the on-chain resource browser `Plinth`, you can access and run it on `Anchor Network` by using this memorable name.
 
-- The inherent characteristic of on chain storage is ownership, which ensures that complex applications can be established on the 'Anchor Network' that are non-interference and easy to read. Even in the development practice of * * Web2.0/Web1.0 * *, such as database systems, permission management has played an important role in ensuring data security. When this advantage is applied to all on chain data, its convenience will bring unexpected advantages to * * Dapp * * development. For example, for the same data source, many interesting 'full chain applications' can be born.
-
+- Ownership of `Anchor Name` and `Anchor Data` is another great feature. This ensures that complex applications can be established on `Anchor Network`. Even in the development practice of **Web2.0/Web1.0**, such as database systems, permission management has played an important role in ensuring data security.  When this advantage is applied to all on-chain data, its convenience will bring unexpected advantages to `Dapp` development. For example, even the same data source, many interesting `full on chain Dapps` can show in different way to meet multi requirement.
 
 #### Data Trade
 
-- `The data of Anchor Network has ownership, and when this ownership can be transferred, data transactions are achieved, which is a very intuitive and does not require intermediary participation. Whether it is the commercial value inherent in the concise 'chain name' itself, or the data recorded under the 'chain name', it can become the transaction subject of this method. The method of free pricing also helps to form a natural market and further activate 'chain name' transactions. This is different from domain name transactions in the era of * * Web2.0/Web1.0 * *. When a 'chain name' is traded, its associated historical content will also be transferred without the need for secondary delivery of domain names and applications. This helps to form a business paradigm for 'Web3.0' development, a model of first detecting results before delivering.
+- `Anchor Name` can be decentralized traded. `Anchor Name` is owned to an unique account, when the ownership can be changed by paying, it is called trade naturally. Whether it is the commercial value inherent in the concise `Anchor Name` itself, or the data recorded under the `Anchor Name`, it can become the transaction subject by this way. Free price helps to form a market and activate `Anchor Name` trades. This is different from domain name trade at **Web2.0/Web1.0** time. When a `Anchor Name` is traded, its associated historical data will also be transferred without more delivery. This may form a business partten for `Web3.0` development, the model of **checking result before delivering**.
 
-- `Chain name trading can be divided into two ways: one is a transaction where everyone can participate, first come, first served; One type is targeted transactions with designated recipients, which other users cannot purchase. This provides a secure trading foundation without any unexpected loss of digital assets. Compared to the continuous recharge method of domain names, 'chain name' adopts a method of * * having it all at once and no more fees * *. After initialization, there are no more maintenance fees.
+- Two ways of `Anchor Name` trade, free and designated. In free way, owner of `Anchor Name` set a price to sell, anybody accept the price can buy it. In designated way, seller need to set both price and buying account address, then only the target account can buy this `Anchor Name`. This provides a secure trading foundation without any unexpected loss of digital assets.
+
+- One-time fee of initialization. Compared to the continuous recharge way of domain names, `Anchor Name` adopts a method of **One-time fee**, after initialization, there are no more maintenance fees.
 
 ### Protocol Lay
 
 #### Location
 
-- `Anchor Network introduces' anchor links' to locate 'chain anchor' data, using identifiers such as' anchor://'for identification, similar to hyperlinks. For example, when we need to access the data of * * hello * * on block * * n * *, it is expressed as** anchor://hello/n **This method is simple and clear, and even without the help of complex parsing systems, it can locate data on the chain, making it more intuitive compared to memoryless hashes. Taking * * hello * * as an example, the simplest expression for 'anchor link' is** anchor://hello **This means obtaining the latest data of * * hello * *.
+- `Anchor Link` is the expression for locating the resouce on `Anchor Network`. A normal format is like **anchor://hello/123/**, similar as hyperlinks. This **anchor://hello/123/** means the data on block number **123** follow the `Anchor` named as **hello**, **anchor://** is the identification of `Anchor Link`. This way is simple and clear, and even without the help of complex parsing system, it can locate data on blockchain network, making it more intuitive compared to unmemorable hash. Still take **hello** for example, the simplest expression of `Anchor Network` is **anchor://hello** which means the latest data of `Anchor` **hello**.
 
-- `Anchor Link 'provides support for multiple networks, with the addition of' @ network 'at the end to transfer information between different chains. The default is' Anchor Network'. This reserves the possibility for future heterogeneous networks, where even completely different blockchain networks can be accessed in a unified manner. This is a very interesting feature that can provide a unified access experience in completely heterogeneous networks, which will be a huge advantage for the development of * * Dapp * *.
+- `Anchor Link` can support  multiple network, with the addition of **@network** at the end of expression to declare different chains, the default is `Anchor Network`. This reserves the possibility for future heterogeneous blockchain networks, even completely different blockchain networks can be located by a same way, which will be a huge advantage for the development of **Dapp**.
 
-- `Anchor links provide more features to support application development, especially for JSON data structures, using** anchor://anchor_name |Key_ The name * * method is used to read JSON data objects under a single 'chain anchor', improving the expressive power of the chain anchor and facilitating the development of * * Dapp * *.
+- `Anchor Link` provide more features to support **Dapp** development. Especially for JSON format, for example, **anchor://anchor_name|key_name** is used to locate JSON data objects under a single `Anchor`, improving the expressive power of `Anchor` and facilitating the **Dapp** development.
 
 #### Relationship
 
-- Call association** Chain anchor A * * can specify a call to * * Chain anchor B * * in the protocol. In this way, data on the chain can be freely organized and form a network. This allows block data to not be isolated, but also makes historical block data meaningful, significantly improving the data utilization rate of the blockchain system. Support for this complex data network is the foundation for building large-scale applications. Even based on the characteristic of 'anchor link' spanning heterogeneous networks, a new form of cross chain has been implemented, where data can still be accessed with peace of mind while still on different networks.
+- Call function. **Anchor_A** can call **Anchor_B** by following the `Anchor Network` protocol. In this way, data on-chain can be freely organized and well grouped. This make the blockchain data not isolate, and alse make the historical data meaningful, significantly improving the data utilization rate of the blockchain network. Support for such complex data sturcture is the foundation of building scaleable Dapp. As `Anchor Link` support heterogeneous blockchain networks, by calling a heterogeneous network, we can say it is a new way to cross chain.
 
-- Combining ownership to create new business paradigms. When data from different owners is associated through 'chain names', it brings about issues of' authorization 'and' trust '. For example, the * * Dapp * * developed by account A is deployed on * * application A * *, while account B has a 'chain name' * * configuration A * *. Users can start * * application A * * through * * configuration A * *. In this use case, account B can composite its own required applications through different configurations without causing damage to the application itself. Even if the * * application A * * is unavailable, account B can disconnect the call association. For account A, it is possible to focus on the development and upgrading of the * * application A * *, which can be initiated through call association for many different configurations.
+- Configuration and **Dapp** isolatation. When data of different owners is associated through `Anchor Name`, it brings about issues of `authority` and `trust`. For example, the **Dapp** developped by **account_A** is deployed on `Anchor` **app_A**, **account_B** have a `Anchor` named **config_A** which call the **Dapp** **app_A**. In this use case, **account_B** can composite its own required as **config_A** to call **app_A** without any change to the **Dapp** itself. Then developper only need to focus on **Dapp**.
 
-- `Chain anchors can also exist in the form of resource libraries for reference by other chain anchors. Due to the immutability of the 'chain anchor', this citation will be more secure. Even if resources are updated, the availability of references can be guaranteed by pointing to specific resources. This is similar to NPM's package management, but the data of these packages is published on the 'Anchor Network', is completely decentralized, and can also guarantee ownership.
+- Library and resource form of `Anchor`.  It means that `Anchor` can be treated as library or resource called by other `Anchor`.Due to the immutability of the `Anchor`, this citation will be more security. Even if resources are updated, the availability of references can be guaranteed by pointing to specific resource. This is similar to package management, but the data of these packages is published on the `Anchor Network` completely decentralized, and can also guarantee ownership.
 
 #### Authority And Trust
 
-- `The Anchor Network supports the interconnection of different chain anchors, which naturally creates a relationship between authorization and trust. The protocol implements these functions in a clearly specified manner. The protocol that supports the 'Anchor Network' will follow this authorization to process plaintext on chain data and implement intellectual property protection at the usage level. However, the data on the chain is plaintext, and authorization methods cannot protect the content from being read.
+- `Anchor Network` supports the interconnection of different `Anchor`, then the relationship is created naturally as `Authority` and `Trust`. The protocol that supports the '`Anchor Network` will follow this authorization to process plaintext on `Anchor` and implement intellectual property protection at the usage level. However, the data on chain is plaintext, and authorization methods cannot protect the content from being read.
 
-- `The 'authorization' of Anchor Network refers to the relationship between Chain Anchor and * * account * *, which is recorded in the protocol of Chain Anchor.
+- `Authority` of `Anchor Network` refers to the relationship between `Anchor` and account, which is recorded in the protocol of `Anchor`.
 
-- `The 'trust' of Anchor Network refers to the relationship between Chain Anchor A and Chain Anchor B, recorded in the protocol of Chain Anchor A.
+- `Authority` of `Anchor Network` refers to the relationship between `Anchor` **A** and `Anchor` **B**, which is recorded in the protocol of `Anchor` **A**.
 
-- `The Anchor Network protocol can also limit the time limits for authorization and trust, using block numbers for calibration. The blockchain network's block number has a time attribute and is suitable for use as an authorization period. For example, based on the block output speed, the block number corresponding to the authorization time can be calculated and written into the authorization information. However, due to the fact that the block output speed is not a strict time limit, the accuracy of this method is limited and cannot fully correspond to the real world time. Please note this when using it.
+- Time limit of authorization supported by `Anchor Network`. `Anchor Network` protocol use block numbers as timestamp. The blockchain network's block number has a time attribute and is suitable for use as an authorization period. Based on the block finalized speed, the block number corresponding to the authorization time can be calculated. However, due to the fact that the block finalized speed is not a strict time limit, the accuracy of this method is limited and cannot fully correspond to the real world time. Please note this when using it.
 
 #### Declared Hidden
 
