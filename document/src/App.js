@@ -17,6 +17,20 @@ const APIs={
   Polkadot:window.Polkadot,
 }
 
+const list=[
+  {title:"AnchorJS SDK",link:"anchor://anchorjs_md",children:[]},
+  {title:"Loader",link:"anchor://loader_md",children:[
+    {title:"Convertor",link:"anchor://convertor_md"},
+    {title:"Downloader",link:"anchor://downloader_md"},
+  ]},
+  {title:"Easy Protocol",link:"anchor://easy_md",children:[]},
+  {title:"Gateway",link:"anchor://gateway_md",children:[
+    {title:"Hub",link:"anchor://g_hub"},
+    {title:"Service",link:"anchor://g_service"},
+    {title:"UI",link:"anchor://g_ui"},
+  ]},
+]
+
 const config={
   logo:"logo.png",
   title:"Easy Blockchain Network",
@@ -32,23 +46,13 @@ const config={
       background:"",
     },
   },
+  menu:list,
   server:"ws://127.0.0.1:9944",
 };
 
-const list=[
-  {title:"AnchorJS SDK",link:"anchor://anchorjs_md",children:[]},
-  {title:"Loader",link:"anchor://loader_md",children:[
-    {title:"Convertor",link:"anchor://convertor_md"},
-    {title:"Downloader",link:"anchor://downloader_md"},
-  ]},
-  {title:"Easy Protocol",link:"anchor://easy_md",children:[]},
-  {title:"Gateway",link:"anchor://gateway_md",children:[
-    {title:"Hub",link:"anchor://g_hub"},
-    {title:"Service",link:"anchor://g_service"},
-    {title:"UI",link:"anchor://g_ui"},
-  ]},
-]
 
+
+let websocket = null;
 function App() {
   let [navs, setNavs] = useState([]);
   let [sub, setSub ]= useState([]);
@@ -56,6 +60,15 @@ function App() {
   let [active, setActive] = useState("");
 
   const self={
+    auto: (ck) => {
+      if (websocket !== null) return ck && ck();
+      const server =config.server ? config.server : "wss://dev.metanchor.net";
+      APIs.Polkadot.ApiPromise.create({ provider: new APIs.Polkadot.WsProvider(server) }).then((api) => {
+        websocket = api;
+        APIs.AnchorJS.set(api);
+        return ck && ck();
+      });
+    },
     getAnchorData:(link)=>{
   
     },
@@ -63,7 +76,6 @@ function App() {
       setSub(topics);
     },
     updateNavIndex:(target)=>{
-      //console.log(target.id);
       setActive(target.id);
       setLink(self.getDefaultLink(list,target.id));
       window.location.hash="#"+target.id;
@@ -89,11 +101,12 @@ function App() {
   }
 
   useEffect(() => {
-    const anchor=window.location.hash.substring(1);
-    setNavs(list);
-    setActive(anchor);
-    setLink(self.getDefaultLink(list,anchor));
-
+    self.auto(() => {
+      const anchor=window.location.hash.substring(1);
+      setNavs(list);
+      setActive(anchor);
+      setLink(self.getDefaultLink(list,anchor));
+    });
   }, [list]);
 
   return (
@@ -107,7 +120,7 @@ function App() {
       </div>
       <div id="body">
         <Crumbs API={APIs} anchor={active} />
-        <Content link={link} API={APIs} config={config} update={self.updateTopics} />
+        <Content link={link} API={APIs} config={config} update={self.updateTopics} websocket={websocket} />
         <Footer pre={0} next={0}/>
       </div>
     </div>

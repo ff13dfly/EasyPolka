@@ -57,7 +57,7 @@ function Content(props) {
         const data = res.data[`${res.location[0]}_${res.location[1]}`];
         cherryInstance.setValue(data.raw);
         window.scrollTo(0, 0);
-        console.log(res.location[0]);
+        //console.log(res.location[0]);
         setAnchor(res.location[0]);
         
         setTimeout(() => {
@@ -67,7 +67,7 @@ function Content(props) {
         }, 50);
       });
     });
-  }, [props.link]);
+  }, [props.link,props.websocket]);
 
   return (
     <div id="md_container" anchor={anchor}></div>

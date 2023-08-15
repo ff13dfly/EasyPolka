@@ -5,15 +5,15 @@ function Crumbs(props) {
   let [block, setBlock ]= useState(0);
 
   const API=props.API;
-  console.log(API);
+  //console.log(API);
   
-  let count=0;
-  const max=50,step=100;
+  //let count=0;
+  //const max=50,step=100;
 
   useEffect(() => {
     if(props.anchor && API.AnchorJS.ready()){
       API.AnchorJS.search(props.anchor,(res)=>{
-        console.log(res);
+        //console.log(res);
         setOwner(res.signer);
         setBlock(res.block);
       })
