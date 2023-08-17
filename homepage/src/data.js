@@ -6,7 +6,7 @@ module.exports={
       thumb:"imgs/Banner_01.jpg",
     },
     {
-      title:"Deployment Network for Dapps",
+      title:"Deployment Network for Dapp",
       desc:"This is a blockchain network to deploy the dApp UI and SDK, then full on-chain.",
       thumb:"imgs/Banner_02.jpg",
     },
@@ -68,7 +68,8 @@ module.exports={
     subject:{
       desc:[
         "Easy Protocol is a simple way to group the resource of Web3.0 world. The only thing you need to remember is the Anchor name.",
-        "By this way, you can load application or storage data on Anchor Network."
+        "By this way, you can load application or storage data on Anchor Network.",
+        "Anchor Link can help you to locate the resource on Web3.0 network, make the access to Web3.0 easy."
       ],
       background:"imgs/loader.png",
     },
@@ -86,21 +87,21 @@ module.exports={
   plinth:{
     subject:{
       title:"Plinth",
-      desc:"Your Web3.0",
+      desc:"Your Web3.0, You can load it anywhere.",
       background:"imgs/plinth.jpg",
     },
     list:[
       {
         title:"The Web3.0 Entry",
-        sub:"You can load it anywhere",
+        sub:"Single entry to access all Anchors.",
       },
       {
         title:"Full On Chain",
-        sub:"You can load it anywhere",
+        sub:"The Plinth itself is full on chain.",
       },
       {
         title:"Simple To Understand",
-        sub:"You can load it anywhere",
+        sub:"Access to Web3.0 with simple name.",
       },
     ]
   },
@@ -118,10 +119,10 @@ module.exports={
       link:"http://loader.metanchor.net/#freesaying@wss://dev.metanchor.net",
     },
     {
-      title:"Virtual Block World",
-      desc:"A total Web3.0 virtual world, even the world structure.",
+      title:"DocumentA",
+      desc:"A total Web3.0 document tools. Put your important docs on Web3.0 in 1 minutes.",
       thumb:"imgs/d_vbw.jpg",
-      link:"http://loader.metanchor.net/#vbw@wss://dev.metanchor.net",
+      link:"http://loader.metanchor.net/#document@wss://dev.metanchor.net",
     },
   ],
   gateway:{

@@ -146,14 +146,14 @@ function App() {
     },
     render:(list)=>{
       const anchor=window.location.hash.substring(1);
+      //console.log(`Rending, link: ${link}, anchor:${anchor}`);
       setNavs(list);
       setActive(anchor);
-      setLink(self.getDefaultLink(current,anchor));
+      setLink(self.getDefaultLink(list,anchor));
     }
   }
 
   useEffect(() => {
-    //const index=Storage.getStartIndex();
     self.fresh(Storage.getStartIndex());
   }, []);
 
