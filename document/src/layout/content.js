@@ -38,8 +38,6 @@ function Content(props) {
       }
     };
     self.auto(() => {
-      //console.log(props.link);
-      //if(cherryInstance!==null) cherryInstance.setValue('loading...');
       if(cherryInstance===null){
         cherryInstance = new Cherry({
           id: "md_container",

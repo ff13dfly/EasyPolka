@@ -6,6 +6,7 @@ import Mark from './layout/mark';
 
 import Content from './layout/content';
 import Footer from './layout/footer';
+import Decode from './lib/decode';
 
 //import getMKTitles from './lib/tree';
 
@@ -16,20 +17,6 @@ const APIs={
   Easy:window.Easy,
   Polkadot:window.Polkadot,
 }
-
-const list=[
-  {title:"AnchorJS SDK",link:"anchor://anchorjs_md",children:[]},
-  {title:"Loader",link:"anchor://loader_md",children:[
-    {title:"Convertor",link:"anchor://convertor_md"},
-    {title:"Downloader",link:"anchor://downloader_md"},
-  ]},
-  {title:"Easy Protocol",link:"anchor://easy_md",children:[]},
-  {title:"Gateway",link:"anchor://gateway_md",children:[
-    {title:"Hub",link:"anchor://g_hub"},
-    {title:"Service",link:"anchor://g_service"},
-    {title:"UI",link:"anchor://g_ui"},
-  ]},
-]
 
 const config={
   logo:"logo.png",
@@ -46,7 +33,6 @@ const config={
       background:"",
     },
   },
-  menu:list,
   start:"anchor_MD_index",
   server:"ws://127.0.0.1:9944",
 };
@@ -57,7 +43,38 @@ function App() {
   let [sub, setSub ]= useState([]);
   let [link, setLink] = useState("");
   let [active, setActive] = useState("");
-  console.log(window.location.hash);
+  let [current,setCurrent]=useState([]);
+  //console.log(window.location.hash);
+
+  const Storage={
+    getStartIndex:()=>{
+      const idata=localStorage.getItem(config.start);
+      if(idata===null) return null;
+      try {
+        const arr=JSON.parse(idata);
+        return arr[0];
+      } catch (error) {
+        localStorage.removeItem(config.start);
+        return null;
+      }
+    },
+    getList:()=>{
+      const idata=localStorage.getItem(config.start);
+      if(idata===null) return [];
+      try {
+        const arr=JSON.parse(idata);
+        return arr;
+      } catch (error) {
+        localStorage.removeItem(config.start);
+        return [];
+      }
+    },
+    setList:(list)=>{
+      localStorage.setItem(config.start,JSON.stringify(list));
+      return true;
+    },
+  }
+
   const self={
     auto: (ck) => {
       if (websocket !== null) return ck && ck();
@@ -68,28 +85,13 @@ function App() {
         return ck && ck();
       });
     },
-    getAnchorData:(link)=>{
-  
-    },
     updateTopics:(topics)=>{
       setSub(topics);
     },
     updateNavIndex:(target)=>{
       setActive(target.id);
-      setLink(self.getDefaultLink(list,target.id));
+      setLink(self.getDefaultLink(current,target.id));
       window.location.hash="#"+target.id;
-    },
-
-    getStartIndex:()=>{
-      const list=localStorage.getItem(config.start);
-      if(list===null) return null;
-      try {
-        const arr=JSON.parse(list);
-        return arr[0];
-      } catch (error) {
-        localStorage.removeItem(config.start);
-        return null;
-      }
     },
 
     getDefaultLink:(list,anchor)=>{
@@ -106,22 +108,54 @@ function App() {
           }
         }
       }
-      //console.log(anchor);
       return "";
     },
-  }
-
-  useEffect(() => {
-    const index=self.getStartIndex();
-    console.log(index);
-
-    self.auto(() => {
+    fresh:(link)=>{
+      const result=Decode(link);
+      if(result===false) return false;
+      self.auto(() => {
+        if(result.block===0){
+          APIs.AnchorJS.search(result.name,(res)=>{
+            //console.log(res);
+            if(res.raw===null) return false;
+            try {
+              const map=JSON.parse(res.raw);
+              if(map && map.data){
+                setCurrent(map.data);
+                self.render(map.data);
+              }
+            } catch (error) {
+              
+            }
+          });
+        }else{
+          APIs.AnchorJS.target(result.name,result.block,(res)=>{
+            if(res.raw===null) return false;
+            try {
+              const map=JSON.parse(res.raw);
+              if(map && map.data){
+                setCurrent(map.data);
+                self.render(map.data);
+              }
+            } catch (error) {
+              
+            }
+          });
+        }
+      });
+    },
+    render:(list)=>{
       const anchor=window.location.hash.substring(1);
       setNavs(list);
       setActive(anchor);
-      setLink(self.getDefaultLink(list,anchor));
-    });
-  }, [list]);
+      setLink(self.getDefaultLink(current,anchor));
+    }
+  }
+
+  useEffect(() => {
+    //const index=Storage.getStartIndex();
+    self.fresh(Storage.getStartIndex());
+  }, []);
 
   return (
     <div id="container">
@@ -131,7 +165,7 @@ function App() {
           <p><small className='text-secondary'>{config.title}</small></p>
         </div>
         <Nav data={navs} sub={sub} active={active} update={self.updateNavIndex}/>
-        <Mark websocket={websocket}/>
+        <Mark websocket={websocket} storage={Storage} reload={self.fresh}/>
       </div>
       <div id="body">
         <Crumbs API={APIs} anchor={active} />
