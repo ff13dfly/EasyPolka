@@ -1,4 +1,5 @@
 import { useState,useEffect } from 'react';
+import Decode from '../lib/decode';
 
 function Mark(props) {
   let [value,setValue]=useState("");
@@ -10,7 +11,20 @@ function Mark(props) {
     },
     onKeydown:(ev)=>{
       if(ev.key==='Enter'){
-        console.log('enter pressed.');
+        const anchor=Decode(value);
+        if(anchor!==false){
+
+        }
+      }
+    },
+    onFocus:(ev)=>{
+      if(ev.target.value===""){
+        setValue("anchor://");
+      }
+    },
+    onBlur:(ev)=>{
+      if(ev.target.value==="anchor://"){
+        setValue("");
       }
     },
   }
@@ -25,22 +39,16 @@ function Mark(props) {
         <small>Such as anchor://hello</small>
         <input type="text" placeholder='Please enter Anchor Link' 
           value={value}
-          onFocus={()=>{
-            setValue("anchor://");
-          }}
-          onBlur={(ev)=>{
-            if(ev.target.value==="anchor://"){
-              setValue("");
-            }
-          }}
+          onFocus={(ev)=>{self.onFocus(ev)}}
+          onBlur={(ev)=>{self.onBlur(ev)}}
           onChange={(ev) => { self.onChange(ev)}}
           onKeyDown={(ev)=>{self.onKeydown(ev)}}
         />
       </div>
       <ul>
-        <li>aaa <small>203</small></li>
-        <li>bbb <small>3,323</small></li>
-        <li>ccc <small>1,239</small></li>
+        <li>anchor://abc</li>
+        <li>anchor://abc/234</li>
+        <li>anchor://ddd/333</li>
       </ul>
     </div>
   );
