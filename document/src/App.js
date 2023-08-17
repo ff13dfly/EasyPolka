@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import Nav from './layout/nav';
 import Crumbs from './layout/crumbs';
-//import History from './layout/history';
+import Mark from './layout/mark';
 
 import Content from './layout/content';
 import Footer from './layout/footer';
@@ -47,10 +47,9 @@ const config={
     },
   },
   menu:list,
+  start:"anchor_MD_index",
   server:"ws://127.0.0.1:9944",
 };
-
-
 
 let websocket = null;
 function App() {
@@ -58,7 +57,7 @@ function App() {
   let [sub, setSub ]= useState([]);
   let [link, setLink] = useState("");
   let [active, setActive] = useState("");
-
+  console.log(window.location.hash);
   const self={
     auto: (ck) => {
       if (websocket !== null) return ck && ck();
@@ -81,6 +80,18 @@ function App() {
       window.location.hash="#"+target.id;
     },
 
+    getStartIndex:()=>{
+      const list=localStorage.getItem(config.start);
+      if(list===null) return null;
+      try {
+        const arr=JSON.parse(list);
+        return arr[0];
+      } catch (error) {
+        localStorage.removeItem(config.start);
+        return null;
+      }
+    },
+
     getDefaultLink:(list,anchor)=>{
       if(list.length===0) return "";
       if(!anchor) return list[0].link;
@@ -95,12 +106,15 @@ function App() {
           }
         }
       }
-      console.log(anchor);
+      //console.log(anchor);
       return "";
     },
   }
 
   useEffect(() => {
+    const index=self.getStartIndex();
+    console.log(index);
+
     self.auto(() => {
       const anchor=window.location.hash.substring(1);
       setNavs(list);
@@ -117,6 +131,7 @@ function App() {
           <p><small className='text-secondary'>{config.title}</small></p>
         </div>
         <Nav data={navs} sub={sub} active={active} update={self.updateNavIndex}/>
+        <Mark websocket={websocket}/>
       </div>
       <div id="body">
         <Crumbs API={APIs} anchor={active} />
