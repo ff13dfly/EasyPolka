@@ -59,9 +59,13 @@ function Mark(props) {
         {list.map((item, key) => (
          <li key={key} onClick={(ev)=>{
            props.reload(item);
-         }}><small hidden={true}>X</small> {item}</li>
+         }}><input type="checkbox" /> {item}</li>
         ))}
       </ul>
+      <div id="remove">
+        <input type="checkbox" />
+        <img src="icons/remove.svg" alt="" />
+      </div>
     </div>
   );
 }
