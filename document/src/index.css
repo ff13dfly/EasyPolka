@@ -53,10 +53,12 @@ code {
 #logo p{margin: 0 auto;}
 #crumbs {color:#BBAAFF;background: #FFFFFF;padding: 3px 0px 3px 0px;cursor: pointer;}
 #mark{position: fixed;bottom: 0px;margin: 0 auto;width:210px;}
-#mark ul{font-size:14px;}
-#remove{width: 100%;margin-bottom: 10px;}
-#remove input{margin-left: 13px;}
+#mark ul{font-size:18px;}
+#mark ul li input{margin: 0 auto;padding: 0px 0px 0px 0px;margin-right: 5px;}
+#remove{width: 100%;padding-bottom: 10px;}
+#remove input{margin: 0 auto;margin-left: 9px;padding: 0px 0px 0px 0px;float: left;}
 #remove img{width: 24px;height: 24px;margin: 0 auto;float: right;cursor: pointer;}
+
 #remove img:hover{opacity: 0.6;}
 #search{width: 90%;}
 #search small{color:#BBBBBB;font-size: 12px;}

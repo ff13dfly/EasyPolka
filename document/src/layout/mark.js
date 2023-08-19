@@ -4,7 +4,9 @@ import Decode from '../lib/decode';
 function Mark(props) {
   let [value,setValue]=useState("");
   let [list,setList]=useState([]);
+  let [deleting,setDeleting]=useState(false);
 
+  let todo=[];
   const self={
     onChange:(ev)=>{
       const val=ev.target.value;
@@ -36,11 +38,64 @@ function Mark(props) {
         setValue("");
       }
     },
+    switchDelete:(ev)=>{
+      if(!deleting){
+        //set the select state
+
+      }else{
+        console.log(todo);
+
+        //remove target storage;
+        const map={},nfavs=[];
+        for(let i=0;i<todo.length;i++){
+          map[todo[i]]=true;
+        }
+        
+        for(let i=0;i<list.length;i++){
+          if(!map[i]) nfavs.push(list[i]);
+        }
+        //onsole.log(nfavs);
+
+        props.storage.setList(nfavs);
+
+        todo=[];
+        self.fresh();
+      }
+      setDeleting(!deleting);
+    },
+    onClick:(ev,key,item)=>{
+      console.log(key);
+      if(deleting){
+        //set the delete todo list
+        const ntodo=[];
+        let exsist=false;
+        for(let i=0;i<todo.length;i++){
+          const row=todo[i];
+          if(row===key){
+            exsist=true;
+          }else{
+            ntodo.push(row);
+          } 
+        }
+        if(!exsist) ntodo.push(key);
+        todo=ntodo;
+
+
+        
+        return false;
+      }else{
+        props.reload(item);
+      }
+    },
+    fresh:()=>{
+      const favs=props.storage.getList();
+      setList(favs);
+    }
   }
 
   useEffect(() => {
-    const favs=props.storage.getList();
-    setList(favs);
+    self.fresh();
+    
   }, []);
 
   return (
@@ -58,13 +113,19 @@ function Mark(props) {
       <ul>
         {list.map((item, key) => (
          <li key={key} onClick={(ev)=>{
-           props.reload(item);
-         }}><input type="checkbox" /> {item}</li>
+          self.onClick(ev,key,item);
+         }}>
+          <input type="checkbox" hidden={!deleting} onChange={(ev)=>{
+          //self.onClick(ev,key,item);
+         }}/>{item}</li>
         ))}
       </ul>
       <div id="remove">
-        <input type="checkbox" />
-        <img src="icons/remove.svg" alt="" />
+        {/* <input type="checkbox" hidden={!deleting} /> */}
+        <img src="icons/remove.svg" alt="" onClick={(ev)=>{
+          self.switchDelete(ev);
+          
+        }} />
       </div>
     </div>
   );
