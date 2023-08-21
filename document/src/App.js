@@ -52,10 +52,16 @@ function App() {
 
   const Storage = {
     getStartIndex: () => {
+      const hash=window.location.hash;
+      if(hash.substring(0,10)==="#anchor://"){
+        return hash.substring(1,hash.length);
+      }
+
       const idata = localStorage.getItem(config.start);
       if (idata === null) return null;
       try {
         const arr = JSON.parse(idata);
+        //console.log(arr);
         return arr[0];
       } catch (error) {
         localStorage.removeItem(config.start);
@@ -121,35 +127,39 @@ function App() {
         if (result.block === 0) {
           APIs.AnchorJS.search(result.name, (res) => {
             //console.log(res);
-            if (res.raw === null) return false;
+            if (res.raw === null) return self.render([]);
+            setAnchor(res.name);
+            setBlock(res.block);
+            setOwner(res.signer);
             try {
               const map = JSON.parse(res.raw);
-              if (map && map.data) {
+              if (map && map.data && Array.isArray(map.data)) {
                 setCurrent(map.data);
-                self.render(map.data);
+                return self.render(map.data);
+              }else{
+                return self.render([]);
               }
 
-              setAnchor(res.name);
-              setBlock(res.block);
-              setOwner(res.signer);
+              
             } catch (error) {
-
+              return self.render([]);
             }
           });
         } else {
           APIs.AnchorJS.target(result.name, result.block, (res) => {
-            if (res.raw === null) return false;
+            if (res.raw === null) return self.render([]);
+            setAnchor(res.name);
+            setBlock(res.block);
+            setOwner(res.signer);
+
             try {
               const map = JSON.parse(res.raw);
-              if (map && map.data) {
+              if (map && map.data && Array.isArray(map.data)) {
                 setCurrent(map.data);
-                self.render(map.data);
+                return self.render(map.data);
               }
-              setAnchor(res.name);
-              setBlock(res.block);
-              setOwner(res.signer);
             } catch (error) {
-
+              return self.render([]);
             }
           });
         }
@@ -177,6 +187,7 @@ function App() {
         </div>
         <Nav data={navs} sub={sub} active={active} update={self.updateNavIndex} />
         <div id="entry">
+          <hr />
           <table>
             <tbody>
               <tr>

@@ -52,6 +52,7 @@ code {
 #logo img{width: 60%;margin: 0 auto;}
 #logo p{margin: 0 auto;}
 #entry{font-size: 16px;color: #888888;}
+#entry hr{color:#EEEEEE;border: 1px solid #EEEEEE;}
 #entry table tr td{padding: 3px 5px 3px 5px;}
 #entry table tr td:first-child{background-color: #EEEEEE;}
 

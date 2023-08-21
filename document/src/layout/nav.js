@@ -11,7 +11,7 @@ function Nav(props) {
 
   return (
     <ul>
-      {list.map((item, key) => (
+      {list.length===0?(<li>Empty index</li>):list.map((item, key) => (
         <li key={key} 
           id={item.link.substring(9,item.link.length)} 
           className={active===item.link.substring(9,item.link.length)?"active":""} 

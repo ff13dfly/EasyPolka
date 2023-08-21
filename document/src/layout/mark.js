@@ -64,9 +64,7 @@ function Mark(props) {
       setDeleting(!deleting);
     },
     onClick:(ev,key,item)=>{
-      console.log(key);
       if(deleting){
-        //set the delete todo list
         const ntodo=[];
         let exsist=false;
         for(let i=0;i<todo.length;i++){
@@ -79,11 +77,10 @@ function Mark(props) {
         }
         if(!exsist) ntodo.push(key);
         todo=ntodo;
-
-
-        
         return false;
       }else{
+        //console.log(item);
+        window.location.hash=item;
         props.reload(item);
       }
     },
@@ -112,11 +109,12 @@ function Mark(props) {
       </div>
       <ul>
         {list.map((item, key) => (
-         <li key={key} onClick={(ev)=>{
-          self.onClick(ev,key,item);
-         }}>
+         <li key={key} 
+            onClick={(ev)=>{
+              self.onClick(ev,key,item);
+            }}
+          >
           <input type="checkbox" hidden={!deleting} onChange={(ev)=>{
-          //self.onClick(ev,key,item);
          }}/>{item}</li>
         ))}
       </ul>
@@ -124,7 +122,6 @@ function Mark(props) {
         {/* <input type="checkbox" hidden={!deleting} /> */}
         <img src="icons/remove.svg" alt="" onClick={(ev)=>{
           self.switchDelete(ev);
-          
         }} />
       </div>
     </div>
