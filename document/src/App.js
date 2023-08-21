@@ -196,11 +196,11 @@ function App() {
               </tr>
               <tr>
                 <td>Block</td>
-                <td>{block.toLocaleString()}</td>
+                <td>{!block?0:block.toLocaleString()}</td>
               </tr>
               <tr>
                 <td>Owner</td>
-                <td>{owner.substring(0, 6) + '...' + owner.substring(owner.length - 6, owner.length)}</td>
+                <td>{!owner?"":(owner.substring(0, 6) + '...' + owner.substring(owner.length - 6, owner.length))}</td>
               </tr>
             </tbody>
           </table>
