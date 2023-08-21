@@ -51,6 +51,10 @@ code {
 #nav dt .active:focus{background: #BBAA33;} */
 #logo img{width: 60%;margin: 0 auto;}
 #logo p{margin: 0 auto;}
+#entry{font-size: 16px;color: #888888;}
+#entry table tr td{padding: 3px 5px 3px 5px;}
+#entry table tr td:first-child{background-color: #EEEEEE;}
+
 #crumbs {color:#BBAAFF;background: #FFFFFF;padding: 3px 0px 3px 0px;cursor: pointer;}
 #mark{position: fixed;bottom: 0px;margin: 0 auto;width:210px;}
 #mark ul{font-size:18px;}
