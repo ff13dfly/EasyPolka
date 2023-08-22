@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import Decode from '../lib/decode';
+import Favs from './favs';
 
 function Mark(props) {
   let [value, setValue] = useState("");
   let [list, setList] = useState([]);
   let [deleting, setDeleting] = useState(false);
 
-  let [select, setSelect] = useState([]);
+  let [select, setSelect] = useState(false);
+  let [todo, setTodo]=useState([]);
 
   const self = {
     onChange: (ev) => {
@@ -40,40 +42,44 @@ function Mark(props) {
         setValue("");
       }
     },
+    clearSelect:()=>{
+      setSelect({});
+    },
     switchDelete: (ev) => {
-      if (!deleting) {
-        setSelect(new Array(list.length).fill(false));
-        //console.log(select);
-      } else {
-        console.log(select);
-        //return false;
+      if(deleting){
+        console.log(todo);
+        const dmap={};
+        for(let i=0;i<todo.length;i++){
+          dmap[todo[i]]=true;
+        }
+
         const nfavs = [];
-        for(let i=0;i<select.length;i++){
-          if(select[i]===false){
+        for(let i=0;i<list.length;i++){
+          if(!dmap[i]){
             nfavs.push(list[i]);
           }
         }
         props.storage.setList(nfavs);
         setList(nfavs);
-        setSelect([]);
-        self.fresh();
+        setTodo([]);
       }
-
-      setDeleting(!deleting);
-    },
-    onClick: (ev, key, item) => {
-      if (deleting) {
-        setSelect(select);
-      } else {
-        //console.log(item);
-        window.location.hash = item;
-        props.reload(item);
-      }
+      const val=!deleting;
+      setDeleting(val);
     },
     fresh: () => {
       const favs = props.storage.getList();
       setList(favs);
-    }
+    },
+
+    todo:(todo)=>{
+      //console.log(todo);
+      if(deleting){
+        setTodo(todo);
+      }else{
+        window.location.hash = todo;
+        props.reload(todo);
+      }
+    },
   }
 
   useEffect(() => {
@@ -92,23 +98,15 @@ function Mark(props) {
           onKeyDown={(ev) => { self.onKeydown(ev) }}
         />
       </div>
-      <ul>
-        {list.map((item, key) => (
-          <li key={key}>
-            <input type="checkbox"
-              hidden={!deleting}
-              onChange={(ev) => {
-                select[key] = !select[key];
-              }}
-            />
-            <span onClick={(ev) => {
-              self.onClick(ev, key, item);
-            }}>{item}</span>
-          </li>
-        ))}
-      </ul>
+      <Favs list={list} deleting={deleting} todo={self.todo} all={select}/>
       <div id="remove">
-        {/* <input type="checkbox" hidden={!deleting} /> */}
+        <input type="checkbox" 
+          checked={select}
+          hidden={true}
+          onChange={(ev)=>{
+            const val=!select;
+            setSelect(val);
+          }}/>
         <img src="icons/remove.svg" alt="" onClick={(ev) => {
           self.switchDelete(ev);
         }} />
