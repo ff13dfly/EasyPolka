@@ -40,6 +40,10 @@
     }
     ```
 
+    ```Shell
+        node converter_react_v3.js package/config_homepage.json
+    ```
+
 ### Vue
 
 ### Normal Web Application

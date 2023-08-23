@@ -8,7 +8,7 @@ function Mark(props) {
   let [deleting, setDeleting] = useState(false);
 
   let [select, setSelect] = useState(false);
-  let [todo, setTodo]=useState([]);
+  let [todo, setTodo] = useState([]);
 
   const self = {
     onChange: (ev) => {
@@ -17,7 +17,7 @@ function Mark(props) {
     },
     onKeydown: (ev) => {
       if (ev.key === 'Enter') {
-        if(deleting) return false;
+        if (deleting) return false;
         const anchor = Decode(value);
         if (anchor !== false) {
           const favs = props.storage.getList();
@@ -42,20 +42,19 @@ function Mark(props) {
         setValue("");
       }
     },
-    clearSelect:()=>{
+    clearSelect: () => {
       setSelect({});
     },
     switchDelete: (ev) => {
-      if(deleting){
-        console.log(todo);
-        const dmap={};
-        for(let i=0;i<todo.length;i++){
-          dmap[todo[i]]=true;
+      if (deleting) {
+        const dmap = {};
+        for (let i = 0; i < todo.length; i++) {
+          dmap[todo[i]] = true;
         }
 
         const nfavs = [];
-        for(let i=0;i<list.length;i++){
-          if(!dmap[i]){
+        for (let i = 0; i < list.length; i++) {
+          if (!dmap[i]) {
             nfavs.push(list[i]);
           }
         }
@@ -63,7 +62,7 @@ function Mark(props) {
         setList(nfavs);
         setTodo([]);
       }
-      const val=!deleting;
+      const val = !deleting;
       setDeleting(val);
     },
     fresh: () => {
@@ -71,11 +70,11 @@ function Mark(props) {
       setList(favs);
     },
 
-    todo:(todo)=>{
+    todo: (todo) => {
       //console.log(todo);
-      if(deleting){
+      if (deleting) {
         setTodo(todo);
-      }else{
+      } else {
         window.location.hash = todo;
         props.reload(todo);
       }
@@ -98,15 +97,15 @@ function Mark(props) {
           onKeyDown={(ev) => { self.onKeydown(ev) }}
         />
       </div>
-      <Favs list={list} deleting={deleting} todo={self.todo} all={select}/>
+      <Favs list={list} deleting={deleting} todo={self.todo} all={select} />
       <div id="remove">
-        <input type="checkbox" 
+        <input type="checkbox"
           checked={select}
           hidden={true}
-          onChange={(ev)=>{
-            const val=!select;
+          onChange={(ev) => {
+            const val = !select;
             setSelect(val);
-          }}/>
+          }} />
         <img src="icons/remove.svg" alt="" onClick={(ev) => {
           self.switchDelete(ev);
         }} />

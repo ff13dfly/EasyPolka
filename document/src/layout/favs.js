@@ -17,7 +17,8 @@ function Favs(props) {
   }
 
   useEffect(() => {
-    //console.log(select);
+    setSelect({});
+    self.fresh();
   }, [props.list]);
 
   return (

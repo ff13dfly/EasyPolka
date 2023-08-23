@@ -57,7 +57,7 @@ code {
 #entry table tr td:first-child{background-color: #EEEEEE;}
 
 #crumbs {color:#BBAAFF;background: #FFFFFF;padding: 3px 0px 3px 0px;cursor: pointer;}
-#mark{position: fixed;bottom: 0px;margin: 0 auto;width:210px;}
+#mark{position: fixed;bottom: 24px;margin: 0 auto;width:210px;}
 #mark ul{font-size:18px;}
 #mark ul li input{margin: 0 auto;padding: 0px 0px 0px 0px;margin-right: 5px;}
 #remove{width: 100%;padding-bottom: 10px;}
