@@ -1,13 +1,13 @@
 module.exports={
   slide:[
     {
-      title:"Self Bootstrap Web3.0 Network",
-      desc:"You can access the whole Web3.0 via Anchor Network base on Substrate.",
+      title:"Self Bootstrap Network",
+      desc:"Access the whole Web3.0 via Anchor Network.",
       thumb:"imgs/Banner_01.jpg",
     },
     {
-      title:"Deployment Network for Dapp",
-      desc:"This is a blockchain network to deploy the dApp UI and SDK, then full on-chain.",
+      title:"Deployment Network for Dapps",
+      desc:"Full-on-chain Network for the Dapp UI and APIs.",
       thumb:"imgs/Banner_02.jpg",
     },
   ],
