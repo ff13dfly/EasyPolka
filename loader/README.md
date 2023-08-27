@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Loader is the entry application to load data or application on `Anchor Network`. It is the off-chain part, can run from local.
+- Loader is the entry application to load data or application on `Anchor Network`. It is the off-chain part, can run from local. You can treat is as BIOS to the computer.
 
 - Requirement. These libraries is packaged to the release files.
 
@@ -12,8 +12,8 @@
 
 - Loader is minified to avoid modifying easily. It can accept limied parameters.
 
-    1. Anchor name
-    2. Node
+    1. Frontend, decode location *hash* and *search* to load target Anchor.
+    2. Node.JS, node.js call the loader and the called **Anchor Link**.
 
 ## Frontend
 
@@ -33,7 +33,7 @@
         loader.web.html?anchor=anchor_name&block=3334&key=good&node=wss://dev.metanchor.net&network=anchor
     ```
 
-- Parameters, which can be sent to application. `#{anchor_name}[@][node_address][?][key=value]#`
+- Parameters, which can be sent to application. The applications can decode the location themselves to act properly.
 
 ## Backend
 
@@ -42,8 +42,8 @@
 - Backend loader relies on `node` to input the parameters.
 
     ```BASH
-        # node loader_nodejs.min.js [anchor link] [node]
-        node loader.nodejs.js anchor://node_me/ ws://127.0.0.1:9944
+        # node loader_nodejs.min.js [anchor link]
+        node loader.nodejs.js anchor://node_me/
     ```
 
 - Run Gateway system

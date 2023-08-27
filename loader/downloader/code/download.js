@@ -158,7 +158,6 @@ const self = {
                 if(anchor.protocol && anchor.protocol.fmt && anchor.protocol.fmt==="htm"){
                     down.setAttribute("href",pre+encodeURIComponent(anchor.raw));
                     const down_name=!anchor.protocol.ver?`${easy.location[0]}_${easy.location[1]}.html`:`${easy.location[0]}_${easy.location[1]}_v${anchor.protocol.ver}.html`;
-                    //console.log(down_name)
                     down.setAttribute("download",down_name);       
                 }else{
                     const replace=self.groupEasyData(easy);

@@ -146,15 +146,23 @@ const self = {
         }
         return map;
     },
+    //TODO, here to support 3 way to decode anchor link
+    getEasyLink:()=>{
+        const result = {
+            anchor: config.anchor,
+            server: config.server,
+            block:0,
+        }
+        return result;
+    },
 }
 
 console.log(location);
-
 const result = self.decoder(location.hash);
 let linker = `anchor://${result.anchor}/`;
 if(result.block!==0) linker+=result.block;
 const server = result.server;
-console.log(linker);
+//console.log(linker);
 
 self.version(config.version, "ver");
 self.step(`Anchor Network server ${server}`, () => {

@@ -23,8 +23,8 @@
 
 ## 词汇表
 
-1. Anchor，链锚，`Easy Protocol`协议使用的链上数据存储方式，既是高效的KV链上储存，也是可回溯的线上链表储存。
-2. Anchor Linker，类似于URI的链上资源链接，可以直接标定链锚数据。
+1. Anchor Linker，类似于URI的链上资源链接，可以直接标定链锚数据。
+2. Anchor，链锚，`Easy Protocol`协议使用的链上数据存储方式，既是高效的KV链上储存，也是可回溯的线上链表储存。
 3. Declared Hidden，数据所有者通过显性的申明，隐藏指定的链上数据，是一种伪删除。
 4. Authorty，链锚数据之间的相互信任关系，链锚数据和账户之间的信任关系
 5. Loader，从链上启动程序的加载器，通过该加载器即可浏览整个链的内容，类似于计算机系统的BIOS。
@@ -64,10 +64,15 @@
 
     ```SHELL
         # Format of Anchor Link
-        anchor://{name}[/][{block}][/][?][{key}={val}&{key}={val}][@][network]
+        anchor://{name}[.][network][/][{block}][/][?][{key}={val}&{key}={val}][@][node]
+
+        # Full sample
+        anchor://anchor_name.anchor/3345?tpl=dark&title=today@wss://dev.metanchor.net
+        anchor://anchor_name.anchor/3345~3499|key_name?tpl=dark&title=today@wss://dev.metanchor.net
+        anchor://abc/abc.anchor/3345~3499|key_name?tpl=dark&title=today@wss://dev.metanchor.net
     ```
 
-     ```SHELL
+    ```SHELL
         # "hello" sample
         anchor://hello
         anchor://hello/
@@ -97,6 +102,8 @@
 
         # get the combined data then get key_name
         anchor://{name}/{block_start}~{block_end}|{key_name}
+
+        
     ```
 
 ### 授权

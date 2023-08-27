@@ -6,7 +6,9 @@ Anchor Network parts, including **Anchor JS SDK**, **Easy Protocol**, **Loader**
 
 - **Easy Protocol** ( [Folder to open](https://github.com/ff13dfly/EasyPolka/tree/main/protocol) ): Simple protocol to organize data on Anchor Network, support interesting features, such as `Anchor Linke`, `Declared Hidden`, `Anchor Authority`.
 
-- **Loader** ( [Folder to open](https://github.com/ff13dfly/EasyPolka/tree/main/loader) ): Booter of Anchor Network, can run the Dapps by Anchor name, base on **Easy Protocol**. There is a [website](http://plinth.metanchor.net/) you can try. The Anchor name can be passed to application by URL hash.
+- **Loader** ( [Folder to open](https://github.com/ff13dfly/EasyPolka/tree/main/loader) ): Booter of Anchor Network, can run the Dapps by **Anchor Name**, base on **Easy Protocol**. There is a [website](http://plinth.metanchor.net/) you can try. The Anchor name can be passed to application by URL hash. Both frontend and backend are supported.
+
+- **Downloader** ( [Folder to open](https://github.com/ff13dfly/EasyPolka/tree/main/loader/downloder) ): The application to combine the on chain Anchor data to a single file then download.
 
 - **Convertor** ( [Folder to open](https://github.com/ff13dfly/EasyPolka/tree/main/convertor) ): Tools to deploy your current web applications on Anchor Network without coding. NodeJS needed to run the convertor properly.
 

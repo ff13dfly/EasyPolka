@@ -1,7 +1,7 @@
 # DocumentA
 
-- DocumentA is a `Full on chain application`
+- DocumentA is a `Full on chain application`, read the index for location hash which is **Anchor link**
 
 ## Parameters
 
-- `#${anchor_name}[?][index=anchor_index]#`, can accept the input parameters.
+- `#{anchor_link}`, can accept the input parameters.
