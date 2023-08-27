@@ -155,11 +155,17 @@ const self = {
         const anchor=easy.data[`${easy.location[0]}_${easy.location[1]}`];
         switch (easy.type) {
             case "app":
-                const replace=self.groupEasyData(easy);
-                const tpl=self.getReactTemplate(replace.name,replace.title,replace.code,replace.css);
-                down.setAttribute("href",pre+encodeURIComponent(tpl));
-                down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}_v${anchor.protocol.ver}.html`);
-                
+                if(anchor.protocol && anchor.protocol.fmt && anchor.protocol.fmt==="htm"){
+                    down.setAttribute("href",pre+encodeURIComponent(anchor.raw));
+                    const down_name=!anchor.protocol.ver?`${easy.location[0]}_${easy.location[1]}.html`:`${easy.location[0]}_${easy.location[1]}_v${anchor.protocol.ver}.html`;
+                    //console.log(down_name)
+                    down.setAttribute("download",down_name);       
+                }else{
+                    const replace=self.groupEasyData(easy);
+                    const tpl=self.getReactTemplate(replace.name,replace.title,replace.code,replace.css);
+                    down.setAttribute("href",pre+encodeURIComponent(tpl));
+                    down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}_v${anchor.protocol.ver}.html`);
+                }
                 break;
             case "data":
                 const data={
@@ -172,7 +178,7 @@ const self = {
                 break;
 
             case "lib":
-                const fmt=!adata.protocol.fmt?"json":adata.protocol.fmt;
+                const fmt=!data.protocol.fmt?"json":data.protocol.fmt;
                 down.setAttribute("href",pre+encodeURIComponent(anchor.raw));
                 down.setAttribute("download",`${easy.location[0]}_${easy.location[1]}_v${anchor.protocol.ver}.${fmt}`);
                 break;

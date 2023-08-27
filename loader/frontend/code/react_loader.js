@@ -58,12 +58,13 @@ const self = {
             //result.anchor=result.anchor.substring(0,result.anchor.length-1);
         }
 
-        const tmp = hash.split('|');
-        if (tmp.length === 2) {
-            const block=parseInt(tmp[1]);
-            if(!isNaN(block) && block>0)result.block=block;
-            result.anchor=tmp[0].substring(1);
-        }
+        //TODO, bad way to target sepcial block, mixed with JSON key way.
+        // const tmp = hash.split('|');
+        // if (tmp.length === 2) {
+        //     const block=parseInt(tmp[1]);
+        //     if(!isNaN(block) && block>0)result.block=block;
+        //     result.anchor=tmp[0].substring(1);
+        // }
         result.anchor=decodeURIComponent(result.anchor);
         
         return result;
@@ -146,6 +147,9 @@ const self = {
         return map;
     },
 }
+
+console.log(location);
+
 const result = self.decoder(location.hash);
 let linker = `anchor://${result.anchor}/`;
 if(result.block!==0) linker+=result.block;

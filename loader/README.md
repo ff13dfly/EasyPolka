@@ -17,15 +17,20 @@
 
 ## Frontend
 
-- This implement of loader is to load applications which can run on browser enviment. The latest version is [release/loader_web.min.js](release/loader_web.min.js).
+- This implement of loader is to load applications which can run on browser enviment. The latest version is [release/loader.web.html](release/loader.web.html).
 
 - Frontend loader decodes URL hash to get the `Anchor` name and node to link. By defalt, the Anchor is "plinth" and the node is "ws://127.0.0.1:9944".
 
-    ```TEXT
-        loader_web.min.js#anchor_name#
-        loader_web.min.js#anchor_name|888#
-        loader_web.min.js#anchor_name|888@ws://127.0.0.1:9944#
-   
+    ```SHELL
+        # way 1: wrapper the "Anchor Name" with "#"
+        loader.web.html#anchor_name#
+
+        # way 2: use "Anchor Link" as hash
+        loader.web.html#anchor://anchor_name
+        loader.web.html#anchor://anchor_name/3334|good@wss://dev.metanchor.net
+
+        # way 3: decode html search
+        loader.web.html?anchor=anchor_name&block=3334&key=good&node=wss://dev.metanchor.net&network=anchor
     ```
 
 - Parameters, which can be sent to application. `#{anchor_name}[@][node_address][?][key=value]#`
@@ -50,3 +55,12 @@
     ```
 
 ## Downloader
+
+- **Downloader** is an application which can combine the Anchor data to be a single file by following **Easy Protocol**.
+
+- **Downloader** treats the locaction hash as **Anchor Name**. The sample as follow.
+
+    ```Shell
+        # hash as the Anchor name
+        downloader.html#anchor_name
+    ```
