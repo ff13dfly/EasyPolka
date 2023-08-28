@@ -31,7 +31,10 @@ const sepetor={
     "range":"~",
     "network":".",      // . or @, need to test and check
     "and":"&",          // for input params
-}
+};
+const limit={
+    name:60,
+};
 const special=[`\0`,`\b`,`\f`,`\n`,`\r`,`\t`,`\v`,`\'`,`\"`,`\\`,` `,`\-`];
 
 const result={
@@ -47,8 +50,8 @@ const result={
 }
 
 //const test=encodeURIComponent(`anchor://你好/333`);
-//const test=encodeURIComponent(special.join("-"));
-//console.log(test);
+const test=encodeURIComponent(special.join("-"));
+console.log(test);
 
 const self={
     format:()=>{
@@ -57,11 +60,13 @@ const self={
     encode:(result)=>{
 
     },
-    decoder:(str)=>{
+    decoder:(input)=>{
+        //const str=encodeURIComponent(input);
+        //console.log(str);
         const deResult=Object.assign({}, result);
 
         //1.check prefix
-        let body=self.checkPrefix(str);
+        let body=self.checkPrefix(input);
         if(body===false){
             deResult.message="Wrong prefix.";
             return deResult
@@ -84,6 +89,15 @@ const self={
         body=chk_key.left;
 
         console.log('\x1b[36m%s\x1b[0m',body);
+
+        //5.check range
+        const chk_range=self.checkRange(body);
+        if(chk_range.end!==0){
+            result.range=[chk_range.start,chk_range.end];
+        }
+        body=chk_range.left;
+
+        //6.check block
     
         //console.log(chk_network);
         return deResult
@@ -169,11 +183,38 @@ const self={
     },
 
     checkRange:(body)=>{
+        const res={start:0,end:0,left:""};
 
+        const input=self.clearSlash(body);
+        const arr=input.split(sepetor.common);
+        if(arr.length===1){
+            res.left=input;
+            return res;
+        }
+        
+        const tmp=arr[arr.length-1].split(sepetor.range);
+        if(tmp.length!==2){
+            res.left=input;
+            return res;
+        }
+        
+        if(/^\d+$/.test(tmp[0]) && /^\d+$/.test(tmp[1])){
+            res.start=parseInt(tmp[0]);
+            res.end=parseInt(tmp[1]);
+            arr.pop();
+            res.left=arr.join(sepetor.common);    
+        }else{
+            res.left=input;
+        } 
+        return res;
     },
-
     checkBlock:(body)=>{
 
+    },
+    clearSlash:(body)=>{
+        const len=body.length;
+        if(body.substring(len-1,len)===sepetor.common) return body.substring(0,len-1);
+        return body;
     },
   }
   

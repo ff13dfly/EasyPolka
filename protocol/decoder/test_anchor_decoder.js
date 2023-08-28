@@ -37,8 +37,27 @@ const list=[
     ],
     [   //4. parameters check
         "anchor://abc?a=aaa&b=234&input=333",
+        "anchor://abc/?a=aaa&b=234&input=333",
+        "anchor://abc//?a=aaa&b=234&input=333",
         "anchor://abc?ccc?a=aaa&b=234&input=333",
         "anchor://abc?ccc?a=aaa&b==234&input=333",
+    ],
+    [   //5. JSON key check
+        "anchor://abc|||",
+        "anchor://abc|abc|",
+        "anchor://abc|ddd?a=33;b=22",
+        "anchor://abc|ddd?a=33&b=22",
+        "anchor://abc|ddd?a=33&b|=22",
+        "anchor://abc/|ddd?a=33&b=22",
+    ],
+    [   //6. block range check
+        "anchor://abc/123/3345~3499",
+        "anchor://abc/3345~3499/",
+        "anchor://abc/3345~3499",
+        "anchor://abc/3345~3499~3945",
+        "anchor://abc///3345~3499/",
+        "anchor://abc/3345~3499|||?a=33&b=abcd",
+        "anchor://abc/123/3345~3499|key_name?tpl=dark&title=today@wss://dev.metanchor.net",
     ],
 ];
 const intro=[
@@ -46,6 +65,8 @@ const intro=[
     "Special characters check",
     "Server check",
     "Parameters check",
+    "JSON key check",
+    "Block range check",
 ];
 
 //1.decode from right ( rule of decode )
