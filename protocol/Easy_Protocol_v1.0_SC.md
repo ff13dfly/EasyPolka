@@ -70,6 +70,8 @@
         anchor://anchor_name.anchor/3345?tpl=dark&title=today@wss://dev.metanchor.net
         anchor://anchor_name.anchor/3345~3499|key_name?tpl=dark&title=today@wss://dev.metanchor.net
         anchor://abc/abc.anchor/3345~3499|key_name?tpl=dark&title=today@wss://dev.metanchor.net
+        anchor://abc.abc.anchor/3345~3499|key_name?tpl=dark&title=today@wss://dev.metanchor.net
+        anchor://abc/123/3345~3499|key_name?tpl=dark&title=today@wss://dev.metanchor.net
     ```
 
     ```SHELL
