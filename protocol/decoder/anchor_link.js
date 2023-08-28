@@ -88,18 +88,23 @@ const self={
         if(chk_key.key!=="") deResult.key=chk_key.key;
         body=chk_key.left;
 
-        console.log('\x1b[36m%s\x1b[0m',body);
-
         //5.check range
+
+        //TODO, here to skip block check;
         const chk_range=self.checkRange(body);
         if(chk_range.end!==0){
-            result.range=[chk_range.start,chk_range.end];
+            deResult.range=[chk_range.start,chk_range.end];
         }
         body=chk_range.left;
 
+        //console.log('\x1b[36m%s\x1b[0m',body);
+
         //6.check block
+        const chk_block=self.checkBlock(body);
+        if(chk_block.block!==0) deResult.block=chk_block.block;
     
-        //console.log(chk_network);
+        deResult.anchor=chk_block.left;
+
         return deResult
     },
 
@@ -197,7 +202,7 @@ const self={
             res.left=input;
             return res;
         }
-        
+
         if(/^\d+$/.test(tmp[0]) && /^\d+$/.test(tmp[1])){
             res.start=parseInt(tmp[0]);
             res.end=parseInt(tmp[1]);
@@ -206,10 +211,24 @@ const self={
         }else{
             res.left=input;
         } 
+
+
         return res;
     },
     checkBlock:(body)=>{
+        const res={block:0,left:""};
+        //const input=self.clearSlash(body);
+        const arr=body.split(sepetor.common);
 
+        if(arr.length===1 || !/^\d+$/.test(arr[arr.length-1])){
+            res.left=body;
+            return res;
+        }
+
+        const block=arr.pop();
+        res.block=parseInt(block);
+        res.left=arr.join(sepetor.common);
+        return res;
     },
     clearSlash:(body)=>{
         const len=body.length;
