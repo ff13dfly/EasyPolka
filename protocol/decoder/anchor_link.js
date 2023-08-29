@@ -63,7 +63,12 @@ const self={
     decoder:(input)=>{
         //const str=encodeURIComponent(input);
         //console.log(str);
+        
         const deResult=Object.assign({}, result);
+        if(!self.isValid(input)){
+            deResult.message="illegle input";
+            return result;
+        } 
 
         //1.check prefix
         let body=self.checkPrefix(input);
@@ -94,18 +99,26 @@ const self={
         const chk_range=self.checkRange(body);
         if(chk_range.end!==0){
             deResult.range=[chk_range.start,chk_range.end];
+            deResult.anchor=chk_range.left;
+        }else{
+            //6.check block
+            body=chk_range.left;
+            const chk_block=self.checkBlock(body);
+            if(chk_block.block!==0) deResult.block=chk_block.block;
+        
+            deResult.anchor=chk_block.left;
         }
-        body=chk_range.left;
+        
 
         //console.log('\x1b[36m%s\x1b[0m',body);
 
-        //6.check block
-        const chk_block=self.checkBlock(body);
-        if(chk_block.block!==0) deResult.block=chk_block.block;
-    
-        deResult.anchor=chk_block.left;
+        
 
         return deResult
+    },
+    isValid:(input)=>{
+        //console.log(input);
+        return Object.prototype.toString.call(input) === "[object String]";
     },
 
     checkPrefix:(str)=>{

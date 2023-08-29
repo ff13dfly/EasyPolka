@@ -18,11 +18,19 @@ const list=[
         "abc",
         "anchor://",
         "anchor://hello",
-        "anchor://hello/2234"
+        "anchor://hello/2234",
+        "anchor://你好/2234",
+        "anchor://你好/2234/",
     ],
     [   //2.special characters
         `anchor://hello/22\n34`,
         `anchor://hello/22\r34`,
+        NaN,
+        null,
+        function(){},
+        -200,
+        ["hell","me"],
+        "+anchor", 
     ],
     [   //3. server check
         "anchor://abc@wss://dev.metanchor.net",
