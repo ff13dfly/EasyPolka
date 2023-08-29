@@ -33,7 +33,7 @@ const sepetor={
     "and":"&",          // for input params
 };
 const limit={
-    name:60,
+    name:20,
 };
 const special=[`\0`,`\b`,`\f`,`\n`,`\r`,`\t`,`\v`,`\'`,`\"`,`\\`,` `,`\-`];
 
@@ -45,25 +45,42 @@ const result={
     server:"",              //node server to link
     range:[0,0],            //get the range data
     key:"",                 //get the anchor key data
-    params:{},              //input parameters
+    params:null,             //input parameters
     message:"",             //error message
 }
 
 //const test=encodeURIComponent(`anchor://你好/333`);
-const test=encodeURIComponent(special.join("-"));
-console.log(test);
+//const test=encodeURIComponent(special.join("-"));
+//console.log(test);
 
 const self={
     format:()=>{
         return result;
     },
-    encode:(result)=>{
+    encoder:(input)=>{
+        //anchor://anchor_name.anchor/3345~3499|key_name?tpl=dark&title=today@ws://dev.metanchor.net
+        if(!input.anchor) return false;
+        let str=sepetor.protocol;
+        str+=input.anchor;
+        if(input.block && input.block!==0){
+            str+=sepetor.common+input.block;
+        }else if(input.range[1]!==0){
+            str+=sepetor.common+input.range[0]+sepetor.range+input.range[1];
+        }else{
 
+        }
+        if(input.key) str+=sepetor.key+input.key;
+        if(input.params!==null){
+            const list=[];
+            for(let k in input.params){
+                list.push(`${k}=${input.params[k]}`);
+            }
+            str+=sepetor.param+list.join(sepetor.and);
+        }
+        if(input.server) str+=sepetor.server+input.server;
+        return str;
     },
     decoder:(input)=>{
-        //const str=encodeURIComponent(input);
-        //console.log(str);
-        
         const deResult=Object.assign({}, result);
         if(!self.isValid(input)){
             deResult.message="illegle input";
@@ -105,15 +122,16 @@ const self={
             body=chk_range.left;
             const chk_block=self.checkBlock(body);
             if(chk_block.block!==0) deResult.block=chk_block.block;
-        
-            deResult.anchor=chk_block.left;
+            body=chk_block.left;
+
+            if(body.length>limit.name){
+                const limitResult=Object.assign({}, result);
+                limitResult.message="anchor length limitation:"+limit.name;
+                return limitResult;
+            }
+
+            deResult.anchor=body;
         }
-        
-
-        //console.log('\x1b[36m%s\x1b[0m',body);
-
-        
-
         return deResult
     },
     isValid:(input)=>{
@@ -216,16 +234,14 @@ const self={
             return res;
         }
 
-        if(/^\d+$/.test(tmp[0]) && /^\d+$/.test(tmp[1])){
+        if(/^\d+$/.test(tmp[0]) && /^\d+$/.test(tmp[1]) && tmp[0]!=tmp[1]){
             res.start=parseInt(tmp[0]);
             res.end=parseInt(tmp[1]);
             arr.pop();
             res.left=arr.join(sepetor.common);    
         }else{
             res.left=input;
-        } 
-
-
+        }
         return res;
     },
     checkBlock:(body)=>{
@@ -237,7 +253,6 @@ const self={
             res.left=body;
             return res;
         }
-
         const block=arr.pop();
         res.block=parseInt(block);
         res.left=arr.join(sepetor.common);

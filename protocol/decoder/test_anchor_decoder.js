@@ -11,7 +11,9 @@
 \\ ：反斜杠（\u005C）
 **/
 
-const {decoder}=require("./anchor_link");
+const {decoder,encoder}=require("./anchor_link");
+
+const special=[`\0`,`\b`,`\f`,`\n`,`\r`,`\t`,`\v`,`\'`,`\"`,`\\`,` `,`\-`];
 
 const list=[
     [   //1. protocol check
@@ -62,6 +64,7 @@ const list=[
         "anchor://abc/123/3345~3499",
         "anchor://abc/3345~3499/",
         "anchor://abc/3345~3499",
+        "anchor://abc/999~999",
         "anchor://abc/3345~3499~3945",
         "anchor://abc///3345~3499/",
         "anchor://abc/3345~3499|||?a=33&b=abcd",
@@ -86,6 +89,7 @@ for(let i=0;i<list.length;i++){
     for(let j=0;j<row.length;j++){
         const res=decoder(row[j]);
         console.log(`[${j}]: ${row[j]}`);
-        console.log(`${JSON.stringify(res)}\n`);
+        console.log(`${JSON.stringify(res)}`);
+        console.log(`${encoder(res)}\n`);
     }
 }
