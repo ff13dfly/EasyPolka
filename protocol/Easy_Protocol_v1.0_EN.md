@@ -12,6 +12,14 @@
 
 - `Easy Protocol` do not check the code valid. On following, will use `Javascript` and `JSON` to decibe the logical if neccessary.
 
+    | Number | type | description |essential |
+    | :----- | ----------- | ------------- | ------------- |
+    | anchor:// | string | Protocol prefix | Yes |
+    | {name} | string | Anchor name | Yes |
+    | [.] | string | symbol to seperate network | No |
+    | [{network}] | string | Network name, default is Anchor Network | No |
+    | [/] | string | Seperator for name and network | No |
+
 ## Data Structure
 
 ### Anchor
