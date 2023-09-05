@@ -48,8 +48,8 @@ output(`Get the config file path, ready to start.`, 'dark');
 
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/api');
-//const anchorJS= require('../../package/node/anchor.node');
-const anchorJS = require('../../anchorJS/publish/anchor');
+let  anchorJS=null;
+
 const fs = require('fs');
 output(`Support libraries checked.`, 'dark');
 
@@ -228,6 +228,10 @@ const self = {
 
         ApiPromise.create({ provider: new WsProvider(server) }).then((api) => {
             output(`Linker to node [${server}] created.`, 'success');
+
+            if(anchorJS===null){
+                return ck && ck({error:"Failed to load anchorJS."});
+            }
 
             websocket = api;
             anchorJS.set(api);
@@ -416,11 +420,13 @@ const self = {
     },
 };
 
-
 //1.read xconfig.json to get setting
 file.read(cfgFile, (xcfg) => {
     if (xcfg.error) return output(`Error: failed to load config file "${cfgFile}".`, 'error');
     output(`Read the config file successful.`, 'success');
+
+    anchorJS = require(xcfg.lib.anchorJS);
+
     //2.read React asset file
     const target = `${xcfg.directory}/${xcfg.asset}`;
     output(`Read to get asset file '${target}'`);
@@ -475,6 +481,11 @@ file.read(cfgFile, (xcfg) => {
 
                 //4.2.write resouce then get the anchor location.
                 self.auto(xcfg.server, (pair) => {
+
+                    if(pair.error){
+                        output(pair.error,"error");
+                    }
+
                     self.multi(list, (done) => {
                         //4.3.write the res result to resoucre ref anchor
                         list = [];        //clean the list
