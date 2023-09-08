@@ -1,0 +1,16 @@
+{
+    "directory":"frontend",
+    "map":{
+        "anchorjs":"anchor.min.js",
+        "polkadot":"polkadot.min.js",
+        "easy":"easy.min.js"
+    },
+    "protocol":{
+
+    },
+    "server":"ws://127.0.0.1:9944",
+    "account":{
+        "password":"",
+        "seed":"Alice"
+    }
+}

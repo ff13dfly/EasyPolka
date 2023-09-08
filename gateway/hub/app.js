@@ -21,6 +21,8 @@
 // 2. only trust anchor data, even the encry JSON file.
 // 3. when start, need to vertify the runner password. When adding vservice, need to confirm the account
 
+console.clear();
+
 // running config
 const tools = require("../lib/tools");
 const config = {
@@ -141,10 +143,9 @@ app.use(router.routes());
 // application implement
 const self = {
     getRequestURI: (port) => {
-        //const IP=self.getIpAddress();
-        //console.log(IP);
         const host="localhost";
         const uri = `http://${host}:${port}`;
+        //console.log(uri);
         return uri;
     },
     getParams: (str, pre) => {
@@ -241,16 +242,15 @@ const self = {
 }
 
 const {WebSocketServer} =require('ws');
-const wss = new WebSocketServer({ port: port+1 });
+const wss = new WebSocketServer({port: port+1});
+console.log(wss);
 const clients={};
 wss.on('connection', function connection(ws,request, client) {
     const uid=tools.char(12);
     clients[uid]=ws;
 
     ws.send(JSON.stringify({"spam":uid}));
-
     ws.on('error', console.error);
-  
     ws.on('message', function message(data) {
         console.log(data.toString());
         //console.log('received: %s', data);
@@ -268,8 +268,6 @@ wss.on('connection', function connection(ws,request, client) {
             console.log("not json data");
         }
     });
-  
-    
   
     // setInterval(function(){
     //   const data={"hello":"from nodejs server."};
