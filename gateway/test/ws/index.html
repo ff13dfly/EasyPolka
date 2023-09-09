@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        
+    </body>
+    <script>
+        var url="ws://localhost:8000";
+        var ws=new WebSocket(url);
+        var index=0;
+        var spam="";
+        var interval=null;
+        ws.onopen=function(res){
+            interval=setInterval(() => {
+                index++;
+                var sdata={"spam":spam,"index":index};
+                ws.send(JSON.stringify(sdata))
+            }, 50);
+        }
+        ws.onmessage=function(res){
+            var data=JSON.parse(res.data);
+            if(data.spam) spam=data.spam;
+            console.log(res.data);
+        }
+        ws.onclose=function(res){
+            clearInterval(interval);
+        }
+        ws.onerror=function(res){
+            //console.log(res);
+        }
+
+        
+    </script>
+</html>
