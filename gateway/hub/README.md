@@ -12,6 +12,16 @@
 
 - Two ways to run, one is anonymous, one is account.
 
+## Setting
+
+- You can run the node by the command as follow:
+
+    ```SHELL
+        node hub.js config.json
+    ```
+
+- Sample of config.json.
+
 ## Workflow
 
 ### Way 1, vService voluntary

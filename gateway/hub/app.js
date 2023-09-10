@@ -9,9 +9,14 @@
 // node app.js ss58_address port cfg_anchor
 // node app.js 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw
 
+// #Best way
+// node app.js config.json
+
 //########## LOADER ##########
 // node hub.min.js 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw 8001
 // node loader.nodejs.js anchor://gateway_hub/ ws://127.0.0.1:9944 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw 8001
+
+// node app.js anchor://gateway_hub/ config.json
 
 //JSON RPC 2.0
 //https://www.jsonrpc.org/specification#response_object
@@ -241,39 +246,14 @@ const self = {
     },
 }
 
-const {WebSocketServer} =require('ws');
-const wss = new WebSocketServer({port: port+1});
-console.log(wss);
-const clients={};
-wss.on('connection', function connection(ws,request, client) {
-    const uid=tools.char(12);
-    clients[uid]=ws;
-
-    ws.send(JSON.stringify({"spam":uid}));
-    ws.on('error', console.error);
-    ws.on('message', function message(data) {
-        console.log(data.toString());
-        //console.log('received: %s', data);
-        try {
-            const json=JSON.parse(data);
-            if(json.id && json.params && json.params.spam){
-                const data={
-                    time:tools.stamp,
-                    spam:json.params.spam,
-                }
-                clients[json.params.spam].send(JSON.stringify(data));
-            }
-        } catch (error) {
-            console.log(error);
-            console.log("not json data");
-        }
-    });
-  
-    // setInterval(function(){
-    //   const data={"hello":"from nodejs server."};
-    //   ws.send(JSON.stringify(data));
-    // },3000);
-});
+const WS = require("../lib/wss");
+const fetch=(params,ck)=>{
+    //console.log(params);
+    const data={"hello":"good"};
+    return ck && ck(data);
+};
+WS.auto({},{fetch:fetch});
+WS.start();
 
 // Router of hub, API calls, for web jsonp
 router.get("/", async (ctx) => {
@@ -304,7 +284,6 @@ router.get("/", async (ctx) => {
         return ctx.body = self.export({ error: "unkown call" }, jsonp.request.id, jsonp.callback);
     }
 
-    //TODO,here to solve the high TPV problem
     // if (method !== 'spam') {
     //     ctx.body = self.export({data:{stamp:tools.stamp(),num:tools.rand(1,2000)}}, jsonp.request.id, jsonp.callback);
     //     return true;

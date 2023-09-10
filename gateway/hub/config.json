@@ -1,0 +1,14 @@
+{
+    "port":8001,
+    "expire": {
+        "spam": 300000,
+        "encry": 6000000,
+        "password":300000, 
+        "vservice":9000000
+    },
+    "account":{
+        "seed":"",
+        "address":"",
+        "encry":{}
+    }
+}
