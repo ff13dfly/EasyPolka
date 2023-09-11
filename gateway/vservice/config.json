@@ -1,0 +1,14 @@
+{
+    "port":4503,
+    "address":"5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9",
+    "anchor":"",
+    "expire": {
+        "spam": 300000,
+        "encry": 6000000,
+        "password":300000, 
+        "vservice":9000000
+    },
+    "polkadot":{
+        "node":"ws://127.0.0.1:9944"
+    }
+}

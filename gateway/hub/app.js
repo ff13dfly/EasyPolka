@@ -26,9 +26,6 @@
 // 2. only trust anchor data, even the encry JSON file.
 // 3. when start, need to vertify the runner password. When adding vservice, need to confirm the account
 
-console.clear();
-
-// running config
 const tools = require("../lib/tools");
 const config = {
     version:"1.1.0",
@@ -53,22 +50,6 @@ const config = {
         vservice:9000000,            //vService acitve exipred time, 15 mins
     },
 }
-const theme = {
-    error: '\x1b[31m%s\x1b[0m',
-    success: '\x1b[36m%s\x1b[0m',
-    primary: '\x1b[33m%s\x1b[0m',
-    dark: '\x1b[90m%s\x1b[0m',
-};
-const output = (ctx, type, skip) => {
-    const stamp = () => { return new Date().toLocaleString(); };
-    if (!type || !theme[type]) {
-        if (skip) return console.log(ctx);
-        console.log(`[${stamp()}] ` + ctx);
-    } else {
-        if (skip) return console.log(theme[type], ctx);
-        console.log(theme[type], `[${stamp()}] ` + ctx);
-    }
-};
 
 /************************************************/
 /***************** Memory DB ********************/
@@ -109,7 +90,7 @@ const init = {
 /************************************************/
 /***************** RPC server *******************/
 /************************************************/
-
+const {output}=require("../lib/output");
 const self = {
     getRequestURI: (port) => {
         const host="localhost";
@@ -395,9 +376,8 @@ const listen={
 /************************************************/
 /*************** Running logical ****************/
 /************************************************/
-
+console.clear();
 output(`Anchor Gateway Hub ( v${config.version} ) running...`,"dark",true);
-
 const Valid = require("../lib/valid");
 Valid(process.argv.slice(2),(cfg)=>{
     if(cfg.error) return output(cfg.error,"error");
