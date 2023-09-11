@@ -31,12 +31,7 @@ console.clear();
 // running config
 const tools = require("../lib/tools");
 const config = {
-    theme: {
-        error: '\x1b[31m%s\x1b[0m',
-        success: '\x1b[36m%s\x1b[0m',
-        primary: '\x1b[33m%s\x1b[0m',
-        dark: '\x1b[90m%s\x1b[0m',
-    },
+    version:"1.1.0",
     keys: {
         host: tools.char(20),        //DB key: host information
         encry: tools.char(20),       //DB key: encry `key` and `iv` data of excutor
@@ -58,32 +53,42 @@ const config = {
         vservice:9000000,            //vService acitve exipred time, 15 mins
     },
 }
-console.log(config.theme.dark, `Anchor Gateway HubAnchor Gateway Hub ( v1.0 ) running...`);
+const theme = {
+    error: '\x1b[31m%s\x1b[0m',
+    success: '\x1b[36m%s\x1b[0m',
+    primary: '\x1b[33m%s\x1b[0m',
+    dark: '\x1b[90m%s\x1b[0m',
+};
+const output = (ctx, type, skip) => {
+    const stamp = () => { return new Date().toLocaleString(); };
+    if (!type || !theme[type]) {
+        if (skip) return console.log(ctx);
+        console.log(`[${stamp()}] ` + ctx);
+    } else {
+        if (skip) return console.log(theme[type], ctx);
+        console.log(theme[type], `[${stamp()}] ` + ctx);
+    }
+};
 
-// arguments
-const args = process.argv.slice(2);
-if (!args[0]) return console.log(config.theme.error, `Error: no runner address.`);
-const address = args[0];
-if (address.length !== 48) return console.log(config.theme.error, `Error: runner address illegal.`);
-const port = !args[1] ? 8001 : args[1];
-const cfgAnchor = !args[2] ? "" : args[2];
-console.log(config.theme.success, `Ready to load gateway Hub by ${address}, the config Anchor is ${!cfgAnchor ? "not set" : cfgAnchor}`);
+/************************************************/
+/***************** Memory DB ********************/
+/************************************************/
 
 // basic setting and init the env
 const DB = require("../lib/mndb");
 const init = {
-    run: () => {
-        init.mndb();
+    run: (obj) => {
+        init.mndb(obj);
     },
-    mndb: () => {
+    mndb: (obj) => {
         const ks = config.keys;
-        //DB.key_set(ks.runner, address);                 //runner address
-        DB.key_set(ks.setting, cfgAnchor);              //setting anchor
+        //DB.key_set(ks.runner, address);               //runner address
+        DB.key_set(ks.setting, obj.anchor);              //setting anchor
         DB.key_set(ks.host, {                           //hub host details
             endpoint:"",        //access uri
             service:"",
             manage:"",
-            runner:address,
+            runner:obj.address,
         });              
         DB.key_set(ks.encry, { key: "", iv: "" });
 
@@ -100,57 +105,15 @@ const init = {
         });
     },
 }
-init.run();
-//console.log( DB.key_get(config.keys.runner));
 
-const koa = require("koa");
-const bodyParser = require("koa-bodyparser");
-const koaRouter = require("koa-router");
+/************************************************/
+/***************** RPC server *******************/
+/************************************************/
 
-/*****************************************************/
-/*********** koa.js to run the http server ***********/
-/*****************************************************/
-
-// exposed module
-const exposed = {
-    "service": {      //service functions here
-        //"knock":require("./service/knock.js"),
-        //"reg":require("./service/reg.js"),
-        "pong": require("./service/pong.js"),
-        "shuttle": require("./service/shuttle.js"),
-    },
-
-    "call": {        //public request method name checked here
-        "auto": require("./call/auto.js"),
-        "spam": require("./call/spam.js"),
-    },
-    "manage": {      //manage request method name checked here
-        "handshake": require("./manage/handshake.js"),  //get hub encry token to transport JSON file
-        "upload": require("./manage/upload.js"),        //upload account JSON file
-        "drop": require("./manage/drop.js"),            //drop the encry JSON file
-        "auth": require("./manage/auth.js"),            //verify authority to get JWT token
-        "dock": require("./manage/dock.js"),            //dock vService by URI and secret
-        "apart": require("./manage/apart.js"),          //apart vService by URI
-        "system": require("./manage/system.js"),        //system monitor data
-        "list": require("./manage/list.js"),            //vService exposed methods list 
-    },
-}
-
-// application start
-const app = new koa(), router = new koaRouter();
-app.use(bodyParser({
-    detectJSON: function (ctx) {
-        return ctx;
-    }
-}));
-app.use(router.routes());
-
-// application implement
 const self = {
     getRequestURI: (port) => {
         const host="localhost";
         const uri = `http://${host}:${port}`;
-        //console.log(uri);
         return uri;
     },
     getParams: (str, pre) => {
@@ -207,7 +170,6 @@ const self = {
         return !callback ? output : `${callback}(${JSON.stringify(output)})`;
     },
     checkSpam: (spam, IP) => {
-        //console.log(`Spam checking ...`);
         const DB = require("../lib/mndb.js");
         const data = DB.hash_get(config.keys.spam,spam);
         if (data === null) return 'error spam';
@@ -215,8 +177,6 @@ const self = {
         const stamp = tools.stamp();
         if (stamp > data.exp) return 'expired spam';
         data.exp = stamp + config.expire.spam;
-        //console.log({ IP });
-        //console.log(data);
         if (data.more.IP !== IP) return 'illigle spam';
         return true;
     },
@@ -246,137 +206,205 @@ const self = {
     },
 }
 
-const WS = require("../lib/wss");
-const fetch=(params,ck)=>{
-    //console.log(params);
-    const data={"hello":"good"};
-    return ck && ck(data);
-};
-WS.auto({},{fetch:fetch});
-WS.start();
+const exposed = {
+    "service": {      //service functions here
+        //"knock":require("./service/knock.js"),
+        //"reg":require("./service/reg.js"),
+        "pong": require("./service/pong.js"),
+        "shuttle": require("./service/shuttle.js"),
+    },
 
-// Router of hub, API calls, for web jsonp
-router.get("/", async (ctx) => {
-    const params = self.getParams(ctx.request.url);
-    const start = tools.stamp();
-    console.log(config.theme.success, `--------------------------- request start ---------------------------`);
-    console.log(`[ call ] stamp: ${start}. Params : ${JSON.stringify(params)}`);
+    "call": {        //public request method name checked here
+        "auto": require("./call/auto.js"),
+        "spam": require("./call/spam.js"),
+    },
+    "manage": {      //manage request method name checked here
+        "handshake": require("./manage/handshake.js"),  //get hub encry token to transport JSON file
+        "upload": require("./manage/upload.js"),        //upload account JSON file
+        "drop": require("./manage/drop.js"),            //drop the encry JSON file
+        "auth": require("./manage/auth.js"),            //verify authority to get JWT token
+        "dock": require("./manage/dock.js"),            //dock vService by URI and secret
+        "apart": require("./manage/apart.js"),          //apart vService by URI
+        "system": require("./manage/system.js"),        //system monitor data
+        "list": require("./manage/list.js"),            //vService exposed methods list 
+    },
+}
 
-    const mon=DB.key_get(config.keys.monitor);
-    mon.req+=1;
-    mon.last=tools.stamp();
+const koa = require("koa");
+const bodyParser = require("koa-bodyparser");
+const koaRouter = require("koa-router");
+const app = new koa(),router=new koaRouter();
+const cfgService={
+    manage:"manage",
+    service:"service",
+    //RPC:"websocket",
+    http:"http",
+}
+const listen={
+    run:(obj)=>{
+        app.use(bodyParser({
+            detectJSON: function (ctx) {
+                return ctx;
+            }
+        }));
+        app.use(router.routes());
 
-    const jsonp = self.formatParams(params);
-    const method = jsonp.request.method;
-    const IP = self.getClientIP(ctx.req);
-    if (method !== 'spam') {
-        if (!jsonp.request.params.spam) return ctx.body = self.export({ error: "no spam" }, jsonp.request.id, jsonp.callback);
-        const spam = jsonp.request.params.spam;
-        const spamResult = self.checkSpam(spam, IP);
-        if (spamResult !== true) {
-            return ctx.body = self.export({ error: spamResult }, jsonp.request.id, jsonp.callback);
+        // router running...
+        for(var k in cfgService){
+            if(listen[cfgService[k]]) listen[cfgService[k]]();
         }
-    }else{
-        mon.spam+=1;
-    }
-    
-    if (!method || !exposed.call[method]) {
-        return ctx.body = self.export({ error: "unkown call" }, jsonp.request.id, jsonp.callback);
-    }
 
-    // if (method !== 'spam') {
-    //     ctx.body = self.export({data:{stamp:tools.stamp(),num:tools.rand(1,2000)}}, jsonp.request.id, jsonp.callback);
-    //     return true;
-    // }
-    
-
-    const env = { IP: IP };
-    const result = await exposed.call[method](method, jsonp.request.params, jsonp.request.id, config, env);
-    ctx.body = self.export(result, jsonp.request.id, jsonp.callback);
-
-    const end = tools.stamp();
-    console.log(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success, `---------------------------- request end ----------------------------`);
-});
-
-router.get("/manage", async (ctx) => {
-    const params = self.getParams(ctx.request.url, "/manage");
-    const start = tools.stamp();
-    console.log(config.theme.success, `--------------------------- request start ---------------------------`);
-    console.log(`[ manage ] stamp: ${start}. Params : ${JSON.stringify(params)}`);
-
-    const mon=DB.key_get(config.keys.monitor);
-    mon.manage+=1;
-    mon.last=tools.stamp();
-
-    const jsonp = self.formatParams(params);
-    const method = jsonp.request.method;
-    //console.log(`Request [ manage ] stamp: ${jsonp.stamp}, server stamp : ${tools.stamp()}`);
-
-    //1. check spam
-    if (!jsonp.request.params.spam) return ctx.body = self.export({ error: "no spam" }, jsonp.request.id, jsonp.callback);
-    const spam = jsonp.request.params.spam;
-    const IP = self.getClientIP(ctx.req);
-    const spamResult = self.checkSpam(spam, IP);
-    if (spamResult !== true) {
-        return ctx.body = self.export({ error: spamResult }, jsonp.request.id, jsonp.callback);
-    }
-
-    //2. router to target method
-    if (!method || !exposed.manage[method]) {
-        return ctx.body = self.export({ error: "unkown call" }, jsonp.request.id, jsonp.callback);
-    }
-    const result = await exposed.manage[method](method, jsonp.request.params, jsonp.request.id, config);
-    ctx.body = self.export(!result.error ? result.data : result, jsonp.request.id, jsonp.callback);
-
-    //3. fresh the encry JSON file expire time
-    //TODO, fresh the expire time of JSON file.
-
-    const end = tools.stamp();
-    console.log(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success, `---------------------------- request end ----------------------------`);
-});
-
-// vService APIs
-router.post("/service", async (ctx) => {
-    //const header=ctx.request.header;
-    const req = ctx.request.body;
-    const start = tools.stamp();
-    console.log(config.theme.success, `--------------------------- request start ---------------------------`);
-    console.log(`[ service ] stamp: ${start}. Request : ${JSON.stringify(req)}`);
-
-    const mon=DB.key_get(config.keys.monitor);
-    mon.service+=1;
-    mon.last=tools.stamp();
-
-    if (!req.method || !exposed.service[req.method]) {
+        const port=obj.port;
+        app.listen(port, () => {
+            const ks=config.keys;
+            const endpoint=self.getRequestURI(port);
         
-        return ctx.body = JSON.stringify({ error: "unkown call" });
-    }
-    const result = await exposed.service[req.method](req.method, req.params, req.id, config);
-    ctx.body = self.export(!result.error ? result.data : result, req.id);
+            const host=DB.key_get(ks.host);
+            host.endpoint=endpoint;
+            host.service=`${endpoint}/service/`;
+            host.manage=`${endpoint}/manage/`;
+            
+            output(`[ Hub url ] http://localhost:${port}`,"primary",true);
+            output(`[ Manage url ] http://localhost:${port}/manage`,"primary",true);
+            
+            output(`Testing command lines:`,"",true);
+            output(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'`,"",true);
+            output(`Enjoy the Anchor Gateway Micro-service System.`,"success",true);
+        });
+    },
+    manage:()=>{
+        router.get("/manage", async (ctx) => {
+            const params = self.getParams(ctx.request.url, "/manage");
+            const start = tools.stamp();
+            output(`--------------------------- request start ---------------------------`,"success",true);
+            output(`[ manage ] stamp: ${start}. Params : ${JSON.stringify(params)}`,"",true);
 
-    const end = tools.stamp();
-    console.log(`[ service ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`);
-    console.log(config.theme.success, `---------------------------- request end ----------------------------`);
-});
+            const mon=DB.key_get(config.keys.monitor);
+            mon.manage+=1;
+            mon.last=tools.stamp();
+        
+            const jsonp = self.formatParams(params);
+            const method = jsonp.request.method;
 
-// start hub application
-app.listen(port, () => {
-    //console.log(self.getRequestURI(port) + '/service/');
-    const ks=config.keys;
-    const endpoint=self.getRequestURI(port);
+            //1. check spam
+            if (!jsonp.request.params.spam) return ctx.body = self.export({ error: "no spam" }, jsonp.request.id, jsonp.callback);
+            const spam = jsonp.request.params.spam;
+            const IP = self.getClientIP(ctx.req);
+            const spamResult = self.checkSpam(spam, IP);
+            if (spamResult !== true) {
+                return ctx.body = self.export({ error: spamResult }, jsonp.request.id, jsonp.callback);
+            }
+        
+            //2. router to target method
+            if (!method || !exposed.manage[method]) {
+                return ctx.body = self.export({ error: "unkown call" }, jsonp.request.id, jsonp.callback);
+            }
+            const result = await exposed.manage[method](method, jsonp.request.params, jsonp.request.id, config);
+            ctx.body = self.export(!result.error ? result.data : result, jsonp.request.id, jsonp.callback);
+        
+            //3. fresh the encry JSON file expire time
+            //TODO, fresh the expire time of JSON file.
+        
+            const end = tools.stamp();
+            output(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`,"",true);
+            output(`---------------------------- request end ----------------------------\n`,"success",true);
+        });
+    },
+    http:()=>{
+        router.get("/", async (ctx) => {
+            const params = self.getParams(ctx.request.url);
+            const start = tools.stamp();
+            output(`--------------------------- request start ---------------------------`,"success",true);
+            output(`[ call ] stamp: ${start}. Params : ${JSON.stringify(params)}`,"",true);
+            const mon=DB.key_get(config.keys.monitor);
+            mon.req+=1;
+            mon.last=tools.stamp();
+        
+            const jsonp = self.formatParams(params);
+            const method = jsonp.request.method;
+            const IP = self.getClientIP(ctx.req);
+            if (method !== 'spam') {
+                if (!jsonp.request.params.spam) return ctx.body = self.export({ error: "no spam" }, jsonp.request.id, jsonp.callback);
+                const spam = jsonp.request.params.spam;
+                const spamResult = self.checkSpam(spam, IP);
+                if (spamResult !== true) {
+                    return ctx.body = self.export({ error: spamResult }, jsonp.request.id, jsonp.callback);
+                }
+            }else{
+                mon.spam+=1;
+            }
+            
+            if (!method || !exposed.call[method]) {
+                return ctx.body = self.export({ error: "unkown call" }, jsonp.request.id, jsonp.callback);
+            }
+        
+            const env = { IP: IP };
+            const result = await exposed.call[method](method, jsonp.request.params, jsonp.request.id, config, env);
+            ctx.body = self.export(result, jsonp.request.id, jsonp.callback);
+        
+            const end = tools.stamp();
+            output(`[ manage ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`,"",true);
+            output(`---------------------------- request end ----------------------------\n`,"success",true);
+        });
+    },
+    service:()=>{
+        router.post("/service", async (ctx) => {
+            const req = ctx.request.body;
+            const start = tools.stamp();
+            output(`--------------------------- request start ---------------------------`,"success",true);
+            output(`[ service ] stamp: ${start}. Request : ${JSON.stringify(req)}`,"",true);
 
-    const host=DB.key_get(ks.host);
-    host.endpoint=endpoint;
-    host.service=`${endpoint}/service/`;
-    host.manage=`${endpoint}/manage/`;
+            const mon=DB.key_get(config.keys.monitor);
+            mon.service+=1;
+            mon.last=tools.stamp();
+        
+            if (!req.method || !exposed.service[req.method]) {
+                
+                return ctx.body = JSON.stringify({ error: "unkown call" });
+            }
+            const result = await exposed.service[req.method](req.method, req.params, req.id, config);
+            ctx.body = self.export(!result.error ? result.data : result, req.id);
+        
+            const end = tools.stamp();
+            output(`[ service ] stamp: ${end}, cost: ${end - start}ms, Result : ${JSON.stringify(result)}`,"",true);
+            output(`---------------------------- request end ----------------------------\n`,"success",true);
+        });
+    },
+    websocket:()=>{
+        const WS = require("../lib/wss");
+        const axios= require("axios").default;
+        const fetch=(params,ck)=>{
+            const cfg={
+                method: 'post',
+                url: "http://localhost:4444",
+                data:{"index":params.index},
+            }
+            axios(cfg).then((res)=>{
+                const data=res.data;
+                data.stamp=tools.stamp();
+                return ck && ck(data);
+            }).catch((err)=>{
+                output(err,"error");
+            });
+        };
+        WS.auto({},{fetch:fetch});
+        WS.start();
+    },
+}
 
-    //console.log(`JSON RPC 2.0 server running at port ${port}`);
-    console.log(config.theme.primary, `[ Hub url ] http://localhost:${port}`);
-    console.log(config.theme.primary, `[ Manage url ] http://localhost:${port}/manage`);
+/************************************************/
+/*************** Running logical ****************/
+/************************************************/
 
-    console.log(`Testing command lines:`);
-    console.log(`curl "http://localhost:${port}" -d '{"jsonrpc":"2.0","method":"echo","params":{"text":"hello world"},"id":3334}'`)
-    console.log(config.theme.success, `Enjoy the Anchor Gateway Micro-service System.`)
+output(`Anchor Gateway Hub ( v${config.version} ) running...`,"dark",true);
+
+const Valid = require("../lib/valid");
+Valid(process.argv.slice(2),(cfg)=>{
+    if(cfg.error) return output(cfg.error,"error");
+    if(!cfg.address) return output(`No manager address, valid hub server.`,"error");
+    if(!cfg.port) return output(`No port to bind hub service.`,"error");
+    if(cfg.port<8000) return output(`Please set the bind port > 8000 `,"error");
+    
+    init.run({anchor:cfg.anchor,address:cfg.address});
+    listen.run({port:cfg.port});
 });
