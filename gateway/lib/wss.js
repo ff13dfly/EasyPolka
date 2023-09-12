@@ -1,5 +1,6 @@
 const {WebSocketServer} =require('ws');
 const tools = require("./tools");
+const {output}=require("./output");
 
 const cfg={
     port:8866,
@@ -30,6 +31,7 @@ const self={
     },
     init:(ck)=>{
         wss = new WebSocketServer({port: cfg.port});
+        output(`Websocket started successful, port:${cfg.port}`,"success",true);
         return ck && ck();
     },
     start:()=>{
@@ -37,22 +39,29 @@ const self={
             self.start();
         });
         wss.on('connection', function connection(ws,request, client) {
+            
             const wid=tools.char(12);
-
-            console.log(wid);
             clients[wid]=ws;
+            output(`New connection created: ${wid}`);
             ws.send(JSON.stringify({"spam":wid}));
             ws.on('error', console.error);
             ws.on('message',(res)=>{
                 const str=res.toString();
-                const input=JSON.parse(str);
-                const active=clients[input.spam];
-                if(agent.fetch===null){
-                    active.send(JSON.stringify({error:"No data fetch function."}));
-                }else{
-                    agent.fetch(input,(data)=>{
-                        active.send(JSON.stringify(data));
-                    });
+                try {
+                    const input=JSON.parse(str);
+                    if(!input.spam){
+                        return output(`Unrecongnize request, input: ${str}`,"error");
+                    }
+                    const active=clients[input.spam];
+                    if(agent.fetch===null){
+                        active.send(JSON.stringify({error:"No data fetch function."}));
+                    }else{
+                        agent.fetch(input,(data)=>{
+                            active.send(JSON.stringify(data));
+                        });
+                    }
+                } catch (error) {
+                    output(`Failed to decode input params.`,"error");
                 }
             });
         })

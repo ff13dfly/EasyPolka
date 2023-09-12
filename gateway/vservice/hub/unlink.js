@@ -3,9 +3,10 @@
 
 const DB = require("../../lib/mndb");
 const tools = require("../../lib/tools");
+const {output}=require("../../lib/output");
 
 module.exports = (req, server, config) => {
-    console.log(`[ unlink ] called : ${JSON.stringify(req)}`);
+    output(`[ unlink ] called : ${JSON.stringify(req)}`);
     const token = req.params.token;
     const hub=DB.key_get(token);
     if(hub===null) return {error:"illigle token"};
@@ -19,6 +20,6 @@ module.exports = (req, server, config) => {
         },
         stamp:tools.stamp(),
     }
-    console.log(`[ unlink ] response : ${JSON.stringify(result)}\n`)
+    output(`[ unlink ] response : ${JSON.stringify(result)}\n`)
     return result;
 };

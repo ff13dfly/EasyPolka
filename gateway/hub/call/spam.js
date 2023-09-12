@@ -7,6 +7,7 @@
 // 1. not related to account. That will cause ddos to target account.
 const DB = require("../../lib/mndb.js");
 const tools = require("../../lib/tools");
+const {output}=require("../../lib/output");
 
 const self = {
     clean:(stamp,ckey,mkey)=>{     //clean the expired spam
@@ -31,7 +32,7 @@ const self = {
             count++;
             delete map[row];
         }
-        console.log(`${count} rows need to be removed`);
+        output(`${count} rows need to be removed`)
         for(let i=0;i<count;i++) queue.shift();
     },
 }

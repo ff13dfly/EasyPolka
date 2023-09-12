@@ -6,6 +6,7 @@
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
 const encry=require('../../lib/encry');
+const {output}=require("../../lib/output");
 
 const self={
     checkAuthority:(token,ks)=>{
@@ -21,14 +22,15 @@ const self={
 
 
         const auth=JSON.parse(de_token);
-        console.log(`Authority:${JSON.stringify(auth)}`);
+        output(`Authority:${JSON.stringify(auth)}`);
         const json=DB.key_get(ks.encoded);
         if(json===null){
             return {error:"No authority file."};
         }
 
         const exp=json.exp;
-        console.log(`Authority on Hub:${JSON.stringify(exp)}`);
+        output(`Authority on Hub:${JSON.stringify(exp)}`);
+        
         if(auth.password!==exp.password){
             return {error:"Illigle authority of pass"};
         }

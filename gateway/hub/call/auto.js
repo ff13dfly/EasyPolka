@@ -4,6 +4,7 @@
 const DB=require("../../lib/mndb.js");
 const tools=require("../../lib/tools");
 const axios= require("axios").default;
+const {output}=require("../../lib/output");
 
 const self={
     formatJSON:(method,params,id)=>{
@@ -17,7 +18,7 @@ const self={
 }
 
 module.exports=(method,params,id,config,env)=>{
-    console.log(`From auto exposed API, params : ${JSON.stringify(params)}`);
+    output(`From auto exposed API, params : ${JSON.stringify(params)}`,"",true);
 
     return new Promise((resolve, reject) => {
         //1.prepare the vService list
@@ -61,7 +62,6 @@ module.exports=(method,params,id,config,env)=>{
         axios(reqAuto).then((resAuto)=>{
             const rData=resAuto.data;
             if(rData.error) return resolve({error:rData.error});
-
             const info=rData.result;
 
             const res={
@@ -70,11 +70,12 @@ module.exports=(method,params,id,config,env)=>{
             }
 
             //4. monitor length data update
-
             return resolve(res);
         }).catch((err)=>{
-            console.log(config.theme.error,err);
-            return reject({error:err});
+            output(err,"error");
+            //TODO, if the vService interrupt, need to remove the service
+
+            return resolve({error:"No response from vService."});
         });
     });
 };

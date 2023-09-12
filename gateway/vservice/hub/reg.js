@@ -3,6 +3,7 @@
 const DB = require("../../lib/mndb");
 const tools = require("../../lib/tools");
 const encry = require('../../lib/encry');
+const {output}=require("../../lib/output");
 
 const self = {
     getKeyIV: (secret, salt) => {
@@ -13,7 +14,7 @@ const self = {
 }
 
 module.exports = (req, server, config) => {
-    console.log(`[ reg ] called : ${JSON.stringify(req)}`);
+    output(`[ reg ] called : ${JSON.stringify(req)}`);
     //console.log(`[ reg ] called : ${JSON.stringify(req)}`);
     //console.log(`[ reg ] config : ${JSON.stringify(config)}`);
     if (!req.params) return { error: "Invalid request." };
@@ -94,7 +95,7 @@ module.exports = (req, server, config) => {
         //console.log(`[ reg ] response : ${JSON.stringify(result)}\n`);
         return result;
     } catch (error) {
-        console.log(config.theme.error,`Error here : ${error}`);
+        output(error,"error");
         return { error: error }
     }
 };

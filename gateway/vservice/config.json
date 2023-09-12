@@ -1,5 +1,6 @@
 {
     "port":4503,
+    "name":"vName",
     "address":"5EJ7xPwx9MGaqsuTBanT7kde6r5fJfSUenf9qFnGYkMNcyn9",
     "anchor":"",
     "expire": {

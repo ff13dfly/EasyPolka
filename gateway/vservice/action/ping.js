@@ -1,10 +1,8 @@
-/***********************/
-/***********************/
-
 const DB = require("../../lib/mndb");
 const tools = require("../../lib/tools");
 const axios= require("axios").default;
 const encry = require('../../lib/encry');
+const { output } = require("../../lib/output");
 
 const self = {
     ping:(list,ck,ts)=>{
@@ -48,7 +46,7 @@ const self = {
             
             return self.ping(list,ck,ts);
         }).catch((err)=>{
-            console.log(config.theme.error,err);
+            output(err,"error",true);
             return self.ping(list,ck,ts);
         });
     },
@@ -65,14 +63,12 @@ const self = {
 
 let active=null;                 //two tast: 1. SN ; 2. Fresh AES token
 module.exports = (config) => {
-    //console.log(`This is from action "ping"`);
-
     if(active===null) active=setInterval(()=>{
-        console.log(config.theme.success,`---------------------------- auto fresh ----------------------------`)
+        output(`---------------------------- auto fresh ----------------------------`,"success",true);
         const hubs=DB.hash_all(config.keys.hubs);
-        console.log(hubs);
+        //console.log(hubs);
         if(hubs===null){
-            console.log(config.theme.error,`No active Hub linked yet.`);
+            output(`No active Hub linked yet.`,"error",true);
             return true;
         }
 
@@ -87,10 +83,9 @@ module.exports = (config) => {
                 hubs[k]["AES"]=row.AES;
                 hubs[k]["active"]=row.active;
             }
-
-            console.log(config.theme.success,`All hubs active.`);
+            output(`All hubs active.`,"success",true);
         });
-        console.log(config.theme.success,`---------------------------- auto fresh ----------------------------\n`)
+        output(`---------------------------- auto fresh ----------------------------\n`,"success",true);
     //},3000);
     },config.timer.ping);
 };

@@ -4,7 +4,6 @@ const DB=require("../../lib/mndb.js");
 const tools=require("../../lib/tools");
 
 module.exports=(method,params,id,config)=>{
-
     return new Promise((resolve, reject) => {
         const res={
             data:{
@@ -16,6 +15,6 @@ module.exports=(method,params,id,config)=>{
 
         setTimeout(()=>{
             return resolve(res);
-        },1200)
+        },tools.rand(300,900));
     });
 };

@@ -218,7 +218,7 @@ const app = new koa(),router=new koaRouter();
 const cfgService={
     manage:"manage",
     service:"service",
-    //RPC:"websocket",
+    RPC:"websocket",
     http:"http",
 }
 const listen={
@@ -353,19 +353,29 @@ const listen={
     },
     websocket:()=>{
         const WS = require("../lib/wss");
-        const axios= require("axios").default;
-        const fetch=(params,ck)=>{
-            const cfg={
-                method: 'post',
-                url: "http://localhost:4444",
-                data:{"index":params.index},
+        const fetch=(req,ck)=>{
+
+            const start = tools.stamp();
+            output(`--------------------------- request start ---------------------------`,"success",true);
+            output(`[ service ] stamp: ${start}. Request : ${JSON.stringify(req)}`,"",true);
+
+            //monitor code
+            const mon=DB.key_get(config.keys.monitor);
+            mon.req+=1;
+            mon.last=tools.stamp();
+            
+            const method = req.method;
+            if (!req.method || !exposed.call[method]) {
+                return ck && ck({error:"unkown call"});
             }
-            axios(cfg).then((res)=>{
-                const data=res.data;
-                data.stamp=tools.stamp();
-                return ck && ck(data);
-            }).catch((err)=>{
-                output(err,"error");
+            
+            const env = {};
+            exposed.call[method](method, req, req.id, config, env).then((result)=>{
+                if(result.error) return ck && ck(result);
+                const data=result.data;
+                data.done=result.stamp;
+                data.hub=tools.stamp();
+                ck && ck(data);
             });
         };
         WS.auto({},{fetch:fetch});

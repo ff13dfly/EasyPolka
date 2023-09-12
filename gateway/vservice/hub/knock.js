@@ -10,8 +10,10 @@
 
 const DB=require("../../lib/mndb.js");
 const tools=require("../../lib/tools");
+const {output}=require("../../lib/output");
+
 module.exports=(req,server,config)=>{
-    console.log(`[ knock ] called : ${JSON.stringify(req)}`);
+    output(`[ knock ] called : ${JSON.stringify(req)}`,"",true);
     //console.log(server);
     //1.DDOS check to avoid too much request
 
@@ -29,6 +31,6 @@ module.exports=(req,server,config)=>{
         },
         stamp:tools.stamp(),
     }
-    console.log(`[ knock ] response : ${JSON.stringify(result)}\n`)
+    output(`[ knock ] response : ${JSON.stringify(result)}\n`,"",true)
     return result;
 };

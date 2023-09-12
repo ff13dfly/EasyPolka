@@ -3,6 +3,7 @@
 
 const DB=require("../../lib/mndb");
 const tools=require("../../lib/tools");
+const {output}=require("../../lib/output");
 
 const self={
     autoDrop:(ks)=>{
@@ -11,7 +12,7 @@ const self={
 
         const exp=json.exp;
         const stamp=tools.stamp();
-        console.log(`Checking, now ${stamp}, exp ${exp.file}`);
+        output(`Checking, now ${stamp}, exp ${exp.file}`);
 
         if(stamp>exp.file){
             DB.key_del(ks.encoded);

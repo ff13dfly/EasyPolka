@@ -7,7 +7,7 @@
         
     </body>
     <script>
-        var url="ws://localhost:8000";
+        var url="ws://localhost:8866";
         var ws=new WebSocket(url);
         var index=0;
         var spam="";
@@ -15,7 +15,15 @@
         ws.onopen=function(res){
             interval=setInterval(() => {
                 index++;
-                var sdata={"spam":spam,"index":index};
+                var address="5DAkxQvZ9JQUfZtHjYV6MbcZFvuHHBzN8HQ69xuyDUFfxwGK";
+                var sdata={
+                    "spam":spam,
+                    "index":index,
+                    "method":"auto",
+                    "svc":"vHistory",
+                    "act":"view",
+                    "id":address,
+                };
                 ws.send(JSON.stringify(sdata))
             }, 50);
         }
