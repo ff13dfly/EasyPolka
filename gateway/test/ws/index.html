@@ -9,36 +9,39 @@
     <script>
         var url="ws://localhost:8866";
         var ws=new WebSocket(url);
-        var index=0;
-        var spam="";
-        var interval=null;
-        ws.onopen=function(res){
-            interval=setInterval(() => {
-                index++;
-                var address="5DAkxQvZ9JQUfZtHjYV6MbcZFvuHHBzN8HQ69xuyDUFfxwGK";
-                var sdata={
-                    "spam":spam,
-                    "index":index,
-                    "method":"auto",
-                    "svc":"vHistory",
-                    "act":"view",
-                    "id":address,
-                };
-                ws.send(JSON.stringify(sdata))
-            }, 50);
-        }
-        ws.onmessage=function(res){
-            var data=JSON.parse(res.data);
-            if(data.spam) spam=data.spam;
-            console.log(res.data);
-        }
-        ws.onclose=function(res){
-            clearInterval(interval);
-        }
-        ws.onerror=function(res){
-            //console.log(res);
-        }
-
-        
+            var index=0;
+            var spam="";
+            var interval=null;
+            ws.onopen=function(res){
+                interval=setInterval(() => {
+                    index++;
+                    var address="5DAkxQvZ9JQUfZtHjYV6MbcZFvuHHBzN8HQ69xuyDUFfxwGK";
+                    var sdata={
+                        "spam":spam,
+                        "index":index,
+                        "method":"auto",
+                        "svc":"vHistory",
+                        "act":"view",
+                        "id":address,
+                    };
+                    ws.send(JSON.stringify(sdata))
+                }, 1000);
+            }
+            
+            ws.onmessage=function(res){
+                var data=JSON.parse(res.data);
+                if(data.spam) spam=data.spam;
+                console.log(res.data);
+            }
+            ws.onclose=function(res){
+                clearInterval(interval);
+            }
+            ws.onerror=function(res){
+                if(ws.readyState===3){
+                    console.log("Failed to link to websocket server, please check the server status.");
+                }
+                //console.log(ws)
+                //console.log(res);
+            }
     </script>
 </html>

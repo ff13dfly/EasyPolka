@@ -1,3 +1,6 @@
+// reconnect and failed to connect problem
+// https://stackoverflow.com/questions/25779831/how-to-catch-websocket-connection-to-ws-xxxnn-failed-connection-closed-be
+
 const {WebSocketServer} =require('ws');
 const tools = require("./tools");
 const {output}=require("./output");
