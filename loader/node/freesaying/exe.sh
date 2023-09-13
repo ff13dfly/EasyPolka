@@ -1,0 +1,7 @@
+#nohup sh exe.sh &
+#nohup node loader.nodejs.js anchor://vhistory/ ws://127.0.0.1:9944 &
+node loader.nodejs.js anchor://vhistory/ ws://127.0.0.1:9944
+#node loader.nodejs.js anchor://vmarket/ ws://127.0.0.1:9944
+#node loader.nodejs.js anchor://vmix/ ws://127.0.0.1:9944
+#node loader.nodejs.js anchor://vsocial/ ws://127.0.0.1:9944
+#node loader.nodejs.js anchor://vsaying/ ws://127.0.0.1:9944

@@ -1,5 +1,3 @@
-/***********************/
-/***********************/
 const DB=require("../../lib/mndb.js");
 const tools=require("../../lib/tools");
 

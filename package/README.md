@@ -4,7 +4,7 @@
 
     ```BASH
         # install 
-        yarn add esbuld
+        yarn add esbuild
     ```
 
 ## Loader

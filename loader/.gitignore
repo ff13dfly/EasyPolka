@@ -10,3 +10,8 @@ package-lock.json
 yarn.lock
 
 node/demo
+node/freesaying/vHistory.min.js
+node/freesaying/vMarket.min.js
+node/freesaying/vMix.min.js
+node/freesaying/vSaying.min.js
+node/freesaying/vSocial.min.js
