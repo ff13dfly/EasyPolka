@@ -1,10 +1,18 @@
 import { Col } from 'react-bootstrap';
 
-function Join() {
+function Cell(props) {
+  const size=props.size;
+  const row=props.data;
+
   return (
-    <Col md={4} lg={4} xl={4} xxl={4} className='pt-4'>
-      <h3>Join Us</h3>
+    <Col xs={size} sm={size} md={size} lg={size} xl={size} xxl={size} className='pt-4 cell'
+      onClick={(ev)=>{
+        console.log("click");
+      }}
+    >
+      <img src={row.icon} alt="" />
+      <h6>{row.short}</h6>
     </Col>
   );
 }
-export default Join;
+export default Cell;
