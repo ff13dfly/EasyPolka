@@ -157,12 +157,11 @@ const self = {
     },
 }
 
-console.log(location);
+//console.log(location);
 const result = self.decoder(location.hash);
 let linker = `anchor://${result.anchor}/`;
 if(result.block!==0) linker+=result.block;
 const server = result.server;
-//console.log(linker);
 
 self.version(config.version, "ver");
 self.step(`Anchor Network server ${server}`, () => {
