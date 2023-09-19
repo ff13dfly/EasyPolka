@@ -1,7 +1,7 @@
 import { Container, Navbar, Form, Button, Row, Col } from 'react-bootstrap';
 function Navigator() {
   return (
-    <Navbar expand="lg" className="bg-body-tertiary">
+    <Navbar expand="lg" className="bg-body-tertiary pb-4">
       <Container>
         <Navbar.Brand href="#home">W<span className='logo'>3</span>OS</Navbar.Brand>
         <Row>

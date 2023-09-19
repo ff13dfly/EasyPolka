@@ -11,7 +11,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"logo192.png",
+      "icon":"icons/app_01.jpg",
       "short":"Setting",
       "desc":""
     },
@@ -25,7 +25,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"logo192.png",
+      "icon":"icons/app_02.jpg",
       "short":"Document",
       "desc":""
     },
@@ -39,7 +39,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"logo192.png",
+      "icon":"icons/app_03.jpg",
       "short":"Anchor",
       "desc":""
     },
@@ -53,7 +53,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"logo192.png",
+      "icon":"icons/app_04.jpg",
       "short":"Hello",
       "desc":""
     },
@@ -67,8 +67,22 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"logo192.png",
+      "icon":"icons/app_05.jpg",
       "short":"Gateway",
+      "desc":""
+    },
+    {
+      "name":"talking",
+      "src":"anchor://setting",
+      "base":true,
+      "status":"installing",
+      "type":"",
+      "grid":{
+        "size":[1,1],
+        "position":[0,0],
+      },
+      "icon":"icons/app_06.jpg",
+      "short":"talking",
       "desc":""
     }
   ]

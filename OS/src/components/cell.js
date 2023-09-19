@@ -24,7 +24,7 @@ function Cell(props) {
       }}
     >
       <span className={props.index%2?"status green":"status red"}></span>
-      <span className='type'>Data</span>
+      <span className='type'>{props.index%2?"Data":"Dapp"}</span>
       <img src={row.icon} alt="" />
       <h6>{row.short}</h6>
     </Col>
