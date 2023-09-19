@@ -23,6 +23,23 @@ code {
 
 @media screen and (min-width: 1200px){
 }
+.logo{font-size: 16px;color:#444444}
 
 .cell{text-align: center;}
-.cell img{width: 100%;object-fit: cover;}
+.cell img{width: 90%;object-fit: cover;border-radius: 10px;
+  box-shadow: 2px 2px 2px 1px #BBBBBB;
+}
+.cell h6{margin-top: 4px;}
+.status {width: 12px;height: 12px;border-radius: 6px;z-index: 100;float: left;
+    position: relative;left: 0px;top:14px;}
+.green{background: #6fc86f;}
+.red{background: #b83a10;}
+
+.type{height: 14px;line-height: 14px;font-size: 12px;text-align: right; z-index: 100;float: right;
+  background: #FFFFFF;position: relative;right: 0px;top:14px;}
+
+.board{background: #444444;color:#FFFFFF;border-radius: 12px;text-align: center;}
+
+#stage{width: 100%;height: 180px;background: #EEEEEE;
+  position: fixed;left: 0px;top:400px;z-index: 999;}
+#mask{width:100%;height: 100%;background: #000000;opacity: 0;z-index: 900;position: fixed;left: 0px;top:0px;}

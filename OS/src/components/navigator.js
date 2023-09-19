@@ -3,7 +3,7 @@ function Navigator() {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#home">W3OS</Navbar.Brand>
+        <Navbar.Brand href="#home">W<span className='logo'>3</span>OS</Navbar.Brand>
         <Row>
           <Col lg={9} xs={9} className="pt-2" >
             <Form.Control

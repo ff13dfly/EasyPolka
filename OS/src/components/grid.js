@@ -16,7 +16,7 @@ function Grid(props) {
   return (
     <Row className='pb-2'>
       {list[page].map((row, index) => (
-        <Cell size={num} key={index} data={row} />
+        <Cell size={num} key={index} index={index} data={row} funs={props.funs}/>
       ))}
     </Row>
   );
