@@ -46,3 +46,8 @@ code {
 .stage{background: #000000;opacity: 0.2;z-index: 960;position: fixed;}
 
 #mask{width:100%;height: 100%;background: #000000;opacity: 0;z-index: 900;position: fixed;left: 0px;top:0px;}
+
+#page{position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 999;background: #FFFFFF;}
+#close{position: fixed;left: 10px;bottom: 10px;width: 60px;height: 60px;border-radius: 30px;
+  background: #EEEEEE;text-align: center;line-height: 60px;font-size: 40px;color: #FFFFFF;}
+#page iframe{width: 100%;height: 600px;}

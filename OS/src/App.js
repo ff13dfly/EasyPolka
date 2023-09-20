@@ -15,6 +15,7 @@ const size = Device.grids();
 function App() {
   let [ctx_stage, setStageContent] = useState("");
   let [ctx_mask, setMaskContent] = useState("");
+  let [ctx_page, setPageContent] = useState("");
 
   const funs={
     stage:(ctx)=>{
@@ -23,7 +24,14 @@ function App() {
     mask:(ctx)=>{
       setMaskContent(ctx);
     },
+    page:(ctx)=>{
+      setPageContent(ctx);
+    },
   }
+
+  useEffect(()=>{
+
+  },[]);
 
   return (
     <div>
@@ -34,6 +42,7 @@ function App() {
       </Container>
       {ctx_stage}
       {ctx_mask}
+      {ctx_page}
     </div>
   );
 }

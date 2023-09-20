@@ -1,5 +1,6 @@
 import { Col } from 'react-bootstrap';
 import Stage from '../layout/stage';
+import Page from '../layout/page';
 import Device from '../lib/device';
 import Overview from './overview';
 
@@ -21,13 +22,31 @@ function Cell(props) {
       const posY = details.gridY + cellY  * details.cell[1];
       return { position: [posX, posY], size: details.cell, screen: details.screen }
     },
-    click: () => {
-      console.log(data);
+    clickData:()=>{
       const block = self.calcBlock(props.index);
       const content=(<Overview link={data.src}/>);
       funs.stage(<Stage block={block} content={content} callback={(ev) => {
         funs.stage("");
       }} />);
+    },
+    clickApp:()=>{
+      //console.log("Ready to load app");
+      funs.page(<Page anchor="playground" funs={funs}/>);
+    },
+    click: () => {
+      console.log(data.type);
+      switch (data.type) {
+
+        case "data":
+          self.clickData();
+          break;
+        case "app":
+          self.clickApp();
+          break;
+        default:
+          self.clickData();
+          break;
+      }
     },
   }
 

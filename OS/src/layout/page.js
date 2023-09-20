@@ -1,32 +1,36 @@
 import { Row, Col } from 'react-bootstrap';
 import { useEffect,useState} from 'react';
-import { Config } from '../config/default.js';
 
 //dialog page container, hidden default
 
 function Page(props) {
-  const router=props.router;
-  const show=props.show;
-  //console.log(router);
-  //console.log(show);
-  let [info,setInfo]=useState(router);
+  const alink=props.anchor;
 
+  let [link,setLink]=useState("");
+
+  const basic="http://localhost/easypolka/loader/frontend/code/index.html";
 
   const self={
-    router:(page)=>{
-      setInfo(page);
-    },
   };
 
   useEffect(() => {
-    self.router(router);
+    //self.router(router);
+    setLink(`${basic}#${alink}#`);
   }, []);
 
 
   return (
-    <Row>
-      <Col lg={12} xs={12} className="pt-2" id={Config.ID.page} >{info}</Col>
-    </Row>
+    <div id="page">
+      <Row>
+        <Col lg={12} xs={12} className="pt-2"></Col>
+        <Col lg={12} xs={12} className="pt-2">
+          <iframe src={link}></iframe>
+        </Col>
+      </Row>
+      <span id="close" onClick={(ev)=>{
+        props.funs.page("");
+      }}>X</span>
+    </div>
   );
 }
 export default Page;

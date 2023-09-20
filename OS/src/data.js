@@ -6,7 +6,7 @@ module.exports=[
       "block":0,
       "base":true,
       "status":"normal",
-      "type":"",
+      "type":"app",
       "grid":{
         "size":[1,1],
         "position":[0,0],
