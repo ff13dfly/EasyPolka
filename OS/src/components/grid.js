@@ -21,7 +21,7 @@ function Grid(props) {
   useEffect(()=> {
     //const startY=Device.getStart(id);
     //console.log(startY);
-  })
+  },[])
 
   return (
     <div id={id}>

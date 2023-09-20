@@ -1,12 +1,15 @@
 import { Col } from 'react-bootstrap';
 import Stage from '../layout/stage';
-import Mask from '../layout/mask';
 import Device from '../lib/device';
+import Overview from './overview';
+
 
 function Cell(props) {
   const size = props.size;
   const row = props.data;
   const funs = props.funs;
+
+  const data=props.data;
 
   const self = {
     calcBlock: (index) => {
@@ -19,21 +22,11 @@ function Cell(props) {
       return { position: [posX, posY], size: details.cell, screen: details.screen }
     },
     click: () => {
-      const block = self.calcBlock(props.index)
-      funs.stage(<Stage block={block} callback={(ev) => {
+      console.log(data);
+      const block = self.calcBlock(props.index);
+      const content=(<Overview link={data.src}/>);
+      funs.stage(<Stage block={block} content={content} callback={(ev) => {
         funs.stage("");
-        // const x=ev.screenX;
-        // const y=ev.screenY;
-        // const clickEvent = new MouseEvent('click', {
-        //   view: window,
-        //   screenX: x,
-        //   screenY: y,
-        // });
-        // const elementAtPoint = document.elementFromPoint(x, y);
-        // console.log(elementAtPoint);
-        //elementAtPoint.click();
-        //elementAtPoint.dispatchEvent(clickEvent);
-
       }} />);
     },
   }

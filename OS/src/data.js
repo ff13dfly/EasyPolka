@@ -17,7 +17,7 @@ module.exports=[
     },
     {
       "name":"setting",
-      "src":"anchor://setting",
+      "src":"anchor://document",
       "base":true,
       "status":"failed",
       "type":"",
@@ -31,7 +31,7 @@ module.exports=[
     },
     {
       "name":"setting",
-      "src":"anchor://setting",
+      "src":"anchor://homepage",
       "base":true,
       "status":"failed",
       "type":"",
@@ -45,7 +45,7 @@ module.exports=[
     },
     {
       "name":"setting",
-      "src":"anchor://setting",
+      "src":"anchor://hello",
       "base":true,
       "status":"failed",
       "type":"",
@@ -59,7 +59,7 @@ module.exports=[
     },
     {
       "name":"setting",
-      "src":"anchor://setting",
+      "src":"anchor://gateway_ui",
       "base":true,
       "status":"failed",
       "type":"",
@@ -73,7 +73,7 @@ module.exports=[
     },
     {
       "name":"talking",
-      "src":"anchor://setting",
+      "src":"anchor://freesaying",
       "base":true,
       "status":"installing",
       "type":"",

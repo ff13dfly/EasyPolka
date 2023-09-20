@@ -1,20 +1,18 @@
 import { Container} from 'react-bootstrap';
-import { useEffect,useState} from 'react';
+import { useEffect} from 'react';
 
 function Stage(props) {
   const block=props.block;
-  console.log(block);
   const size=block.size;
   const pos=block.position;
   const screen=block.screen;
 
   useEffect(() => {
-    //self.router(router);
+
   }, []);
 
   const cmap={
     top:`${pos[1]+size[1]}px`,
-    //display:"none",
   }
   const bmap={
     left:{
@@ -60,9 +58,7 @@ function Stage(props) {
         }}></div>
       </div>
       <div id="stage" style={cmap}>
-        <Container >
-          Stage here.Stage here.Stage here.Stage here.Stage here.Stage here.Stage here.Stage here.Stage here.Stage here.
-        </Container>
+        <Container >{props.content}</Container>
       </div>
     </div>
   );
