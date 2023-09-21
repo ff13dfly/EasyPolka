@@ -22,7 +22,7 @@ function Page(props) {
   return (
     <div id="page">
       <Row>
-        <Col lg={12} xs={12} className="pt-2"></Col>
+        <Col lg={12} xs={12} className="pt-2">Title and Status here</Col>
         <Col lg={12} xs={12} className="pt-2">
           <iframe src={link}></iframe>
         </Col>

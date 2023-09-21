@@ -2,11 +2,11 @@ module.exports=[
   [
     {
       "name":"setting",
-      "src":"anchor://setting",
+      "src":"",
       "block":0,
       "base":true,
       "status":"normal",
-      "type":"app",
+      "type":"system",
       "grid":{
         "size":[1,1],
         "position":[0,0],
@@ -16,9 +16,24 @@ module.exports=[
       "desc":""
     },
     {
+      "name":"account",
+      "src":"",
+      "block":0,
+      "base":true,
+      "status":"normal",
+      "type":"system",
+      "grid":{
+        "size":[1,1],
+        "position":[0,0],
+      },
+      "icon":"icons/app_01.jpg",
+      "short":"Account",
+      "desc":""
+    },
+    {
       "name":"setting",
       "src":"anchor://document",
-      "base":true,
+      "base":false,
       "status":"failed",
       "type":"",
       "grid":{
@@ -32,7 +47,7 @@ module.exports=[
     {
       "name":"setting",
       "src":"anchor://homepage",
-      "base":true,
+      "base":false,
       "status":"failed",
       "type":"",
       "grid":{
@@ -46,7 +61,7 @@ module.exports=[
     {
       "name":"setting",
       "src":"anchor://hello",
-      "base":true,
+      "base":false,
       "status":"failed",
       "type":"",
       "grid":{
@@ -59,10 +74,10 @@ module.exports=[
     },
     {
       "name":"setting",
-      "src":"anchor://gateway_ui",
-      "base":true,
+      "src":"anchor://homepage",
+      "base":false,
       "status":"failed",
-      "type":"",
+      "type":"data",
       "grid":{
         "size":[1,1],
         "position":[0,0],
@@ -73,10 +88,10 @@ module.exports=[
     },
     {
       "name":"talking",
-      "src":"anchor://freesaying",
-      "base":true,
+      "src":"anchor://homepage",
+      "base":false,
       "status":"installing",
-      "type":"",
+      "type":"app",
       "grid":{
         "size":[1,1],
         "position":[0,0],
