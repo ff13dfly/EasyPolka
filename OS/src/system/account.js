@@ -1,8 +1,10 @@
-import { Container,Row, Col } from 'react-bootstrap';
+import { Navbar, Container, Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
 
 function Account(props) {
   console.log(props.funs);
+  const size = [3, 6, 3];
+
   const self = {
 
   };
@@ -10,25 +12,35 @@ function Account(props) {
   useEffect(() => {
 
   }, []);
-
-
   return (
     <div id="page">
-      <Container >
-      <Row>
-        <Col lg={3} xs={3} className="pt-2"></Col>
-        <Col lg={6} xs={6} className="pt-2 text-center"> Account Setting </Col>
-        <Col lg={3} xs={3} className="pt-2  text-end" onClick={(ev)=>{
-        props.funs.page("");
-      }}> X </Col>
-        <Col lg={12} xs={12} className="pt-2">
-          服务器配置
-        </Col>
-      </Row>
-      {/* <span id="close" onClick={(ev)=>{
-        props.funs.page("");
-      }}>X</span> */}
+      <Navbar className="bg-body-tertiary">
+        <Container>
+          <Row style={{"width":"100%","margin":"0 auto"}}>
+            <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}
+            style={{"paddingTop":"6px"}}>
+              <Navbar.Brand href="#">W<span className='logo'>3</span>OS</Navbar.Brand>
+            </Col>
+            <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}
+              style={{"paddingTop":"10px"}} className='text-center'>
+              Account Setting</Col>
+            <Col xs={size[2]} sm={size[2]} md={size[2]} lg={size[2]} xl={size[2]} xxl={size[2]} 
+              className="text-end pb-2" style={{"paddingTop":"10px"}}>
+              <span className="close" onClick={(ev) => {
+                props.funs.page("");
+              }}>X</span>
+            </Col>
+          </Row>
+        </Container>
+      </Navbar>
+      <Container>
+        <Row>
+          <Col lg={12} xs={12} className="pt-2">
+            账号配置
+          </Col>
+        </Row>
       </Container>
+
     </div>
   );
 }

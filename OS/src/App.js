@@ -16,7 +16,8 @@ function App() {
   let [ctx_stage, setStageContent] = useState("");
   let [ctx_mask, setMaskContent] = useState("");
   let [ctx_page, setPageContent] = useState("");
-  let [show, setDailogShow] = useState(false);
+  let [show,setDialogShow] = useState(false);
+  let [apps,setApps]= useState([[]]);
 
   const funs={
     stage:(ctx)=>{
@@ -28,10 +29,13 @@ function App() {
     page:(ctx)=>{
       setPageContent(ctx);
     },
+    fresh:()=>{
+
+    },
   }
 
   useEffect(()=>{
-
+    setApps(list);
   },[]);
 
   return (
@@ -39,7 +43,7 @@ function App() {
       <Navigator />
       <Container>
         <Board />
-        <Grid size={size} list={list} funs={funs}/>
+        <Grid size={size} list={apps} funs={funs}/>
         <Dialog show={show}/>
       </Container>
       {ctx_stage}
