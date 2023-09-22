@@ -7,7 +7,7 @@ import Board from './components/board';
 import Dialog from './layout/dialog';
 
 import Device from './lib/device';
-import list from './data';
+import RUNTIME from './lib/runtime';
 
 const size = Device.grids();
 
@@ -35,7 +35,9 @@ function App() {
   }
 
   useEffect(()=>{
-    setApps(list);
+    RUNTIME.getApps((list)=>{
+      setApps(list);
+    });
   },[]);
 
   return (

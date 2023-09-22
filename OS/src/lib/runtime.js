@@ -1,8 +1,11 @@
+import list from '../data';
+
 let API = null;
 let wsAPI = null;
 
 const config = {
     endpoint: "ws://localhost:9944",
+    loader:"",
     user: {
 
     },
@@ -12,6 +15,15 @@ const RUNTIME = {
     trustSetting: () => {
 
     },
+
+    getApps:(ck)=>{
+        //console.log(list);
+        return ck && ck(list);;
+    },
+    installApp:(data)=>{
+
+    },
+
     link: (ck) => {
         if (wsAPI === null) {
             const WsProvider = API.Polkadot.WsProvider;

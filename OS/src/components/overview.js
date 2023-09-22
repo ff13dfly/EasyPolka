@@ -1,12 +1,18 @@
 import { Row,Col } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
+import RUNTIME from '../lib/runtime';
 
 function Overview(props) {
   const anchor=props.link;
 
   useEffect(()=> {
-    console.log(anchor);
+    RUNTIME.getAPIs((APIs)=>{
+      //APIs.AnchorJS.search()
+      APIs.Easy(anchor,(res)=>{
+        console.log(res);
+      });
+    });
   },[anchor]);
 
   return (

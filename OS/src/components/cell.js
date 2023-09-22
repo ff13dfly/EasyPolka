@@ -29,6 +29,11 @@ function Cell(props) {
       const posY = details.gridY + cellY  * details.cell[1];
       return { position: [posX, posY], size: details.cell, screen: details.screen }
     },
+    getAnchor:(link)=>{
+      const tmp=link.split("anchor://");
+      if(tmp.length===2) return tmp[1];
+      return false;
+    },
     clickData:()=>{
       const block = self.calcBlock(props.index);
       const content=(<Overview link={data.src}/>);
@@ -38,7 +43,8 @@ function Cell(props) {
     },
     clickApp:()=>{
       //console.log("Ready to load app");
-      funs.page(<Page anchor="playground" funs={funs}/>);
+      const anchor=self.getAnchor(row.src);
+      funs.page(<Page anchor={anchor} funs={funs}/>);
     },
     clickBase:()=>{
       //const name="setting";
@@ -53,6 +59,9 @@ function Cell(props) {
           case "data":
             self.clickData();
             break;
+          case "lib":
+            self.clickData();
+            break;
           case "app":
             self.clickApp();
             break;
@@ -65,15 +74,15 @@ function Cell(props) {
   }
 
   return (
-    <Col xs={size} sm={size} md={size} lg={size} xl={size} xxl={size} className='pt-4 cell'
-      onClick={(ev) => {
-        self.click()
-      }}
-    >
+    <Col xs={size} sm={size} md={size} lg={size} xl={size} xxl={size} className='pt-4 cell'>
       <span className={props.index % 2 ? "status green" : "status red"}></span>
-      <span className='type'>{props.index % 2 ? "Data" : "Dapp"}</span>
-      <img src={row.icon} alt="" />
-      <h6>{row.short}</h6>
+      <span className='type'>{!row.type?"unknow":row.type}</span>
+      <img src={row.icon} alt="" onClick={(ev) => {
+        self.click()
+      }}/>
+      <h6 onClick={(ev) => {
+        self.click()
+      }}>{row.short}</h6>
     </Col>
   );
 }

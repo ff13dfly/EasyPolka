@@ -12,7 +12,7 @@ module.exports=[
         "position":[0,0],
       },
       "icon":"icons/app_01.jpg",
-      "short":"Setting",
+      "short":"Network",
       "desc":""
     },
     {
@@ -35,27 +35,13 @@ module.exports=[
       "src":"anchor://document",
       "base":false,
       "status":"failed",
-      "type":"",
+      "type":"app",
       "grid":{
         "size":[1,1],
         "position":[0,0],
       },
       "icon":"icons/app_02.jpg",
       "short":"Document",
-      "desc":""
-    },
-    {
-      "name":"setting",
-      "src":"anchor://homepage",
-      "base":false,
-      "status":"failed",
-      "type":"",
-      "grid":{
-        "size":[1,1],
-        "position":[0,0],
-      },
-      "icon":"icons/app_03.jpg",
-      "short":"Anchor",
       "desc":""
     },
     {
@@ -68,22 +54,36 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"icons/app_04.jpg",
+      "icon":"icons/app_03.jpg",
       "short":"Hello",
       "desc":""
     },
     {
       "name":"setting",
-      "src":"anchor://homepage",
+      "src":"anchor://ntoday",
       "base":false,
       "status":"failed",
-      "type":"data",
+      "type":"",
+      "grid":{
+        "size":[1,1],
+        "position":[0,0],
+      },
+      "icon":"icons/app_04.jpg",
+      "short":"nToday",
+      "desc":""
+    },
+    {
+      "name":"setting",
+      "src":"anchor://easy",
+      "base":false,
+      "status":"failed",
+      "type":"lib",
       "grid":{
         "size":[1,1],
         "position":[0,0],
       },
       "icon":"icons/app_05.jpg",
-      "short":"Gateway",
+      "short":"Easy",
       "desc":""
     },
     {
