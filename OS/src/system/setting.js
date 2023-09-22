@@ -3,18 +3,20 @@ import { useEffect } from 'react';
 import RUNTIME from '../lib/runtime';
 
 function Setting(props) {
-  //console.log(props.funs);
-  RUNTIME.init();
-
   const size = [3, 6, 3];
   const self = {
 
   };
 
   useEffect(() => {
-
+    RUNTIME.getAPIs((APIs)=>{
+      console.log(APIs);
+      const link="anchor://hello";
+      APIs.Easy(link,(res)=>{
+        console.log(res);
+      });
+    });
   }, []);
-
 
   return (
     <div id="page">

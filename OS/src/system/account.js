@@ -2,7 +2,7 @@ import { Navbar, Container, Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
 
 function Account(props) {
-  console.log(props.funs);
+  //console.log(props.funs);
   const size = [3, 6, 3];
 
   const self = {
