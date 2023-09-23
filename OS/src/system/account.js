@@ -36,7 +36,12 @@ function Account(props) {
       <Container>
         <Row>
           <Col lg={12} xs={12} className="pt-2">
-            账号配置
+            <h4>账号信息</h4>
+            <p>地址及余额信息</p>
+            <h4>账号选择</h4>
+            <p>所有账号的列表</p>
+            <h4>新建帐号</h4>
+            <p>账号新建的功能</p>
           </Col>
         </Row>
       </Container>

@@ -6,6 +6,7 @@ import Overview from './overview';
 
 import Setting from '../system/setting';
 import Account from '../system/account';
+import Contact from '../system/contact';
 
 function Cell(props) {
   const size = props.size;
@@ -17,6 +18,7 @@ function Cell(props) {
   const map={
     "setting":<Setting funs={funs} />,
     "account":<Account funs={funs} />,
+    "contact":<Contact funs={funs} />,
   };
 
   const self = {

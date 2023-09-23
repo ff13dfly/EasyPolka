@@ -31,6 +31,21 @@ module.exports=[
       "desc":""
     },
     {
+      "name":"contact",
+      "src":"",
+      "block":0,
+      "base":true,
+      "status":"normal",
+      "type":"system",
+      "grid":{
+        "size":[1,1],
+        "position":[0,0],
+      },
+      "icon":"icons/app_01.jpg",
+      "short":"Contact",
+      "desc":""
+    },
+    {
       "name":"setting",
       "src":"anchor://document",
       "base":false,

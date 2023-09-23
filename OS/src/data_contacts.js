@@ -1,0 +1,14 @@
+module.exports={
+  "5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw":{
+    "intro":"",
+    "status":"",
+    "type":"friend",
+    "network":"Anchor",
+  },
+  "5EUFM4U2LUypvctxvqnEV2vb3hBABspWUYEjErwRpTbsYEaJ":{
+    "intro":"",
+    "status":"",
+    "type":"friend",
+    "network":"Anchor",
+  }
+}

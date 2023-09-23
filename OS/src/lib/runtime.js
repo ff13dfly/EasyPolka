@@ -1,4 +1,5 @@
 import list from '../data';
+import contacts from '../data_contacts';
 
 let API = null;
 let wsAPI = null;
@@ -14,6 +15,10 @@ const config = {
 const RUNTIME = {
     trustSetting: () => {
 
+    },
+
+    getContact:(ck)=>{
+        return ck && ck(contacts);
     },
 
     getApps:(ck)=>{

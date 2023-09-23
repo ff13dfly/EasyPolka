@@ -2,7 +2,10 @@ import { Navbar,Container,Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
 import RUNTIME from '../lib/runtime';
 
-function Setting(props) {
+import Contact_Add from '../components/contact_add';
+import Contact_List from '../components/contact_list';
+
+function Contact(props) {
   const size = [3, 6, 3];
   const self = {
 
@@ -29,7 +32,7 @@ function Setting(props) {
             </Col>
             <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}
               style={{"paddingTop":"10px"}} className='text-center'>
-              Network Setting</Col>
+              Contacts</Col>
             <Col xs={size[2]} sm={size[2]} md={size[2]} lg={size[2]} xl={size[2]} xxl={size[2]} 
               className="text-end pb-2" style={{"paddingTop":"10px"}}>
               <span className="close" onClick={(ev) => {
@@ -40,16 +43,10 @@ function Setting(props) {
         </Container>
       </Navbar>
       <Container>
-        <Row>
-          <Col lg={12} xs={12} className="pt-2">
-            <h4>网络信息配置</h4>
-            <p>连接的主节点</p>
-            <p>聊天服务器</p>
-            <h4>API配置</h4>
-          </Col>
-        </Row>
+        <Contact_Add />
+        <Contact_List />
       </Container>
     </div>
   );
 }
-export default Setting;
+export default Contact;
