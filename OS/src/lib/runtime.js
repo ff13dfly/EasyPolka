@@ -6,6 +6,7 @@ let wsAPI = null;
 
 const config = {
     endpoint: "ws://localhost:9944",
+    //endpoint: "wss://dev.metanchor.net",
     loader:"",
     user: {
 

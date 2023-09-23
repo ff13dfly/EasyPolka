@@ -8,7 +8,8 @@ function Page(props) {
 
   let [link,setLink]=useState("");
 
-  const basic="http://localhost/easypolka/loader/frontend/code/index.html";
+  //const basic="http://localhost/easypolka/loader/frontend/code/index.html";
+  const basic="loader.html";
 
   const self={
   };
