@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head></head>
+    <script src="../../../package/frontend/polkadot.min.js"></script>
+    <script>
+        var url="ws://localhost:7788";
+        var ws=new WebSocket(url);
+        var spam="";
+        ws.onopen=function(res){
+
+            setInterval(()=>{
+                var sdata={
+                    action:"reg",
+                    account:"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
+                    spam:spam,
+                };
+                ws.send(JSON.stringify(sdata));
+            },2000);
+        }
+            
+        ws.onmessage=function(res){
+            //console.log(res);
+            if(res.type==="message"){
+                const data=JSON.parse(res.data);
+                console.log(data);
+            }
+            // var data=JSON.parse(res.data);
+            // if(data.spam) spam=data.spam;
+            // console.log(res.data);
+            
+        }
+        ws.onclose=function(res){
+            //clearInterval(interval);
+        }
+        ws.onerror=function(res){
+            if(ws.readyState===3){
+                console.log("Failed to link to websocket server, please check the server status.");
+            }
+        }
+    </script>
+    <body style="text-align: center;padding-top: 20px;font-size: 30px;">
+        http://localhost/Easypolka/gateway/test/chat/
+    </body>
+</html>
