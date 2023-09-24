@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head></head>
+    <script src="polkadot.min.js"></script>
+    <script>
+        const ApiPromise=Polkadot.ApiPromise
+        const WsProvider=Polkadot.WsProvider
+        const provider = new WsProvider("ws://127.0.0.1:9944");
+        ApiPromise.create({ provider: provider }).then((wsAPI) => {
+            //console.log(wsAPI);
+
+            // const block=468664;
+            // wsAPI.rpc.chain.getBlockHash(block,(res)=>{
+            //     const hash = res.toHex();
+            //     wsAPI.rpc.chain.getBlock(hash).then((dt) => {
+            //         wsAPI.query.system.events.at(hash,(evs)=>{
+            //             const list=evs.toHuman();
+            //             for(let i=0;i<list.length;i++){
+            //                 const row=list[i];
+            //                 console.log(JSON.stringify(row));
+            //             }
+            //         });
+            //     });
+            // });
+
+            wsAPI.rpc.chain.subscribeFinalizedHeads((lastHeader) => {
+                const hash = lastHeader.hash.toHex();
+			    //const block=lastHeader.number.toNumber();
+                wsAPI.rpc.chain.getBlock(hash).then((dt) => {
+                    wsAPI.query.system.events.at(hash,(evs)=>{
+                        const list=evs.toHuman();
+                        for(let i=0;i<list.length;i++){
+                            const row=list[i];
+                            console.log(JSON.stringify(row));
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    <body style="text-align: center;padding-top: 20px;font-size: 40px;">
+        Testing Polkadot transfer, please check on console.<br />
+        http://localhost/Easypolka/gateway/test/transfer/
+    </body>
+</html>

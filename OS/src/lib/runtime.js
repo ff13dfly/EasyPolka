@@ -23,7 +23,6 @@ const RUNTIME = {
     },
 
     getApps:(ck)=>{
-        //console.log(list);
         return ck && ck(list);;
     },
     installApp:(data)=>{
@@ -39,6 +38,7 @@ const RUNTIME = {
                 ApiPromise.create({ provider: provider }).then((PokLinker) => {
                     wsAPI = PokLinker;
                     API.AnchorJS.set(wsAPI);
+                    console.log(PokLinker);
                     ck && ck(API);
                 });
             } catch (error) {
@@ -71,7 +71,7 @@ const RUNTIME = {
 
             return RUNTIME.link(ck);
         }
-
+        //console.log(API);
         return ck && ck(API);
     },
 }
