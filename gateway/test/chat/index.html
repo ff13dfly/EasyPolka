@@ -2,14 +2,17 @@
 <html lang="en">
   <head></head>
     <script src="../../../package/frontend/polkadot.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="js/bootstrap.min.css">
     <script>
-        var url="ws://localhost:7788";
-        var ws=new WebSocket(url);
-        var spam="";
+        const url="ws://localhost:7788";
+        const ws=new WebSocket(url);
+        let spam="";
         ws.onopen=function(res){
 
             setInterval(()=>{
-                var sdata={
+                const sdata={
                     action:"reg",
                     account:"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
                     spam:spam,
@@ -38,7 +41,53 @@
             }
         }
     </script>
-    <body style="text-align: center;padding-top: 20px;font-size: 30px;">
-        http://localhost/Easypolka/gateway/test/chat/
+    <script>
+        const accounts=[
+            "5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
+            "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+            "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+            "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
+        ];
+        $(function(){
+            var tpl=`<div class="row">`;
+            for(var i=0;i<accounts.length;i++){
+                const row=accounts[i];
+                const chat=`<div class="col-6 col-lg-6">
+                    <div class="row pt-4 pb-2">
+                        <div class="col-12 col-lg-12">
+                            <textarea id="screen_${i}" disabled="disabled" name="" class="form-control" cols="30" rows="10"></textarea>
+                        </div>
+                        <div class="col-1 col-lg-1 pt-2">From</div>
+                        <div class="col-11 col-lg-11 pt-2">${row}</div>
+                        <div class="col-1 col-lg-1">To</div>
+                        <div class="col-11 col-lg-11">
+                            <input type="text" id="target_${i}" class="form-control" value="">
+                        </div>
+                        <div class="col-9 col-lg-9 pt-3">
+                            <input type="text" id="content_${i}" class="form-control" value="">
+                        </div>
+                        <div class="col-3 col-lg-3 pt-3 text-end">
+                            <button class="btn btn-md btn-primary btn_send" id="btn_${i}" data="${i}">Send</button>
+                        </div>
+                    </div>
+                </div>`;
+                tpl+=chat;
+            }
+            tpl+=`</div>`;
+            $("body").html(tpl);
+            $(".btn_send").on("click",(ev)=>{
+                const sel=$(ev.target);
+                const index=sel.attr("data");
+
+                const target=$("#target_"+index).val();
+                const ctx=$("#content_"+index).val();
+                console.log(target);
+                console.log(ctx);
+            });
+        });
+    </script>
+    <body style="width: 90%;margin: 0 auto;">
+        
+        
     </body>
 </html>
