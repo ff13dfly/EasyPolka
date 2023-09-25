@@ -1,6 +1,5 @@
 // chat server , nodeJS
-
-const { ApiPromise, WsProvider } = require('@polkadot/api');
+//const { ApiPromise, WsProvider } = require('@polkadot/api');
 
 const {WebSocketServer} =require('ws');
 const port=7788;
@@ -25,6 +24,7 @@ const self={
         self.send({status:0},spam,order);
     },
 };
+
 wss.on('connection', function connection(ws,request, client) {
     const uid=tools.char(12);
     clients[uid]=ws;

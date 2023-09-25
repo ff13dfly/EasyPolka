@@ -10,37 +10,6 @@
     <script src="js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="js/bootstrap.min.css">
     <script>
-        // const url="ws://localhost:7788";
-        // const ws=new WebSocket(url);
-        // let spam="";
-        // ws.onopen=function(res){
-
-        //     setInterval(()=>{
-        //         const sdata={
-        //             action:"reg",
-        //             account:"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
-        //             spam:spam,
-        //         };
-        //         ws.send(JSON.stringify(sdata));
-        //     },2000);
-        // }
-            
-        // ws.onmessage=function(res){
-        //     if(res.type==="message"){
-        //         const data=JSON.parse(res.data);
-        //         console.log(data);
-        //     }
-        // }
-        // ws.onclose=function(res){
-        //     //clearInterval(interval);
-        // }
-        // ws.onerror=function(res){
-        //     if(ws.readyState===3){
-        //         console.log("Failed to link to websocket server, please check the server status.");
-        //     }
-        // }
-
-        
         const url="ws://localhost:7788";
         const wmap={},spams={},count={};
         const accounts=[
@@ -158,10 +127,8 @@
                                 break;
 
                             case "chat":
-                                //spams[index]=input.spam;
-                                console.log(input);
-                                $("#screen_"+index).append(`<p>${input.msg}<br /><small>${input.from}</small></p>`);
-
+                                const ctx=`<p>${input.msg}<br /><small>${input.from}</small></p>`;
+                                $("#screen_"+index).prepend(ctx);
                                 break;
 
                             default:

@@ -1,5 +1,5 @@
-import list from '../data';
-import contacts from '../data_contacts';
+import list from '../data/apps';
+import contacts from '../data/contacts';
 
 let API = null;
 let wsAPI = null;
