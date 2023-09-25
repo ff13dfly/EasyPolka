@@ -1,53 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head></head>
+    <head>
+        <style>
+            .screen{height: 200px;width: 100%;background: #EEEEEE;overflow: auto;}
+        </style>
+    </head>
     <script src="../../../package/frontend/polkadot.min.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="js/bootstrap.min.css">
     <script>
-        const url="ws://localhost:7788";
-        const ws=new WebSocket(url);
-        let spam="";
-        ws.onopen=function(res){
+        // const url="ws://localhost:7788";
+        // const ws=new WebSocket(url);
+        // let spam="";
+        // ws.onopen=function(res){
 
-            setInterval(()=>{
-                const sdata={
-                    action:"reg",
-                    account:"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
-                    spam:spam,
-                };
-                ws.send(JSON.stringify(sdata));
-            },2000);
-        }
+        //     setInterval(()=>{
+        //         const sdata={
+        //             action:"reg",
+        //             account:"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
+        //             spam:spam,
+        //         };
+        //         ws.send(JSON.stringify(sdata));
+        //     },2000);
+        // }
             
-        ws.onmessage=function(res){
-            //console.log(res);
-            if(res.type==="message"){
-                const data=JSON.parse(res.data);
-                console.log(data);
-            }
-            // var data=JSON.parse(res.data);
-            // if(data.spam) spam=data.spam;
-            // console.log(res.data);
-            
-        }
-        ws.onclose=function(res){
-            //clearInterval(interval);
-        }
-        ws.onerror=function(res){
-            if(ws.readyState===3){
-                console.log("Failed to link to websocket server, please check the server status.");
-            }
-        }
-    </script>
-    <script>
+        // ws.onmessage=function(res){
+        //     if(res.type==="message"){
+        //         const data=JSON.parse(res.data);
+        //         console.log(data);
+        //     }
+        // }
+        // ws.onclose=function(res){
+        //     //clearInterval(interval);
+        // }
+        // ws.onerror=function(res){
+        //     if(ws.readyState===3){
+        //         console.log("Failed to link to websocket server, please check the server status.");
+        //     }
+        // }
+
+        
+        const url="ws://localhost:7788";
+        const wmap={},spams={},count={};
         const accounts=[
             "5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
             "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
             "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
             "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
         ];
+
+        const self={
+            init:(url,agent,ck,index)=>{
+                const ws=new WebSocket(url);
+                ws.onopen=(res)=>{
+                    agent.open(res,index);
+                };
+                ws.onmessage=(res)=>{
+                    agent.message(res,index);
+                };
+                ws.onclose=(res)=>{
+                    agent.close(res,index);
+                };
+                ws.onerror=(res)=>{
+                    agent.error(res,index);
+                };
+                return ck && ck(ws,index);
+            },
+            send:(obj,index)=>{
+                if(!wmap[index]) return false;
+                if(!count[index]){
+                    count[index]=1;
+                }else{
+                    count[index]++;
+                }
+                const ws=wmap[index];
+                obj.order=count[index];
+                ws.send(JSON.stringify(obj));
+                return true;
+            },
+            getIndex:(acc)=>{
+                for(let i=0;i<accounts.length;i++){
+                    if(acc===accounts[i]) return i;
+                }
+                return false;
+            },
+        };
+
         $(function(){
             var tpl=`<div class="row">`;
             for(var i=0;i<accounts.length;i++){
@@ -55,7 +94,7 @@
                 const chat=`<div class="col-6 col-lg-6">
                     <div class="row pt-4 pb-2">
                         <div class="col-12 col-lg-12">
-                            <textarea id="screen_${i}" disabled="disabled" name="" class="form-control" cols="30" rows="10"></textarea>
+                            <div id="screen_${i}" class="screen"></div>
                         </div>
                         <div class="col-1 col-lg-1 pt-2">From</div>
                         <div class="col-11 col-lg-11 pt-2">${row}</div>
@@ -63,10 +102,13 @@
                         <div class="col-11 col-lg-11">
                             <input type="text" id="target_${i}" class="form-control" value="">
                         </div>
-                        <div class="col-9 col-lg-9 pt-3">
+                        <div class="col-2 col-lg-2 pt-3">
+                            <button class="btn btn-md btn-default btn_link" id="link_${i}" data="${i}">Link</button>
+                        </div>
+                        <div class="col-8 col-lg-8 pt-3">
                             <input type="text" id="content_${i}" class="form-control" value="">
                         </div>
-                        <div class="col-3 col-lg-3 pt-3 text-end">
+                        <div class="col-2 col-lg-2 pt-3 text-end">
                             <button class="btn btn-md btn-primary btn_send" id="btn_${i}" data="${i}">Send</button>
                         </div>
                     </div>
@@ -78,12 +120,65 @@
             $(".btn_send").on("click",(ev)=>{
                 const sel=$(ev.target);
                 const index=sel.attr("data");
-
                 const target=$("#target_"+index).val();
                 const ctx=$("#content_"+index).val();
-                console.log(target);
-                console.log(ctx);
+                const data={
+                    act:"chat",
+                    to:target,
+                    msg:ctx,
+                    spam:spams[index],
+                }
+                self.send(data,index);
             });
+
+            $(".btn_link").on("click",(ev)=>{
+                const sel=$(ev.target);
+                const index=sel.attr("data");
+                const data={
+                    act:"reg",
+                    acc:accounts[index],
+                    spam:spams[index],
+                }
+                self.send(data,index);
+            })
+
+            //websocket group
+
+            for(var i=0;i<accounts.length;i++){
+                const agent={
+                    open:(res,index)=>{
+                        console.log(index);
+                    },
+                    message:(res,index)=>{
+                        const input=JSON.parse(res.data);
+                        if(!input) return false;
+                        switch (input.act) {
+                            case "init":
+                                spams[index]=input.spam;
+                                break;
+
+                            case "chat":
+                                //spams[index]=input.spam;
+                                console.log(input);
+                                $("#screen_"+index).append(`<p>${input.msg}<br /><small>${input.from}</small></p>`);
+
+                                break;
+
+                            default:
+                                break;
+                        }
+                    },
+                    close:(res,index)=>{
+
+                    },
+                    error:(res,index)=>{
+
+                    }
+                }
+                self.init(url,agent,(ws,index)=>{
+                    wmap[i]=ws;
+                },i);
+            }
         });
     </script>
     <body style="width: 90%;margin: 0 auto;">
