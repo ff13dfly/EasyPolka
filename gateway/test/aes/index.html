@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            #screen{height: 400px;width: 100%;background: #EEEEEE;overflow: auto;}
+        </style>
+    </head>
+    <script src="../../../package/frontend/polkadot.min.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../js/bootstrap.min.css">
+    <script>
+        const url="ws://localhost:5566";
+        const self={
+            init:(url,agent,ck)=>{
+                const ws=new WebSocket(url);
+                ws.onopen=(res)=>{
+                    agent.open(res);
+                };
+                ws.onmessage=(res)=>{
+                    agent.message(res);
+                };
+                ws.onclose=(res)=>{
+                    agent.close(res);
+                };
+                ws.onerror=(res)=>{
+                    agent.error(res);
+                };
+                return ck && ck(ws);
+            },
+            send:(obj,index)=>{
+                if(!wmap[index]) return false;
+                if(!count[index]){
+                    count[index]=1;
+                }else{
+                    count[index]++;
+                }
+                const ws=wmap[index];
+                obj.order=count[index];
+                ws.send(JSON.stringify(obj));
+                return true;
+            },
+        }
+
+        $(function(){
+            const agent={
+                open:(res)=>{
+                    console.log("Websocket linked, URL: "+url);
+                },
+                close:(res)=>{
+
+                },
+                error:(res)=>{
+
+                }
+            }
+            self.init(url,agent,(ws)=>{
+                
+            });
+        });
+    </script>
+    
+    <body style="width: 90%;margin: 0 auto;">
+        <div class="row">
+            <div class="col-lg-8 pt-4">
+                <div class="col-lg-12 pb-2">
+                    <textarea class="form-control" id="raw" cols="30" rows="10">
+
+                    </textarea>
+                    <small>1,000 Bytes</small>
+                </div>
+                <div class="col-lg-12 pb-2">
+                    <textarea class="form-control" id="encry" cols="30" rows="10" disabled="disabled"></textarea>
+                    <small>1,800 Bytes</small>
+                </div>
+            </div>
+            <div class="col-lg-4 pt-4">
+                <div class="row">
+                    <div class="col-lg-12" id="screen">
+
+                    </div>
+                    <div class="col-lg-12 pt-4">
+                        <input type="text" id="password" class="form-control" placeholder="Please input the encry password">
+                    </div>
+                    <div class="col-lg-4 pt-4 text-center">
+                        <button class="btn btn-md btn-primary">Random</button>
+                    </div>
+                    <div class="col-lg-4 pt-4 text-center">
+                        <button class="btn btn-md btn-primary">Encode</button>
+                    </div>
+                    <div class="col-lg-4 pt-4 text-center">
+                        <button class="btn btn-md btn-primary">Decode</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>
