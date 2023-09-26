@@ -7,6 +7,7 @@ import Contact_List from '../components/contact_list';
 
 function Contact(props) {
   const size = [3, 6, 3];
+  const funs = props.funs;
   const self = {
 
   };
@@ -43,8 +44,8 @@ function Contact(props) {
         </Container>
       </Navbar>
       <Container>
-        <Contact_Add />
-        <Contact_List />
+        <Contact_Add  funs={funs}/>
+        <Contact_List funs={funs}/>
       </Container>
     </div>
   );

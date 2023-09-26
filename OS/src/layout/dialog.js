@@ -1,24 +1,29 @@
 import { Modal } from 'react-bootstrap';
-import { useEffect } from 'react';
+import { useState,useEffect } from 'react';
 
 function Dialog(props) {
 
-  const funs=props.funs;
-  const callback=props.callback;
-
+  let [show,setShow]=useState(false);
   const self={
-    hideDialog:()=>{
-      if(callback) callback();
-      funs.hide();
+    hide:(ev)=>{
+      setShow(false);
+      props.update();
     },
   }
 
-  useEffect(() => {
+  //setShow(props.show)
 
-  }, []);
+  useEffect(() => {
+    //console.log(props.show);
+    setShow(props.show)
+  }, [props.show]);
+
+  //<Modal show={props.show} size="lg" onHide={funs.dialog.hide()}>
 
   return (
-    <Modal show={props.show} size="lg" onHide={self.hideDialog}>
+    <Modal show={show} size="lg" onHide={(ev)=>{
+      self.hide(ev);
+    }}>
       <Modal.Header closeButton>
         <Modal.Title >{props.title}</Modal.Title>
       </Modal.Header>

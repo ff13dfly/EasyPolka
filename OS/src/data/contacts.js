@@ -10,5 +10,11 @@ module.exports={
     "status":"",
     "type":"friend",
     "network":"Anchor",
+  },
+  "5DtBERu7U1SwPD1iebf5zHgjRsUnrU3iQgswySXeu6PK7eL4":{
+    "intro":"",
+    "status":"",
+    "type":"friend",
+    "network":"Anchor",
   }
 }

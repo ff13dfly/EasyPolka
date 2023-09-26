@@ -1,13 +1,24 @@
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col,Image } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
+import Chat from './chat';
+
 import RUNTIME from '../lib/runtime';
+import tools from '../lib/tools';
 
 function Contact_List(props) {
-  const size = [12, 12];
+  const size = [12];
+  const dv={xs:4,sm:4,md:4,lg:4,xl:6,xxl:6};
+  const funs = props.funs;
 
   let [contact, setContact] = useState({});
-  //console.log(contact);
+
+  const self={
+    click:(address,ev)=>{
+      funs.dialog.show(<Chat address={address} />);
+    },
+  }
+
   useEffect(() => {
     RUNTIME.getContact((res) => {
       setContact(res);
@@ -17,15 +28,19 @@ function Contact_List(props) {
   return (
     <Row>
       {Object.keys(contact).map((address, index) => (
-        <Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12} key={index}>
+        <Col xs={dv.xs} sm={dv.sm} md={dv.md} lg={dv.lg} xl={dv.xl} xxl={dv.xxl} key={index} onClick={(ev)=>{
+          self.click(address,ev);
+        }}>
           <Row>
             <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}
               className="pt-2">
-              {address}
-            </Col>
-            <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}
-              className="pt-2 text-end">
-              @{contact[address].network}
+                <Image 
+                    src={`https://robohash.org/${address}.png`}
+                    rounded
+                    width="100%"
+                  />
+              <small>{tools.shorten(address,5)}</small><br />
+              <small>@{contact[address].network}</small>
             </Col>
           </Row>
         </Col>

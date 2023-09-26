@@ -16,7 +16,12 @@ function App() {
   let [ctx_stage, setStageContent] = useState("");
   let [ctx_mask, setMaskContent] = useState("");
   let [ctx_page, setPageContent] = useState("");
+
   let [show,setDialogShow] = useState(false);
+  let [content,setContent] = useState("");
+  let [title,setTitle] = useState("");
+  //let [callback,setCallback]= useState(()=>{});
+
   let [apps,setApps]= useState([[]]);
 
   const funs={
@@ -29,8 +34,20 @@ function App() {
     page:(ctx)=>{
       setPageContent(ctx);
     },
-    fresh:()=>{
-
+    dialog:{
+      show:(ctx,title)=>{
+        console.log("here:"+show);
+        setContent(ctx);
+        if(title) setTitle(title);
+        setDialogShow(true);
+      },
+      hide:(ck)=>{
+        setDialogShow(false);
+        return ck && ck();
+      },
+    },
+    update:()=>{
+      setDialogShow(false);
     },
   }
 
@@ -46,7 +63,7 @@ function App() {
       <Container>
         <Board />
         <Grid size={size} list={apps} funs={funs}/>
-        <Dialog show={show}/>
+        <Dialog show={show} content={content} title={title} update={funs.update}/>
       </Container>
       {ctx_stage}
       {ctx_mask}
