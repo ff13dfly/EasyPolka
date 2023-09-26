@@ -17,7 +17,7 @@ function From(props) {
           />
       </Col>
       <Col xs={10} sm={10} md={10} lg={10} xl={10} xxl={10} >
-        <p className="from">${props.content}</p>
+        <p className="from">{props.content}</p>
       </Col>
     </Row>
   );

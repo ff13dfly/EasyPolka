@@ -8,14 +8,14 @@ import tools from '../lib/tools';
 
 function Contact_List(props) {
   const size = [12];
-  const dv={xs:4,sm:4,md:4,lg:4,xl:6,xxl:6};
+  const dv={xs:3,sm:3,md:3,lg:3,xl:6,xxl:6};
   const funs = props.funs;
 
   let [contact, setContact] = useState({});
 
   const self={
     click:(address,ev)=>{
-      funs.dialog.show(<Chat address={address} />);
+      funs.dialog.show(<Chat address={address} />,"Chatting");
     },
   }
 
@@ -39,7 +39,7 @@ function Contact_List(props) {
                     rounded
                     width="100%"
                   />
-              <small>{tools.shorten(address,5)}</small><br />
+              <small>{tools.shorten(address,4)}</small><br/>
               <small>@{contact[address].network}</small>
             </Col>
           </Row>
