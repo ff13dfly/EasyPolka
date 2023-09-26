@@ -1,16 +1,25 @@
 import { Navbar, Container, Row, Col } from 'react-bootstrap';
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
+
+import Login from '../components/login';
+import User from '../components/user';
 
 function Account(props) {
-  //console.log(props.funs);
   const size = [3, 6, 3];
+  
+  let [details, setDetails] = useState("");
 
   const self = {
+    fresh:()=>{
+      
+    },
+    balance:()=>{
 
-  };
+    },
+  }
 
   useEffect(() => {
-
+    setDetails(<User fresh={self.fresh} balance={self.balance}/>);
   }, []);
   return (
     <div id="page">
@@ -34,16 +43,7 @@ function Account(props) {
         </Container>
       </Navbar>
       <Container>
-        <Row>
-          <Col lg={12} xs={12} className="pt-2">
-            <h4>账号信息</h4>
-            <p>地址及余额信息</p>
-            <h4>账号选择</h4>
-            <p>所有账号的列表</p>
-            <h4>新建帐号</h4>
-            <p>账号新建的功能</p>
-          </Col>
-        </Row>
+        {details}
       </Container>
 
     </div>

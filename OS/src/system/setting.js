@@ -1,6 +1,6 @@
 import { Navbar,Container,Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
-import RUNTIME from '../lib/runtime';
+//import RUNTIME from '../lib/runtime';
 
 function Setting(props) {
   const size = [3, 6, 3];

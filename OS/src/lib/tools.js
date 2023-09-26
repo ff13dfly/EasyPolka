@@ -1,4 +1,20 @@
 const self={
+    checkEncryFile: (fa, ck) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const sign = JSON.parse(e.target.result);
+                if (!sign.address || !sign.encoded) return ck && ck({ error: 'Error encry JSON file' });
+                if (sign.address.length !== 48) return ck && ck({ error: 'Error SS58 address' });
+                if (sign.encoded.length !== 268) return ck && ck({ error: 'Error encoded verification' });
+                return ck && ck(sign);
+            } catch (error) {
+                return ck && ck({ error: 'Not encry JSON file' });
+            }
+        }
+        reader.readAsText(fa);
+    },
+
     stamp:()=>{
         return new Date().getTime();
     },

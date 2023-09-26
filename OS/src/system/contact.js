@@ -1,6 +1,6 @@
 import { Navbar,Container,Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
-import RUNTIME from '../lib/runtime';
+//import RUNTIME from '../lib/runtime';
 
 import Contact_Add from '../components/contact_add';
 import Contact_List from '../components/contact_list';
