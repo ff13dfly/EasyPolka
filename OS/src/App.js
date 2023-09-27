@@ -61,7 +61,7 @@ function App() {
     <div>
       <Navigator />
       <Container>
-        <Board />
+        <Board funs={funs}/>
         <Grid size={size} list={apps} funs={funs}/>
         <Dialog show={show} content={content} title={title} update={funs.update}/>
       </Container>
