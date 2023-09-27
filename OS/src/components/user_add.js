@@ -1,6 +1,6 @@
 import { Row, Col, Button } from 'react-bootstrap';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 
@@ -16,11 +16,12 @@ function User_Add(props) {
       //const arr=mnemonic.split(' ');
 
       RUNTIME.getAPIs((API) => {
+        //console.log(API);
         const mnemonic = mnemonicGenerate(12, undefined, true);
         const keyring = new API.Polkadot.Keyring({ type: 'sr25519' });
         const pair = keyring.addFromUri(mnemonic);
         funs.dialog.show(
-          (< Password callback={(pass) => {
+          (<Password callback={(pass) => {
             console.log(pass);
           }} account={pair.address} mnemonic={mnemonic} funs={funs} />)
         );

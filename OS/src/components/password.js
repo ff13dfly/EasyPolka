@@ -1,10 +1,7 @@
 
 import { Row, Col, Form,Button } from 'react-bootstrap';
-
 import { useEffect,useState } from 'react';
-
 import Mnemonic from './mnem.js';
-
 
 let password='';
 let confirm='';
@@ -49,7 +46,6 @@ function Password(props) {
       <Col lg = { 12 } xs = { 12 }>
         {mnem}
       </Col>
-      
       <Col lg = { 12 } xs = { 12 } className="pt-2">
       <div className="card">
         <div className="card-body">
