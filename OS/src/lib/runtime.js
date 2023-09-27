@@ -1,44 +1,44 @@
-import list from '../data/apps';
-import contacts from '../data/contacts';
-
 let API = null;
 let wsAPI = null;
 
-const config = {
-    endpoint: "ws://localhost:9944",
-    //endpoint: "wss://dev.metanchor.net",
-    loader:"",
-    user: {
-
-    },
+const config={
+    accounts:require("../data/accounts"),
+    apps:require("../data/apps"),
+    contacts:require("../data/contacts"),
+    system:require("../data/setting"),
 }
 
 const RUNTIME = {
+    system_init:()=>{
+
+    },
     trustSetting: () => {
 
     },
 
     getContact:(ck)=>{
-        return ck && ck(contacts);
+        return ck && ck(config.contacts);
     },
 
     getApps:(ck)=>{
-        return ck && ck(list);;
+        return ck && ck(config.apps);
     },
     installApp:(data)=>{
 
     },
+    getConfig:(name)=>{
 
-    link: (ck) => {
+    },
+    link: (endpoint,ck) => {
         if (wsAPI === null) {
             const WsProvider = API.Polkadot.WsProvider;
             const ApiPromise = API.Polkadot.ApiPromise;
             try {
-                const provider = new WsProvider(config.endpoint);
+                const provider = new WsProvider(endpoint);
                 ApiPromise.create({ provider: provider }).then((PokLinker) => {
                     wsAPI = PokLinker;
                     API.AnchorJS.set(wsAPI);
-                    console.log(PokLinker);
+                    //console.log(PokLinker);
                     ck && ck(API);
                 });
             } catch (error) {
@@ -69,7 +69,10 @@ const RUNTIME = {
                 },
             };
 
-            return RUNTIME.link(ck);
+            const endpoint=config.system.basic.endpoint[0];
+            //console.log(endpoint);
+
+            return RUNTIME.link(endpoint,ck);
         }
         //console.log(API);
         return ck && ck(API);
