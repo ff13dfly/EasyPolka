@@ -52,5 +52,9 @@ code {
   background: #EEEEEE;text-align: center;line-height: 40px;font-size: 30px;color: #FFFFFF;}
 #page iframe{width: 100%;height: 600px;}
 
+/*"background": "#FFAABB",*/
+.remove{position: fixed;left: 10px;bottom: 10px;width: 60px;height: 40px;border-radius: 20px;
+  background: #EEEEEE;text-align: center;line-height: 40px;font-size: 30px;color: #FFFFFF;}
+
 .from{background: #EEEEEE;border-radius: 8px;padding: 3px 10px 5px 10px;}
 .to{background: #7dcdf5;border-radius: 8px;padding: 3px 10px 5px 10px;}

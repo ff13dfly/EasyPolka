@@ -47,6 +47,9 @@ function Contact(props) {
         <Contact_Add  funs={funs}/>
         <Contact_List funs={funs}/>
       </Container>
+      <span className="remove" onClick={(ev)=>{
+        console.log("here");
+      }}>X</span>
     </div>
   );
 }

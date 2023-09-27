@@ -51,6 +51,7 @@ function Chat(props) {
     height:"500px",
     background:"#FFFFFF",
     padding:"0px 5px 0px 5px",
+    overflow: "auto",
   }
 
   return (

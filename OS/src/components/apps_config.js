@@ -4,9 +4,15 @@ import { useEffect, useState } from 'react';
 import RUNTIME from '../lib/runtime';
 
 function ConfigApp(props) {
-
-  const size = [5, 7];
+  const funs=props.funs;
+  const size = [10, 2];
   let [obj, setObj] = useState({});
+
+  const self={
+    click:(name,ev)=>{
+      funs.dialog.show(name,`${name} setting`);
+    }
+  }
 
   useEffect(() => {
     RUNTIME.getSetting((res) => {
@@ -22,13 +28,15 @@ function ConfigApp(props) {
         <h5>Application setting</h5>
       </Col>
       {Object.keys(obj).map((name, index) => (
-        <Col key={index} xs={12} sm={12} md={12} lg={12} xl={12} xxl={12} >
-          <Row>
+        <Col className='pt-4' key={index} xs={12} sm={12} md={12} lg={12} xl={12} xxl={12} >
+          <Row onClick={(ev)=>{
+            self.click(name,ev);
+          }}>
             <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]} >
               {name}
             </Col>
-            <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]} >
-              {/* {obj[name].stable} */}
+            <Col className='text-end' xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]} >
+              {">"}
             </Col>
           </Row>
         </Col>

@@ -3,6 +3,7 @@ import { useEffect,useState } from 'react';
 
 import Login from '../components/login';
 import User from '../components/user';
+import User_Add from '../components/user_add';
 
 function Account(props) {
   const size = [3, 6, 3];
@@ -44,6 +45,7 @@ function Account(props) {
       </Navbar>
       <Container>
         {details}
+        <User_Add />
       </Container>
 
     </div>

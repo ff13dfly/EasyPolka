@@ -6,6 +6,7 @@ module.exports={
     "version":"1.0.1",
     "auth":["Fuu"],
     "loader":"loader.html",
+    "protocol":["Easy Protocol"],
   },
   "APIs":{
     "Polkadot":{
