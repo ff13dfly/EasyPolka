@@ -7,6 +7,7 @@ import User_Add from '../components/user_add';
 
 function Account(props) {
   const size = [3, 6, 3];
+  const funs=props.funs;
   
   let [details, setDetails] = useState("");
 
@@ -45,7 +46,7 @@ function Account(props) {
       </Navbar>
       <Container>
         {details}
-        <User_Add />
+        <User_Add funs={funs} />
       </Container>
 
     </div>
