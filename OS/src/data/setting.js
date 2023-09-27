@@ -5,6 +5,7 @@ module.exports={
     "desc":"Full on chain OS for Web3.0, base on Anchor Network.",
     "version":"1.0.1",
     "auth":["Fuu"],
+    "loader":"loader.html",
   },
   "APIs":{
     "Polkadot":{

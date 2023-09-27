@@ -21,7 +21,7 @@ function Contact_List(props) {
 
   useEffect(() => {
     RUNTIME.getContact((res) => {
-      console.log(res);
+      //console.log(res);
       setContact(res);
     });
   }, [contact])
