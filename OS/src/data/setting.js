@@ -1,11 +1,24 @@
 module.exports={
   "basic":{   //OS basic parameters
     "endpoint":["ws://127.0.0.1:9944"],
-    "contact":[
-      "ws://localhost:7788",
-      "wss://hub.metanchor.net"
-    ],
-    "trend":["BTC","ETH"]
+    "name":"W3OS",
+    "desc":"Full on chain OS for Web3.0, base on Anchor Network.",
+    "version":"1.0.1",
+    "auth":["Fuu"],
+  },
+  "APIs":{
+    "Polkadot":{
+      "latest":"anchor://polkadot",
+      "stable":"anchor://polkadot"
+    },
+    "anchorJS":{
+      "latest":"anchor://anchorjs",
+      "stable":"anchor://anchorjs"
+    },
+    "Easy":{
+      "latest":"anchor://easy",
+      "stable":"anchor://easy"
+    },
   },
   "storage":{   //localstorage key definition
     "contact":"w3os_contact",
@@ -55,10 +68,36 @@ module.exports={
     ]
   },
   "apps":{
+    "contact":{
+      "node":[
+        "ws://localhost:7788",
+        "wss://hub.metanchor.net"
+      ],
+      "max":500,
+      "permit":{},
+      "icon":"https://robohash.org/",
+      "format":"png",
+    },
+    "account":{
+      "max":10,
+      "icon":"https://robohash.org/",
+      "format":"png",
+    },
+    "trend":{
+      "list":["BTC","ETH","DOT"],
+      "node":[
+        "ws://localhost:7788",
+        "wss://hub.metanchor.net"
+      ],
+      "link":"anchor://trend",
+    },
     "lottery":{
       "network":"Anchor",
       "interval":600,
-      "node":"",
+      "node":[
+        "ws://127.0.0.1:1688",
+        "ws://127.0.0.1:9944"
+      ],
     }
   }
 }

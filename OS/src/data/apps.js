@@ -12,7 +12,7 @@ module.exports=[
         "position":[0,0],
       },
       "icon":"icons/app_01.jpg",
-      "short":"Network",
+      "short":"Setting",
       "desc":""
     },
     {

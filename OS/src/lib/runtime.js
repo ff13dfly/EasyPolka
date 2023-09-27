@@ -15,7 +15,9 @@ const RUNTIME = {
     trustSetting: () => {
 
     },
-
+    getSetting:(ck)=>{
+        return ck && ck(config.system);
+    },
     getContact:(ck)=>{
         return ck && ck(config.contacts);
     },
