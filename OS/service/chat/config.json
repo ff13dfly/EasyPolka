@@ -1,0 +1,10 @@
+{
+    "server":{
+        "port":7788,
+        "runner":"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw"
+    },
+    "backup":{
+        "level":2,
+        "interval":3000
+    }
+}

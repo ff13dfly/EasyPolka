@@ -6,7 +6,6 @@ const self={
     auto:(key)=>{
         const arr=key.split(".");
         self.setKey(arr[0]);
-        //self.setKey(arr[1]);
         self.setIV(arr[1]);
         return true;
     },
