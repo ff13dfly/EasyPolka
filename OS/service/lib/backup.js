@@ -13,4 +13,7 @@ module.exports={
     save:(ctx,encry)=>{
 
     },
+    load:(address)=>{
+
+    },
 }

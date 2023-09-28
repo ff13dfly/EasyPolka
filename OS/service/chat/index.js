@@ -13,8 +13,16 @@ console.clear();
 output(`W3OS chatting service ( v${version} ) running...`,"dark",true);
 Valid(process.argv.slice(2),(res)=>{
     const cfg=res.data;
-    //console.log(cfg);
-    //console.log(chat);
-    const port=cfg.server.port;
-    chat.init(port);
+    const agent={
+        reg:()=>{
+
+        },
+        live:()=>{
+
+        },
+        offline:(from,to,msg)=>{
+            output(`Ready to cache "${msg}" from ${from} to ${to}`);
+        },
+    }
+    chat.init(cfg.server.port,agent);
 });

@@ -104,7 +104,8 @@
                 const sel=$(ev.target);
                 const index=sel.attr("data");
                 const data={
-                    act:"reg",
+                    //act:"reg",
+                    act:"active",
                     acc:accounts[index],
                     spam:spams[index],
                 }
@@ -121,6 +122,7 @@
                     message:(res,index)=>{
                         const input=JSON.parse(res.data);
                         if(!input) return false;
+                        console.log(input);
                         switch (input.act) {
                             case "init":
                                 spams[index]=input.spam;
