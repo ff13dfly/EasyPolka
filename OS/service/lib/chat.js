@@ -31,6 +31,11 @@ const self = {
         return pre;
     },
     stamp: () => { return new Date().getTime(); },
+    count:(obj)=>{
+        let n=0;
+        for(let k in obj) n++;
+        return n;
+    },
 };
 
 module.exports = {
@@ -52,22 +57,30 @@ module.exports = {
             }
 
             output(`Client linked, uid: ${uid} at ${new Date(clients[uid].stamp)}`, "success");
-            ws.send(JSON.stringify({ "spam": uid, "act": "init" }));
+            ws.send(JSON.stringify({ "spam": uid, "act": "init"}));
 
             ws.on('close', (res) => {
                 delete clients[uid];
+                const acc=spamToAccount[uid];
+                delete spamToAccount[uid];
+                delete accountSpam[acc];
                 output(`Client removed, uid: ${uid}`, "error");
             });
+
             ws.on('error', (err) => {
                 output(`Error: ${err}`, "error");
             });
+
             ws.on('message', (res) => {
                 const str = res.toString();
                 output(`Request:${str}`)
                 if (!str) return output(`Empty request.`, "error")
 
+                
+
                 try {
                     const input = JSON.parse(str);
+                    //const result={act:input.act};
                     switch (input.act) {
                         case "reg":     //reg address to server
                             if (!spamToAccount[input.spam]) {
@@ -80,7 +93,7 @@ module.exports = {
                                 const spam = input.spam;
                                 const order = input.order;
                                 agent.reg(acc,(amount) => {
-                                    self.success({ amount: amount }, spam, order);
+                                    self.success({act:"reg" ,amount: amount }, spam, order);
                                 });
                             }
                             break;
@@ -88,7 +101,12 @@ module.exports = {
                         case "active":     //live on the server
                             accountSpam[input.acc] = input.spam;
                             spamToAccount[input.spam] = input.acc;
-                            self.success({}, input.spam, input.order);
+                            const count=self.count(spamToAccount);
+                            console.log(spamToAccount);
+                            self.success({count:count,act:"active"}, input.spam, input.order);
+                            if (agent.active) {
+                                agent.active(count);
+                            }
                             break;
 
                         case "chat":

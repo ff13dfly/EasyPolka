@@ -1,5 +1,6 @@
 {
     "server":{
+        "name":"W3OS chatting",
         "port":7788,
         "runner":"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
         "max":300
