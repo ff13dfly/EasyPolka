@@ -144,6 +144,11 @@
                                 $("#screen_"+index).prepend(ctx);
                                 break;
 
+                            case "notice":
+                                const notice=`<p>${input.msg}</p>`;
+                                $("#screen_"+index).prepend(notice);
+
+                                break;
                             default:
                                 break;
                         }

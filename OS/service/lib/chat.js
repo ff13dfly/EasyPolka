@@ -5,14 +5,15 @@ const clients = {};
 const accountSpam = {}, spamToAccount = {};
 const agent = {
     reg: null,
-    live: null,
     offline: null,
+    active:null,
+    leave:null,
 };
 
 const self = {
     send: (obj, spam, order) => {
         if (!clients[spam]) return false;
-        obj.order = order;
+        if(order!==undefined) obj.order = order;
         clients[spam].websocket.send(JSON.stringify(obj));
     },
     success: (obj, spam, order) => {
@@ -33,10 +34,9 @@ const self = {
 };
 
 module.exports = {
+    // start the chat server
     init: (port, funs) => {
-        if (funs && funs.live) agent.live = funs.live;
-        if (funs && funs.offline) agent.offline = funs.offline;
-        if (funs && funs.reg) agent.reg = funs.reg;
+        for(var k in agent) if(funs[k]) agent[k]=funs[k];
 
         const wss = new WebSocketServer({ port: port });
         output(`Websocket server start on ${port}.`, "dark", true);
@@ -79,7 +79,7 @@ module.exports = {
                             if (agent.reg) {
                                 const spam = input.spam;
                                 const order = input.order;
-                                agent.reg(acc, (amount) => {
+                                agent.reg(acc,(amount) => {
                                     self.success({ amount: amount }, spam, order);
                                 });
                             }
@@ -88,7 +88,6 @@ module.exports = {
                         case "active":     //live on the server
                             accountSpam[input.acc] = input.spam;
                             spamToAccount[input.spam] = input.acc;
-                            //console.log(spamToAccount);
                             self.success({}, input.spam, input.order);
                             break;
 
@@ -120,7 +119,30 @@ module.exports = {
             });
         });
     },
-    cached: (address) => {
+
+    // Get the cached message list.
+    offline: (address) => {
 
     },
+
+    // Sent notification to target address
+    notification:(address,obj)=>{
+        const spam=accountSpam[address];
+        obj.act="notice";
+        if(obj.status){
+            self.success(obj,spam);
+        }else{
+            self.failed(obj,spam);
+        }
+    },
+
+    // Update the friend list
+    friend:( owner,list, remove)=>{
+
+    },
+
+    // Get the friend list
+    contact:(owner)=>{
+
+    }, 
 }

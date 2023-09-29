@@ -20,11 +20,14 @@ Valid(process.argv.slice(2),(res)=>{
             Paytovertify.agent(
                 (res)=>{    //when vertification successful
                     console.log(res);
+                    Chat.notification(res.address,{status:1,msg:"Payment vertification successful"});
                 },
                 (res)=>{    //when vertification failed
                     console.log(res);
+                    Chat.notification(res.address,{status:0,msg:"Payment vertification failed"});
                 }
             );
+
             Paytovertify.subcribe(()=>{
         
             });
@@ -34,7 +37,10 @@ Valid(process.argv.slice(2),(res)=>{
                 return ck && ck(amount);
             });
         },
-        live:()=>{
+        active:()=>{
+
+        },
+        leave:()=>{
 
         },
         offline:(from,to,msg)=>{

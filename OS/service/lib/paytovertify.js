@@ -13,7 +13,7 @@ const agent={
 // Config part
 const config={
     expired:10*60000,       // 10 minutes to expire the vertification
-    at:10000,                // checking interval
+    at:4000,                // checking interval
 };
 
 // Callback message format
@@ -24,7 +24,7 @@ const format={
 
 //Functions
 const self={
-    amount:(address)=>{
+    amount:(address,force)=>{
         if(!map[address]){
             const n=self.rand(1,99);
             map[address]={  //set the amount and expired time
