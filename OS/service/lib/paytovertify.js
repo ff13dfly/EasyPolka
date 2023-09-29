@@ -1,28 +1,40 @@
-//
+const {output}=require("../lib/output");
 
-//Storage part 
+// Storage part 
 const map={};
+let count=0;
+
 let checker=null;   //checking interval
 const agent={
     success:null,
     failed:null,
 };
 
-//Config part
+// Config part
 const config={
     expired:10*60000,       // 10 minutes to expire the vertification
-    at:2000,                // checking interval
+    at:10000,                // checking interval
 };
+
+// Callback message format
+const format={
+    success:{address:"",block:0,index:0},
+    failed:{address:"",message:""},
+}
 
 //Functions
 const self={
     amount:(address)=>{
-        const n=self.rand(1,99);
-        map[address]={  //set the amount and expired time
-            amount:n,
-            stamp:self.stamp()+config.expired,
-        };
-        return n;
+        if(!map[address]){
+            const n=self.rand(1,99);
+            map[address]={  //set the amount and expired time
+                amount:n,
+                stamp:self.stamp()+config.expired,
+            };
+        }else{
+            map[address].stamp=self.stamp()+config.expired;
+        }
+        return map[address].amount;
     },
     stamp:()=>{
         return new Date().getTime();
@@ -40,23 +52,28 @@ module.exports={
 
         if(checker===null){
             checker=setInterval(()=>{
-                console.log("Checking expired requests.");
-                for(let k in map){
-                    //check expired
+                output(`[${count}] Checking expired requests.`);
+                for(let acc in map){
+                    console.log(map[acc]);
                 };
 
-                //agent.success(`Success:${self.stamp()}`);
-                //agent.failed(`Failed:${self.stamp()}`);
+                count++;
+                if(count%5===0){
+                    agent.success({address:"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",block:223,index:3});
+                }
+
+                if(count%7===0){
+                    agent.failed({address:"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",message:""});
+                }
+
             },config.at);
         }
         fun((block,trans)=>{
             // checking the accounts
-
-
         });
     },
-    add:(address,ck)=>{
-        const amount=self.amount(address);
+    add:(address,force,ck)=>{
+        const amount=self.amount(address,force);
         return ck && ck(amount);
     },
 }

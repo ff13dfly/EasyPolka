@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            .screen{height: 300px;width: 100%;background: #EEEEEE;overflow: auto;}
+        </style>
+    </head>
+    <script src="../../../package/frontend/polkadot.min.js"></script>
+    <script src="../../../gateway/test/js/jquery.min.js"></script>
+    <script src="../../../gateway/test/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../../gateway/test/js/bootstrap.min.css">
+    <script>
+        const url="ws://localhost:7788";
+        const wmap={},spams={},count={};
+        const accounts=[
+            "5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
+            "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+            "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+            "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
+        ];
+
+        const self={
+            init:(url,agent,ck,index)=>{
+                const ws=new WebSocket(url);
+                ws.onopen=(res)=>{
+                    agent.open(res,index);
+                };
+                ws.onmessage=(res)=>{
+                    agent.message(res,index);
+                };
+                ws.onclose=(res)=>{
+                    agent.close(res,index);
+                };
+                ws.onerror=(res)=>{
+                    agent.error(res,index);
+                };
+                return ck && ck(ws,index);
+            },
+            send:(obj,index)=>{
+                if(!wmap[index]) return false;
+                if(!count[index]){
+                    count[index]=1;
+                }else{
+                    count[index]++;
+                }
+                const ws=wmap[index];
+                obj.order=count[index];
+                ws.send(JSON.stringify(obj));
+                return true;
+            },
+            getIndex:(acc)=>{
+                for(let i=0;i<accounts.length;i++){
+                    if(acc===accounts[i]) return i;
+                }
+                return false;
+            },
+        };
+
+        $(function(){
+            var tpl=`<div class="row">`;
+            for(var i=0;i<accounts.length;i++){
+                const row=accounts[i];
+                const chat=`<div class="col-6 col-lg-6">
+                    <div class="row pt-4 pb-2">
+                        <div class="col-12 col-lg-12">
+                            <div id="screen_${i}" class="screen"></div>
+                        </div>
+                        <div class="col-1 col-lg-1 pt-2">From</div>
+                        <div class="col-11 col-lg-11 pt-2">${row}</div>
+                        <div class="col-1 col-lg-1">To</div>
+                        <div class="col-11 col-lg-11">
+                            <input type="text" id="target_${i}" class="form-control" value="">
+                        </div>
+                        <div class="col-4 col-lg-4 pt-3">
+                            <button class="btn btn-md btn-success btn_link" id="link_${i}" data="${i}">Link</button>
+                            <button class="btn btn-md btn-primary btn_reg" id="link_${i}" data="${i}">Reg</button>
+                        </div>
+                        <div class="col-6 col-lg-6 pt-3">
+                            <input type="text" id="content_${i}" class="form-control" value="">
+                        </div>
+                        <div class="col-2 col-lg-2 pt-3 text-end">
+                            <button class="btn btn-md btn-primary btn_send" id="btn_${i}" data="${i}">Send</button>
+                        </div>
+                    </div>
+                </div>`;
+                tpl+=chat;
+            }
+            tpl+=`</div>`;
+            $("body").html(tpl);
+            $(".btn_send").on("click",(ev)=>{
+                const sel=$(ev.target);
+                const index=sel.attr("data");
+                const target=$("#target_"+index).val();
+                const ctx=$("#content_"+index).val();
+                const data={
+                    act:"chat",
+                    to:target,
+                    msg:ctx,
+                    spam:spams[index],
+                }
+                self.send(data,index);
+            });
+
+            $(".btn_link").on("click",(ev)=>{
+                const sel=$(ev.target);
+                const index=sel.attr("data");
+                const data={
+                    //act:"reg",
+                    act:"active",
+                    acc:accounts[index],
+                    spam:spams[index],
+                }
+                self.send(data,index);
+            })
+
+            $(".btn_reg").on("click",(ev)=>{
+                const sel=$(ev.target);
+                const index=sel.attr("data");
+                const data={
+                    act:"reg",
+                    acc:accounts[index],
+                    spam:spams[index],
+                }
+                self.send(data,index);
+            })
+            //websocket group
+
+            for(var i=0;i<accounts.length;i++){
+                const agent={
+                    open:(res,index)=>{
+                        console.log(index);
+                    },
+                    message:(res,index)=>{
+                        const input=JSON.parse(res.data);
+                        if(!input) return false;
+                        console.log(input);
+                        switch (input.act) {
+                            case "init":
+                                spams[index]=input.spam;
+                                break;
+
+                            case "chat":
+                                const ctx=`<p>${input.msg}<br /><small>${input.from}</small></p>`;
+                                $("#screen_"+index).prepend(ctx);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    },
+                    close:(res,index)=>{
+
+                    },
+                    error:(res,index)=>{
+
+                    }
+                }
+                self.init(url,agent,(ws,index)=>{
+                    wmap[i]=ws;
+                },i);
+            }
+        });
+    </script>
+    <body style="width: 90%;margin: 0 auto;">
+        
+        
+    </body>
+</html>
