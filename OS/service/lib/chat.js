@@ -75,9 +75,7 @@ module.exports = {
                 const str = res.toString();
                 output(`Request:${str}`)
                 if (!str) return output(`Empty request.`, "error")
-
                 
-
                 try {
                     const input = JSON.parse(str);
                     //const result={act:input.act};

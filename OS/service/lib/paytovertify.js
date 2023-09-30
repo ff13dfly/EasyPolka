@@ -3,6 +3,7 @@ const {output}=require("../lib/output");
 // Storage part 
 const map={};
 let count=0;
+let target="";
 
 let checker=null;   //checking interval
 const agent={
@@ -43,33 +44,33 @@ const self={
 }
 
 module.exports={
+    account:(acc)=>{
+        target=acc;
+    },
     agent:(success,failed)=>{
         agent.success=success;
         agent.failed=failed;
     },
-    subcribe:(fun)=>{
+    subcribe:(fun,convert)=>{
         if(agent.success===null || agent.failed===null) return {error:"No agent to sent the result"};
 
         if(checker===null){
             checker=setInterval(()=>{
+                count++;
                 output(`[${count}] Checking expired requests.`);
                 for(let acc in map){
                     console.log(map[acc]);
                 };
 
-                count++;
-                if(count%5===0){
-                    agent.success({address:"5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",block:223,index:3});
-                }
-
-                if(count%7===0){
-                    agent.failed({address:"5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",message:""});
-                }
-
             },config.at);
         }
+
         fun((block,trans)=>{
-            // checking the accounts
+            // console.log(`[ ${block} ]:${JSON.stringify(trans)}`);
+            // console.log(map);
+            // console.log(target);
+            const list=convert(trans);
+
         });
     },
     add:(address,force,ck)=>{

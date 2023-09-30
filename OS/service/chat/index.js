@@ -8,15 +8,19 @@ const {output}=require("../lib/output");
 const Valid = require("../lib/valid");
 const Chat=require("../lib/chat");
 const Paytovertify=require("../lib/paytovertify");
+const Chain=require("../lib/chk_polkadot");
 
 const version="1.0.1";
 console.clear();
 output(`W3OS chatting service ( v${version} ) running...`,"dark",true);
+
 Valid(process.argv.slice(2),(res)=>{
     const cfg=res.data;
+    Chain.endpoint(cfg.server.polkadot);
     const agent={
         reg:(acc,ck)=>{
             output(`Ready to reg "${acc}"`);
+            Paytovertify.account("5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy");
             Paytovertify.agent(
                 (res)=>{    //when vertification successful
                     console.log(res);
@@ -28,9 +32,7 @@ Valid(process.argv.slice(2),(res)=>{
                 }
             );
 
-            Paytovertify.subcribe(()=>{
-        
-            });
+            Paytovertify.subcribe(Chain.subcribe,Chain.convert);
 
             Paytovertify.add(acc,false,(amount)=>{
                 output(`The pay amount is ${amount}`);
