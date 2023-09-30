@@ -3,52 +3,44 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 import STORAGE from '../lib/storage.js';
+import RUNTIME from '../lib/runtime';
 
 function User(props) {
   let [amount, setAmount] = useState(0);
   let [avatar, setAvatar] = useState('user.png');
   let [info, setInfo] = useState('');
   let [disable, setDisable] = useState('');
+  let [address, setAddress] = useState('');
 
-  const fa = STORAGE.getKey("signature");
-  //const address = fa.address;
-  const address="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";
+  //const address="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";
 
   const self = {
     init: () => {
 
     },
     remove: () => {
-      STORAGE.removeKey("signature");
+      //STORAGE.removeKey("signature");
+      RUNTIME.removeAccount();
       props.fresh();      //父组件传过来的
     },
     charge: () => {
       setDisable('disabled');
-      //console.log('here...');
       setInfo('Requesting...');
-      // props.auto('vMarket','apply',{},(res)=>{
-      //   if(res.message){
-      //     setInfo(res.message);
-      //   }else{
-      //     setInfo(`Apply successful. Got ${res.amount} coins`);
-      //   }
-      //   setTimeout(()=>{
-      //     setDisable('');
-      //     setInfo('');
-      //   },3000);
-      // });
     },
-    download: () => {
-      const pom = document.createElement('a');
-      pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify(fa));
-      pom.setAttribute('download', address + '.json');
-      if (document.createEvent) {
-        var event = document.createEvent('MouseEvents');
-        event.initEvent('click', true, true);
-        pom.dispatchEvent(event);
-      } else {
-        pom.click();
-      }
+    download: (ev) => {
+      RUNTIME.getAccount((sign)=>{
+        //const address = sign.address;
+        const pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + JSON.stringify(sign));
+        pom.setAttribute('download', address + '.json');
+        if (document.createEvent) {
+          var event = document.createEvent('MouseEvents');
+          event.initEvent('click', true, true);
+          pom.dispatchEvent(event);
+        } else {
+          pom.click();
+        }
+      });
     },
   };
 
@@ -57,17 +49,20 @@ function User(props) {
   };
 
   useEffect(() => {
-    //console.log('useEffect...');
-    props.balance(address, (res) => {
-      //console.log(res.data.toJSON())
-      if (res === false) {
-        setAmount('unknown');
-      } else {
-        setAmount(parseFloat(res.data.free.toBn() * 0.000000000001).toLocaleString());
-      }
+    RUNTIME.getAccount((sign)=>{
+      //const fa = STORAGE.getKey("signature");
+      const address = sign.address;
+      setAddress(address);
+      props.balance(address, (res) => {
+        //console.log(res.data.toJSON())
+        if (res === false) {
+          setAmount('unknown');
+        } else {
+          setAmount(parseFloat(res.data.free.toBn() * 0.000000000001).toLocaleString());
+        }
+      });
+      setAvatar(`https://robohash.org/${address}.png`);
     });
-    setAvatar(`https://robohash.org/${address}.png`);
-
   });
 
   const amap = {
@@ -88,7 +83,9 @@ function User(props) {
           <p>{amount} unit</p>
         </Col>
         <Col lg={4} xs={4} className="pt-4 text-end" >
-          <Button size="sm" variant="danger" onClick={self.remove} > Remove </Button>{' '}
+          <Button size="sm" variant="danger" onClick={(ev)=>{
+            self.remove(ev);
+          }} > Remove </Button>{' '}
         </Col>
         <Col lg={12} xs={12} className="text-end" >{info}</Col>
 
@@ -100,7 +97,9 @@ function User(props) {
           <p className='text-muted'>Download your encry verify file.</p>
         </Col>
         <Col lg={4} xs={4} className="pt-4 text-end" >
-          <Button size="sm" variant="primary" onClick={self.download} > Download </Button>{' '}
+          <Button size="sm" variant="primary" onClick={(ev)=>{
+            self.download(ev);
+          }} > Download </Button>{' '}
         </Col>
       </Row>
     </Container>

@@ -19,15 +19,58 @@ function Paybill(props) {
   const avatar_from=`https://robohash.org/${props.from}.png`;
   const avatar_to=`https://robohash.org/${props.target}.png`;
 
+  //let wsAPI=null;
   const self = {
     onClick: (ev) => {
       console.log("clicked");
+      RUNTIME.getActive((wsAPI,Keyring) => {
+        ///onsole.log(keyring);
+        const to="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";
+        const n=props.amount;
+        const keyring = new Keyring({ type: 'sr25519', ss58Format: 2 });
+        const pair=keyring.addFromUri('//Alice');
+        self.transfer(wsAPI,to,n,pair,(res)=>{
+          console.log(res);
+        });
+      });
+    },
+    transfer: function (wsAPI,ss58, amount, pair, ck) {
+        let unsub = null;
+        wsAPI.query.system.account(pair.address, ({ nonce, data: balance }) => {
+            unsub();
+            //console.log(`balance.free: ${balance.free}`);
+            if (balance.free < self.tranform(200)) return ck && ck(false);
+            try {
+                //注意，如果目标账户的coin小于100的时候，会转账失败
+                wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
+                    if (status.type === 'InBlock') {
+                      console.log(`Transaction included at blockHash ${txHash}`);
+                      return ck && ck(amount);
+                    }else if(status.type === 'Finalized'){
+                      console.log(`Transaction included at blockHash ${status.asFinalized}`);
+                      console.log(`Transaction hash ${txHash.toHex()}`);
 
+                      events.forEach(({ phase, event: { data, method, section } }) => {
+                        console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+                      });
+                      
+                      unsub();
+                    }
+                });
+            } catch (error) {
+                return ck && ck(false);
+            }
+        }).then((fun) => {
+            unsub = fun;
+        });
+    },
+    tranform: function (amount) {
+      return amount * 1000000000000;
     },
   }
+
   useEffect(() => {
-
-
+    
   });
 
   const amap = {
@@ -45,17 +88,21 @@ function Paybill(props) {
   return (
     <Container>
       <Row>
-        <Col xs={size.head[0]} sm={size.head[0]} md={size.head[0]} 
+        <Col className='pt-2 pb-2' xs={size.row[0]} sm={size.row[0]} md={size.row[0]} 
+          lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]} >
+          <h5>{props.desc}</h5>
+        </Col>
+        <Col className='pt-4' xs={size.head[0]} sm={size.head[0]} md={size.head[0]} 
           lg={size.head[0]} xl={size.head[0]} xxl={size.head[0]} >
           <img style={amap} src={avatar_from} alt="user logo"/>
           <small style={cmap}>{props.from}</small>
         </Col>
-        <Col className='text-center' xs={size.head[1]} sm={size.head[1]} md={size.head[1]} 
+        <Col className='pt-4 text-center' xs={size.head[1]} sm={size.head[1]} md={size.head[1]} 
           lg={size.head[1]} xl={size.head[1]} xxl={size.head[1]} >
             <h5 className='pt-4'>{props.amount}</h5>
             <p>{"------>"}</p>
         </Col>
-        <Col xs={size.head[2]} sm={size.head[2]} md={size.head[2]} 
+        <Col className='pt-4' xs={size.head[2]} sm={size.head[2]} md={size.head[2]} 
           lg={size.head[2]} xl={size.head[2]} xxl={size.head[2]} >
           <img style={amap} src={avatar_to} alt="user logo"/>
           <small style={cmap}>{props.target}</small>

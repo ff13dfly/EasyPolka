@@ -3,7 +3,7 @@ import { useEffect,useState } from 'react';
 
 import Login from '../components/login';
 import User from '../components/user';
-import User_Add from '../components/user_add';
+import RUNTIME from '../lib/runtime';
 
 function Account(props) {
   const size = [3, 6, 3];
@@ -13,7 +13,13 @@ function Account(props) {
 
   const self = {
     fresh:()=>{
-      
+      RUNTIME.getAccount((sign)=>{
+        if(sign===null){
+          setDetails(<Login fresh={self.fresh} funs={funs} />);
+        }else{
+          setDetails(<User fresh={self.fresh} balance={self.balance}/>);
+        }
+      });
     },
     balance:()=>{
 
@@ -21,8 +27,9 @@ function Account(props) {
   }
 
   useEffect(() => {
-    setDetails(<User fresh={self.fresh} balance={self.balance}/>);
+    self.fresh();
   }, []);
+
   return (
     <div id="page">
       <Navbar className="bg-body-tertiary">
@@ -46,15 +53,7 @@ function Account(props) {
       </Navbar>
       <Container>
         {details}
-        <Row>
-          <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}>
-          </Col>
-          <Col className='text-end' xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}>
-            <User_Add funs={funs} />
-          </Col>
-        </Row>
       </Container>
-
     </div>
   );
 }

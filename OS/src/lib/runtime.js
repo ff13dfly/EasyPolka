@@ -1,5 +1,11 @@
+import STORAGE from './storage';
 let API = null;
 let wsAPI = null;
+
+const keys={
+  "account":"w3os_account_file",
+};
+STORAGE.setMap(keys);
 
 const config={
     accounts:require("../data/accounts"),
@@ -9,6 +15,19 @@ const config={
 }
 
 const RUNTIME = {
+    getAccount:(ck)=>{
+        const fa=STORAGE.getKey("account");
+        return ck && ck(fa);
+    },
+    setAccount:(obj)=>{
+        STORAGE.setKey("account",obj);
+    },
+    removeAccount:()=>{
+        STORAGE.removeKey("account");
+        return true;
+    },
+
+
     system_init:()=>{
 
     },
@@ -40,7 +59,6 @@ const RUNTIME = {
                 ApiPromise.create({ provider: provider }).then((PokLinker) => {
                     wsAPI = PokLinker;
                     API.AnchorJS.set(wsAPI);
-                    //console.log(PokLinker);
                     ck && ck(API);
                 });
             } catch (error) {
@@ -48,6 +66,15 @@ const RUNTIME = {
             }
         } else {
             ck && ck(API);
+        }
+    },
+    getActive:(ck)=>{
+        if(wsAPI===null){
+            RUNTIME.getAPIs(()=>{
+                return ck && ck(wsAPI,API.Polkadot.Keyring);
+            });
+        }else{
+            return ck && ck(wsAPI,API.Polkadot.Keyring);
         }
     },
     getAPIs: (ck) => {
@@ -72,8 +99,6 @@ const RUNTIME = {
             };
 
             const endpoint=config.system.basic.endpoint[0];
-            //console.log(endpoint);
-
             return RUNTIME.link(endpoint,ck);
         }
         //console.log(API);

@@ -1,19 +1,38 @@
-
 import { Container,Row, Col, Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
+
 import { Keyring } from '@polkadot/api';
+import { mnemonicGenerate } from '@polkadot/util-crypto';
 
-import STORAGE from '../lib/storage.js';
-
+import RUNTIME from '../lib/runtime';
+import Password from './password';
 
 function Login(props){
+    const funs=props.funs;
+
     let [password,setPassword]   =useState('');
     let [info,setInfo]=useState( 'Upload the encry file then import.');
     let [encoded, setEncoded] =useState('');
 
     const self={
-      addAccount:()=>{
-        props.register();
+      randomName:()=>{
+        return 'W3OS_'+Math.ceil(Math.random()*100);
+      },
+      addAccount:(ev)=>{
+        RUNTIME.getAPIs((API) => {
+          const mnemonic = mnemonicGenerate(12, undefined, true);
+          const keyring = new API.Polkadot.Keyring({ type: 'sr25519' });
+          const pair = keyring.addFromUri(mnemonic);
+          funs.dialog.show(
+            (<Password callback={(pass) =>{
+              funs.dialog.hide();
+              const sign=pair.toJson(pass);
+              sign.meta.name=self.randomName();
+              RUNTIME.setAccount(sign);
+              props.fresh();
+            }} account={pair.address} mnemonic={mnemonic} funs={funs} />)
+          );
+        });
       },
       changeFile:(ev)=>{
         //1.这里需要对文件内容进行处理
@@ -58,7 +77,7 @@ function Login(props){
 
       },
       setSignJSON:(fa)=>{
-        STORAGE.setKey("signature",fa);
+        RUNTIME.setAccount(fa);
       }
     };
     
@@ -69,7 +88,9 @@ function Login(props){
           <p>Create an account to join FreeSaying.net</p>
         </Col> 
         <Col lg = { 6 } xs = { 6 } className = "pt-4 text-end" >
-          <Button size = "md" variant = "primary" onClick = { (self.addAccount) } >New Account</Button>{' '}
+          <Button size = "md" variant = "primary" onClick = { (ev)=>{
+            self.addAccount(ev)
+          } } >New Account</Button>{' '}
         </Col> 
       </Row>
       <Row>

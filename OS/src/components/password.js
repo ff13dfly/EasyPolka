@@ -33,7 +33,6 @@ function Password(props) {
 
       if(password!==confirm) setBorder('border-warning');
       else setBorder('');
-
     },
   };
 

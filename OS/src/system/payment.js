@@ -12,6 +12,7 @@ function Payment(props) {
   let [account, setAccount] = useState("");
   let [amount, setAmount] = useState(0);
 
+  const desc="The payment can not be called back, please confirm the account you want to pay.";
   const self = {
     changeAmount:(ev)=>{
       setAmount(ev.target.value);
@@ -24,7 +25,7 @@ function Payment(props) {
       funs.dialog.show(
         (<Paybill callback={(pass) => {
           
-        }} from={from} target={account} amount={amount} funs={funs} />),
+        }} desc={desc} from={from} target={account} amount={amount} funs={funs} />),
         "Payment confirm"
       );
     },
