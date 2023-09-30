@@ -14,7 +14,6 @@ function User_Add(props) {
     onClick: (ev) => {
       //const mnemonic = mnemonicGenerate(12,undefined,true);
       //const arr=mnemonic.split(' ');
-
       RUNTIME.getAPIs((API) => {
         //console.log(API);
         const mnemonic = mnemonicGenerate(12, undefined, true);
@@ -26,8 +25,6 @@ function User_Add(props) {
           }} account={pair.address} mnemonic={mnemonic} funs={funs} />)
         );
       });
-
-
     },
   }
 

@@ -6,6 +6,7 @@ import Overview from './overview';
 
 import Setting from '../system/setting';
 import Account from '../system/account';
+import Payment from '../system/payment';
 import Contact from '../system/contact';
 
 function Cell(props) {
@@ -18,6 +19,7 @@ function Cell(props) {
   const map={
     "setting":<Setting funs={funs} />,
     "account":<Account funs={funs} />,
+    "payment":<Payment funs={funs} amount={0} target={""}/>,
     "contact":<Contact funs={funs} />,
   };
 

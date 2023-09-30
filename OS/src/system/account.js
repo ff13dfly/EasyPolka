@@ -46,7 +46,13 @@ function Account(props) {
       </Navbar>
       <Container>
         {details}
-        <User_Add funs={funs} />
+        <Row>
+          <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}>
+          </Col>
+          <Col className='text-end' xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}>
+            <User_Add funs={funs} />
+          </Col>
+        </Row>
       </Container>
 
     </div>

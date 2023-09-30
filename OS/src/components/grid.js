@@ -11,9 +11,6 @@ function Grid(props) {
   const size = props.size;
   const list = props.list;
 
-  //console.log(size);
-  //console.log(list);
-
   const num = Math.floor(sum / size[0]);
 
   const id="grid_container";

@@ -81,7 +81,7 @@ function User(props) {
     <Container>
       <Row className="pt-2" >
         <Col lg={2} xs={2} className="pt-2" >
-          <img style={amap} src={avatar} />
+          <img style={amap} src={avatar} alt="user logo"/>
         </Col>
         <Col lg={6} xs={6} className="pt-2" >
           <h3>{""}</h3>
