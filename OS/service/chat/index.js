@@ -14,21 +14,23 @@ const version="1.0.1";
 console.clear();
 output(`W3OS chatting service ( v${version} ) running...`,"dark",true);
 
+const vertify_account="5EUFM4U2LUypvctxvqnEV2vb3hBABspWUYEjErwRpTbsYEaJ";
+
 Valid(process.argv.slice(2),(res)=>{
     const cfg=res.data;
     Chain.endpoint(cfg.server.polkadot);
     const agent={
         reg:(acc,ck)=>{
             output(`Ready to reg "${acc}"`);
-            Paytovertify.account("5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy");
+            Paytovertify.account(vertify_account);
             Paytovertify.agent(
                 (res)=>{    //when vertification successful
-                    console.log(res);
-                    Chat.notification(res.address,{status:1,msg:"Payment vertification successful"});
+                    output(`Verification successful, ready to sent notification.`,"success");
+                    Chat.notification(res.from,{status:1,msg:"Payment vertification successful"});
                 },
                 (res)=>{    //when vertification failed
-                    console.log(res);
-                    Chat.notification(res.address,{status:0,msg:"Payment vertification failed"});
+                    output(`Verification failed, ready to sent notification.`,"error");
+                    Chat.notification(res.from,{status:0,msg:"Payment vertification failed"});
                 }
             );
 

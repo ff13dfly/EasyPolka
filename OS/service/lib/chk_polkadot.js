@@ -118,7 +118,6 @@ module.exports = {
                 wsAPI.rpc.chain.getBlock(hash).then((dt) => {
                     wsAPI.query.system.events.at(hash, (evs) => {
                         const list = evs.toHuman();
-                        //console.log(list);
                         if (list.length !== 1) {
                             list.shift();
                             return ck && ck(block, list);
@@ -129,6 +128,17 @@ module.exports = {
         });
     },
     convert: (list) => {
-
+        //console.log(list);
+        const result=[];
+        for(let i=0;i<list.length;i++){
+            const row=list[i];
+            if(row.event && 
+                row.event.method==="Transfer" &&
+                row.event.section==="balances" &&
+                row.event.index==='0x0602'){
+                    result.push(row.event.data)  
+            }
+        }  
+        return result;
     },
 }

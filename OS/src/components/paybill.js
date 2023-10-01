@@ -21,6 +21,8 @@ function Paybill(props) {
   const avatar_from = `https://robohash.org/${props.from}.png`;
   const avatar_to = `https://robohash.org/${props.target}.png`;
 
+  // 5EUFM4U2LUypvctxvqnEV2vb3hBABspWUYEjErwRpTbsYEaJ
+
   //let wsAPI=null;
   const self = {
     change: (ev) => {
@@ -29,11 +31,14 @@ function Paybill(props) {
     onClick: (ev) => {
       setInfo("");
       setDisable(true);
+
+      setInfo("Decode signature...");
       RUNTIME.getActive((wsAPI, Keyring) => {
         const to = props.target;
         const n = props.amount;
         RUNTIME.getAccount((acc) => {
           if (!acc){
+            setInfo("No acitve account");
             return false;
           } 
           const keyring = new Keyring({ type: 'sr25519' });
@@ -41,13 +46,28 @@ function Paybill(props) {
           try {
             pair.decodePkcs8(password);
             self.transfer(wsAPI, to, n, pair, (res) => {
-              setDisable(false);
               if(res===false){
                 setInfo("Payment failed.");
+                setDisable(false);
                 return false;
+              }else{
+                console.log(res);
+                switch (res.status) {
+                  case 'InBlock':
+                    setInfo("Payment is on progress.");
+
+                    break;
+                  case 'Finalized':
+                    setInfo("Payment done.");
+                    setDisable(false);
+                    setTimeout(()=>{
+                      funs.dialog.hide();
+                    },1500);
+                    break;
+                  default:
+                    break;
+                }
               }
-              console.log(res);
-              funs.dialog.hide();
             });
             return pair
           } catch (error) {
@@ -70,15 +90,15 @@ function Paybill(props) {
           wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
             if (status.type === 'InBlock') {
               console.log(`Transaction included at blockHash ${txHash}`);
-              return ck && ck(amount);
+              ck && ck({status:status.type});
             } else if (status.type === 'Finalized') {
-              console.log(`Transaction included at blockHash ${status.asFinalized}`);
-              console.log(`Transaction hash ${txHash.toHex()}`);
+              //console.log(`Transaction included at blockHash ${status.asFinalized}`);
+              //console.log(`Transaction hash ${txHash.toHex()}`);
 
               events.forEach(({ phase, event: { data, method, section } }) => {
                 console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
               });
-
+              ck && ck({status:status.type,hash:txHash.toHex(),block:status.asFinalized.toHex()});
               unsub();
             }
           });

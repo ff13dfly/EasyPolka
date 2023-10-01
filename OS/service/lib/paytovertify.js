@@ -13,7 +13,7 @@ const agent={
 
 // Config part
 const config={
-    expired:10*60000,       // 10 minutes to expire the vertification
+    expired:1*60000,       // 10 minutes to expire the vertification
     at:4000,                // checking interval
 };
 
@@ -29,8 +29,8 @@ const self={
         if(!map[address]){
             const n=self.rand(1,99);
             map[address]={  //set the amount and expired time
-                amount:n,
-                stamp:self.stamp()+config.expired,
+                amount:n, 
+                expired:self.stamp()+config.expired,
             };
         }else{
             map[address].stamp=self.stamp()+config.expired;
@@ -59,18 +59,37 @@ module.exports={
                 count++;
                 output(`[${count}] Checking expired requests.`);
                 for(let acc in map){
-                    console.log(map[acc]);
+                    if(map[acc].expired < self.stamp()){
+                        output(`Deleting expired: ${acc}`,"error");
+                        delete map[acc];
+                    }
                 };
 
             },config.at);
         }
 
         fun((block,trans)=>{
-            // console.log(`[ ${block} ]:${JSON.stringify(trans)}`);
-            // console.log(map);
-            // console.log(target);
             const list=convert(trans);
-
+            //console.log(list);
+            //console.log(block);
+            for(let i=0;i<list.length;i++){
+                const row=list[i];
+                output(`Transaction got, ${JSON.stringify(row)}`,"primary");
+                if(!map[row.from]){
+                    if(row.to===target) agent.failed({from:row.from,amount:row.amount,msg:"Unknow or Expired account",block:block});
+                    continue;
+                } 
+                const detail=map[row.from];
+                output(`Ready to verify account ${row.from}`,"primary");
+                if(row.to===target && self.stamp()<detail.expired){
+                    if((detail.amount*1000000000000).toLocaleString()===row.amount){
+                        agent.success({from:row.from,amount:row.amount,block:block});
+                        delete(map[row.from])
+                    }else{
+                        agent.failed({from:row.from,amount:row.amount,msg:"Wrong amount",block:block});
+                    }
+                }
+            }
         });
     },
     add:(address,force,ck)=>{
