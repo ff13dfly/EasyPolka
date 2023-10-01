@@ -24,8 +24,7 @@ function Paybill(props) {
     onClick: (ev) => {
       console.log("clicked");
       RUNTIME.getActive((wsAPI,Keyring) => {
-        ///onsole.log(keyring);
-        const to="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";
+        const to=props.target;
         const n=props.amount;
         const keyring = new Keyring({ type: 'sr25519', ss58Format: 2 });
         const pair=keyring.addFromUri('//Alice');

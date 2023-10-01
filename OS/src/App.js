@@ -36,7 +36,7 @@ function App() {
     },
     dialog:{
       show:(ctx,title)=>{
-        console.log("here:"+show);
+        //console.log("here:"+show);
         setContent(ctx);
         if(title) setTitle(title);
         setDialogShow(true);

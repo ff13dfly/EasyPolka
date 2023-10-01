@@ -2,7 +2,6 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 
 import { useState, useEffect } from 'react';
 
-import STORAGE from '../lib/storage.js';
 import RUNTIME from '../lib/runtime';
 
 function User(props) {
@@ -19,7 +18,6 @@ function User(props) {
 
     },
     remove: () => {
-      //STORAGE.removeKey("signature");
       RUNTIME.removeAccount();
       props.fresh();      //父组件传过来的
     },
@@ -89,10 +87,10 @@ function User(props) {
         </Col>
         <Col lg={12} xs={12} className="text-end" >{info}</Col>
 
-        <Col lg={8} xs={8} className="pt-2 text-start" ><p className="text-justify" style={cls}>{address}</p></Col>
-        <Col lg={4} xs={4} className="pt-3 text-end" >
+        <Col lg={12} xs={12} className="pt-2 text-start" ><p className="text-justify" style={cls}>{address}</p></Col>
+        {/* <Col lg={4} xs={4} className="pt-3 text-end" >
           <Button size="sm" variant="primary" onClick={self.charge} disabled={disable} > Free charge </Button>{' '}
-        </Col>
+        </Col> */}
         <Col lg={8} xs={8} className="pt-4 text-start" >
           <p className='text-muted'>Download your encry verify file.</p>
         </Col>

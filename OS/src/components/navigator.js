@@ -18,8 +18,7 @@ function Navigator() {
           if(res===false){
             return setMap({background:"#d7a3a3"});
           }
-
-          console.log(res);
+          //console.log(res);
         });
       });
     },
