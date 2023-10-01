@@ -14,15 +14,13 @@ const version="1.0.1";
 console.clear();
 output(`W3OS chatting service ( v${version} ) running...`,"dark",true);
 
-const vertify_account="5EUFM4U2LUypvctxvqnEV2vb3hBABspWUYEjErwRpTbsYEaJ";
-
 Valid(process.argv.slice(2),(res)=>{
     const cfg=res.data;
     Chain.endpoint(cfg.server.polkadot);
     const agent={
         reg:(acc,ck)=>{
             output(`Ready to reg "${acc}"`);
-            Paytovertify.account(vertify_account);
+            Paytovertify.account(cfg.server.vertification);
             Paytovertify.agent(
                 (res)=>{    //when vertification successful
                     output(`Verification successful, ready to sent notification.`,"success");
@@ -38,7 +36,7 @@ Valid(process.argv.slice(2),(res)=>{
 
             Paytovertify.add(acc,false,(amount)=>{
                 output(`The pay amount is ${amount}`);
-                return ck && ck(amount);
+                return ck && ck(amount,cfg.server.vertification);
             });
         },
         active:()=>{

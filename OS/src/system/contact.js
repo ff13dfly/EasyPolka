@@ -2,8 +2,8 @@ import { Navbar,Container,Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
 //import RUNTIME from '../lib/runtime';
 
-import Contact_Add from '../components/contact_add';
-import Contact_List from '../components/contact_list';
+import ContactAdd from '../components/contact_add';
+import ContactList from '../components/contact_list';
 
 function Contact(props) {
   const size = [3, 6, 3];
@@ -44,8 +44,8 @@ function Contact(props) {
         </Container>
       </Navbar>
       <Container>
-        <Contact_Add  funs={funs}/>
-        <Contact_List funs={funs}/>
+        <ContactAdd  funs={funs} /> 
+        <ContactList funs={funs} />
       </Container>
       <span className="remove" onClick={(ev)=>{
         console.log("here");

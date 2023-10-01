@@ -2,6 +2,11 @@ import { Row,Col } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
 import RUNTIME from '../lib/runtime';
+import AppSetting from './apps_single';
+
+const fmt={
+  name:"",
+}
 
 function ConfigApp(props) {
   const funs=props.funs;
@@ -10,13 +15,13 @@ function ConfigApp(props) {
 
   const self={
     click:(name,ev)=>{
-      funs.dialog.show(name,`${name} setting`);
+      
+      funs.dialog.show((<AppSetting funs={funs} name={name} />),`${name} setting`);
     }
   }
 
   useEffect(() => {
     RUNTIME.getSetting((res) => {
-      //console.log(res);
       const map = res.apps;
       setObj(map);
     });

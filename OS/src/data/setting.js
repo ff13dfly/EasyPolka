@@ -45,7 +45,8 @@ module.exports={
       "desc":""
     },
     "contact":{ //contact data structure
-      "intro":"",
+      "intro":"W3OS contact service",
+      "server":["ws://127.0.0.1:7788"],
       "status":"",
       "type":"friend",
       "network":"Anchor",

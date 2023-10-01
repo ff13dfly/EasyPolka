@@ -27,6 +27,14 @@ const RUNTIME = {
         return true;
     },
 
+    // setConfig:(obj)=>{
+
+    // },
+    // getConfig:(name,ck)=>{
+
+    //     return ck && ck();
+    // },
+
 
     system_init:()=>{
 
@@ -47,9 +55,7 @@ const RUNTIME = {
     installApp:(data)=>{
 
     },
-    getConfig:(name)=>{
-
-    },
+    
     link: (endpoint,ck) => {
         if (wsAPI === null) {
             const WsProvider = API.Polkadot.WsProvider;

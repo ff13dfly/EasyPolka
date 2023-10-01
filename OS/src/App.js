@@ -11,7 +11,6 @@ import RUNTIME from './lib/runtime';
 
 const size = Device.grids();
 
-
 function App() {
   let [ctx_stage, setStageContent] = useState("");
   let [ctx_mask, setMaskContent] = useState("");

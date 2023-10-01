@@ -90,8 +90,8 @@ module.exports = {
                             if (agent.reg) {
                                 const spam = input.spam;
                                 const order = input.order;
-                                agent.reg(acc,(amount) => {
-                                    self.success({act:"reg" ,amount: amount }, spam, order);
+                                agent.reg(acc,(amount,target) => {
+                                    self.success({act:"reg" ,amount: amount,target:target }, spam, order);
                                 });
                             }
                             break;

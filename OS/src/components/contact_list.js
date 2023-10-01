@@ -6,7 +6,7 @@ import Chat from './chat';
 import RUNTIME from '../lib/runtime';
 import tools from '../lib/tools';
 
-function Contact_List(props) {
+function ContactList(props) {
   const size = [12];
   const dv={xs:3,sm:3,md:3,lg:3,xl:6,xxl:6};
   const funs = props.funs;
@@ -49,4 +49,4 @@ function Contact_List(props) {
     </Row>
   );
 }
-export default Contact_List;
+export default ContactList;

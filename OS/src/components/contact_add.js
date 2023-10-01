@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 
 
-function Contact_Add(props) {
+function ContactAdd(props) {
   const size=[10,2];
 
   useEffect(() => {
@@ -32,4 +32,4 @@ function Contact_Add(props) {
     </Row>
   );
 }
-export default Contact_Add;
+export default ContactAdd;

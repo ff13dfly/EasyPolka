@@ -13,14 +13,14 @@ const agent={
 
 // Config part
 const config={
-    expired:1*60000,       // 10 minutes to expire the vertification
+    expired:10*60000,       // 10 minutes to expire the vertification
     at:4000,                // checking interval
 };
 
 // Callback message format
 const format={
-    success:{address:"",block:0,index:0},
-    failed:{address:"",message:""},
+    success:{from:"",block:0,index:0},
+    failed:{from:"",message:""},
 }
 
 //Functions

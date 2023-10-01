@@ -9,7 +9,7 @@ function Setting(props) {
   const size = [3, 6, 3];
 
   useEffect(() => {
-
+    //console.log(window.Jeditor);
   }, []);
 
   return (
