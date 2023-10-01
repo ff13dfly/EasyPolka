@@ -14,9 +14,6 @@ function User(props) {
   //const address="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";
 
   const self = {
-    init: () => {
-
-    },
     remove: () => {
       RUNTIME.removeAccount();
       props.fresh();      //父组件传过来的
@@ -40,6 +37,12 @@ function User(props) {
         }
       });
     },
+    copyAddress:(ev)=>{
+      RUNTIME.getAccount((sign)=>{
+        console.log(window.clipboardData);
+        //window.clipboardData.setData("Text",sign.address);
+      });
+    },
   };
 
   const cls = {
@@ -48,15 +51,13 @@ function User(props) {
 
   useEffect(() => {
     RUNTIME.getAccount((sign)=>{
-      //const fa = STORAGE.getKey("signature");
       const address = sign.address;
       setAddress(address);
       props.balance(address, (res) => {
-        //console.log(res.data.toJSON())
         if (res === false) {
           setAmount('unknown');
         } else {
-          setAmount(parseFloat(res.data.free.toBn() * 0.000000000001).toLocaleString());
+          setAmount(parseFloat(res.free * 0.000000000001).toLocaleString());
         }
       });
       setAvatar(`https://robohash.org/${address}.png`);
@@ -86,8 +87,15 @@ function User(props) {
           }} > Remove </Button>{' '}
         </Col>
         <Col lg={12} xs={12} className="text-end" >{info}</Col>
+        
 
-        <Col lg={12} xs={12} className="pt-2 text-start" ><p className="text-justify" style={cls}>{address}</p></Col>
+        <Col lg={9} xs={9} className="pt-2 text-start" ><p className="text-justify" style={cls}>{address}</p></Col>
+        <Col lg={3} xs={3} className="text-end" >
+          <Button className='mt-4' size="sm" variant="primary" onClick={(ev)=>{
+            self.copyAddress(ev);
+          }}> Copy </Button>
+        </Col>
+        
         {/* <Col lg={4} xs={4} className="pt-3 text-end" >
           <Button size="sm" variant="primary" onClick={self.charge} disabled={disable} > Free charge </Button>{' '}
         </Col> */}

@@ -136,7 +136,8 @@ function Payment(props) {
           <Col className='pb-4' xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
             lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
             <small>Amount to pay</small>
-            <input type="number" className="form-control" disabled={disable.amount} style={active.amount} defaultValue={props.amount} onChange={(ev)=>{
+            <input type="number" className="form-control" disabled={disable.amount} style={active.amount} 
+              defaultValue={props.amount} onChange={(ev)=>{
               self.changeAmount(ev);
             }}/>
           </Col>

@@ -21,8 +21,15 @@ function Account(props) {
         }
       });
     },
-    balance:()=>{
-
+    balance:(address,ck)=>{
+      RUNTIME.getAPIs((API) => {
+        if(API.AnchorJS.ready()){
+          return API.AnchorJS.balance(address,ck);
+        }
+        setTimeout(()=>{
+          self.balance(address,ck);
+        },100);
+      });
     },
   }
 
