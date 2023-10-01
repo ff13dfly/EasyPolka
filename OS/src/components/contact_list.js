@@ -41,7 +41,7 @@ function ContactList(props) {
                     width="100%"
                   />
               <small>{tools.shorten(address,4)}</small><br/>
-              <small>@{contact[address].network}</small>
+              <small><input type="checkbox" style={{marginRight:"5px"}}/>@{contact[address].network}</small>
             </Col>
           </Row>
         </Col>
