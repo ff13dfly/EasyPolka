@@ -1,28 +1,29 @@
 import STORAGE from './storage';
 let API = null;
 let wsAPI = null;
+let wss = {};
 
-const keys={
-  "account":"w3os_account_file",
+const keys = {
+    "account": "w3os_account_file",
 };
 STORAGE.setMap(keys);
 
-const config={
-    accounts:require("../data/accounts"),
-    apps:require("../data/apps"),
-    contacts:require("../data/contacts"),
-    system:require("../data/setting"),
+const config = {
+    accounts: require("../data/accounts"),
+    apps: require("../data/apps"),
+    contacts: require("../data/contacts"),
+    system: require("../data/setting"),
 }
 
 const RUNTIME = {
-    getAccount:(ck)=>{
-        const fa=STORAGE.getKey("account");
+    getAccount: (ck) => {
+        const fa = STORAGE.getKey("account");
         return ck && ck(fa);
     },
-    setAccount:(obj)=>{
-        STORAGE.setKey("account",obj);
+    setAccount: (obj) => {
+        STORAGE.setKey("account", obj);
     },
-    removeAccount:()=>{
+    removeAccount: () => {
         STORAGE.removeKey("account");
         return true;
     },
@@ -36,27 +37,47 @@ const RUNTIME = {
     // },
 
 
-    system_init:()=>{
+    system_init: () => {
 
     },
     trustSetting: () => {
 
     },
-    getSetting:(ck)=>{
+    getSetting: (ck) => {
         return ck && ck(config.system);
     },
-    getContact:(ck)=>{
+    getContact: (ck) => {
         return ck && ck(config.contacts);
     },
 
-    getApps:(ck)=>{
+    getApps: (ck) => {
         return ck && ck(config.apps);
     },
-    installApp:(data)=>{
+    installApp: (data) => {
 
     },
-    
-    link: (endpoint,ck) => {
+
+    websocket: (uri, agent, ck) => {
+        console.log(uri);
+        if (wss[uri]) return ck && ck(wss[uri]);
+        const ws = new WebSocket(uri);
+        ws.onopen = (res) => {
+            agent.open(res);
+        };
+        ws.onmessage = (res) => {
+            agent.message(res);
+        };
+        ws.onclose = (res) => {
+            agent.close(res);
+        };
+        ws.onerror = (res) => {
+            agent.error(res);
+        };
+        wss[uri]=ws;
+        return ck && ck(ws);
+    },
+
+    link: (endpoint, ck) => {
         if (wsAPI === null) {
             const WsProvider = API.Polkadot.WsProvider;
             const ApiPromise = API.Polkadot.ApiPromise;
@@ -74,13 +95,13 @@ const RUNTIME = {
             ck && ck(API);
         }
     },
-    getActive:(ck)=>{
-        if(wsAPI===null){
-            RUNTIME.getAPIs(()=>{
-                return ck && ck(wsAPI,API.Polkadot.Keyring);
+    getActive: (ck) => {
+        if (wsAPI === null) {
+            RUNTIME.getAPIs(() => {
+                return ck && ck(wsAPI, API.Polkadot.Keyring);
             });
-        }else{
-            return ck && ck(wsAPI,API.Polkadot.Keyring);
+        } else {
+            return ck && ck(wsAPI, API.Polkadot.Keyring);
         }
     },
     getAPIs: (ck) => {
@@ -104,8 +125,8 @@ const RUNTIME = {
                 },
             };
 
-            const endpoint=config.system.basic.endpoint[0];
-            return RUNTIME.link(endpoint,ck);
+            const endpoint = config.system.basic.endpoint[0];
+            return RUNTIME.link(endpoint, ck);
         }
         //console.log(API);
         return ck && ck(API);
