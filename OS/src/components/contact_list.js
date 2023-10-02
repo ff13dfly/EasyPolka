@@ -12,10 +12,21 @@ function ContactList(props) {
   const funs = props.funs;
 
   let [contact, setContact] = useState({});
+  let [count, setCount] = useState(0);
+  let [select, setSelect] = useState({});
 
   const self={
+    fresh:()=>{
+      count++;
+      setCount(count);
+    },
     click:(address,ev)=>{
       funs.dialog.show(<Chat address={address} />,"Chatting");
+    },
+    select:(index)=>{
+      //console.log(index);
+      select[`cs_${index}`] = !select[`cs_${index}`];
+      self.fresh();
     },
   }
 
@@ -27,10 +38,10 @@ function ContactList(props) {
   }, [contact])
 
   return (
-    <Row>
+    <Row index={count}>
       {Object.keys(contact).map((address, index) => (
         <Col xs={dv.xs} sm={dv.sm} md={dv.md} lg={dv.lg} xl={dv.xl} xxl={dv.xxl} key={index} onClick={(ev)=>{
-          self.click(address,ev);
+          props.edit?self.select(index):self.click(address,ev);
         }}>
           <Row>
             <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}
@@ -41,7 +52,11 @@ function ContactList(props) {
                     width="100%"
                   />
               <small>{tools.shorten(address,4)}</small><br/>
-              <small><input type="checkbox" style={{marginRight:"5px"}}/>@{contact[address].network}</small>
+              <small><input hidden={!props.edit} type="checkbox"  
+                checked={!select[`cs_${index}`]?false:select[`cs_${index}`]}
+                onChange={(ev)=>{
+
+                }} style={{marginRight:"5px"}}/>@{contact[address].network}</small>
             </Col>
           </Row>
         </Col>

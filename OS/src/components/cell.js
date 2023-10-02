@@ -1,4 +1,6 @@
 import { Col } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+
 import Stage from '../layout/stage';
 import Page from '../layout/page';
 import Device from '../lib/device';
@@ -13,8 +15,9 @@ function Cell(props) {
   const size = props.size;
   const row = props.data;
   const funs = props.funs;
-
   const data=props.data;
+
+  let [check, setCheck] = useState(false);
 
   const map={
     "setting":<Setting funs={funs} />,
@@ -75,6 +78,13 @@ function Cell(props) {
         }
       }
     },
+    select:()=>{
+      setCheck(!check);
+    },
+    tail:(str)=>{
+      if(str.length<=6) return str;
+      return str.substr(0, 4) + '..'
+    },
   }
 
   return (
@@ -82,11 +92,13 @@ function Cell(props) {
       <span className={props.index % 2 ? "status green" : "status red"}></span>
       <span className='type'>{!row.type?"unknow":row.type}</span>
       <img src={row.icon} alt="" onClick={(ev) => {
-        self.click()
+        props.edit?self.select():self.click()
       }}/>
       <h6 onClick={(ev) => {
-        self.click()
-      }}>{row.short}</h6>
+        props.edit?self.select():self.click()
+      }}><span><input hidden={!props.edit} type="checkbox" onChange={(ev)=>{
+
+      }} checked={check} style={{marginRight:"5px"}}/></span>{props.edit?self.tail(row.short):row.short}</h6>
     </Col>
   );
 }

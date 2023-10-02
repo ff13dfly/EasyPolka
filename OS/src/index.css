@@ -55,8 +55,9 @@ code {
 /*"background": "#FFAABB",*/
 .remove{position: fixed;left: 10px;bottom: 10px;width: 60px;height: 40px;border-radius: 20px;
   background: #EEEEEE;text-align: center;line-height: 40px;font-size: 30px;color: #FFFFFF;}
-.opts{position: fixed;left: 10px;bottom: 15px;width: 60%;height: 40px;border-radius: 20px;
+.opts{position: fixed;left: 10px;bottom: 15px;height: 50px;border-radius: 20px;padding: 0px 15px 0px 15px;
   background: #EEEEEE;line-height: 40px;font-size: 30px;color: #FFFFFF;}
+.opt_button{width: 36px;height: 36px;margin: 0px 5px 0px 5px;opacity: 0.6;}
 
 .from{background: #EEEEEE;border-radius: 8px;padding: 3px 10px 5px 10px;}
 .to{background: #7dcdf5;border-radius: 8px;padding: 3px 10px 5px 10px;}

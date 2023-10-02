@@ -1,15 +1,24 @@
 import { Navbar,Container,Row, Col } from 'react-bootstrap';
-import { useEffect } from 'react';
+import { useState,useEffect } from 'react';
 //import RUNTIME from '../lib/runtime';
 
 import ContactAdd from '../components/contact_add';
 import ContactList from '../components/contact_list';
+import ContactSetting from '../components/contact_setting';
 
 function Contact(props) {
   const size = [3, 6, 3];
   const funs = props.funs;
-  const self = {
 
+  let [editing, setEditing] = useState(false);
+
+  const self = {
+    clickSetting:(ev)=>{
+      funs.dialog.show((<ContactSetting funs={funs}/>),"Contact setting")
+    },
+    clickEdit:(ev)=>{
+      setEditing(!editing);
+    },
   };
 
   useEffect(() => {
@@ -45,27 +54,16 @@ function Contact(props) {
       </Navbar>
       <Container>
         <ContactAdd  funs={funs} /> 
-        <ContactList funs={funs} />
+        <ContactList funs={funs} edit={editing}/>
       </Container>
         <div className="opts">
-          <Row>
-            <Col  xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}>
-              <button className='btn btn-sm btn-success mr-2'> Remove </button>
-            </Col>
-            <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}>
-              <button className='btn btn-sm btn-success'> Link </button>
-            </Col>
-            <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}>
-              <i className="bi bi-person">abc</i>
-            </Col>
-            <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}>
-
-            </Col>
-          </Row>
+          <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev)=>{
+            self.clickEdit(ev)
+          }}/>
+          <img src="icons/setting.svg" className='opt_button' alt="" onClick={(ev)=>{
+            self.clickSetting(ev)
+          }}/>
         </div>
-        {/* <span className="remove" onClick={(ev)=>{
-          console.log("here");
-        }}>X</span> */}
     </div>
   );
 }

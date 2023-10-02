@@ -24,7 +24,7 @@ function Grid(props) {
     <div id={id}>
       <Row className='pb-2'>
         {list[page].map((row, index) => (
-          <Cell size={num} key={index} index={index} data={row} funs={props.funs}/>
+          <Cell size={num} key={index} index={index} data={row} edit={props.edit} funs={props.funs}/>
         ))}
       </Row>
     </div>

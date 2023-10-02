@@ -1,5 +1,5 @@
 import { Container } from 'react-bootstrap';
-import { useEffect,useState} from 'react';
+import { useEffect, useState } from 'react';
 
 import Navigator from './components/navigator';
 import Grid from './components/grid';
@@ -16,57 +16,71 @@ function App() {
   let [ctx_mask, setMaskContent] = useState("");
   let [ctx_page, setPageContent] = useState("");
 
-  let [show,setDialogShow] = useState(false);
-  let [content,setContent] = useState("");
-  let [title,setTitle] = useState("");
+  let [show, setDialogShow] = useState(false);
+  let [content, setContent] = useState("");
+  let [title, setTitle] = useState("");
   //let [callback,setCallback]= useState(()=>{});
 
-  let [apps,setApps]= useState([[]]);
+  let [editing, setEditing] = useState(false);
 
-  const funs={
-    stage:(ctx)=>{
+  let [apps, setApps] = useState([[]]);
+
+  const funs = {
+    stage: (ctx) => {
       setStageContent(ctx);
     },
-    mask:(ctx)=>{
+    mask: (ctx) => {
       setMaskContent(ctx);
     },
-    page:(ctx)=>{
+    page: (ctx) => {
       setPageContent(ctx);
     },
-    dialog:{
-      show:(ctx,title)=>{
+    dialog: {
+      show: (ctx, title) => {
         //console.log("here:"+show);
         setContent(ctx);
-        if(title) setTitle(title);
+        if (title) setTitle(title);
         setDialogShow(true);
       },
-      hide:(ck)=>{
+      hide: (ck) => {
         setDialogShow(false);
         return ck && ck();
       },
     },
-    update:()=>{
+    update: () => {
       setDialogShow(false);
     },
   }
 
-  useEffect(()=>{
-    RUNTIME.getApps((list)=>{
+  const self={
+    clickEdit:(ev)=>{
+      setEditing(!editing);
+    },
+  }
+
+  useEffect(() => {
+    RUNTIME.getApps((list) => {
       setApps(list);
     });
-  },[]);
+  }, []);
 
   return (
     <div>
       <Navigator />
       <Container>
-        <Board funs={funs}/>
-        <Grid size={size} list={apps} funs={funs}/>
-        <Dialog show={show} content={content} title={title} update={funs.update}/>
+        <Board funs={funs} />
+        <Grid size={size} list={apps} funs={funs} edit={editing}/>
+        <Dialog show={show} content={content} title={title} update={funs.update} />
       </Container>
       {ctx_stage}
       {ctx_mask}
       {ctx_page}
+      <div className="opts">
+        {/* <img src="icons/edit.svg" className='opt_button' alt="" /> */}
+        <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev)=>{
+          self.clickEdit(ev)
+        }}/>
+      </div>
     </div>
   );
 }
