@@ -24,6 +24,9 @@ function Contact(props) {
       const n=count+1;
       setCount(n);
     },
+    select:(map)=>{
+      console.log(map);
+    },
   };
 
   useEffect(() => {
@@ -52,8 +55,8 @@ function Contact(props) {
         </Container>
       </Navbar>
       <Container>
-        <ContactAdd  funs={funs} fresh={self.fresh}/> 
-        <ContactList funs={funs} fresh={self.fresh} edit={editing} count={count}/>
+        <ContactAdd  funs={funs} fresh={self.fresh} /> 
+        <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count}/>
       </Container>
         <div className="opts">
           <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev)=>{

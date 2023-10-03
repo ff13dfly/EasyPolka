@@ -16,6 +16,7 @@ function Cell(props) {
   const row = props.data;
   const funs = props.funs;
   const data=props.data;
+  const onSelect=props.select;
 
   let [check, setCheck] = useState(false);
 
@@ -80,6 +81,7 @@ function Cell(props) {
     },
     select:()=>{
       setCheck(!check);
+      onSelect(props.index);
     },
     tail:(str)=>{
       if(str.length<=6) return str;

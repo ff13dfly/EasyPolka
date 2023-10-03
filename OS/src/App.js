@@ -56,6 +56,9 @@ function App() {
     clickEdit:(ev)=>{
       setEditing(!editing);
     },
+    select:(id)=>{
+      console.log(`Selected App Index: ${id}`);
+    },
   }
 
   useEffect(() => {
@@ -69,7 +72,7 @@ function App() {
       <Navigator />
       <Container>
         <Board funs={funs} />
-        <Grid size={size} list={apps} funs={funs} edit={editing}/>
+        <Grid size={size} list={apps} funs={funs} edit={editing} select={self.select}/>
         <Dialog show={show} content={content} title={title} update={funs.update} />
       </Container>
       {ctx_stage}
