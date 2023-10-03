@@ -3,6 +3,13 @@ let API = null;
 let wsAPI = null;
 let wss = {};
 
+const errors={
+    WEBSOCKET_LINK_ERROR:{
+        message:"Failed to link to websocket",
+        code:4001,
+    }
+}
+
 const keys = {
     "account": "w3os_account_file",
 };
@@ -26,6 +33,10 @@ const RUNTIME = {
     removeAccount: () => {
         STORAGE.removeKey("account");
         return true;
+    },
+
+    getError:(name)=>{
+
     },
 
     // setConfig:(obj)=>{
@@ -60,21 +71,25 @@ const RUNTIME = {
     websocket: (uri, agent, ck) => {
         console.log(uri);
         if (wss[uri]) return ck && ck(wss[uri]);
-        const ws = new WebSocket(uri);
-        ws.onopen = (res) => {
-            agent.open(res);
-        };
-        ws.onmessage = (res) => {
-            agent.message(res);
-        };
-        ws.onclose = (res) => {
-            agent.close(res);
-        };
-        ws.onerror = (res) => {
-            agent.error(res);
-        };
-        wss[uri]=ws;
-        return ck && ck(ws);
+        try {
+            const ws = new WebSocket(uri);
+            ws.onopen = (res) => {
+                agent.open(res);
+            };
+            ws.onmessage = (res) => {
+                agent.message(res);
+            };
+            ws.onclose = (res) => {
+                agent.close(res);
+            };
+            ws.onerror = (res) => {
+                agent.error(res);
+            };
+            wss[uri]=ws;
+            return ck && ck(ws);
+        } catch (error) {
+           return ck && ck(RUNTIME.getError("WEBSOCKET_LINK_ERROR")); 
+        }
     },
 
     link: (endpoint, ck) => {

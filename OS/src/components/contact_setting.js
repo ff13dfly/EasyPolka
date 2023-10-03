@@ -2,6 +2,7 @@ import { Row, Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 import RUNTIME from '../lib/runtime';
+import Payto from './payto';
 
 let websocket = null;
 let spam = "";
@@ -16,6 +17,7 @@ function ContactSetting(props) {
 
   let [server, setServer] = useState("");
   let [info, setInfo] = useState("");
+  let [hidden, setHidden] = useState(false);
   let [detail, setDetail] = useState("Your account is not actived on chat server, please veritify your account first.");
   
   const self = {
@@ -57,7 +59,10 @@ function ContactSetting(props) {
                 spam = input.spam;
                 break;
               case "reg":
-                setDetail(`Pay ${input.amount} to <small>${input.target}</small>`);
+                //Payto
+                //setDetail(`Pay ${input.amount} to <small>${input.target}</small>`);
+                setHidden(true);
+                setDetail(<Payto amount={input.amount} target={input.target} funs={funs} />);
                 break;
               case "notice":
                 break;
@@ -106,7 +111,7 @@ function ContactSetting(props) {
       </Col>
       <Col className='text-end' xs={size.vertify[1]} sm={size.vertify[1]} md={size.vertify[1]}
         lg={size.vertify[1]} xl={size.vertify[1]} xxl={size.vertify[1]}>
-        <button className='btn btn-md btn-primary' onClick={(ev) => {
+        <button className='btn btn-md btn-primary' hidden={hidden} onClick={(ev) => {
           self.click(ev)
         }}>Reg</button>
       </Col>
