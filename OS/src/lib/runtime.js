@@ -12,6 +12,8 @@ const errors={
 
 const keys = {
     "account": "w3os_account_file",
+    "contact": "w3os_contact_list",
+    "apps": "w3os_apps_list",
 };
 STORAGE.setMap(keys);
 
@@ -57,8 +59,33 @@ const RUNTIME = {
     getSetting: (ck) => {
         return ck && ck(config.system);
     },
+
+    //contact functions
+    addContact:(address,ck)=>{
+        let list = STORAGE.getKey("contact");
+        if(list===null) list={};
+        list[address]={
+            "intro":"",
+            "status":"",
+            "type":"friend",
+            "network":"Anchor",
+        }
+        STORAGE.setKey("contact",list);
+        return ck && ck(true);
+    },
+    removeContact:(address,ck)=>{
+
+    },
     getContact: (ck) => {
-        return ck && ck(config.contacts);
+        let list = STORAGE.getKey("contact");
+        if(list===null) list={};
+        return ck && ck(list);
+
+        // if(list===null){
+        //     return ck && ck(config.contacts);
+        // }else{
+        //     console.log(list);
+        // }
     },
 
     getApps: (ck) => {

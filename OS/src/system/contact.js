@@ -11,6 +11,7 @@ function Contact(props) {
   const funs = props.funs;
 
   let [editing, setEditing] = useState(false);
+  let [count, setCount] = useState(0);
 
   const self = {
     clickSetting:(ev)=>{
@@ -19,16 +20,14 @@ function Contact(props) {
     clickEdit:(ev)=>{
       setEditing(!editing);
     },
+    fresh:()=>{
+      const n=count+1;
+      setCount(n);
+    },
   };
 
   useEffect(() => {
-    // RUNTIME.getAPIs((APIs)=>{
-    //   console.log(APIs);
-    //   const link="anchor://hello";
-    //   APIs.Easy(link,(res)=>{
-    //     console.log(res);
-    //   });
-    // });
+
   }, []);
 
   return (
@@ -53,8 +52,8 @@ function Contact(props) {
         </Container>
       </Navbar>
       <Container>
-        <ContactAdd  funs={funs} /> 
-        <ContactList funs={funs} edit={editing}/>
+        <ContactAdd  funs={funs} fresh={self.fresh}/> 
+        <ContactList funs={funs} fresh={self.fresh} edit={editing} count={count}/>
       </Container>
         <div className="opts">
           <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev)=>{

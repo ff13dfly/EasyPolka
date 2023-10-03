@@ -7,26 +7,30 @@ import RUNTIME from '../lib/runtime';
 import tools from '../lib/tools';
 
 function ContactList(props) {
+
   const size = [12];
   const dv={xs:3,sm:3,md:3,lg:3,xl:6,xxl:6};
   const funs = props.funs;
+  const count=props.count;
+
+  console.log(count);
 
   let [contact, setContact] = useState({});
-  let [count, setCount] = useState(0);
+  //let [count, setCount] = useState(0);
   let [select, setSelect] = useState({});
 
   const self={
-    fresh:()=>{
-      count++;
-      setCount(count);
-    },
+    // fresh:()=>{
+    //   count++;
+    //   setCount(count);
+    // },
     click:(address,ev)=>{
       funs.dialog.show(<Chat address={address} />,"Chatting");
     },
     select:(index)=>{
       //console.log(index);
       select[`cs_${index}`] = !select[`cs_${index}`];
-      self.fresh();
+      props.fresh();
     },
   }
 
@@ -35,7 +39,7 @@ function ContactList(props) {
       //console.log(res);
       setContact(res);
     });
-  }, [contact])
+  }, [count])
 
   return (
     <Row index={count}>
