@@ -73,9 +73,19 @@ const RUNTIME = {
         STORAGE.setKey("contact",list);
         return ck && ck(true);
     },
-    removeContact:(address,ck)=>{
-
+    removeContact:(list,ck)=>{
+        console.log(list);
+        let map = STORAGE.getKey("contact");
+        if(map===null) map={};
+        for(let i=0;i<list.length;i++){
+            const acc=list[i];
+            if(map[acc]) delete map[acc];
+        }
+        console.log(map);
+        STORAGE.setKey("contact",map);
+        return ck && ck(true);
     },
+
     getContact: (ck) => {
         let list = STORAGE.getKey("contact");
         if(list===null) list={};

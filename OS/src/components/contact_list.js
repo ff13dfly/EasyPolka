@@ -14,7 +14,6 @@ function ContactList(props) {
   const count=props.count;
 
   let [contact, setContact] = useState({});
-  //let [count, setCount] = useState(0);
   let [select, setSelect] = useState({});
 
   const self={
@@ -24,7 +23,8 @@ function ContactList(props) {
     select:(address)=>{
       select[address] = !select[address];
       props.fresh();
-      console.log(select);
+      props.select(select);
+      //console.log(select);
     },
   }
 
@@ -49,7 +49,7 @@ function ContactList(props) {
                     rounded
                     width="100%"
                   />
-              <small>{tools.shorten(address,4)}</small><br/>
+              <small>{address.length>10?tools.shorten(address,4):address}</small><br/>
               <small><input hidden={!props.edit} type="checkbox"  
                 checked={!select[address]?false:select[address]}
                 onChange={(ev)=>{

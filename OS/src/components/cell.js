@@ -80,6 +80,7 @@ function Cell(props) {
       }
     },
     select:()=>{
+      if(row.type==="system") return false;
       setCheck(!check);
       onSelect(props.index);
     },
@@ -98,9 +99,9 @@ function Cell(props) {
       }}/>
       <h6 onClick={(ev) => {
         props.edit?self.select():self.click()
-      }}><span><input hidden={!props.edit} type="checkbox" onChange={(ev)=>{
+      }}><span><input hidden={props.edit?(row.type==="system"?true:false):true} type="checkbox" onChange={(ev)=>{
 
-      }} checked={check} style={{marginRight:"5px"}}/></span>{props.edit?self.tail(row.short):row.short}</h6>
+      }} checked={check} style={{marginRight:"5px"}}/></span>{props.edit?(row.type==="system"?row.short:self.tail(row.short)):row.short}</h6>
     </Col>
   );
 }

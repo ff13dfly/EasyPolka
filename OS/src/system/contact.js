@@ -6,6 +6,10 @@ import ContactAdd from '../components/contact_add';
 import ContactList from '../components/contact_list';
 import ContactSetting from '../components/contact_setting';
 
+import RUNTIME from '../lib/runtime';
+
+let selected=null;
+
 function Contact(props) {
   const size = [3, 6, 3];
   const funs = props.funs;
@@ -13,19 +17,35 @@ function Contact(props) {
   let [editing, setEditing] = useState(false);
   let [count, setCount] = useState(0);
 
+  //let [selected,setSelected]=useState({});
+
   const self = {
     clickSetting:(ev)=>{
       funs.dialog.show((<ContactSetting funs={funs}/>),"Contact setting")
     },
     clickEdit:(ev)=>{
       setEditing(!editing);
+      if(editing && selected!==null){
+        const list=[];
+        for(var address in selected){
+          if(selected[address]===true){
+            list.push(address);
+          }
+        }
+        //console.log(list);
+        RUNTIME.removeContact(list,(res)=>{
+          selected=null;
+          self.fresh();
+        });
+      }
     },
     fresh:()=>{
       const n=count+1;
       setCount(n);
     },
     select:(map)=>{
-      console.log(map);
+      //console.log(map);
+      selected=map;
     },
   };
 
