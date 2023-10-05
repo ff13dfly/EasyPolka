@@ -9,6 +9,7 @@ const Valid = require("../lib/valid");
 const Chat=require("../lib/chat");
 const Paytovertify=require("../lib/paytovertify");
 const Chain=require("../lib/chk_polkadot");
+const History=require("../lib/history");
 
 const version="1.0.1";
 console.clear();
@@ -39,16 +40,21 @@ Valid(process.argv.slice(2),(res)=>{
                 return ck && ck(amount,cfg.server.vertification);
             });
         },
-        active:()=>{
-
+        active:(address)=>{
+            //return History.mine(address);
         },
         leave:()=>{
 
         },
         offline:(from,to,msg)=>{
-            output(`Ready to cache "${msg}" from ${from} to ${to}`);
-            
+            //output(`Ready to cache "${msg}" from ${from} to ${to}`);
+            History.message(from,to,msg);
         },
+        get:{
+            message:(address)=>{
+                return History.mine(address);
+            },
+        }
     }
     Chat.init(cfg.server.port,agent);
 });

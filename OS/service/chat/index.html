@@ -145,6 +145,10 @@
                                 const ctx=`<p>${input.msg}<br /><small>${input.from}</small></p>`;
                                 $("#screen_"+index).prepend(ctx);
                                 break;
+                            case "history":
+                                const his=`<p>${input.msg}<br /><small>${input.from}</small></p>`;
+                                $("#screen_"+index).prepend(his);
+                                break;
                             case "active":
                                 const act=`<p>The ${input.count} active user.</p>`;
                                 $("#screen_"+index).prepend(act);

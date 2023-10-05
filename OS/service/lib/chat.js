@@ -3,11 +3,13 @@ const { output } = require("./output");
 
 const clients = {};
 const accountSpam = {}, spamToAccount = {};
+
 const agent = {
     reg: null,
     offline: null,
     active:null,
     leave:null,
+    get:null,
 };
 
 const self = {
@@ -100,10 +102,19 @@ module.exports = {
                             accountSpam[input.acc] = input.spam;
                             spamToAccount[input.spam] = input.acc;
                             const count=self.count(spamToAccount);
-                            console.log(spamToAccount);
+                            //console.log(spamToAccount);
                             self.success({count:count,act:"active"}, input.spam, input.order);
                             if (agent.active) {
                                 agent.active(count);
+                            }
+
+                            //console.log(agent)
+                            if(agent.get.message){
+                                const list=agent.get.message(input.acc);
+                                for(let i=0;i<list.length;i++){
+                                    const row=list[i];
+                                    self.success({act:"history",msg:row.content,from:row.from, stamp:row.stamp }, input.spam, input.order);
+                                }
                             }
                             break;
 
@@ -113,7 +124,9 @@ module.exports = {
                             };
 
                             const to = input.to;
+                            console.log(to);
                             if (!clients[accountSpam[to]]) {
+
                                 output(`User ${to} is not active`, "error");
                                 if (agent.offline) {
                                     const from = spamToAccount[input.spam];
