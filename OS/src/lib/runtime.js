@@ -2,6 +2,7 @@ import STORAGE from './storage';
 let API = null;
 let wsAPI = null;
 let wss = {};
+let spams = {};
 
 const errors={
     WEBSOCKET_LINK_ERROR:{
@@ -87,15 +88,13 @@ const RUNTIME = {
     },
 
     getContact: (ck) => {
-        let list = STORAGE.getKey("contact");
-        if(list===null) list={};
-        return ck && ck(list);
+        RUNTIME.getAccount((res)=>{
+            if(res===null || !res.address) return ck && ck(false);
 
-        // if(list===null){
-        //     return ck && ck(config.contacts);
-        // }else{
-        //     console.log(list);
-        // }
+            let list = STORAGE.getKey("contact");
+            if(list===null) list={};
+            return ck && ck(list);
+        });
     },
 
     getApps: (ck) => {
@@ -105,22 +104,28 @@ const RUNTIME = {
 
     },
 
-    websocket: (uri, agent, ck) => {
-        console.log(uri);
+    setSpam:(uri,spam)=>{
+        spams[uri]=spam;
+    },
+    getSpam:(uri)=>{
+        return spams[uri];
+    },
+    websocket: (uri, ck, agent) => {
+        //console.log(uri);
         if (wss[uri]) return ck && ck(wss[uri]);
         try {
             const ws = new WebSocket(uri);
             ws.onopen = (res) => {
-                agent.open(res);
+                if(agent && agent.open) agent.open(res);
             };
             ws.onmessage = (res) => {
-                agent.message(res);
+                if(agent && agent.message) agent.message(res);
             };
             ws.onclose = (res) => {
-                agent.close(res);
+                if(agent && agent.close) agent.close(res);
             };
             ws.onerror = (res) => {
-                agent.error(res);
+                if(agent && agent.error)  agent.error(res);
             };
             wss[uri]=ws;
             return ck && ck(ws);

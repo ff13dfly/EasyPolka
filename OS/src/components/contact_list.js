@@ -30,7 +30,6 @@ function ContactList(props) {
 
   useEffect(() => {
     RUNTIME.getContact((res) => {
-      //console.log(res);
       setContact(res);
     });
   }, [count])

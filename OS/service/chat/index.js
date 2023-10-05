@@ -40,14 +40,14 @@ Valid(process.argv.slice(2),(res)=>{
                 return ck && ck(amount,cfg.server.vertification);
             });
         },
-        active:(address)=>{
-            //return History.mine(address);
+        active:(address,count)=>{
+            History.clean(address,count);
+            return true;
         },
         leave:()=>{
 
         },
         offline:(from,to,msg)=>{
-            //output(`Ready to cache "${msg}" from ${from} to ${to}`);
             History.message(from,to,msg);
         },
         get:{

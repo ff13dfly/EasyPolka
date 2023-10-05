@@ -23,16 +23,17 @@ function ContactSetting(props) {
   const self = {
     click: (ev) => {
       RUNTIME.getAccount((acc) => {
+        if(acc===null || !acc.address) return false;
         const data = {
           act: "reg",
           acc: acc.address,
         }
-        console.log(data);
+        //console.log(data);
         self.send(data);
       });
     },
     send: (obj) => {
-      if(!ready || !spam) return setTimeout(()=>{
+      if(!ready || !spam ) return setTimeout(()=>{
         self.send(obj);
       },200);
       obj.spam=spam;
@@ -57,6 +58,7 @@ function ContactSetting(props) {
             switch (input.act) {
               case "init":
                 spam = input.spam;
+                RUNTIME.setSpam(uri,input.spam);
                 break;
               case "reg":
                 //Payto
@@ -81,16 +83,17 @@ function ContactSetting(props) {
 
         }
       }
-      RUNTIME.websocket(uri, agent, (ws) => {
+      RUNTIME.websocket(uri, (ws) => {
         websocket = ws;
         RUNTIME.getAccount((acc) => {
+          if(acc===null || !acc.address) return false;
           const data = {
             act: "active",
             acc: acc.address,
           }
           self.send(data);
         });
-      });
+      },agent);
     });
   }, []);
 

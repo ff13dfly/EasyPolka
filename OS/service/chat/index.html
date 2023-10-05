@@ -140,7 +140,6 @@
                             case "init":
                                 spams[index]=input.spam;
                                 break;
-
                             case "chat":
                                 const ctx=`<p>${input.msg}<br /><small>${input.from}</small></p>`;
                                 $("#screen_"+index).prepend(ctx);
@@ -157,6 +156,10 @@
                                 const notice=`<p>${input.msg}</p>`;
                                 $("#screen_"+index).prepend(notice);
 
+                                break;
+                            case "error":
+                                const err=`<p>${input.msg}</p>`;
+                                $("#screen_"+index).prepend(err);
                                 break;
                             default:
                                 break;

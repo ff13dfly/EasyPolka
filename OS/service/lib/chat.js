@@ -24,6 +24,7 @@ const self = {
     },
     failed: (obj, spam, order) => {
         obj.status = 0;
+        obj.act="error";
         self.send(obj, spam, order);
     },
     rand: (m, n) => { return Math.round(Math.random() * (m - n) + n); },
@@ -99,15 +100,15 @@ module.exports = {
                             break;
 
                         case "active":     //live on the server
+                            if(accountSpam[input.acc]!==undefined){
+                                return self.failed({ msg: "Dunplicate login" }, input.spam, input.order);
+                            }
+
                             accountSpam[input.acc] = input.spam;
                             spamToAccount[input.spam] = input.acc;
                             const count=self.count(spamToAccount);
-                            //console.log(spamToAccount);
                             self.success({count:count,act:"active"}, input.spam, input.order);
-                            if (agent.active) {
-                                agent.active(count);
-                            }
-
+                            
                             //console.log(agent)
                             if(agent.get.message){
                                 const list=agent.get.message(input.acc);
@@ -115,7 +116,15 @@ module.exports = {
                                     const row=list[i];
                                     self.success({act:"history",msg:row.content,from:row.from, stamp:row.stamp }, input.spam, input.order);
                                 }
+
+                                if (agent.active) {
+                                    agent.active(input.acc,list.length);
+                                }
                             }
+                            break;
+
+                        case "offline":     //leave by user action
+
                             break;
 
                         case "chat":
@@ -124,7 +133,6 @@ module.exports = {
                             };
 
                             const to = input.to;
-                            console.log(to);
                             if (!clients[accountSpam[to]]) {
 
                                 output(`User ${to} is not active`, "error");
@@ -138,7 +146,9 @@ module.exports = {
                             self.success({}, input.spam, input.order);
 
                             break;
+
                         default:
+                            output(`Unknow request: ${JSON.stringify(input)}`, "error");
                             break;
                     }
 
