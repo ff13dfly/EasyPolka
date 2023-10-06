@@ -11,32 +11,24 @@
     <link rel="stylesheet" href="../js/bootstrap.min.css">
     <script>
         const url="ws://localhost:5566";
+        let ws=null;
         const self={
-            init:(url,agent,ck)=>{
-                const ws=new WebSocket(url);
+            init:(url,agent)=>{
+                if(ws===null) ws=new WebSocket(url);
                 ws.onopen=(res)=>{
-                    agent.open(res);
+                    agent.open(res.data);
                 };
                 ws.onmessage=(res)=>{
-                    agent.message(res);
+                    agent.message(res.data);
                 };
                 ws.onclose=(res)=>{
-                    agent.close(res);
+                    agent.close(res.data);
                 };
                 ws.onerror=(res)=>{
-                    agent.error(res);
+                    agent.error(res.data);
                 };
-                return ck && ck(ws);
             },
-            send:(obj,index)=>{
-                if(!wmap[index]) return false;
-                if(!count[index]){
-                    count[index]=1;
-                }else{
-                    count[index]++;
-                }
-                const ws=wmap[index];
-                obj.order=count[index];
+            send:(obj)=>{
                 ws.send(JSON.stringify(obj));
                 return true;
             },
@@ -47,6 +39,17 @@
                 open:(res)=>{
                     console.log("Websocket linked, URL: "+url);
                 },
+                message:(res)=>{
+                    try {
+                        const data=JSON.parse(res);
+                        console.log(data);
+
+                        console.log(atob(data.code));
+                        console.log(btoa(data.code));
+                    } catch (error) {
+                        console.log(error);
+                    }
+                },
                 close:(res)=>{
 
                 },
@@ -54,8 +57,23 @@
 
                 }
             }
-            self.init(url,agent,(ws)=>{
+            self.init(url,agent);
+
+            $("#btn_pass").off("click").on("click",function(){
+                console.log("btn_pass");
                 
+            });
+            $("#btn_en").off("click").on("click",function(){
+                const ctx=$("#raw").val();
+                const pass=$("#password").val();
+                if(!ctx || !pass) return false;
+
+                console.log(`Pass:${pass},content:${ctx}`);
+                self.send({act:"encode",pass:pass,ctx:ctx});
+                
+            });
+            $("#btn_de").off("click").on("click",function(){
+                console.log("btn_de");
             });
         });
     </script>
@@ -64,9 +82,7 @@
         <div class="row">
             <div class="col-lg-8 pt-4">
                 <div class="col-lg-12 pb-2">
-                    <textarea class="form-control" id="raw" cols="30" rows="10">
-
-                    </textarea>
+                    <textarea class="form-control" id="raw" cols="30" rows="10"></textarea>
                     <small>1,000 Bytes</small>
                 </div>
                 <div class="col-lg-12 pb-2">
@@ -83,13 +99,13 @@
                         <input type="text" id="password" class="form-control" placeholder="Please input the encry password">
                     </div>
                     <div class="col-lg-4 pt-4 text-center">
-                        <button class="btn btn-md btn-primary">Random</button>
+                        <button class="btn btn-md btn-primary" id="btn_pass">Random</button>
                     </div>
                     <div class="col-lg-4 pt-4 text-center">
-                        <button class="btn btn-md btn-primary">Encode</button>
+                        <button class="btn btn-md btn-primary" id="btn_en">Encode</button>
                     </div>
                     <div class="col-lg-4 pt-4 text-center">
-                        <button class="btn btn-md btn-primary">Decode</button>
+                        <button class="btn btn-md btn-primary" id="btn_de">Decode</button>
                     </div>
                 </div>
 
