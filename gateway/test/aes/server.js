@@ -54,7 +54,7 @@ wss.on('connection', function connection(active,request, client) {
 
                     const de=encry.decrypt(code);
 
-                    self.success({"md5":md5,"code":code,"circle":de});
+                    self.success({act:"encode","raw":ctx,"md5":md5,"code":code,"circle":de});
                     break;
 
                 case "decode":

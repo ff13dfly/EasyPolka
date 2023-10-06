@@ -4,6 +4,13 @@ const { output } = require("./output");
 const clients = {};
 const accountSpam = {}, spamToAccount = {};
 
+const summary={
+    active:0,
+    reg:0,
+    msg:0,
+    depository:0,
+};
+
 const agent = {
     reg: null,
     offline: null,
@@ -19,11 +26,11 @@ const self = {
         clients[spam].websocket.send(JSON.stringify(obj));
     },
     success: (obj, spam, order) => {
-        obj.status = 1;
+        obj.success = true;
         self.send(obj, spam, order);
     },
     failed: (obj, spam, order) => {
-        obj.status = 0;
+        //obj.success = false;
         obj.act="error";
         self.send(obj, spam, order);
     },
@@ -67,6 +74,7 @@ module.exports = {
                 const acc=spamToAccount[uid];
                 delete spamToAccount[uid];
                 delete accountSpam[acc];
+                summary.active--;
                 output(`Client removed, uid: ${uid}`, "error");
             });
 
@@ -109,6 +117,8 @@ module.exports = {
                             const count=self.count(spamToAccount);
                             self.success({count:count,act:"active"}, input.spam, input.order);
                             
+                            summary.active++;
+                            self.success({act:"summary",data:summary }, input.spam, input.order);
                             //console.log(agent)
                             if(agent.get.message){
                                 const list=agent.get.message(input.acc);
@@ -124,10 +134,22 @@ module.exports = {
                             break;
 
                         case "offline":     //leave by user action
-
+                            if (!spamToAccount[input.spam]) {
+                               return output(`Unknow spam.`, "error");
+                            };
+                            const uid=input.spam;
+                            delete clients[uid];
+                            const address=spamToAccount[uid];
+                            delete spamToAccount[uid];
+                            delete accountSpam[address];
+                            summary.active--;
+                            output(`Client offline, uid: ${uid}`, "error");
+                            self.success({act:"offline",msg:"done"}, input.spam, input.order);
                             break;
 
                         case "chat":
+
+                            summary.msg++;
                             if (!spamToAccount[input.spam]) {
 
                             };
@@ -140,8 +162,12 @@ module.exports = {
                                     const from = spamToAccount[input.spam];
                                     agent.offline(from, to, input.msg);
                                 }
+                                summary.depository++;
                                 return self.failed({ msg: "User is not active." }, input.spam, input.order);
                             }
+
+                            
+
                             self.send({ act: "chat", msg: input.msg, from: spamToAccount[input.spam] }, accountSpam[to], input.order);
                             self.success({}, input.spam, input.order);
 

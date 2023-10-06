@@ -3,6 +3,12 @@
     <head>
         <style>
             .screen{height: 300px;width: 100%;background: #EEEEEE;overflow: auto;}
+            .live{background: #bbdbb9;margin: 0 auto;padding: 0px 0px 0px 0px;}
+            .single{background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;}
+            .single small{color: #666666;background: #EEEEEE;}
+            .active{background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;}
+            .notice{background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;}
+            .error{font:#FFFFFF;background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;}
         </style>
     </head>
     <script src="../../../package/frontend/polkadot.min.js"></script>
@@ -19,6 +25,9 @@
             "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
             "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
         ];
+        const shorten=function(addr){
+            return addr.substr(0, 5) + '...' + addr.substr(addr.length - 5, 5);
+        }
 
         const self={
             init:(url,agent,ck,index)=>{
@@ -72,11 +81,12 @@
                         <div class="col-11 col-lg-11">
                             <input type="text" id="target_${i}" class="form-control" value="">
                         </div>
-                        <div class="col-4 col-lg-4 pt-3">
+                        <div class="col-5 col-lg-5 pt-3">
                             <button class="btn btn-md btn-success btn_link" id="link_${i}" data="${i}">Link</button>
+                            <button class="btn btn-md btn-danger btn_leave" id="link_${i}" data="${i}">Leave</button>
                             <button class="btn btn-md btn-primary btn_reg" id="link_${i}" data="${i}">Reg</button>
                         </div>
-                        <div class="col-6 col-lg-6 pt-3">
+                        <div class="col-5 col-lg-5 pt-3">
                             <input type="text" id="content_${i}" class="form-control" value="">
                         </div>
                         <div class="col-2 col-lg-2 pt-3 text-end">
@@ -111,6 +121,16 @@
                     spam:spams[index],
                 }
                 self.send(data,index);
+            });
+
+            $(".btn_leave").on("click",(ev)=>{
+                const sel=$(ev.target);
+                const index=sel.attr("data");
+                const data={
+                    act:"offline",
+                    spam:spams[index],
+                }
+                self.send(data,index);
             })
 
             $(".btn_reg").on("click",(ev)=>{
@@ -129,7 +149,7 @@
                 const agent={
                     open:(res,index)=>{
                         console.log(res.data);
-                        const welcome=`<p>Client actived, welcome!</p>`;
+                        const welcome=`<p class="live">Client actived, welcome!</p>`;
                         $("#screen_"+index).prepend(welcome);
                     },
                     message:(res,index)=>{
@@ -141,24 +161,24 @@
                                 spams[index]=input.spam;
                                 break;
                             case "chat":
-                                const ctx=`<p>${input.msg}<br /><small>${input.from}</small></p>`;
+                                const ctx=`<p class="single"><small>${shorten(input.from)}</small>${input.msg}</p>`;
                                 $("#screen_"+index).prepend(ctx);
                                 break;
                             case "history":
-                                const his=`<p>${input.msg}<br /><small>${input.from}</small></p>`;
+                                const his=`<p class="single"><small>${shorten(input.from)}</small>${input.msg}</p>`;
                                 $("#screen_"+index).prepend(his);
                                 break;
                             case "active":
-                                const act=`<p>The ${input.count} active user.</p>`;
+                                const act=`<p class="active">The ${input.count} active user.</p>`;
                                 $("#screen_"+index).prepend(act);
                                 break;
                             case "notice":
-                                const notice=`<p>${input.msg}</p>`;
+                                const notice=`<p class="notice">${input.msg}</p>`;
                                 $("#screen_"+index).prepend(notice);
 
                                 break;
                             case "error":
-                                const err=`<p>${input.msg}</p>`;
+                                const err=`<p class="error">${input.msg}</p>`;
                                 $("#screen_"+index).prepend(err);
                                 break;
                             default:

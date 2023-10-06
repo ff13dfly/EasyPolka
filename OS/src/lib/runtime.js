@@ -15,6 +15,7 @@ const keys = {
     "account": "w3os_account_file",
     "contact": "w3os_contact_list",
     "apps": "w3os_apps_list",
+    "salt":"w3os_salt",
 };
 STORAGE.setMap(keys);
 
