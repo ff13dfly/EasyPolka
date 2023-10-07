@@ -7,18 +7,18 @@ let wsAPI = null;
 let wss = {};
 let spams = {};
 
-let login = {
-    md5: "",        //AES decode md5 password, avoid explosing the real one
-    stamp: 0,       //Login stamp, check expired
-    account: "",     //Login account, bind to current user
-};
+// let login = {
+//     md5: "",        //AES decode md5 password, avoid explosing the real one
+//     stamp: 0,       //Login stamp, check expired
+//     account: "",     //Login account, bind to current user
+// };
 
-const errors = {
-    WEBSOCKET_LINK_ERROR: {
-        message: "Failed to link to websocket",
-        code: 4001,
-    }
-}
+// const errors = {
+//     WEBSOCKET_LINK_ERROR: {
+//         message: "Failed to link to websocket",
+//         code: 4001,
+//     }
+// }
 
 //keys and prefix for localstorage
 const prefix = "w3os";
@@ -57,7 +57,7 @@ const RUNTIME = {
             setPass((pass) => {
                 const md5 = Encry.md5(`${salt}${pass}`);
                 const check = STORAGE.getKey("vertify");
-                console.log(check);
+                //console.log(check);
                 if(check===null){   //a. no password check, create one
                     STORAGE.setEncry(md5);
                     STORAGE.setKey("vertify",md5);
@@ -85,14 +85,6 @@ const RUNTIME = {
     getError: (name) => {
 
     },
-
-    // setConfig:(obj)=>{
-
-    // },
-    // getConfig:(name,ck)=>{
-
-    //     return ck && ck();
-    // },
 
 
     system_init: () => {
@@ -130,22 +122,32 @@ const RUNTIME = {
         STORAGE.setKey("contact", map);
         return ck && ck(true);
     },
-
     getContact: (ck) => {
-        RUNTIME.getAccount((res) => {
-            if (res === null || !res.address) return ck && ck(false);
-
-            let list = STORAGE.getKey("contact");
-            if (list === null) list = {};
-            return ck && ck(list);
-        });
+        const list = STORAGE.getKey("contact");
+        if(list===null){
+            STORAGE.setKey("contact",config.contacts);
+        }
+        return ck && ck(STORAGE.getKey("contact"));
+    },
+    clearContact:()=>{
+        STORAGE.removeKey("contact");
     },
 
     getApps: (ck) => {
-        return ck && ck(config.apps);
+        const list = STORAGE.getKey("apps");
+        if(list===null){
+            STORAGE.setKey("apps",config.apps);
+        }
+        return ck && ck(STORAGE.getKey("apps"));
+    },
+    removeApp:(page,index)=>{
+
     },
     installApp: (data) => {
 
+    },
+    clearApps:()=>{
+        STORAGE.removeKey("apps");
     },
 
     setSpam: (uri, spam) => {

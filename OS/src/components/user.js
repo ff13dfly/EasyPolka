@@ -51,6 +51,8 @@ function User(props) {
 
   useEffect(() => {
     RUNTIME.getAccount((sign)=>{
+      if(!sign) return false;
+      //console.log(sign);
       const address = sign.address;
       setAddress(address);
       props.balance(address, (res) => {

@@ -23,6 +23,9 @@ const STORAGE={
 		Encry.auto(md5);
 		return true;
 	},
+	clearEncry:()=>{
+		hash="";
+	},
 	setIgnore:(list)=>{
 		for(let i=0;i<list.length;i++) ignore[list[i]]=true;
 		return true;
@@ -60,7 +63,15 @@ const STORAGE={
 		const str = localStorage.getItem(key);
 		if(str === null) return null;
 
-		if(!hash || ignore[name]===true) return JSON.parse(str);
+		//console.log(str);
+		//console.log(hash);
+		if(!hash || ignore[name]===true){
+			try {
+				return JSON.parse(str);
+			} catch (error) {
+				return false;
+			}
+		} 
 
 		const res=Encry.decrypt(str);
 		if(!res) return false;

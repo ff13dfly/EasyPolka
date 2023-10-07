@@ -60,62 +60,62 @@ module.exports=[
       "short":"Contact",
       "desc":""
     },
-    {
-      "name":"setting",
-      "src":"anchor://document",
-      "base":false,
-      "status":"failed",
-      "type":"app",
-      "grid":{
-        "size":[1,1],
-        "position":[0,0],
-      },
-      "icon":"icons/app_02.jpg",
-      "short":"Document",
-      "desc":""
-    },
-    {
-      "name":"setting",
-      "src":"anchor://hello",
-      "base":false,
-      "status":"failed",
-      "type":"",
-      "grid":{
-        "size":[1,1],
-        "position":[0,0],
-      },
-      "icon":"icons/app_03.jpg",
-      "short":"Hello",
-      "desc":""
-    },
-    {
-      "name":"setting",
-      "src":"anchor://ntoday",
-      "base":false,
-      "status":"failed",
-      "type":"",
-      "grid":{
-        "size":[1,1],
-        "position":[0,0],
-      },
-      "icon":"icons/app_04.jpg",
-      "short":"nToday",
-      "desc":""
-    },
-    {
-      "name":"setting",
-      "src":"anchor://easy",
-      "base":false,
-      "status":"failed",
-      "type":"lib",
-      "grid":{
-        "size":[1,1],
-        "position":[0,0],
-      },
-      "icon":"icons/app_05.jpg",
-      "short":"Easy",
-      "desc":""
-    },
+    // {
+    //   "name":"document",
+    //   "src":"anchor://document",
+    //   "base":false,
+    //   "status":"failed",
+    //   "type":"app",
+    //   "grid":{
+    //     "size":[1,1],
+    //     "position":[0,0],
+    //   },
+    //   "icon":"icons/app_02.jpg",
+    //   "short":"Document",
+    //   "desc":""
+    // },
+    // {
+    //   "name":"hello",
+    //   "src":"anchor://hello",
+    //   "base":false,
+    //   "status":"failed",
+    //   "type":"",
+    //   "grid":{
+    //     "size":[1,1],
+    //     "position":[0,0],
+    //   },
+    //   "icon":"icons/app_03.jpg",
+    //   "short":"Hello",
+    //   "desc":""
+    // },
+    // {
+    //   "name":"ntoday",
+    //   "src":"anchor://ntoday",
+    //   "base":false,
+    //   "status":"failed",
+    //   "type":"",
+    //   "grid":{
+    //     "size":[1,1],
+    //     "position":[0,0],
+    //   },
+    //   "icon":"icons/app_04.jpg",
+    //   "short":"nToday",
+    //   "desc":""
+    // },
+    // {
+    //   "name":"easy",
+    //   "src":"anchor://easy",
+    //   "base":false,
+    //   "status":"failed",
+    //   "type":"lib",
+    //   "grid":{
+    //     "size":[1,1],
+    //     "position":[0,0],
+    //   },
+    //   "icon":"icons/app_05.jpg",
+    //   "short":"Easy",
+    //   "desc":""
+    // },
     {
       "name":"talking",
       "src":"anchor://homepage",
