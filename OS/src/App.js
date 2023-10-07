@@ -21,7 +21,7 @@ function App() {
   let [show, setDialogShow] = useState(false);
   let [content, setContent] = useState("");
   let [title, setTitle] = useState("");
-  let [callback,setCallback]= useState(()=>{});
+  let [callback, setCallback] = useState(() => { });
 
   let [editing, setEditing] = useState(false);
 
@@ -48,42 +48,49 @@ function App() {
         setDialogShow(false);
         return ck && ck();
       },
-      agent:(onHide)=>{
+      agent: (onHide) => {
         setCallback(onHide);
       },
     },
-    // update: () => {
-    //   setDialogShow(false);
-    // },
   }
 
-  const self={
-    clickEdit:(ev)=>{
+  const self = {
+    clickEdit: (ev) => {
       setEditing(!editing);
     },
-    select:(id)=>{
+    select: (id) => {
       console.log(`Selected App Index: ${id}`);
     },
-    fresh:()=>{
+    login: (ctx, title) => {
+      RUNTIME.init((ck) => {
+        funs.dialog.show(<SystemPassword info={ctx} callback={(pass) => {
+          funs.dialog.hide();
+          return ck && ck(pass);
+        }} />, title);
+
+      }, self.fresh);
+    },
+    fresh: () => {
       RUNTIME.getApps((list) => {
+        if (list === false) {
+          setTimeout(() => {
+            const info = (<p>Error password, please try again.</p>);
+            const title = "System password";
+            self.login(info, title);
+          }, 500);
+          return false;
+        }
         setApps(list);
       });
     },
-    // setInitPass:(pass,ck)=>{
-    // },
   }
 
   useEffect(() => {
-    RUNTIME.init((ck)=>{
-      const info_pass=(<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br/><br/>
-        Please notes that, if skip this step, all your operation will be lost. <br/>
-        The storaged setting will not include your private key.</p>);
-      funs.dialog.show(<SystemPassword info={info_pass} callback={(pass)=>{
-        //self.setInitPass(pass,ck);
-        funs.dialog.hide();
-        return ck && ck(pass);
-      }}/>,"W3OS system password setting");
-    },self.fresh);
+    const info = (<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br /><br />
+      Please notes that, if skip this step, all your operation will be lost. <br />
+      The storaged setting will not include your private key.</p>);
+    const sys_title = "W3OS system password setting";
+    self.login(info, sys_title);
   }, []);
 
   return (
@@ -91,17 +98,22 @@ function App() {
       <Navigator />
       <Container>
         <Board funs={funs} />
-        <Grid size={size} list={apps} funs={funs} edit={editing} select={self.select}/>
-        <Dialog show={show} content={content} callback={callback} title={title} update={self.fresh} />
+        <Grid size={size} list={apps} funs={funs} edit={editing} select={self.select} />
+        <Dialog show={show} content={content} callback={callback} title={title} funs={funs} />
       </Container>
       {ctx_stage}
       {ctx_mask}
       {ctx_page}
       <div className="opts">
         {/* <img src="icons/edit.svg" className='opt_button' alt="" /> */}
-        <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev)=>{
+        <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev) => {
           self.clickEdit(ev)
-        }}/>
+        }} />
+        <img src="icons/fin.svg" className='opt_button' alt="" onClick={(ev) => {
+          const info = (<p>Please input the system password.</p>);
+          const title = "System Login";
+          self.login(info, title);
+        }} />
       </div>
     </div>
   );

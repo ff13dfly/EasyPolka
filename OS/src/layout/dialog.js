@@ -4,16 +4,6 @@ import { useState,useEffect } from 'react';
 function Dialog(props) {
 
   let [show,setShow]=useState(false);
-  const self={
-    hide:(ev)=>{
-      console.log(props)
-      setShow(false);
-      if(props.update) props.update();
-      if(props.callback) props.callback(false);
-    },
-  }
-
-  //setShow(props.show)
 
   useEffect(() => {
     //console.log(props.show);
@@ -24,7 +14,7 @@ function Dialog(props) {
 
   return (
     <Modal show={show} size="lg" onHide={(ev)=>{
-      self.hide(ev);
+      props.funs.dialog.hide();
     }}>
       <Modal.Header closeButton>
         <Modal.Title >{props.title}</Modal.Title>
