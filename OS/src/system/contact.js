@@ -7,6 +7,7 @@ import ContactList from '../components/contact_list';
 import ContactSetting from '../components/contact_setting';
 
 import RUNTIME from '../lib/runtime';
+import INDEXED from '../lib/indexed';
 
 let selected=null;
 
@@ -116,7 +117,7 @@ function Contact(props) {
   };
 
   useEffect(() => {
-
+    //INDEXED.test();
   }, []);
 
   return (
