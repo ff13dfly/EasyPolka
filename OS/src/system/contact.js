@@ -10,14 +10,17 @@ import RUNTIME from '../lib/runtime';
 
 let selected=null;
 
+let websocket = null;
+let spam = "";
+
+let chats={};
+
 function Contact(props) {
   const size = [3, 6, 3];
   const funs = props.funs;
 
   let [editing, setEditing] = useState(false);
   let [count, setCount] = useState(0);
-
-  //let [selected,setSelected]=useState({});
 
   const self = {
     clickSetting:(ev)=>{
@@ -38,6 +41,69 @@ function Contact(props) {
           self.fresh();
         });
       }
+    },
+    send: (obj) => {
+      if(!spam ) return setTimeout(()=>{
+        self.send(obj);
+      },200);
+      obj.spam=spam;
+      websocket.send(JSON.stringify(obj));
+    },
+    linkChatting:(ev)=>{
+      RUNTIME.getSetting((cfg) => {
+        const config = cfg.apps.contact,uri = config.node[0];
+        const agent = {
+          open: (res) => {},
+          message: (res) => {
+            const str = res.data;
+            try {
+              const input = JSON.parse(str);
+              //console.log(input);
+              switch (input.act) {
+                case "init":
+                  spam = input.spam;
+                  RUNTIME.setSpam(uri,input.spam);
+                  break;
+                case "chat":
+                    console.log(input);
+                    if(!chats[input.address]) chats[input.address]=[];
+                    chats[input.address].push(input);
+
+                    setCount(count++);
+                    break;
+                case "reg":
+
+                  break;
+                case "notice":
+                  break;
+                default:
+                  break;
+              }
+  
+            } catch (error) {
+  
+            }
+          },
+          close: (res) => {
+            websocket=null;   //remove websocket link
+          },
+          error: (res) => {
+  
+          }
+        }
+        RUNTIME.websocket(uri, (ws) => {
+          websocket = ws;
+          RUNTIME.getAccount((acc) => {
+            //console.log(acc);
+            if(acc===null || !acc.address) return false;
+            const data = {
+              act: "active",
+              acc: acc.address,
+            }
+            self.send(data);
+          });
+        },agent);
+      });
     },
     fresh:()=>{
       const n=count+1;
@@ -84,6 +150,9 @@ function Contact(props) {
           }}/>
           <img src="icons/setting.svg" className='opt_button' alt="" onClick={(ev)=>{
             self.clickSetting(ev)
+          }}/>
+          <img src="icons/link.svg" className='opt_button' alt="" onClick={(ev)=>{
+            self.linkChatting(ev)
           }}/>
         </div>
     </div>
