@@ -39,7 +39,9 @@ code {
   position: relative;right: 10px;top:14px;color: #FFFFFF;font-weight: 600;}
 
 .board{background: #444444;color:#FFFFFF;border-radius: 12px;padding: 15px 10px 15px 15px;}
-
+.count {width: 18px;height: 18px;border-radius: 9px;z-index: 100;float: left;color:#FFFFFF;margin:0 auto;padding:0px 0px 0px 0px;
+  position: relative;top: 0px;left:0px;background: #6fc86f;text-align: center;
+  font-size: 8px;line-height: 18px;margin-top: -60px;}
 
 #stage{width: 100%;height: 180px;background: #FFFFFF;overflow: auto;
   position: fixed;left: 0px;top:400px;box-shadow: 2px 2px 2px 1px #BBBBBB;z-index: 999;}

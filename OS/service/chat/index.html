@@ -97,7 +97,7 @@
                 tpl+=chat;
             }
             tpl+=`</div>`;
-            $("body").html(tpl);
+            $("#container").html(tpl);
             $(".btn_send").on("click",(ev)=>{
                 const sel=$(ev.target);
                 const index=sel.attr("data");
@@ -199,7 +199,7 @@
         });
     </script>
     <body style="width: 90%;margin: 0 auto;">
-        
-        
+        <div>5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw</div>
+        <div id="container" style="width: 100%;margin: 0 auto;"></div>
     </body>
 </html>
