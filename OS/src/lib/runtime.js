@@ -1,32 +1,75 @@
 import STORAGE from './storage';
+import tools from './tools';
+import Encry from './encry';
+
 let API = null;
 let wsAPI = null;
 let wss = {};
 let spams = {};
 
-const errors={
-    WEBSOCKET_LINK_ERROR:{
-        message:"Failed to link to websocket",
-        code:4001,
+let login = {
+    md5: "",        //AES decode md5 password, avoid explosing the real one
+    stamp: 0,       //Login stamp, check expired
+    account: "",     //Login account, bind to current user
+};
+
+const errors = {
+    WEBSOCKET_LINK_ERROR: {
+        message: "Failed to link to websocket",
+        code: 4001,
     }
 }
 
+//keys and prefix for localstorage
+const prefix = "w3os";
 const keys = {
-    "account": "w3os_account_file",
-    "contact": "w3os_contact_list",
-    "apps": "w3os_apps_list",
-    "salt":"w3os_salt",
+    "account": `${prefix}_account_file`,
+    "contact": `${prefix}_contact_list`,
+    "apps": `${prefix}_apps_list`,
+    "salt": `${prefix}_salt`,
+    "vertify": `${prefix}_check`,
 };
 STORAGE.setMap(keys);
 
+//default OS setting
 const config = {
     accounts: require("../data/accounts"),
-    apps: require("../data/apps"),
-    contacts: require("../data/contacts"),
-    system: require("../data/setting"),
+    apps: require("../data/apps"),              //Official Dapps
+    contacts: require("../data/contacts"),      //Official contact
+    system: require("../data/setting"),         //Official settings for both system and Dapps
 }
 
 const RUNTIME = {
+    //1. set the password for W3OS;
+    //!important, if there is no password, the data will be encode by default salt.
+    //!important, the storage will be fresh when the password changed
+    init: (setPass, ck) => {
+        //1. creat salt anyway.
+        STORAGE.setIgnore(["salt","vertify"]);     //public data;
+        let salt = STORAGE.getKey("salt");
+        if (salt === null) {    //1.first time to run W3OS
+            const char = tools.char(28, prefix);
+            STORAGE.setKey("salt", char);
+        }
+        salt = STORAGE.getKey("salt");
+        const login = STORAGE.getEncry();     //check storage md5 password hash
+        if(!login) {
+            setPass((pass) => {
+                const md5 = Encry.md5(`${salt}${pass}`);
+                const check = STORAGE.getKey("vertify");
+                console.log(check);
+                if(check===null){   //a. no password check, create one
+                    STORAGE.setEncry(md5);
+                    STORAGE.setKey("vertify",md5);
+                }else{  //b. no password check, create one
+                    if(check!==md5) return ck && ck({msg:"Error password"});
+                    STORAGE.setEncry(md5);
+                    console.log(`vertify:${check},pass:${md5}`);
+                    return ck && ck(true);
+                }
+            });
+        }
+    },
     getAccount: (ck) => {
         const fa = STORAGE.getKey("account");
         return ck && ck(fa);
@@ -39,7 +82,7 @@ const RUNTIME = {
         return true;
     },
 
-    getError:(name)=>{
+    getError: (name) => {
 
     },
 
@@ -63,37 +106,37 @@ const RUNTIME = {
     },
 
     //contact functions
-    addContact:(address,ck)=>{
+    addContact: (address, ck) => {
         let list = STORAGE.getKey("contact");
-        if(list===null) list={};
-        list[address]={
-            "intro":"",
-            "status":"",
-            "type":"friend",
-            "network":"Anchor",
+        if (list === null) list = {};
+        list[address] = {
+            "intro": "",
+            "status": "",
+            "type": "friend",
+            "network": "Anchor",
         }
-        STORAGE.setKey("contact",list);
+        STORAGE.setKey("contact", list);
         return ck && ck(true);
     },
-    removeContact:(list,ck)=>{
+    removeContact: (list, ck) => {
         console.log(list);
         let map = STORAGE.getKey("contact");
-        if(map===null) map={};
-        for(let i=0;i<list.length;i++){
-            const acc=list[i];
-            if(map[acc]) delete map[acc];
+        if (map === null) map = {};
+        for (let i = 0; i < list.length; i++) {
+            const acc = list[i];
+            if (map[acc]) delete map[acc];
         }
         console.log(map);
-        STORAGE.setKey("contact",map);
+        STORAGE.setKey("contact", map);
         return ck && ck(true);
     },
 
     getContact: (ck) => {
-        RUNTIME.getAccount((res)=>{
-            if(res===null || !res.address) return ck && ck(false);
+        RUNTIME.getAccount((res) => {
+            if (res === null || !res.address) return ck && ck(false);
 
             let list = STORAGE.getKey("contact");
-            if(list===null) list={};
+            if (list === null) list = {};
             return ck && ck(list);
         });
     },
@@ -105,10 +148,10 @@ const RUNTIME = {
 
     },
 
-    setSpam:(uri,spam)=>{
-        spams[uri]=spam;
+    setSpam: (uri, spam) => {
+        spams[uri] = spam;
     },
-    getSpam:(uri)=>{
+    getSpam: (uri) => {
         return spams[uri];
     },
     websocket: (uri, ck, agent) => {
@@ -117,21 +160,21 @@ const RUNTIME = {
         try {
             const ws = new WebSocket(uri);
             ws.onopen = (res) => {
-                if(agent && agent.open) agent.open(res);
+                if (agent && agent.open) agent.open(res);
             };
             ws.onmessage = (res) => {
-                if(agent && agent.message) agent.message(res);
+                if (agent && agent.message) agent.message(res);
             };
             ws.onclose = (res) => {
-                if(agent && agent.close) agent.close(res);
+                if (agent && agent.close) agent.close(res);
             };
             ws.onerror = (res) => {
-                if(agent && agent.error)  agent.error(res);
+                if (agent && agent.error) agent.error(res);
             };
-            wss[uri]=ws;
+            wss[uri] = ws;
             return ck && ck(ws);
         } catch (error) {
-           return ck && ck(RUNTIME.getError("WEBSOCKET_LINK_ERROR")); 
+            return ck && ck(RUNTIME.getError("WEBSOCKET_LINK_ERROR"));
         }
     },
 

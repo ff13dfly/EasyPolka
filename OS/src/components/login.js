@@ -85,7 +85,7 @@ function Login(props){
       <Container>
         <Row className = "pt-4" >
         <Col lg = { 6 } xs = { 6 } className = "pt-4" >
-          <p>Create an account to join FreeSaying.net</p>
+          <p>Create an account to join W3OS</p>
         </Col> 
         <Col lg = { 6 } xs = { 6 } className = "pt-4 text-end" >
           <Button size = "md" variant = "primary" onClick = { (ev)=>{
@@ -94,14 +94,17 @@ function Login(props){
         </Col> 
       </Row>
       <Row>
-        
         <Col lg = { 12 } xs = { 12 } className = "pt-4 pb-4"><hr /></Col>
 
         <Col lg = { 5 } xs = { 12 } className = "pt-2" >
-          <Form.Control size = "md" type = "file" placeholder = "Add Polkadot account JSON file..." onChange = { self.changeFile }/>
+          <Form.Control size = "md" type = "file" 
+          placeholder = "Add Polkadot account JSON file..." 
+          onChange = { self.changeFile }/>
         </Col>
         <Col lg = { 5 } xs = { 12 } className = "pt-2" >
-          <Form.Control size = "md" type = "password" placeholder = "Account password..." onChange = {self.changePassword}/> </Col > 
+          <Form.Control size = "md" type = "password" 
+          placeholder = "Account password..." 
+          onChange = {self.changePassword}/> </Col > 
         <Col lg = { 2 } xs = { 12 } className = "pt-2 text-end" >
          
         </Col>

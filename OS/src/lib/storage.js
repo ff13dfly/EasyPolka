@@ -1,12 +1,12 @@
-// const keys = {
-//     jsonFile: 'js_file_name',
-//     anchorList: 'anchor_list',
-//     startNode: 'start_node',
-//     historyNode: 'history_node',
-// };
+import Encry from './encry';
 
 const map={};
 const persist={};		//通过支付串化，进行数据保存
+
+const ignore={	//ignore encry list
+
+}
+let hash="";
 
 const STORAGE={
 	dump:()=>{
@@ -15,10 +15,20 @@ const STORAGE={
 			persist:persist,
 		};
 	},
+	getEncry:()=>{
+		return hash;
+	},
+	setEncry:(md5)=>{
+		hash=md5;
+		Encry.auto(md5);
+		return true;
+	},
+	setIgnore:(list)=>{
+		for(let i=0;i<list.length;i++) ignore[list[i]]=true;
+		return true;
+	},
 	setMap:(obj) => {
-		for(var k in obj){
-			map[k]=obj[k];
-		}
+		for(var k in obj)map[k]=obj[k];
 		return true;
 	},
 
@@ -44,16 +54,28 @@ const STORAGE={
 
 	//key-value
 	getKey:(name) => {
+		//console.log(map);
 		if(!map[name]) return null;
 		const key = map[name];
 		const str = localStorage.getItem(key);
 		if(str === null) return null;
-		return JSON.parse(str);
+
+		if(!hash || ignore[name]===true) return JSON.parse(str);
+
+		const res=Encry.decrypt(str);
+		if(!res) return false;
+		return JSON.parse(res);
 	},
 	setKey:(name,obj) => {
 		if(!map[name]) return false;
 		const key=map[name];
-		localStorage.setItem(key,JSON.stringify(obj));
+		if(!hash || ignore[name]===true) return localStorage.setItem(key,JSON.stringify(obj));
+		console.log(obj);
+		console.log(hash);
+		Encry.auto(hash);
+		const res=Encry.encrypt(JSON.stringify(obj));
+		console.log(res);
+		localStorage.setItem(key,res);
 	},
 
 	getNode:(name,node)=>{

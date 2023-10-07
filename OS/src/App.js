@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 import Navigator from './components/navigator';
 import Grid from './components/grid';
 import Board from './components/board';
-import Dialog from './layout/dialog';
 
+import SystemPassword from './components/sys_password';
+
+import Dialog from './layout/dialog';
 import Device from './lib/device';
 import RUNTIME from './lib/runtime';
 
@@ -19,7 +21,7 @@ function App() {
   let [show, setDialogShow] = useState(false);
   let [content, setContent] = useState("");
   let [title, setTitle] = useState("");
-  //let [callback,setCallback]= useState(()=>{});
+  let [callback,setCallback]= useState(()=>{});
 
   let [editing, setEditing] = useState(false);
 
@@ -46,10 +48,13 @@ function App() {
         setDialogShow(false);
         return ck && ck();
       },
+      agent:(onHide)=>{
+        setCallback(onHide);
+      },
     },
-    update: () => {
-      setDialogShow(false);
-    },
+    // update: () => {
+    //   setDialogShow(false);
+    // },
   }
 
   const self={
@@ -59,12 +64,26 @@ function App() {
     select:(id)=>{
       console.log(`Selected App Index: ${id}`);
     },
+    fresh:()=>{
+      RUNTIME.getApps((list) => {
+        setApps(list);
+      });
+    },
+    // setInitPass:(pass,ck)=>{
+    // },
   }
 
   useEffect(() => {
-    RUNTIME.getApps((list) => {
-      setApps(list);
-    });
+    RUNTIME.init((ck)=>{
+      const info_pass=(<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br/><br/>
+        Please notes that, if skip this step, all your operation will be lost. <br/>
+        The storaged setting will not include your private key.</p>);
+      funs.dialog.show(<SystemPassword info={info_pass} callback={(pass)=>{
+        //self.setInitPass(pass,ck);
+        funs.dialog.hide();
+        return ck && ck(pass);
+      }}/>,"W3OS system password setting");
+    },self.fresh);
   }, []);
 
   return (
@@ -73,7 +92,7 @@ function App() {
       <Container>
         <Board funs={funs} />
         <Grid size={size} list={apps} funs={funs} edit={editing} select={self.select}/>
-        <Dialog show={show} content={content} title={title} update={funs.update} />
+        <Dialog show={show} content={content} callback={callback} title={title} update={self.fresh} />
       </Container>
       {ctx_stage}
       {ctx_mask}

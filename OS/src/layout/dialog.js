@@ -6,8 +6,10 @@ function Dialog(props) {
   let [show,setShow]=useState(false);
   const self={
     hide:(ev)=>{
+      console.log(props)
       setShow(false);
-      props.update();
+      if(props.update) props.update();
+      if(props.callback) props.callback(false);
     },
   }
 
@@ -16,7 +18,7 @@ function Dialog(props) {
   useEffect(() => {
     //console.log(props.show);
     setShow(props.show)
-  }, [props.show]);
+  }, [props.show,props.callback]);
 
   //<Modal show={props.show} size="lg" onHide={funs.dialog.hide()}>
 
