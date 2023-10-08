@@ -117,7 +117,7 @@ function Contact(props) {
   };
 
   useEffect(() => {
-    //INDEXED.test();
+    INDEXED.test();
   }, []);
 
   return (
