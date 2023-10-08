@@ -7,19 +7,20 @@ import To from './chat_to';
 import RUNTIME from '../lib/runtime';
 
 let chatWS=null;
+let spam="";
+let backup=[];
 
 function Chat(props) {
   const size = {
     content: [9, 3],
   };
   const dv = { xs: 4, sm: 4, md: 4, lg: 4, xl: 6, xxl: 6 };
-
+  const mailer=props.mailer;
   let [content, setContent] = useState("");
   let [list, setList] = useState([]);
 
   let my_address = "";
-  let spam="";
-
+  
   const self = {
     chat: (ev) => {
       //console.log(content);
@@ -39,6 +40,7 @@ function Chat(props) {
       now.push(row);
       setList(now);
       setContent("");
+      backup=now;
     },
     onChange: (ev) => {
       setContent(ev.target.value);
@@ -59,22 +61,36 @@ function Chat(props) {
     my_address = res.address;
   });
 
+  
+
   useEffect(() => {
-    const history = [
-      { type: "from", address: props.address, content: "Hello, will you help me? Transfer me 2,000 units" },
-      { type: "to", address: my_address, content: "No,no such thing." },
-    ]
-    setList(history);
+    // const history = [
+    //   { type: "from", address: props.address, content: "Hello, will you help me? Transfer me 2,000 units" },
+    //   { type: "to", address: my_address, content: "No,no such thing." },
+    // ]
+    // setList(history);
+    // backup=history;
 
     RUNTIME.getSetting((cfg) => {
       const config = cfg.apps.contact;
       const uri = config.node[0];
       RUNTIME.websocket(uri, (ws) => {
-        //console.log(ws);
         chatWS=ws;
-        spam = RUNTIME.setSpam(uri);
+        spam = RUNTIME.getSpam(uri);
+
       });
     });
+
+    mailer(props.address,(res)=>{
+      const nlist=[];
+      for(let i=0;i<backup.length;i++){
+        nlist.push(backup[i]);
+      }
+      nlist.push({ type: "from", address: props.address, content: res.msg })
+      setList(nlist);
+      backup=nlist;
+    });
+    
   }, [])
 
   const cmap = {

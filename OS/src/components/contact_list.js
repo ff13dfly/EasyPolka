@@ -18,7 +18,7 @@ function ContactList(props) {
 
   const self = {
     click: (address, ev) => {
-      funs.dialog.show(<Chat address={address} />, "Chatting");
+      funs.dialog.show(<Chat address={address} mailer={props.mailer}/>, "Chatting");
     },
     select: (address) => {
       select[address] = !select[address];
@@ -29,7 +29,7 @@ function ContactList(props) {
 
   useEffect(() => {
     RUNTIME.getContact((res) => {
-      console.log("fresh");
+      //console.log("fresh");
       const list=[];
       for(var k in res){
         const atom=res[k];
@@ -62,7 +62,6 @@ function ContactList(props) {
                 onChange={(ev) => {
                   //self.change(ev,address);
                 }} style={{ marginRight: "5px" }} />@{row.network}</small>
-
             </Col>
           </Row>
         </Col>

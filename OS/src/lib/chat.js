@@ -26,9 +26,13 @@ const CHAT = {
             }
         });
     },
-    unread: (from) => {
+    page:(mine,from,step,page,ck)=>{
 
     },
+    unread: (mine,from,ck) => {
+
+    },
+    
     checkTable: (from, list) => {
         for (let i = 0; i < list.length; i++) {
             if (list[i] === from) return true;

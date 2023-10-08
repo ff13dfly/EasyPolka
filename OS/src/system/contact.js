@@ -50,6 +50,9 @@ function Contact(props) {
       obj.spam=spam;
       websocket.send(JSON.stringify(obj));
     },
+    mailer:(address,fun)=>{
+      chats[address]=fun;
+    },
     linkChatting:(ev)=>{
       RUNTIME.getSetting((cfg) => {
         const config = cfg.apps.contact,uri = config.node[0];
@@ -66,12 +69,14 @@ function Contact(props) {
                   RUNTIME.setSpam(uri,input.spam);
                   break;
                 case "chat":
+                    //console.log(input);
+                    //if(!chats[input.address]) chats[input.address]=[];
+                    //chats[input.address].push(input);
                     console.log(input);
-                    if(!chats[input.address]) chats[input.address]=[];
-                    chats[input.address].push(input);
+                    console.log(chats);
+                    if(chats[input.from])chats[input.from](input);
 
                     RUNTIME.getAccount((acc) => {
-                      //console.log(acc)
                       CHAT.save(acc.address,input.from,input.msg,(res)=>{
                         console.log(res);
                       })
@@ -148,7 +153,7 @@ function Contact(props) {
       </Navbar>
       <Container>
         <ContactAdd  funs={funs} fresh={self.fresh} /> 
-        <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count}/>
+        <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count} mailer={self.mailer}/>
       </Container>
         <div className="opts">
           <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev)=>{
