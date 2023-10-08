@@ -48,38 +48,6 @@ const INDEXED = {
 		};
 	},
 
-	initTable: (name, tables) => {
-		return new Promise((resolve, reject) => {
-			const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-			const request = indexedDB.open(name);
-			request.onsuccess = (ev) => {
-				const db = ev.target.result;
-				const ver = db.version;
-				const nreq = indexedDB.open(name, ver + 1);
-				nreq.onsuccess = (ev) => {
-					console.log("here");
-					const ndb = ev.target.result;
-					resolve(ndb);
-				};
-				request.onerror = (ev) => {
-					resolve(false);
-				};
-				request.onupgradeneeded = (ev) => {
-					const ndb = ev.target.result;
-					for (let i = 0; i < tables.length; i++) {
-						const row = tables[i];
-						const store = ndb.createObjectStore(row.table, { keyPath: row.keyPath, unique: true });
-						for (var k in row.map) {
-							store.createIndex(k, k, row.map);
-						}
-					}
-				};
-			};
-			request.onerror = (ev) => {
-				resolve(false);
-			};
-		});
-	},
 	insertRow: (db, table, list) => {
 		const request = db.transaction([table], "readwrite").objectStore(table);
 		for (let i = 0; i < list.length; i++) {
@@ -130,6 +98,7 @@ const INDEXED = {
 	},
 
 	test: () => {
+		//https://juejin.cn/post/7026900352968425486
 		const name = 'w3os_chat';
 		//const name =`w3os_chat_${address}`;
 		INDEXED.checkDB(name, (db) => {

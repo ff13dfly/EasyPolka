@@ -7,7 +7,7 @@ import ContactList from '../components/contact_list';
 import ContactSetting from '../components/contact_setting';
 
 import RUNTIME from '../lib/runtime';
-import INDEXED from '../lib/indexed';
+import CHAT from '../lib/chat';
 
 let selected=null;
 
@@ -70,6 +70,13 @@ function Contact(props) {
                     if(!chats[input.address]) chats[input.address]=[];
                     chats[input.address].push(input);
 
+                    RUNTIME.getAccount((acc) => {
+                      //console.log(acc)
+                      CHAT.save(acc.address,input.from,input.msg,(res)=>{
+                        console.log(res);
+                      })
+                    })
+
                     setCount(count++);
                     break;
                 case "reg":
@@ -95,7 +102,6 @@ function Contact(props) {
         RUNTIME.websocket(uri, (ws) => {
           websocket = ws;
           RUNTIME.getAccount((acc) => {
-            //console.log(acc);
             if(acc===null || !acc.address) return false;
             const data = {
               act: "active",
@@ -111,13 +117,12 @@ function Contact(props) {
       setCount(n);
     },
     select:(map)=>{
-      //console.log(map);
       selected=map;
     },
   };
 
   useEffect(() => {
-    INDEXED.test();
+    //INDEXED.test();
   }, []);
 
   return (
