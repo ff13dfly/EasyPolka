@@ -70,6 +70,9 @@ const RUNTIME = {
             });
         }
     },
+    isLogin:()=>{
+        return STORAGE.getEncry();
+    },
     getAccount: (ck) => {
         const fa = STORAGE.getKey("account");
         return ck && ck(fa);

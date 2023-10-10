@@ -11,7 +11,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"icons/app_01.jpg",
+      "icon":"icons/sys_setting.svg",
       "short":"Setting",
       "desc":""
     },
@@ -26,7 +26,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"icons/app_01.jpg",
+      "icon":"icons/sys_account.svg",
       "short":"Account",
       "desc":""
     },
@@ -41,7 +41,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"icons/app_01.jpg",
+      "icon":"icons/sys_payment.png",
       "short":"Payment",
       "desc":""
     },
@@ -56,7 +56,7 @@ module.exports=[
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"icons/app_01.jpg",
+      "icon":"icons/sys_contact.svg",
       "short":"Contact",
       "desc":""
     },

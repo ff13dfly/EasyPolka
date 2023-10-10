@@ -109,7 +109,7 @@ function App() {
         <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev) => {
           self.clickEdit(ev)
         }} />
-        <img src="icons/fin.svg" className='opt_button' alt="" onClick={(ev) => {
+        <img src="icons/fin.svg" hidden={RUNTIME.isLogin()} className='opt_button' alt="" onClick={(ev) => {
           const info = (<p>Please input the system password.</p>);
           const title = "System Login";
           self.login(info, title);

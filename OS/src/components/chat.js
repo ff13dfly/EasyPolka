@@ -5,6 +5,7 @@ import From from './chat_from';
 import To from './chat_to';
 
 import RUNTIME from '../lib/runtime';
+import CHAT from '../lib/chat';
 
 let chatWS=null;
 let spam="";
@@ -55,22 +56,22 @@ function Chat(props) {
       };
       chatWS.send(JSON.stringify(msg));
     },
+    showHistory:(list)=>{
+      const cs=[];
+      for(let i=0;i<list.length;i++){
+        const row=list[i];
+        cs.push({ type: "from", address: props.address, content: row.msg });
+      }
+      setList(cs);
+      backup=cs;
+    },
   };
 
   RUNTIME.getAccount((res) => {
     my_address = res.address;
   });
 
-  
-
   useEffect(() => {
-    // const history = [
-    //   { type: "from", address: props.address, content: "Hello, will you help me? Transfer me 2,000 units" },
-    //   { type: "to", address: my_address, content: "No,no such thing." },
-    // ]
-    // setList(history);
-    // backup=history;
-
     RUNTIME.getSetting((cfg) => {
       const config = cfg.apps.contact;
       const uri = config.node[0];
@@ -78,6 +79,9 @@ function Chat(props) {
         chatWS=ws;
         spam = RUNTIME.getSpam(uri);
 
+        CHAT.page(my_address,props.address,20,1,(his)=>{
+          self.showHistory(his);
+        });
       });
     });
 
@@ -94,10 +98,11 @@ function Chat(props) {
   }, [])
 
   const cmap = {
-    height: "500px",
+    height: "400px",
+    width:"100%",
     background: "#FFFFFF",
     padding: "0px 5px 0px 5px",
-    overflow: "auto",
+    overflow: "hidden",
   }
 
   return (

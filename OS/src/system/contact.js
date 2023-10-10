@@ -22,6 +22,7 @@ function Contact(props) {
 
   let [editing, setEditing] = useState(false);
   let [count, setCount] = useState(0);
+  let [hidelink,setHidelink] = useState(false);
 
   const self = {
     clickSetting:(ev)=>{
@@ -62,26 +63,19 @@ function Contact(props) {
             const str = res.data;
             try {
               const input = JSON.parse(str);
-              //console.log(input);
               switch (input.act) {
                 case "init":
                   spam = input.spam;
                   RUNTIME.setSpam(uri,input.spam);
                   break;
                 case "chat":
-                    //console.log(input);
-                    //if(!chats[input.address]) chats[input.address]=[];
-                    //chats[input.address].push(input);
                     console.log(input);
-                    console.log(chats);
                     if(chats[input.from])chats[input.from](input);
-
                     RUNTIME.getAccount((acc) => {
                       CHAT.save(acc.address,input.from,input.msg,(res)=>{
                         console.log(res);
                       })
                     })
-
                     setCount(count++);
                     break;
                 case "reg":
@@ -106,6 +100,7 @@ function Contact(props) {
         }
         RUNTIME.websocket(uri, (ws) => {
           websocket = ws;
+          setHidelink(true);
           RUNTIME.getAccount((acc) => {
             if(acc===null || !acc.address) return false;
             const data = {
@@ -162,7 +157,7 @@ function Contact(props) {
           <img src="icons/setting.svg" className='opt_button' alt="" onClick={(ev)=>{
             self.clickSetting(ev)
           }}/>
-          <img src="icons/link.svg" className='opt_button' alt="" onClick={(ev)=>{
+          <img src="icons/link.svg" hidden={hidelink} className='opt_button' alt="" onClick={(ev)=>{
             self.linkChatting(ev)
           }}/>
         </div>
