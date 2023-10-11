@@ -2,6 +2,8 @@ import STORAGE from './storage';
 import tools from './tools';
 import Encry from './encry';
 
+import Config from '../data/setting';
+
 let API = null;
 let wsAPI = null;
 let wss = {};
@@ -146,11 +148,18 @@ const RUNTIME = {
     removeApp:(page,index)=>{
 
     },
-    installApp: (data) => {
-
+    installApp: (obj,page,ck) => {
+        const list = STORAGE.getKey("apps");
+        list[page].push(obj);
+        STORAGE.setKey("apps", list);
+        return ck && ck(true);
     },
     clearApps:()=>{
         STORAGE.removeKey("apps");
+    },
+    formatApp:()=>{
+        const str=JSON.stringify(Config.format.app);
+        return JSON.parse(str);
     },
 
     setSpam: (uri, spam) => {

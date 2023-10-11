@@ -2,7 +2,7 @@ import { Container, Navbar, Form, Button, Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
 import RUNTIME from '../lib/runtime';
 
-function Navigator() {
+function Navigator(props) {
 
   let [name,setName]=useState("");
   let [map,setMap]=useState({});
@@ -15,10 +15,21 @@ function Navigator() {
     onClick:(ev)=>{
       RUNTIME.getAPIs((APIs)=>{
         APIs.AnchorJS.search(name,(res)=>{
-          if(res===false){
+          if(res===false || res.empty){
             return setMap({background:"#d7a3a3"});
           }
+
+          const napp=RUNTIME.formatApp();
+          napp.name=res.name;
+          napp.short=res.name;
+          napp.type=res.protocol.type;
+          napp.src=`anchor://${res.name}/${res.block}`;
+          //console.log(napp);
           //console.log(res);
+          const page=0;
+          RUNTIME.installApp(napp,page,(done)=>{
+            if(done) props.fresh();
+          });
         });
       });
     },

@@ -97,18 +97,10 @@ function Chat(props) {
     
   }, [])
 
-  const cmap = {
-    height: "400px",
-    width:"100%",
-    background: "#FFFFFF",
-    padding: "0px 5px 0px 5px",
-    overflow: "hidden",
-  }
-
   return (
     <Row className='pb-2'>
-      <Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12} >
-        <div style={cmap}>
+      <Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12}>
+        <div className='chat_container' style={{WebkitOverflowScrolling: "touch"}}>
           {list.map((row, key) => (
             row.type === "from" ?
               <From address={row.address} key={key} content={row.content} /> :

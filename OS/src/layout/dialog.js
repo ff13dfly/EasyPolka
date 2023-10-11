@@ -6,8 +6,8 @@ function Dialog(props) {
   let [show,setShow]=useState(false);
 
   useEffect(() => {
-    //console.log(props.show);
     setShow(props.show)
+    //document.body.style.overflow = props.show ? "hidden" : "unset";
   }, [props.show,props.callback]);
 
   //<Modal show={props.show} size="lg" onHide={funs.dialog.hide()}>

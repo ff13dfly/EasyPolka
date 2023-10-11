@@ -95,7 +95,7 @@ function App() {
 
   return (
     <div>
-      <Navigator />
+      <Navigator fresh={self.fresh}/>
       <Container>
         <Board funs={funs} />
         <Grid size={size} list={apps} funs={funs} edit={editing} select={self.select} />

@@ -55,6 +55,12 @@ code {
 #page iframe{width: 100%;height: 600px;}
 
 /*"background": "#FFAABB",*/
+.chat_container{height: 400px; width: 360px;margin: 0 auto;background: #FFFFFF;padding:0px 5px 0px 5px ;
+  overflow-x: hidden;
+  overflow-y: scroll !important;
+  -webkit-overflow-scrolling: touch;
+}
+
 .remove{position: fixed;left: 10px;bottom: 10px;width: 60px;height: 40px;border-radius: 20px;
   background: #EEEEEE;text-align: center;line-height: 40px;font-size: 30px;color: #FFFFFF;}
 .opts{position: fixed;left: 10px;bottom: 15px;height: 50px;border-radius: 20px;padding: 0px 15px 0px 15px;

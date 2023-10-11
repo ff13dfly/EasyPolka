@@ -33,15 +33,15 @@ module.exports={
       "name":"account",
       "src":"",
       "block":0,
-      "base":true,
+      "base":false,       //system apps
       "status":"normal",
-      "type":"system",
+      "type":"app",       //["system","app"]
       "grid":{
         "size":[1,1],
         "position":[0,0],
       },
-      "icon":"icons/app_01.jpg",
-      "short":"Account",
+      "icon":"icons/default.png",
+      "short":"Name",
       "desc":""
     },
     "contact":{ //contact data structure
