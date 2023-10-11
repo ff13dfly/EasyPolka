@@ -8,16 +8,15 @@ const status = {
     REMOVE: 0
 }
 const CHAT = {
-    save: (mine, from, ctx, ck) => {
+    save: (mine, from, ctx,way, ck) => {
         INDEXED.checkDB(DBname, (res) => {
-            //curDB=res;
-            const row = { from:from,msg: ctx,to:"", status: status.UNREAD, stamp: tools.stamp()};
+            const row = { address:from,msg: ctx,status: status.UNREAD,way:way,stamp: tools.stamp()};
+            console.log(row);
             const tbs = res.objectStoreNames;
             if (!CHAT.checkTable(mine, tbs)) {
                 INDEXED.initDB(DBname,[
-                    {table: mine, keyPath: "stamp", map: {from:{ unique: false }, stamp: { unique: false }, status: { unique: false } } }
+                    {table: mine, keyPath: "stamp", map: {address:{ unique: false },way:{ unique: false },stamp: { unique: false }, status: { unique: false } } }
                 ], res.version + 1).then((db) => {
-                    //curDB=db;
                     INDEXED.insertRow(db, mine, [row]);
                     return ck && ck(true);
                 });
@@ -29,7 +28,9 @@ const CHAT = {
     },
     page:(mine,from,step,page,ck)=>{
         INDEXED.checkDB(DBname, (db) => {
-            INDEXED.searchRows(db,mine,'from',from,ck);
+            const tbs = db.objectStoreNames;
+            if (!CHAT.checkTable(mine, tbs)) return ck && ck(false);
+            INDEXED.searchRows(db,mine,'address',from,ck);
         });
     },
     unread: (mine,from,ck) => {

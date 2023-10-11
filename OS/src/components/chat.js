@@ -55,12 +55,17 @@ function Chat(props) {
         spam:spam,
       };
       chatWS.send(JSON.stringify(msg));
+      CHAT.save(my_address,props.address,ctx,"to");           //save the answer
     },
     showHistory:(list)=>{
       const cs=[];
       for(let i=0;i<list.length;i++){
         const row=list[i];
-        cs.push({ type: "from", address: props.address, content: row.msg });
+        if(row.way==="from"){
+          cs.push({ type: "from", address: props.address, content: row.msg });
+        }else{
+          cs.push({ type: "to", address: my_address, content: row.msg });
+        }
       }
       setList(cs);
       backup=cs;

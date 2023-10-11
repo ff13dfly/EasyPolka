@@ -76,7 +76,7 @@
                             <div id="screen_${i}" class="screen"></div>
                         </div>
                         <div class="col-1 col-lg-1 pt-2">From</div>
-                        <div class="col-11 col-lg-11 pt-2">${row}</div>
+                        <div class="col-11 col-lg-11 pt-2" id="mine_${i}">${row}</div>
                         <div class="col-1 col-lg-1">To</div>
                         <div class="col-11 col-lg-11">
                             <input type="text" id="target_${i}" class="form-control" value="">
@@ -110,6 +110,10 @@
                     spam:spams[index],
                 }
                 self.send(data,index);
+                $("#content_"+index).val("");
+                const mine=$("#mine_"+index).html();
+                const str=`<p class="single"><small>${shorten(mine)}</small>${ctx}</p>`;
+                $("#screen_"+index).prepend(str);
             });
 
             $(".btn_link").on("click",(ev)=>{

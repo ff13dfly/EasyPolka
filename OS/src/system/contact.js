@@ -13,8 +13,8 @@ let selected=null;
 
 let websocket = null;
 let spam = "";
-
 let chats={};
+let active =false;  //account reg to server status
 
 function Contact(props) {
   const size = [3, 6, 3];
@@ -65,15 +65,15 @@ function Contact(props) {
               const input = JSON.parse(str);
               console.log(input);
               switch (input.act) {
-                case "init":
+                case "init":        //websocket init, use is not active yet.
                   spam = input.spam;
                   RUNTIME.setSpam(uri,input.spam);
                   break;
                 case "chat":
-                    console.log(input);
+                    //console.log(input);
                     if(chats[input.from])chats[input.from](input);
                     RUNTIME.getAccount((acc) => {
-                      CHAT.save(acc.address,input.from,input.msg,(res)=>{
+                      CHAT.save(acc.address,input.from,input.msg,"from",(res)=>{
                         console.log(res);
                       })
                     })
@@ -84,6 +84,7 @@ function Contact(props) {
                   break;
                 case "active":
                   if(input.success){
+                    active=true;
                     setHidelink(true);
                     self.fresh();
                   }
@@ -108,7 +109,6 @@ function Contact(props) {
         }
         RUNTIME.websocket(uri, (ws) => {
           websocket = ws;
-          //setHidelink(true);
           RUNTIME.getAccount((acc) => {
             if(acc===null || !acc.address) return false;
             const data = {
@@ -127,11 +127,23 @@ function Contact(props) {
     select:(map)=>{
       selected=map;
     },
+    checkActive:()=>{
+      RUNTIME.getSetting((cfg) => {
+        const config = cfg.apps.contact,uri = config.node[0];
+        RUNTIME.websocket(uri, (ws) => {
+          console.log(ws);
+        });
+      });
+    },
   };
 
 
   useEffect(() => {
-    console.log(`Ready to regroup contacts`);
+    if(!active){
+      self.linkChatting();
+    }
+    //self.checkActive();
+    //console.log(`Ready to regroup contacts`);
   }, []);
 
   return (
@@ -166,7 +178,7 @@ function Contact(props) {
           <img src="icons/setting.svg" className='opt_button' alt="" onClick={(ev)=>{
             self.clickSetting(ev)
           }}/>
-          <img src="icons/link.svg" hidden={hidelink} className='opt_button' alt="" onClick={(ev)=>{
+          <img src="icons/link.svg" hidden={hidelink || active} className='opt_button' alt="" onClick={(ev)=>{
             self.linkChatting(ev)
           }}/>
         </div>

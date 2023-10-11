@@ -42,59 +42,7 @@ function ContactSetting(props) {
   }
 
   useEffect(() => {
-    RUNTIME.getSetting((cfg) => {
-      const config = cfg.apps.contact;
-      const uri = config.node[0];
-      setServer(uri);
-      const agent = {
-        open: (res) => {
-          ready=true;
-        },
-        message: (res) => {
-          const str = res.data;
-          try {
-            const input = JSON.parse(str);
-            console.log(input);
-            switch (input.act) {
-              case "init":
-                spam = input.spam;
-                RUNTIME.setSpam(uri,input.spam);
-                break;
-              case "reg":
-                //Payto
-                //setDetail(`Pay ${input.amount} to <small>${input.target}</small>`);
-                setHidden(true);
-                setDetail(<Payto amount={input.amount} target={input.target} funs={funs} />);
-                break;
-              case "notice":
-                break;
-              default:
-                break;
-            }
-
-          } catch (error) {
-
-          }
-        },
-        close: (res) => {
-          ready=false;
-        },
-        error: (res) => {
-
-        }
-      }
-      RUNTIME.websocket(uri, (ws) => {
-        websocket = ws;
-        RUNTIME.getAccount((acc) => {
-          if(acc===null || !acc.address) return false;
-          const data = {
-            act: "active",
-            acc: acc.address,
-          }
-          self.send(data);
-        });
-      },agent);
-    });
+    
   }, []);
 
   return (
