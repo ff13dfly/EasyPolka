@@ -27,7 +27,7 @@ code {
 
 .cell{text-align: center;}
 .cell img{width: 80%;object-fit: cover;border-radius: 10px;
-  box-shadow: 2px 2px 2px 1px #BBBBBB;
+  box-shadow: 2px 2px 2px 1px #BBBBBB;background: #AAAAAA;
 }
 .cell h6{margin-top: 4px;}
 .status {width: 12px;height: 12px;border-radius: 6px;z-index: 100;float: left;
@@ -63,7 +63,7 @@ code {
 
 .remove{position: fixed;left: 10px;bottom: 10px;width: 60px;height: 40px;border-radius: 20px;
   background: #EEEEEE;text-align: center;line-height: 40px;font-size: 30px;color: #FFFFFF;}
-.opts{position: fixed;left: 10px;bottom: 15px;height: 50px;border-radius: 20px;padding: 0px 15px 0px 15px;
+.opts{position: fixed;left: 10px;bottom: 15px;height: 50px;border-radius: 20px;padding: 1px 15px 0px 15px;
   background: #EEEEEE;line-height: 40px;font-size: 30px;color: #FFFFFF;}
 .opt_button{width: 36px;height: 36px;margin: 0px 5px 0px 5px;opacity: 0.6;}
 

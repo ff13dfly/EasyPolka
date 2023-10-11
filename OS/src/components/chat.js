@@ -6,6 +6,7 @@ import To from './chat_to';
 
 import RUNTIME from '../lib/runtime';
 import CHAT from '../lib/chat';
+import SCROLLER from '../lib/scroll';
 
 let chatWS=null;
 let spam="";
@@ -69,6 +70,7 @@ function Chat(props) {
       }
       setList(cs);
       backup=cs;
+      SCROLLER.allowScroll();
     },
   };
 

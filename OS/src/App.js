@@ -10,6 +10,7 @@ import SystemPassword from './components/sys_password';
 import Dialog from './layout/dialog';
 import Device from './lib/device';
 import RUNTIME from './lib/runtime';
+import SCROLLER from './lib/scroll';
 
 const size = Device.grids();
 
@@ -43,6 +44,7 @@ function App() {
         setContent(ctx);
         if (title) setTitle(title);
         setDialogShow(true);
+        SCROLLER.allowScroll();
       },
       hide: (ck) => {
         setDialogShow(false);
@@ -106,7 +108,7 @@ function App() {
       {ctx_page}
       <div className="opts">
         {/* <img src="icons/edit.svg" className='opt_button' alt="" /> */}
-        <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev) => {
+        <img src="icons/remove.svg" hidden={!RUNTIME.isLogin()} className='opt_button' alt="" onClick={(ev) => {
           self.clickEdit(ev)
         }} />
         <img src="icons/fin.svg" hidden={RUNTIME.isLogin()} className='opt_button' alt="" onClick={(ev) => {

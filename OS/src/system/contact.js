@@ -174,10 +174,10 @@ function Contact(props) {
         <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev) => {
           self.clickEdit(ev)
         }} />
-        <img src="icons/setting.svg" className='opt_button' alt="" onClick={(ev) => {
+        <img src="icons/setting.svg" hidden={editing} className='opt_button' alt="" onClick={(ev) => {
           self.clickSetting(ev)
         }} />
-        <img src="icons/link.svg" hidden={hidelink || active} className='opt_button' alt="" onClick={(ev) => {
+        <img src="icons/link.svg" hidden={hidelink || active || editing} className='opt_button' alt="" onClick={(ev) => {
           self.linkChatting(ev)
         }} />
       </div>
