@@ -1,10 +1,7 @@
 import INDEXED from './indexed';
 import tools from './tools';
 
-const prefix = 'w3os_chat_';
 const DBname='w3os_history';
-//let curDB=null;
-
 const status = {
     UNREAD: 3,
     NORMAL: 1,

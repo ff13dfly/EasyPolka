@@ -63,6 +63,7 @@ function Contact(props) {
             const str = res.data;
             try {
               const input = JSON.parse(str);
+              console.log(input);
               switch (input.act) {
                 case "init":
                   spam = input.spam;
@@ -79,6 +80,13 @@ function Contact(props) {
                     setCount(count++);
                     break;
                 case "reg":
+
+                  break;
+                case "active":
+                  if(input.success){
+                    setHidelink(true);
+                    self.fresh();
+                  }
 
                   break;
                 case "notice":
@@ -100,7 +108,7 @@ function Contact(props) {
         }
         RUNTIME.websocket(uri, (ws) => {
           websocket = ws;
-          setHidelink(true);
+          //setHidelink(true);
           RUNTIME.getAccount((acc) => {
             if(acc===null || !acc.address) return false;
             const data = {
@@ -121,8 +129,9 @@ function Contact(props) {
     },
   };
 
+
   useEffect(() => {
-    //INDEXED.test();
+    console.log(`Ready to regroup contacts`);
   }, []);
 
   return (

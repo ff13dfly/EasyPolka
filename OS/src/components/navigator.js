@@ -6,6 +6,7 @@ function Navigator(props) {
 
   let [name,setName]=useState("");
   let [map,setMap]=useState({});
+  //let [anchor,setAnchor]=useState("");
 
   const self={
     onChange:(ev)=>{
@@ -24,11 +25,12 @@ function Navigator(props) {
           napp.short=res.name;
           napp.type=res.protocol.type;
           napp.src=`anchor://${res.name}/${res.block}`;
-          //console.log(napp);
-          //console.log(res);
           const page=0;
           RUNTIME.installApp(napp,page,(done)=>{
-            if(done) props.fresh();
+            if(done){
+              setName("");
+              props.fresh();
+            } 
           });
         });
       });
@@ -45,6 +47,7 @@ function Navigator(props) {
               size="md"
               type="text"
               placeholder="Anchor name..."
+              value={name}
               style={map}
               onChange={(ev) => {self.onChange(ev)}}
             />

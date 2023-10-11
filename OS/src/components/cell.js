@@ -59,7 +59,7 @@ function Cell(props) {
       funs.page(map[data.name]);
     },
     click: () => {
-      console.log(data);
+      //console.log(data);
       if(data.base){
         self.clickBase();
       }else{

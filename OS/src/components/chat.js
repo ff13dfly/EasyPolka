@@ -95,7 +95,7 @@ function Chat(props) {
       backup=nlist;
     });
     
-  }, [])
+  }, []);
 
   return (
     <Row className='pb-2'>
