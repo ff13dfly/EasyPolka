@@ -12,7 +12,7 @@ function ContactAdd(props) {
       setAddress(ev.target.value);
     },
     click:(ev)=>{
-      console.log(address);
+      //console.log(address);
       if(!address) return false;
       RUNTIME.addContact(address,(res)=>{
         if(res===true) props.fresh();

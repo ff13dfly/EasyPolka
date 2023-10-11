@@ -26,7 +26,7 @@ let spams = {};
 const prefix = "w3os";
 const keys = {
     "account": `${prefix}_account_file`,
-    "contact": `${prefix}_contact_list`,
+    //"contact": `${prefix}_contact_list`,
     "apps": `${prefix}_apps_list`,
     "salt": `${prefix}_salt`,
     "vertify": `${prefix}_check`,
@@ -104,38 +104,61 @@ const RUNTIME = {
 
     //contact functions
     addContact: (address, ck) => {
-        let list = STORAGE.getKey("contact");
-        if (list === null) list = {};
-        list[address] = {
-            "intro": "",
-            "status": "",
-            "type": "friend",
-            "network": "Anchor",
-        }
-        STORAGE.setKey("contact", list);
-        return ck && ck(true);
+        RUNTIME.getAccount((acc)=>{
+            if(!acc || !acc.address) return ck && ck(false);
+            const mine=acc.address;
+            let list = STORAGE.getKey(mine);
+            if (list === null) list = {};
+            list[address] = {
+                "intro": "",
+                "status": "",
+                "type": "friend",
+                "network": "Anchor",
+            }
+            STORAGE.setKey(mine, list);
+            return ck && ck(true);
+        });
     },
     removeContact: (list, ck) => {
-        console.log(list);
-        let map = STORAGE.getKey("contact");
-        if (map === null) map = {};
-        for (let i = 0; i < list.length; i++) {
-            const acc = list[i];
-            if (map[acc]) delete map[acc];
-        }
-        console.log(map);
-        STORAGE.setKey("contact", map);
-        return ck && ck(true);
+        RUNTIME.getAccount((acc)=>{
+            if(!acc || !acc.address) return ck && ck(false);
+            const mine=acc.address;
+            //console.log(list);
+            let map = STORAGE.getKey(mine);
+            if (map === null) map = {};
+            for (let i = 0; i < list.length; i++) {
+                const acc = list[i];
+                if (map[acc]) delete map[acc];
+            }
+            //console.log(map);
+            STORAGE.setKey(mine, map);
+            return ck && ck(true);
+        });
     },
     getContact: (ck) => {
-        const list = STORAGE.getKey("contact");
-        if(list===null){
-            STORAGE.setKey("contact",config.contacts);
-        }
-        return ck && ck(STORAGE.getKey("contact"));
+        RUNTIME.getAccount((acc)=>{
+            if(!acc || !acc.address) return ck && ck(false);
+            const mine=acc.address;
+
+            const nmap={} 
+            nmap[mine]=`${prefix}_${mine}`;
+            STORAGE.setMap(nmap);
+
+
+            const list = STORAGE.getKey(mine);
+            if(list===null){
+                STORAGE.setKey(mine,config.contacts);
+            }
+            return ck && ck(STORAGE.getKey(mine));
+        });
     },
-    clearContact:()=>{
-        STORAGE.removeKey("contact");
+    clearContact:(ck)=>{
+        RUNTIME.getAccount((acc)=>{
+            if(!acc || !acc.address) return ck && ck(false);
+            const mine=acc.address;
+            STORAGE.removeKey(mine);
+            return ck && ck(true);
+        });
     },
 
     getApps: (ck) => {
@@ -169,7 +192,6 @@ const RUNTIME = {
         return spams[uri];
     },
     websocket: (uri, ck, agent) => {
-        //console.log(uri);
         if (wss[uri]) return ck && ck(wss[uri]);
         try {
             const ws = new WebSocket(uri);
