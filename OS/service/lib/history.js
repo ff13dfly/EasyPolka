@@ -7,7 +7,7 @@ const self={
         if(timer===null){
             console.log(`Ready to recover the history data`);
             timer=setInterval(()=>{
-                console.log(`Autosave chat history.`);
+                //console.log(`Autosave chat history.`);
             },2000);
         }
     },

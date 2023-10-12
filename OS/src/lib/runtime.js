@@ -192,6 +192,7 @@ const RUNTIME = {
         return spams[uri];
     },
     websocket: (uri, ck, agent) => {
+        console.log(uri);
         if (wss[uri]) return ck && ck(wss[uri]);
         try {
             const ws = new WebSocket(uri);

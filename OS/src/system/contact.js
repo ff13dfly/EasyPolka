@@ -56,6 +56,7 @@ function Contact(props) {
     },
     linkChatting: (ev) => {
       RUNTIME.getSetting((cfg) => {
+        console.log(cfg);
         const config = cfg.apps.contact, uri = config.node[0];
         const agent = {
           open: (res) => { },

@@ -1,8 +1,15 @@
 //########## RUNNING ##########
 // node index.js
 
+// ## build command
+// yarn add esbuild
+// ../../node_modules/esbuild/bin/esbuild index.js --bundle --minify --outfile=./chat_server.min.js --platform=node
+
 // ## abanded, runner will be on config.json
 // node index.js config.json 5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw  
+
+// ## server iptables
+// iptables -I INPUT -p tcp --dport 7788 -j ACCEPT
 
 const {output}=require("../lib/output");
 const Valid = require("../lib/valid");
