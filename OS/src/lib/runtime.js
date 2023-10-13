@@ -42,8 +42,6 @@ const config = {
     system: require("../data/setting"),         //Official settings for both system and Dapps
 }
 
-
-
 const RUNTIME = {
     //1. set the password for W3OS;
     //!important, if there is no password, the data will be encode by default salt.
@@ -96,92 +94,127 @@ const RUNTIME = {
     },
 
     //contact functions
-    addContact: (address, ck) => {
+    addContact:(address, ck, stranger) => {
         RUNTIME.getAccount((acc)=>{
             if(!acc || !acc.address) return ck && ck(false);
-            const mine=acc.address;
-            let list = STORAGE.getKey(mine);
-            if (list === null) list = {};
-            list[address] = {
-                "intro": "",
-                "status": "",
-                "type": "friend",
-                "network": "Anchor",
+            if(!stranger){
+                const mine=acc.address;
+                let list = STORAGE.getKey(mine);
+                if (list === null) list = {};
+                list[address] = {
+                    "intro": "",
+                    "status": 1,
+                    "type": "friend",
+                    "network": "Anchor",
+                }
+                STORAGE.setKey(mine, list);
+            }else{
+                const mine=acc.address;
+                let list = STORAGE.getKey(`${mine}_stranger`);
+                if (list === null) list = {};
+                list[address] = {
+                    "intro": "",
+                    "status": 1,
+                    "type": "stranger",
+                    "network": "Anchor",
+                }
+                STORAGE.setKey(`${mine}_stranger`, list);
             }
-            STORAGE.setKey(mine, list);
             return ck && ck(true);
         });
     },
-    removeContact: (list, ck) => {
+    removeContact: (list, ck, stranger) => {
         RUNTIME.getAccount((acc)=>{
             if(!acc || !acc.address) return ck && ck(false);
             const mine=acc.address;
-            //console.log(list);
-            let map = STORAGE.getKey(mine);
-            if (map === null) map = {};
-            for (let i = 0; i < list.length; i++) {
-                const acc = list[i];
-                if (map[acc]) delete map[acc];
+            if(!stranger){
+                let map = STORAGE.getKey(mine);
+                if (map === null) map = {};
+                for (let i = 0; i < list.length; i++) {
+                    const acc = list[i];
+                    if (map[acc]) delete map[acc];
+                }
+                STORAGE.setKey(mine, map);
+            }else{
+                let map = STORAGE.getKey(`${mine}_stranger`);
+                if (map === null) map = {};
+                for (let i = 0; i < list.length; i++) {
+                    const acc = list[i];
+                    if (map[acc]) delete map[acc];
+                }
+                STORAGE.setKey(`${mine}_stranger`, map);
             }
-            //console.log(map);
-            STORAGE.setKey(mine, map);
             return ck && ck(true);
         });
     },
-    getContact: (ck) => {
+    getContact: (ck,stranger) => {
         RUNTIME.getAccount((acc)=>{
             if(!acc || !acc.address) return ck && ck(false);
             const mine=acc.address;
-
-            const nmap={} 
-            nmap[mine]=`${prefix}_${mine}`;
-            STORAGE.setMap(nmap);
-
-
-            const list = STORAGE.getKey(mine);
-            if(list===null){
-                STORAGE.setKey(mine,config.contacts);
+            if(!stranger){
+                const nmap={} 
+                nmap[mine]=`${prefix}_${mine}`;
+                STORAGE.setMap(nmap);
+    
+                const list = STORAGE.getKey(mine);
+                console.log(list);
+                if(list===null){
+                    STORAGE.setKey(mine,config.contacts);
+                }
+                return ck && ck(STORAGE.getKey(mine));
+            }else{
+                const nmap={} 
+                nmap[`${mine}_stranger`]=`${prefix}_${mine}_stranger`;
+                STORAGE.setMap(nmap);
+    
+                const list = STORAGE.getKey(`${mine}_stranger`);
+                if(list===null){
+                    STORAGE.setKey(`${mine}_stranger`,{});
+                }
+                return ck && ck(STORAGE.getKey(`${mine}_stranger`));
             }
-            return ck && ck(STORAGE.getKey(mine));
         });
     },
-    clearContact:(ck)=>{
+    clearContact:(ck,stranger)=>{
         RUNTIME.getAccount((acc)=>{
             if(!acc || !acc.address) return ck && ck(false);
             const mine=acc.address;
-            STORAGE.removeKey(mine);
+            if(!stranger){
+                STORAGE.removeKey(mine);
+            }else{
+                STORAGE.removeKey(`${mine}_stranger`);
+            }
             return ck && ck(true);
         });
     },
 
-    cacheStranger:(ck)=>{
-        if(stranger===null){
-            const list = STORAGE.getKey("stranger");
-            stranger=list===null?[]:list;
-        }
-        return ck && ck(stranger);
-    },
-    removeStranger:(acc,ck)=>{
+    // cacheStranger:(ck)=>{
+    //     if(stranger===null){
+    //         const list = STORAGE.getKey("stranger");
+    //         stranger=list===null?[]:list;
+    //     }
+    //     return ck && ck(stranger);
+    // },
+    // removeStranger:(acc,ck)=>{
 
-    },
-    addStranger:(obj,ck)=>{
-        RUNTIME.cacheStranger((list)=>{
-            let same=false;
-            for(let i=0;i<list.length;i++){
-                if(list[i].address===obj.address) same=true;
-            }
+    // },
+    // addStranger:(obj,ck)=>{
+    //     RUNTIME.cacheStranger((list)=>{
+    //         let same=false;
+    //         for(let i=0;i<list.length;i++){
+    //             if(list[i].address===obj.address) same=true;
+    //         }
 
-            //save stranger list
-            if(!same){
-                stranger.push(obj);
-                STORAGE.setKey("stranger",stranger);
-            } 
-            return ck && ck(stranger);
-        });
-    },
-    getStranger:(ck)=>{
-        RUNTIME.cacheStranger(ck);
-    },
+    //         if(!same){
+    //             stranger.push(obj);
+    //             STORAGE.setKey("stranger",stranger);
+    //         } 
+    //         return ck && ck(stranger);
+    //     });
+    // },
+    // getStranger:(ck)=>{
+    //     RUNTIME.cacheStranger(ck);
+    // },
 
     getApps: (ck) => {
         const list = STORAGE.getKey("apps");

@@ -56,6 +56,14 @@ const STORAGE={
 	},
 
 	//key-value
+	exsistKey:(name)=>{
+		if(!map[name]) return null;
+		const key = map[name];
+		const str = localStorage.getItem(key);
+		if(str === null) return false;
+		return true;
+	},
+
 	getKey:(name) => {
 		//console.log(map);
 		if(!map[name]) return null;
@@ -81,8 +89,8 @@ const STORAGE={
 		if(!map[name]) return false;
 		const key=map[name];
 		if(!hash || ignore[name]===true) return localStorage.setItem(key,JSON.stringify(obj));
-		console.log(obj);
-		console.log(hash);
+		//console.log(obj);
+		//console.log(hash);
 		Encry.auto(hash);
 		const res=Encry.encrypt(JSON.stringify(obj));
 		console.log(res);

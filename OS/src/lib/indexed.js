@@ -80,7 +80,7 @@ const INDEXED = {
 		request.onerror = function (e) { };
 	},
 	countRows: (db, table, key, val, status, ck) => {
-		//console.log(table ,key,val);
+		if(db.objectStoreNames.length===0)return false;
 		let count=0;
 		var store = db.transaction(table, "readwrite").objectStore(table);
 		var request = store.index(key).openCursor(IDBKeyRange.only(val));

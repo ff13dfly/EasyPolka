@@ -24,7 +24,7 @@ function ContactList(props) {
     select: (address) => {
       select[address] = !select[address];
       props.fresh();
-      props.select(select);
+      props.select(select,"contact");
     },
     getCount:(mine,list,ck,map)=>{
       if(!map) map={};
@@ -39,15 +39,12 @@ function ContactList(props) {
 
   useEffect(() => {
     RUNTIME.getAccount((fa) => {
-      //console.log(mine);
       const mine=fa.address;
-    
       RUNTIME.getContact((res) => {
         const nlist=[];
         for(var k in res) nlist.push(k);
 
         self.getCount(mine,nlist,(un)=>{
-          console.log(un);
           const list=[];
           for(var k in res){
             const atom=res[k];

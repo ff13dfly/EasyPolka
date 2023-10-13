@@ -28,6 +28,10 @@ const self={
         if (n === undefined) n = 10;
         return addr.substr(0, n) + '...' + addr.substr(addr.length - n, n);
     },
+    empty:(obj)=>{
+        if(JSON.stringify(obj)==="{}") return true;
+        return false;
+    },
 }
 
 module.exports=self;

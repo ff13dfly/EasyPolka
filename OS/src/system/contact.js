@@ -10,7 +10,7 @@ import ContactSetting from '../components/contact_setting';
 import RUNTIME from '../lib/runtime';
 import CHAT from '../lib/chat';
 
-let selected = null;
+let selected = {contact:null,stranger:null};
 
 let websocket = null;
 let spam = "";
@@ -23,7 +23,7 @@ function Contact(props) {
 
   let [editing, setEditing] = useState(false);
   let [count, setCount] = useState(0);
-  let [stranger, setStranger]= useState([]);
+  let [stranger, setStranger]= useState(0);
   let [hidelink, setHidelink] = useState(false);
 
   const self = {
@@ -32,18 +32,32 @@ function Contact(props) {
     },
     clickEdit: (ev) => {
       setEditing(!editing);
-      if (editing && selected !== null) {
+      if (editing && selected.contact !== null) {
         const list = [];
-        for (var address in selected) {
-          if (selected[address] === true) {
+        for (const address in selected.contact) {
+          if (selected.contact[address] === true) {
             list.push(address);
           }
         }
-        //console.log(list);
+
         RUNTIME.removeContact(list, (res) => {
-          selected = null;
+          selected.contact = null;
           self.fresh();
         });
+      }
+
+      if (editing && selected.stranger !== null) {
+        const list = [];
+        for (const address in selected.stranger) {
+          if (selected.stranger[address] === true) {
+            list.push(address);
+          }
+        }
+
+        RUNTIME.removeContact(list, (res) => {
+          selected.contact = null;
+          self.fresh();
+        },true);
       }
     },
     send: (obj) => {
@@ -58,7 +72,6 @@ function Contact(props) {
     },
     linkChatting: (ev) => {
       RUNTIME.getSetting((cfg) => {
-        //console.log(cfg);
         const config = cfg.apps.contact, uri = config.node[0];
         const agent = {
           open: (res) => { },
@@ -77,15 +90,10 @@ function Contact(props) {
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
                       if(res!==true){
-                        RUNTIME.addStranger({
-                          address:res,
-                          intro:"temp chat",
-                          status:1,
-                          type:"stranger",
-                          network:"Anchor",
-                        },(nlist)=>{
-                          setStranger(nlist);
-                        });
+                        RUNTIME.addContact(res,()=>{
+                          stranger++;
+                          setStranger(stranger);
+                        },true);
                       }
                     })
                   })
@@ -96,15 +104,10 @@ function Contact(props) {
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
                       if(res!==true){
-                        RUNTIME.addStranger({
-                          address:res,
-                          intro:"temp chat",
-                          status:1,
-                          type:"stranger",
-                          network:"Anchor",
-                        },(nlist)=>{
-                          setStranger(nlist);
-                        });
+                        RUNTIME.addContact(res,()=>{
+                          stranger++;
+                          setStranger(stranger);
+                        },true);
                       }
                     })
                   })
@@ -155,9 +158,11 @@ function Contact(props) {
     fresh: () => {
       const n = count + 1;
       setCount(n);
+      const x = stranger + 1;
+      setStranger(x);
     },
-    select: (map) => {
-      selected = map;
+    select: (map,cat) => {
+      selected[cat]= map;
     },
     checkActive: () => {
       RUNTIME.getSetting((cfg) => {
@@ -173,13 +178,6 @@ function Contact(props) {
     if (!active) {
       self.linkChatting();
     }
-
-    RUNTIME.getStranger((ss)=>{
-      setStranger(ss);
-    });
-
-    //set friend list to chat 
-    CHAT.friends();
   }, []);
 
   return (
@@ -206,7 +204,7 @@ function Contact(props) {
       <Container>
         <ContactAdd funs={funs} fresh={self.fresh} />
         <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count} mailer={self.mailer} />
-        <StrangerList funs={funs} fresh={self.fresh} select={self.select} edit={editing} list={stranger} mailer={self.mailer} />
+        <StrangerList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={stranger} mailer={self.mailer} />
       </Container>
       <div className="opts">
         <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev) => {
