@@ -4,7 +4,7 @@
         <style>
             .screen{height: 300px;width: 100%;background: #EEEEEE;overflow: auto;}
             .live{background: #bbdbb9;margin: 0 auto;padding: 0px 0px 0px 0px;}
-            .single{background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;}
+            .single{background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;cursor: pointer;}
             .single small{color: #666666;background: #EEEEEE;}
             .active{background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;}
             .notice{background: #ffb4f5;margin: 0 auto;padding: 0px 0px 0px 0px;}
@@ -18,7 +18,8 @@
     <script>
         //const url="ws://localhost:7788";
         //const url="ws://45.63.91.147:7788"
-        const url="ws://android.im:7788"
+        //const url="ws://android.im:7788"
+        const url="wss://chat.metanchor.net"
         const wmap={},spams={},count={};
         const accounts=[
             "5FQmGPk7qGBmU3K6kDfMSBiUHBYq5NqXpx93KFEvDvyz5sRJ",
@@ -65,6 +66,14 @@
                     if(acc===accounts[i]) return i;
                 }
                 return false;
+            },
+            actions:()=>{
+                $(".single").off("click").on("click",function(){
+                    const sel=$(this);
+                    const acc=sel.attr("data");
+                    const index=sel.attr("index");
+                    $(`#target_${index}`).val(!acc?"":acc);
+                });
             },
         };
 
@@ -114,7 +123,7 @@
                 self.send(data,index);
                 $("#content_"+index).val("");
                 const mine=$("#mine_"+index).html();
-                const str=`<p class="single"><small>${shorten(mine)}</small>${ctx}</p>`;
+                const str=`<p class="single" index="${index}"><small>${shorten(mine)}</small>${ctx}</p>`;
                 $("#screen_"+index).prepend(str);
             });
 
@@ -167,12 +176,14 @@
                                 spams[index]=input.spam;
                                 break;
                             case "chat":
-                                const ctx=`<p class="single"><small>${shorten(input.from)}</small>${input.msg}</p>`;
+                                const ctx=`<p class="single" data="${input.from}" index="${index}"><small>${shorten(input.from)}</small>${input.msg}</p>`;
                                 $("#screen_"+index).prepend(ctx);
+                                self.actions()
                                 break;
                             case "history":
-                                const his=`<p class="single"><small>${shorten(input.from)}</small>${input.msg}</p>`;
+                                const his=`<p class="single" data="${input.from}" index="${index}"><small>${shorten(input.from)}</small>${input.msg}</p>`;
                                 $("#screen_"+index).prepend(his);
+                                self.actions()
                                 break;
                             case "active":
                                 const act=`<p class="active">The ${input.count} active user.</p>`;

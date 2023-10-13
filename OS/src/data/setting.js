@@ -73,10 +73,10 @@ module.exports={
   "apps":{
     "contact":{
       "node":[
+        "wss://chat.metanchor.net",
         "ws://android.im:7788",
         "ws://45.63.91.147:7788",
         "ws://localhost:7788",
-        "wss://hub.metanchor.net"
       ],
       "max":500,
       "permit":{},

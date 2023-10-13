@@ -108,9 +108,9 @@ module.exports = {
                             break;
 
                         case "active":     //live on the server
-                            if(accountSpam[input.acc]!==undefined){
-                                return self.failed({ msg: "Dunplicate login" }, input.spam, input.order);
-                            }
+                            // if(accountSpam[input.acc]!==undefined){
+                            //     return self.failed({ msg: "Dunplicate login" }, input.spam, input.order);
+                            // }
 
                             accountSpam[input.acc] = input.spam;
                             spamToAccount[input.spam] = input.acc;
