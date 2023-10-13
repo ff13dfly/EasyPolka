@@ -2,6 +2,7 @@ import { Navbar, Container, Row, Col } from 'react-bootstrap';
 import { useEffect,useState } from 'react';
 
 import Paybill from '../components/paybill';
+import Bill from '../components/bill';
 import RUNTIME from '../lib/runtime';
 
 function Payment(props) {
@@ -9,7 +10,7 @@ function Payment(props) {
   const size={
     head:[3,6,3],
     row:[12],
-    account:[9,3]
+    account:[9,3],
   };
   const funs=props.funs;
   
@@ -108,8 +109,8 @@ function Payment(props) {
         </Container>
       </Navbar>
       <Container>
-        <Row className='pt-4'>
-          <Col className='pb-4' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
+        <Row className='pt-2'>
+          {/* <Col className='pb-4' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
             lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
             <small>From your account</small>
             <textarea className="form-control" disabled={true} cols="10" rows="3" defaultValue={from}></textarea>     
@@ -118,9 +119,9 @@ function Payment(props) {
           <Col className='pb-4' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
             lg={size.account[1]} xl={size.account[1]} xxl={size.account[1]}>
               <img style={amap} src={`https://robohash.org/${from}.png`} alt="user logo"/>
-          </Col>
+          </Col> */}
 
-          <Col className='pb-4' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
+          <Col className='pb-2' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
             lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
             <small>Account to pay</small>
             <textarea className="form-control" disabled={disable.account} style={active.account} cols="10" rows="3" defaultValue={props.target} onChange={(ev)=>{
@@ -128,26 +129,27 @@ function Payment(props) {
             }}></textarea>
           </Col>
 
-          <Col className='pb-4' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
+          <Col className='pb-2' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
             lg={size.account[1]} xl={size.account[1]} xxl={size.account[1]}>
               <img style={amap} src={account.length===48?`https://robohash.org/${account}.png`:"icons/empty.png"} alt="user logo"/>
           </Col>
 
-          <Col className='pb-4' xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
-            lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+          <Col className='pb-2' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
+            lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
             <small>Amount to pay</small>
             <input type="number" className="form-control" disabled={disable.amount} style={active.amount} 
               defaultValue={props.amount} onChange={(ev)=>{
               self.changeAmount(ev);
             }}/>
           </Col>
-          <Col className='pt-4 text-end' xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
-            lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+          <Col className='pt-4 text-end' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
+            lg={size.account[1]} xl={size.account[1]} xxl={size.account[1]}>
             <button className='btn btn-md btn-primary' disabled={disable.pay} onClick={(ev)=>{
               self.click(ev);
-            }}>Payment</button>
+            }}>Pay</button>
           </Col>
         </Row>
+        <Bill />
       </Container>
     </div>
   );

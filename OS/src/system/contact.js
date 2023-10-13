@@ -58,7 +58,7 @@ function Contact(props) {
     },
     linkChatting: (ev) => {
       RUNTIME.getSetting((cfg) => {
-        console.log(cfg);
+        //console.log(cfg);
         const config = cfg.apps.contact, uri = config.node[0];
         const agent = {
           open: (res) => { },
@@ -74,7 +74,21 @@ function Contact(props) {
                   break;
 
                 case "history":
-
+                  RUNTIME.getAccount((acc) => {
+                    CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
+                      if(res!==true){
+                        RUNTIME.addStranger({
+                          address:res,
+                          intro:"temp chat",
+                          status:1,
+                          type:"stranger",
+                          network:"Anchor",
+                        },(nlist)=>{
+                          setStranger(nlist);
+                        });
+                      }
+                    })
+                  })
                   break;
 
                 case "chat":
@@ -82,7 +96,6 @@ function Contact(props) {
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
                       if(res!==true){
-                        //5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm
                         RUNTIME.addStranger({
                           address:res,
                           intro:"temp chat",
