@@ -68,13 +68,13 @@ function StrangerList(props) {
   return (
     <Row index={count}>
       <Col hidden={hide} xs={size.divide[0]} sm={size.divide[0]} md={size.divide[0]}
-        lg={size.divide[0]} xl={size.divide[0]} xxl={size.divide[0]} className="pt-2"><hr /></Col>
+        lg={size.divide[0]} xl={size.divide[0]} xxl={size.divide[0]} className="pt-4"><hr /></Col>
       <Col hidden={hide} xs={size.divide[1]} sm={size.divide[1]} md={size.divide[1]}
-        lg={size.divide[1]} xl={size.divide[1]} xxl={size.divide[1]} className="pt-2 text-center">
+        lg={size.divide[1]} xl={size.divide[1]} xxl={size.divide[1]} className="pt-4 text-center">
         <span style={{ color: "#BBBBBB", fontWeight: "500" }}>Stranger</span>
       </Col>
       <Col hidden={hide} xs={size.divide[2]} sm={size.divide[2]} md={size.divide[2]}
-        lg={size.divide[2]} xl={size.divide[2]} xxl={size.divide[2]} className="pt-2"><hr /></Col>
+        lg={size.divide[2]} xl={size.divide[2]} xxl={size.divide[2]} className="pt-4"><hr /></Col>
       {contact.map((row, index) => (
         <Col xs={dv.xs} sm={dv.sm} md={dv.md} lg={dv.lg} xl={dv.xl} xxl={dv.xxl} key={index} onClick={(ev) => {
           props.edit ? self.select(row.address) : self.click(row.address, ev);

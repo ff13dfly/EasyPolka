@@ -16,6 +16,7 @@ let websocket = null;
 let spam = "";
 let chats = {};
 let active = false;  //account reg to server status
+let friend=false;
 
 function Contact(props) {
   const size = [3, 6, 3];
@@ -173,6 +174,13 @@ function Contact(props) {
       });
     },
   };
+
+  if(!friend){
+    RUNTIME.getContact((fs)=>{
+      CHAT.friends(fs);
+      friend=true;
+    });
+  }
   
   useEffect(() => {
     if (!active) {

@@ -8,7 +8,7 @@ let API = null;
 let wsAPI = null;
 let wss = {};
 let spams = {};
-let stranger=null;
+let stranger = null;
 
 // let login = {
 //     md5: "",        //AES decode md5 password, avoid explosing the real one
@@ -48,7 +48,7 @@ const RUNTIME = {
     //!important, the storage will be fresh when the password changed
     init: (setPass, ck) => {
         //1. creat salt anyway.
-        STORAGE.setIgnore(["salt","vertify"]);     //public data;
+        STORAGE.setIgnore(["salt", "vertify"]);     //public data;
         let salt = STORAGE.getKey("salt");
         if (salt === null) {    //1.first time to run W3OS
             const char = tools.char(28, prefix);
@@ -56,16 +56,16 @@ const RUNTIME = {
         }
         salt = STORAGE.getKey("salt");
         const login = STORAGE.getEncry();     //check storage md5 password hash
-        if(!login) {
+        if (!login) {
             setPass((pass) => {
                 const md5 = Encry.md5(`${salt}${pass}`);
                 const check = STORAGE.getKey("vertify");
                 //console.log(check);
-                if(check===null){   //a. no password check, create one
+                if (check === null) {   //a. no password check, create one
                     STORAGE.setEncry(md5);
-                    STORAGE.setKey("vertify",md5);
-                }else{  //b. no password check, create one
-                    if(check!==md5) return ck && ck({msg:"Error password"});
+                    STORAGE.setKey("vertify", md5);
+                } else {  //b. no password check, create one
+                    if (check !== md5) return ck && ck({ msg: "Error password" });
                     STORAGE.setEncry(md5);
                     console.log(`vertify:${check},pass:${md5}`);
                     return ck && ck(true);
@@ -73,10 +73,10 @@ const RUNTIME = {
             });
         }
     },
-    isLogin:()=>{
+    isLogin: () => {
         return STORAGE.getEncry();
     },
-    
+
     getAccount: (ck) => {
         const fa = STORAGE.getKey("account");
         return ck && ck(fa);
@@ -94,96 +94,62 @@ const RUNTIME = {
     },
 
     //contact functions
-    addContact:(address, ck, stranger) => {
-        RUNTIME.getAccount((acc)=>{
-            if(!acc || !acc.address) return ck && ck(false);
-            if(!stranger){
-                const mine=acc.address;
-                let list = STORAGE.getKey(mine);
-                if (list === null) list = {};
-                list[address] = {
-                    "intro": "",
-                    "status": 1,
-                    "type": "friend",
-                    "network": "Anchor",
-                }
-                STORAGE.setKey(mine, list);
-            }else{
-                const mine=acc.address;
-                let list = STORAGE.getKey(`${mine}_stranger`);
-                if (list === null) list = {};
-                list[address] = {
-                    "intro": "",
-                    "status": 1,
-                    "type": "stranger",
-                    "network": "Anchor",
-                }
-                STORAGE.setKey(`${mine}_stranger`, list);
+    addContact: (address, ck, stranger) => {
+        RUNTIME.getAccount((acc) => {
+            if (!acc || !acc.address) return ck && ck(false);
+            const mine = acc.address;
+            const nkey = !stranger ? mine : `${mine}_stranger`;
+            let list = STORAGE.getKey(nkey);
+            if (list === null) list = {};
+            list[address] = {
+                "intro": "",
+                "status": 1,
+                "type": !stranger?"friend":"stranger",
+                "network": "Anchor",
             }
+            STORAGE.setKey(nkey, list);
             return ck && ck(true);
         });
     },
     removeContact: (list, ck, stranger) => {
-        RUNTIME.getAccount((acc)=>{
-            if(!acc || !acc.address) return ck && ck(false);
-            const mine=acc.address;
-            if(!stranger){
-                let map = STORAGE.getKey(mine);
-                if (map === null) map = {};
-                for (let i = 0; i < list.length; i++) {
-                    const acc = list[i];
-                    if (map[acc]) delete map[acc];
-                }
-                STORAGE.setKey(mine, map);
-            }else{
-                let map = STORAGE.getKey(`${mine}_stranger`);
-                if (map === null) map = {};
-                for (let i = 0; i < list.length; i++) {
-                    const acc = list[i];
-                    if (map[acc]) delete map[acc];
-                }
-                STORAGE.setKey(`${mine}_stranger`, map);
+        RUNTIME.getAccount((acc) => {
+            if (!acc || !acc.address) return ck && ck(false);
+            const mine = acc.address;
+            const nkey = !stranger ? mine : `${mine}_stranger`;
+            let map = STORAGE.getKey(nkey);
+            if (map === null) map = {};
+            for (let i = 0; i < list.length; i++) {
+                const acc = list[i];
+                if (map[acc]) delete map[acc];
             }
+            STORAGE.setKey(nkey, map);
+
             return ck && ck(true);
         });
     },
-    getContact: (ck,stranger) => {
-        RUNTIME.getAccount((acc)=>{
-            if(!acc || !acc.address) return ck && ck(false);
-            const mine=acc.address;
-            if(!stranger){
-                const nmap={} 
-                nmap[mine]=`${prefix}_${mine}`;
-                STORAGE.setMap(nmap);
-    
-                const list = STORAGE.getKey(mine);
-                console.log(list);
-                if(list===null){
-                    STORAGE.setKey(mine,config.contacts);
-                }
-                return ck && ck(STORAGE.getKey(mine));
-            }else{
-                const nmap={} 
-                nmap[`${mine}_stranger`]=`${prefix}_${mine}_stranger`;
-                STORAGE.setMap(nmap);
-    
-                const list = STORAGE.getKey(`${mine}_stranger`);
-                if(list===null){
-                    STORAGE.setKey(`${mine}_stranger`,{});
-                }
-                return ck && ck(STORAGE.getKey(`${mine}_stranger`));
+    getContact: (ck, stranger) => {
+        RUNTIME.getAccount((acc) => {
+            if (!acc || !acc.address) return ck && ck(false);
+            const mine = acc.address;
+            const nmap = {};
+            const skey = !stranger ? `${prefix}_${mine}` : `${prefix}_${mine}_stranger`;
+            const nkey = !stranger ? mine : `${mine}_stranger`;
+            nmap[nkey] = skey;
+            STORAGE.setMap(nmap);
+
+            const list = STORAGE.getKey(nkey);
+            if (list === null) {
+                STORAGE.setKey(nkey, !stranger ? config.contacts : {});
             }
+            return ck && ck(STORAGE.getKey(nkey));
         });
     },
-    clearContact:(ck,stranger)=>{
-        RUNTIME.getAccount((acc)=>{
-            if(!acc || !acc.address) return ck && ck(false);
-            const mine=acc.address;
-            if(!stranger){
-                STORAGE.removeKey(mine);
-            }else{
-                STORAGE.removeKey(`${mine}_stranger`);
-            }
+    clearContact: (ck, stranger) => {
+        RUNTIME.getAccount((acc) => {
+            if (!acc || !acc.address) return ck && ck(false);
+            const mine = acc.address;
+            const nkey = !stranger ? mine : `${mine}_stranger`;
+            STORAGE.removeKey(nkey);
             return ck && ck(true);
         });
     },
@@ -218,25 +184,25 @@ const RUNTIME = {
 
     getApps: (ck) => {
         const list = STORAGE.getKey("apps");
-        if(list===null){
-            STORAGE.setKey("apps",config.apps);
+        if (list === null) {
+            STORAGE.setKey("apps", config.apps);
         }
         return ck && ck(STORAGE.getKey("apps"));
     },
-    removeApp:(page,index)=>{
+    removeApp: (page, index) => {
 
     },
-    installApp: (obj,page,ck) => {
+    installApp: (obj, page, ck) => {
         const list = STORAGE.getKey("apps");
         list[page].push(obj);
         STORAGE.setKey("apps", list);
         return ck && ck(true);
     },
-    clearApps:()=>{
+    clearApps: () => {
         STORAGE.removeKey("apps");
     },
-    formatApp:()=>{
-        const str=JSON.stringify(Config.format.app);
+    formatApp: () => {
+        const str = JSON.stringify(Config.format.app);
         return JSON.parse(str);
     },
 
