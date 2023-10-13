@@ -38,7 +38,7 @@ module.exports ={
         const html = safeDocument.documentElement;
         const { body } = safeDocument;
         if (!body || !body.style) return;
-        console.log("here");
+        //console.log("here");
         html.style.position = '';
         html.style.overflow = '';
         body.style.position = '';

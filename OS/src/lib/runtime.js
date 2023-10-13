@@ -8,6 +8,7 @@ let API = null;
 let wsAPI = null;
 let wss = {};
 let spams = {};
+let stranger=null;
 
 // let login = {
 //     md5: "",        //AES decode md5 password, avoid explosing the real one
@@ -26,7 +27,7 @@ let spams = {};
 const prefix = "w3os";
 const keys = {
     "account": `${prefix}_account_file`,
-    //"contact": `${prefix}_contact_list`,
+    "stranger": `${prefix}_stranger_list`,
     "apps": `${prefix}_apps_list`,
     "salt": `${prefix}_salt`,
     "vertify": `${prefix}_check`,
@@ -40,6 +41,8 @@ const config = {
     contacts: require("../data/contacts"),      //Official contact
     system: require("../data/setting"),         //Official settings for both system and Dapps
 }
+
+
 
 const RUNTIME = {
     //1. set the password for W3OS;
@@ -161,6 +164,37 @@ const RUNTIME = {
         });
     },
 
+    cacheStranger:(ck)=>{
+        if(stranger===null){
+            const list = STORAGE.getKey("stranger");
+            //console.log(list);
+            //if(list===null) return ck && ck([]);
+            stranger=list===null?[]:list;
+        }
+        return ck && ck(stranger);
+    },
+    removeStranger:(acc,ck)=>{
+
+    },
+    addStranger:(obj,ck)=>{
+        RUNTIME.cacheStranger((list)=>{
+            let same=false;
+            for(let i=0;i<list.length;i++){
+                if(list[i].address===obj.address) same=true;
+            }
+
+            //save stranger list
+            if(!same){
+                stranger.push(obj);
+                STORAGE.setKey("stranger",stranger);
+            } 
+            return ck && ck(stranger);
+        });
+    },
+    getStranger:(ck)=>{
+        RUNTIME.cacheStranger(ck);
+    },
+
     getApps: (ck) => {
         const list = STORAGE.getKey("apps");
         if(list===null){
@@ -192,7 +226,7 @@ const RUNTIME = {
         return spams[uri];
     },
     websocket: (uri, ck, agent) => {
-        console.log(uri);
+        //console.log(uri);
         if (wss[uri]) return ck && ck(wss[uri]);
         try {
             const ws = new WebSocket(uri);

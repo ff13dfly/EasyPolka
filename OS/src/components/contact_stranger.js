@@ -6,7 +6,7 @@ import Chat from './chat';
 import RUNTIME from '../lib/runtime';
 import tools from '../lib/tools';
 
-function ContactList(props) {
+function StrangerList(props) {
 
   const size = [12];
   const dv = { xs: 3, sm: 3, md: 3, lg: 3, xl: 6, xxl: 6 };
@@ -28,17 +28,8 @@ function ContactList(props) {
   }
 
   useEffect(() => {
-    RUNTIME.getContact((res) => {
-      console.log(res);
-      const list=[];
-      for(var k in res){
-        const atom=res[k];
-        atom.address=k;
-        list.push(atom);
-      }
-      setContact(list);
-    });
-  }, [count])
+    setContact(props.list);
+  }, [props.list])
 
   return (
     <Row index={count}>
@@ -69,4 +60,4 @@ function ContactList(props) {
     </Row>
   );
 }
-export default ContactList;
+export default StrangerList;

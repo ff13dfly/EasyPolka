@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 import ContactAdd from '../components/contact_add';
 import ContactList from '../components/contact_list';
+import StrangerList from '../components/contact_stranger';
 import ContactSetting from '../components/contact_setting';
 
 import RUNTIME from '../lib/runtime';
@@ -22,6 +23,7 @@ function Contact(props) {
 
   let [editing, setEditing] = useState(false);
   let [count, setCount] = useState(0);
+  let [stranger, setStranger]= useState([]);
   let [hidelink, setHidelink] = useState(false);
 
   const self = {
@@ -64,18 +66,33 @@ function Contact(props) {
             const str = res.data;
             try {
               const input = JSON.parse(str);
-              console.log(input);
+              //console.log(input);
               switch (input.act) {
                 case "init":        //websocket init, use is not active yet.
                   spam = input.spam;
                   RUNTIME.setSpam(uri, input.spam);
                   break;
+
+                case "history":
+
+                  break;
+
                 case "chat":
-                  //console.log(input);
                   if (chats[input.from]) chats[input.from](input);
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
-                      console.log(res);
+                      if(res!==true){
+                        //5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm
+                        RUNTIME.addStranger({
+                          address:res,
+                          intro:"temp chat",
+                          status:1,
+                          type:"stranger",
+                          network:"Anchor",
+                        },(nlist)=>{
+                          setStranger(nlist);
+                        });
+                      }
                     })
                   })
                   setCount(count++);
@@ -138,12 +155,19 @@ function Contact(props) {
       });
     },
   };
-
-
+  
   useEffect(() => {
     if (!active) {
       self.linkChatting();
     }
+
+    RUNTIME.getStranger((ss)=>{
+      setStranger(ss);
+    });
+
+    //set friend list to chat 
+    CHAT.friends();
+
   }, []);
 
   return (
@@ -170,6 +194,7 @@ function Contact(props) {
       <Container>
         <ContactAdd funs={funs} fresh={self.fresh} />
         <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count} mailer={self.mailer} />
+        <StrangerList funs={funs} fresh={self.fresh} select={self.select} edit={editing} list={stranger} mailer={self.mailer} />
       </Container>
       <div className="opts">
         <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev) => {
