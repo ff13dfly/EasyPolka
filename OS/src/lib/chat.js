@@ -43,8 +43,18 @@ const CHAT = {
             INDEXED.searchRows(db,mine,'address',from,ck);
         });
     },
-    unread: (mine,from,ck) => {
 
+    unread: (mine,from,ck) => {
+        
+    },
+
+    toread:(mine,rows,ck)=>{
+        //console.log(mine,from,rows)
+        INDEXED.checkDB(DBname, (db) => {
+            //console.log(db);
+            INDEXED.updateRow(db,mine,rows);
+        });
+        
     },
     
     checkTable: (from, list) => {

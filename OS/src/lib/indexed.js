@@ -62,7 +62,7 @@ const INDEXED = {
 			console.log("Failed to insert");
 		};
 	},
-	searchRows: (db, table, key, val,ck) => {
+	searchRows: (db, table, key, val, ck) => {
 		let list = [];
 		var store = db.transaction(table, "readwrite").objectStore(table);
 		var request = store.index(key).openCursor(IDBKeyRange.only(val));
@@ -73,11 +73,27 @@ const INDEXED = {
 				// 必须要检查
 				list.push(cursor.value);
 				cursor.continue(); // 遍历了存储对象中的所有内容
-			}else{
+			} else {
 				return ck && ck(list);
 			}
 		};
 		request.onerror = function (e) { };
+	},
+	updateRow: (db, table, list) => {
+		console.log(table);
+		var store = db.transaction(table, "readwrite").objectStore(table);
+		for(let i=0;i<list.length;i++){
+			const data=list[i];
+			console.log(data);
+			const request = store.put(data);
+			request.onsuccess = function () {
+				console.log("数据更新成功");
+			};
+	
+			request.onerror = function () {
+				console.log("数据更新失败");
+			};
+		}
 	},
 
 	getDataByKey: (db, storeName, key) => {
@@ -103,7 +119,7 @@ const INDEXED = {
 		//const name =`w3os_chat_${address}`;
 		INDEXED.checkDB(name, (db) => {
 			INDEXED.insertRow(db, "address_a", [{ address: "acc", msg: "hello", status: 3, stamp: 0 }, { address: "acc_a", msg: "hello a", status: 3, stamp: 0 }, { address: "acc_b", msg: "hello b", status: 3, stamp: 0 }])
-			INDEXED.searchRows(db, "address_a", "status", 3,(list)=>{
+			INDEXED.searchRows(db, "address_a", "status", 3, (list) => {
 				console.log(list);
 			});
 			// INDEXED.initDB(name,[

@@ -72,6 +72,18 @@ function Chat(props) {
       backup=cs;
       SCROLLER.allowScroll();
     },
+
+    getUnread:(list)=>{
+      const nlist=[];
+      for(let i=0;i<list.length;i++){
+        const row=list[i];
+        if(row.status===3){
+          row.status=1;
+          nlist.push(row);
+        }
+      }
+      return nlist;
+    },
   };
 
   RUNTIME.getAccount((res) => {
@@ -88,6 +100,12 @@ function Chat(props) {
 
         CHAT.page(my_address,props.address,20,1,(his)=>{
           self.showHistory(his);
+          const nlist=self.getUnread(his);
+          if(nlist.length!==0){
+            CHAT.toread(my_address,nlist,(res)=>{
+              console.log(res);
+            });
+          }
         });
       });
     });
