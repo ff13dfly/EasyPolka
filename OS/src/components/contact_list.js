@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Chat from './chat';
 
 import RUNTIME from '../lib/runtime';
+import CHAT from '../lib/chat';
 import tools from '../lib/tools';
 
 function ContactList(props) {
@@ -25,18 +26,38 @@ function ContactList(props) {
       props.fresh();
       props.select(select);
     },
+    getCount:(mine,list,ck,map)=>{
+      if(!map) map={};
+      if(list.length===0) return ck && ck(map);
+      const acc=list.pop();
+      CHAT.unread(mine,acc,(n)=>{
+        map[acc]=!n?0:n;
+        return self.getCount(mine,list,ck,map);
+      });
+    },
   }
 
   useEffect(() => {
-    RUNTIME.getContact((res) => {
-      console.log(res);
-      const list=[];
-      for(var k in res){
-        const atom=res[k];
-        atom.address=k;
-        list.push(atom);
-      }
-      setContact(list);
+    RUNTIME.getAccount((fa) => {
+      //console.log(mine);
+      const mine=fa.address;
+    
+      RUNTIME.getContact((res) => {
+        const nlist=[];
+        for(var k in res) nlist.push(k);
+
+        self.getCount(mine,nlist,(un)=>{
+          console.log(un);
+          const list=[];
+          for(var k in res){
+            const atom=res[k];
+            atom.address=k;
+            atom.unread=!un[k]?0:un[k];
+            list.push(atom);
+          }
+          setContact(list);
+        });
+      });
     });
   }, [count])
 
@@ -55,7 +76,7 @@ function ContactList(props) {
                 width="100%"
                 style={{minHeight:"80px"}}
               />
-              <span className='count'>3</span>
+              <span className='count' hidden={!row.unread || row.unread===0}>{!row.unread?0:row.unread}</span>
               <small>{row.address.length > 10 ? tools.shorten(row.address, 4) : row.address}</small><br />
               <small><input hidden={!props.edit} type="checkbox"
                 checked={!select[row.address] ? false : select[row.address]}

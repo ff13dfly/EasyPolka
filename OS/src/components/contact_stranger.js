@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 
 import Chat from './chat';
 
-//import RUNTIME from '../lib/runtime';
+import RUNTIME from '../lib/runtime';
+import CHAT from '../lib/chat';
 import tools from '../lib/tools';
 
 function StrangerList(props) {
@@ -30,13 +31,47 @@ function StrangerList(props) {
       props.fresh();
       props.select(select);
     },
+    getCount:(mine,list,ck,map)=>{
+      if(!map) map={};
+      if(list.length===0) return ck && ck(map);
+      const acc=list.pop();
+      CHAT.unread(mine,acc,(n)=>{
+        map[acc]=!n?0:n;
+        return self.getCount(mine,list,ck,map);
+      });
+    },
   }
 
   useEffect(() => {
-    setContact(props.list);
+    //setContact(props.list);
     if(props.list.length!==0) setHide(false);
-    
-  }, [props.list])
+
+    RUNTIME.getAccount((fa) => {
+      const mine=fa.address;
+      const nlist=[];
+      for(let i=0;i<props.list.length;i++){
+        nlist.push(props.list[i].address);
+      } 
+
+  
+        // for(let i=0;i<props.list.length;i++){
+        //   const atom=props.list[i];
+        //   list.push(atom);
+        //   nlist.push(atom.address);
+        // }
+        // console.log(nlist);
+        
+        self.getCount(mine,nlist,(un)=>{
+          const list=[];
+          for(let i=0;i<props.list.length;i++){
+            const atom=props.list[i];
+            atom.unread=!un[atom.address]?0:un[atom.address];
+            list.push(atom);
+          }
+          setContact(list);
+        });
+    });
+  }, [props.list]);
 
   return (
     <Row index={count}>
@@ -61,7 +96,7 @@ function StrangerList(props) {
                 width="100%"
                 style={{minHeight:"80px"}}
               />
-              <span className='count'>3</span>
+              <span className='count' hidden={!row.unread || row.unread===0}>{!row.unread?0:row.unread}</span>
               <small>{row.address.length > 10 ? tools.shorten(row.address, 4) : row.address}</small><br />
               <small><input hidden={!props.edit} type="checkbox"
                 checked={!select[row.address] ? false : select[row.address]}

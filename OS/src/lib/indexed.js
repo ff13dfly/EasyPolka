@@ -79,6 +79,23 @@ const INDEXED = {
 		};
 		request.onerror = function (e) { };
 	},
+	countRows: (db, table, key, val, status, ck) => {
+		//console.log(table ,key,val);
+		let count=0;
+		var store = db.transaction(table, "readwrite").objectStore(table);
+		var request = store.index(key).openCursor(IDBKeyRange.only(val));
+
+		request.onsuccess = function (e) {
+			var cursor = e.target.result;
+			if (cursor) {
+				if(cursor.value.status===status) count++;
+				cursor.continue(); // 遍历了存储对象中的所有内容
+			} else {
+				return ck && ck(count);
+			}
+		};
+		request.onerror = function (e) { };
+	},
 	updateRow: (db, table, list) => {
 		console.log(table);
 		var store = db.transaction(table, "readwrite").objectStore(table);

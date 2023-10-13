@@ -180,7 +180,6 @@ function Contact(props) {
 
     //set friend list to chat 
     CHAT.friends();
-
   }, []);
 
   return (

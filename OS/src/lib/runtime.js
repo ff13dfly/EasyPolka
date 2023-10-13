@@ -78,6 +78,7 @@ const RUNTIME = {
     isLogin:()=>{
         return STORAGE.getEncry();
     },
+    
     getAccount: (ck) => {
         const fa = STORAGE.getKey("account");
         return ck && ck(fa);
@@ -90,17 +91,6 @@ const RUNTIME = {
         return true;
     },
 
-    getError: (name) => {
-
-    },
-
-
-    system_init: () => {
-
-    },
-    trustSetting: () => {
-
-    },
     getSetting: (ck) => {
         return ck && ck(config.system);
     },
@@ -167,8 +157,6 @@ const RUNTIME = {
     cacheStranger:(ck)=>{
         if(stranger===null){
             const list = STORAGE.getKey("stranger");
-            //console.log(list);
-            //if(list===null) return ck && ck([]);
             stranger=list===null?[]:list;
         }
         return ck && ck(stranger);

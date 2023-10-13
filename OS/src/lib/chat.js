@@ -45,16 +45,16 @@ const CHAT = {
     },
 
     unread: (mine,from,ck) => {
-        
+        const status=3;
+        INDEXED.checkDB(DBname, (db) => {
+            INDEXED.countRows(db,mine,"address",from,status,ck);
+        });
     },
 
     toread:(mine,rows,ck)=>{
-        //console.log(mine,from,rows)
         INDEXED.checkDB(DBname, (db) => {
-            //console.log(db);
-            INDEXED.updateRow(db,mine,rows);
+            INDEXED.updateRow(db,mine,rows,ck);
         });
-        
     },
     
     checkTable: (from, list) => {
