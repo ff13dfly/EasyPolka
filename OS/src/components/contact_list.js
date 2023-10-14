@@ -2,6 +2,7 @@ import { Row, Col, Image } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 import Chat from './chat';
+import ContactTitle from './contact_title';
 
 import RUNTIME from '../lib/runtime';
 import CHAT from '../lib/chat';
@@ -19,7 +20,7 @@ function ContactList(props) {
 
   const self = {
     click: (address, ev) => {
-      funs.dialog.show(<Chat address={address} mailer={props.mailer}/>,tools.shorten(address,6));
+      funs.dialog.show(<Chat address={address} mailer={props.mailer}/>,<ContactTitle address={address} />);
     },
     select: (address) => {
       select[address] = !select[address];

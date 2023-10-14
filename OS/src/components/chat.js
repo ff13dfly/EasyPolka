@@ -15,6 +15,7 @@ let backup=[];
 function Chat(props) {
   const size = {
     content: [9, 3],
+    row:[12],
   };
   const dv = { xs: 4, sm: 4, md: 4, lg: 4, xl: 6, xxl: 6 };
   const mailer=props.mailer;
@@ -25,7 +26,7 @@ function Chat(props) {
   
   const self = {
     chat: (ev) => {
-      //console.log(content);
+      if(!content) return false;
       self.append(content);
       self.send(content,props.address);
     },
@@ -124,8 +125,8 @@ function Chat(props) {
 
   return (
     <Row className='pb-2'>
-      <Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12}>
-        <div className='chat_container' style={{WebkitOverflowScrolling: "touch"}}>
+      <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+        <div className='chat_container'>
           {list.map((row, key) => (
             row.type === "from" ?
               <From address={row.address} key={key} content={row.content} /> :
@@ -133,14 +134,17 @@ function Chat(props) {
           ))}
         </div>
       </Col>
+      <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+        <hr/>
+      </Col>
       <Col xs={size.content[0]} sm={size.content[0]} md={size.content[0]} lg={size.content[0]} xl={size.content[0]} xxl={size.content[0]}
-        className="pt-4">
+        className="">
         <input type="text" className="form-control" value={content} onChange={(ev) => {
           self.onChange(ev);
         }} />
       </Col>
       <Col xs={size.content[1]} sm={size.content[1]} md={size.content[1]} lg={size.content[1]} xl={size.content[1]} xxl={size.content[1]}
-        className="pt-4 text-end">
+        className="text-end">
         <button className='btn btn-md btn-primary' onClick={(ev) => {
           self.chat(ev);
         }}>Send</button>

@@ -3,12 +3,14 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
 import RUNTIME from '../lib/runtime';
+import Copy from '../lib/clipboard';
 
 function User(props) {
   let [amount, setAmount] = useState(0);
   let [avatar, setAvatar] = useState('user.png');
   let [info, setInfo] = useState('');
-  let [disable, setDisable] = useState('');
+  let [disable, setDisable] = useState(false);
+  let [clip, setClip] = useState("Copy");
   let [address, setAddress] = useState('');
 
   //const address="5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw";
@@ -39,8 +41,13 @@ function User(props) {
     },
     copyAddress:(ev)=>{
       RUNTIME.getAccount((sign)=>{
-        console.log(window.clipboardData);
-        //window.clipboardData.setData("Text",sign.address);
+        Copy(sign.address);
+        setDisable(true);
+        setClip("Done");
+        setTimeout(()=>{
+          setDisable(false);
+          setClip("Copy");
+        },1000);
       });
     },
   };
@@ -93,9 +100,9 @@ function User(props) {
 
         <Col lg={9} xs={9} className="pt-2 text-start" ><p className="text-justify" style={cls}>{address}</p></Col>
         <Col lg={3} xs={3} className="text-end" >
-          <Button className='mt-4' size="sm" variant="primary" onClick={(ev)=>{
+          <Button disabled={disable} className='mt-4' size="sm" variant="primary" onClick={(ev)=>{
             self.copyAddress(ev);
-          }}> Copy </Button>
+          }}> {clip} </Button>
         </Col>
         
         {/* <Col lg={4} xs={4} className="pt-3 text-end" >

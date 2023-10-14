@@ -1,22 +1,23 @@
 import { Row,Col,Image } from 'react-bootstrap';
 
 function To(props) {
-  const size = [2,10];
-  const cmap={
-    background:"#EEEEEE",
-  }
-
+  const address=props.address;
+  const size ={
+    content:[10,2]
+  };
   return (
-    <Row className='pt-1'>
-      <Col xs={10} sm={10} md={10} lg={10} xl={10} xxl={10} >
-        <p className="to">{props.content}</p>
+    <Row className='pb-2'>
+      <Col className='text-end' xs={size.content[0]} sm={size.content[0]} md={size.content[0]} 
+      lg={size.content[0]} xl={size.content[0]} xxl={size.content[0]} >
+        <span className="to">{props.content}</span>
       </Col>
-      <Col xs={2} sm={2} md={2} lg={2} xl={2} xxl={2} >
+      <Col xs={size.content[1]} sm={size.content[1]} md={size.content[1]} 
+      lg={size.content[1]} xl={size.content[0]} xxl={size.content[1]} >
         <Image 
-            src={`https://robohash.org/${props.address}.png`}
+            className='to_icon'
+            src={`https://robohash.org/${address}.png`}
             rounded
             width="100%"
-            style={cmap}
           />
       </Col>
     </Row>

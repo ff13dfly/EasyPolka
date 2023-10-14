@@ -1,22 +1,23 @@
 import { Row,Col,Image } from 'react-bootstrap';
 
 function From(props) {
-  const size = [2,10];
-  const cmap={
-    background:"#EEEEEE",
-  }
-
+  const address=props.address;
+  const size ={
+    content:[2,10]
+  };
   return (
-    <Row className='pt-1'>
-      <Col xs={2} sm={2} md={2} lg={2} xl={2} xxl={2} >
+    <Row className='pb-2'>
+      <Col xs={size.content[0]} sm={size.content[0]} md={size.content[0]} 
+      lg={size.content[0]} xl={size.content[0]} xxl={size.content[0]} >
           <Image 
-            src={`https://robohash.org/${props.address}.png`}
+            className='from_icon'
+            src={`https://robohash.org/${address}.png`}
             rounded
             width="100%"
-            style={cmap}
           />
       </Col>
-      <Col xs={10} sm={10} md={10} lg={10} xl={10} xxl={10} >
+      <Col xs={size.content[1]} sm={size.content[1]} md={size.content[1]} 
+      lg={size.content[1]} xl={size.content[0]} xxl={size.content[1]} >
         <p className="from">{props.content}</p>
       </Col>
     </Row>
