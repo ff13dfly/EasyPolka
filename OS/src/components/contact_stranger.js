@@ -9,8 +9,6 @@ import CHAT from '../lib/chat';
 import tools from '../lib/tools';
 
 function StrangerList(props) {
-
-  //const size = [12];
   const size = {
     row: 12,
     divide: [4, 4, 4],
@@ -25,7 +23,7 @@ function StrangerList(props) {
 
   const self = {
     click: (address, ev) => {
-      funs.dialog.show(<Chat address={address} mailer={props.mailer} />, <ContactTitle address={address} />);
+      funs.dialog.show(<Chat address={address} mailer={props.mailer} fresh={props.fresh}/>, <ContactTitle address={address} />);
     },
     select: (address) => {
       select[address] = !select[address];
@@ -48,18 +46,18 @@ function StrangerList(props) {
       const mine=fa.address;
       RUNTIME.getContact((ss) => {
         if(!tools.empty(ss)) setHide(false);
-
         const nlist=[];
         for(var k in ss) nlist.push(k);
 
         self.getCount(mine,nlist,(un)=>{
-          const list=[];
+          const ulist=[],zlist=[];
           for(var k in ss){
             const atom=ss[k];
             atom.address=k;
             atom.unread=!un[k]?0:un[k];
-            list.push(atom);
+            !un[k]?zlist.push(atom):ulist.push(atom);
           }
+          const list=ulist.concat(zlist);
           setContact(list);
         });
       },true);

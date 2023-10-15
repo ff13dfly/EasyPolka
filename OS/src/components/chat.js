@@ -58,6 +58,7 @@ function Chat(props) {
       };
       chatWS.send(JSON.stringify(msg));
       CHAT.save(my_address,props.address,ctx,"to");           //save the answer
+      self.toBottom();
     },
     showHistory:(list)=>{
       const cs=[];
@@ -72,6 +73,7 @@ function Chat(props) {
       setList(cs);
       backup=cs;
       SCROLLER.allowScroll();
+      self.toBottom();
     },
 
     getUnread:(list)=>{
@@ -84,6 +86,12 @@ function Chat(props) {
         }
       }
       return nlist;
+    },
+    toBottom:()=>{
+      setTimeout(()=>{
+        const element=document.getElementById(`con_${props.address}`);
+        element.scrollTop = element.scrollHeight;
+      },100);
     },
   };
 
@@ -104,7 +112,7 @@ function Chat(props) {
           const nlist=self.getUnread(his);
           if(nlist.length!==0){
             CHAT.toread(my_address,nlist,(res)=>{
-              console.log(res);
+              if(props.fresh) props.fresh();
             });
           }
         });
@@ -119,14 +127,16 @@ function Chat(props) {
       nlist.push({ type: "from", address: props.address, content: res.msg })
       setList(nlist);
       backup=nlist;
+      self.toBottom();
     });
     
   }, []);
 
   return (
     <Row className='pb-2'>
-      <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
-        <div className='chat_container'>
+      <Col className='chat_container' id={`con_${props.address}`} xs={size.row[0]} sm={size.row[0]} md={size.row[0]} 
+      lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+        <div id={`scroll_${props.address}`}>
           {list.map((row, key) => (
             row.type === "from" ?
               <From address={row.address} key={key} content={row.content} /> :

@@ -96,7 +96,7 @@ const INDEXED = {
 		};
 		request.onerror = function (e) { };
 	},
-	updateRow: (db, table, list) => {
+	updateRow: (db, table, list,ck) => {
 		console.log(table);
 		var store = db.transaction(table, "readwrite").objectStore(table);
 		for(let i=0;i<list.length;i++){
@@ -104,11 +104,12 @@ const INDEXED = {
 			console.log(data);
 			const request = store.put(data);
 			request.onsuccess = function () {
-				console.log("数据更新成功");
+				//console.log("数据更新成功");
+				ck && ck(true);
 			};
 	
 			request.onerror = function () {
-				console.log("数据更新失败");
+				//console.log("数据更新失败");
 			};
 		}
 	},

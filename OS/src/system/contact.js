@@ -126,6 +126,7 @@ function Contact(props) {
 
                   break;
                 case "notice":
+                  console.log(`Notice:${JSON.stringify(input)}`);
                   break;
                 default:
                   break;

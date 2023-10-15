@@ -20,7 +20,7 @@ function ContactList(props) {
 
   const self = {
     click: (address, ev) => {
-      funs.dialog.show(<Chat address={address} mailer={props.mailer}/>,<ContactTitle address={address} />);
+      funs.dialog.show(<Chat address={address} mailer={props.mailer} fresh={props.fresh}/>,<ContactTitle address={address} />);
     },
     select: (address) => {
       select[address] = !select[address];
@@ -41,23 +41,25 @@ function ContactList(props) {
   useEffect(() => {
     RUNTIME.getAccount((fa) => {
       const mine=fa.address;
-      RUNTIME.getContact((res) => {
+      RUNTIME.getContact((cs) => {
         const nlist=[];
-        for(var k in res) nlist.push(k);
+        for(var k in cs) nlist.push(k);
 
         self.getCount(mine,nlist,(un)=>{
-          const list=[];
-          for(var k in res){
-            const atom=res[k];
+          //console.log(un);
+          const ulist=[],zlist=[];
+          for(var k in cs){
+            const atom=cs[k];
             atom.address=k;
             atom.unread=!un[k]?0:un[k];
-            list.push(atom);
+            !un[k]?zlist.push(atom):ulist.push(atom);
           }
+          const list=ulist.concat(zlist);
           setContact(list);
         });
       });
     });
-  }, [count])
+  }, [count]);
 
   return (
     <Row index={count}>
