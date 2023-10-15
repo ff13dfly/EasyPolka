@@ -90,10 +90,9 @@ function Contact(props) {
                 case "history":
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
+                      self.fresh();
                       if(res!==true){
                         RUNTIME.addContact(res,()=>{
-                          stranger++;
-                          setStranger(stranger);
                         },true);
                       }
                     })
@@ -104,15 +103,14 @@ function Contact(props) {
                   if (chats[input.from]) chats[input.from](input);
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
+                      self.fresh();
                       if(res!==true){
                         RUNTIME.addContact(res,()=>{
-                          stranger++;
-                          setStranger(stranger);
                         },true);
                       }
                     })
                   })
-                  setCount(count++);
+                  //setCount(count++);
                   break;
                 case "reg":
 
@@ -143,8 +141,12 @@ function Contact(props) {
 
           }
         }
+
         RUNTIME.getAccount((acc) => {
-          if (acc === null || !acc.address) return false;
+          if (acc === null || !acc.address){
+            setHidelink(true);
+            return false;
+          } 
           RUNTIME.websocket(uri, (ws) => {
             websocket = ws;
 

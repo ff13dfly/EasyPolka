@@ -79,19 +79,33 @@ const INDEXED = {
 		};
 		request.onerror = function (e) { };
 	},
-	countRows: (db, table, key, val, status, ck) => {
-		if(db.objectStoreNames.length===0)return false;
+	checkTable:(tables,name)=>{
+		let valid=false;
+		if(tables.length===0) return valid;
+		for(let i=0;i<tables.length;i++){
+			const row=tables[i];
+			if(row===name)	valid=true;
+		}
+		return valid;
+	},
+	countRows: (db, table, key, val, status, ck) => {	
+		if(!INDEXED.checkTable(db.objectStoreNames,table)) return ck && ck({count:0,latest:0});
 		let count=0;
+		let latest=0;
 		var store = db.transaction(table, "readwrite").objectStore(table);
 		var request = store.index(key).openCursor(IDBKeyRange.only(val));
 
 		request.onsuccess = function (e) {
 			var cursor = e.target.result;
 			if (cursor) {
-				if(cursor.value.status===status) count++;
+				if(cursor.value.status===status){
+					count++;
+					if(cursor.value.stamp>latest) latest=cursor.value.stamp;
+				} 
+				
 				cursor.continue(); // 遍历了存储对象中的所有内容
 			} else {
-				return ck && ck(count);
+				return ck && ck({count:count,latest:latest});
 			}
 		};
 		request.onerror = function (e) { };

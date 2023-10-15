@@ -27,34 +27,52 @@ function ContactList(props) {
       props.fresh();
       props.select(select,"contact");
     },
-    getCount:(mine,list,ck,map)=>{
-      if(!map) map={};
-      if(list.length===0) return ck && ck(map);
-      const acc=list.pop();
-      CHAT.unread(mine,acc,(n)=>{
-        map[acc]=!n?0:n;
-        return self.getCount(mine,list,ck,map);
+    getCount: (mine, list, ck, map,order) => {
+      if (!map) map = {};
+      if( !order) order=[];
+      if (list.length === 0) return ck && ck(map,order);
+      const acc = list.pop();
+      CHAT.unread(mine, acc, (res) => {
+        const n=res.count;
+        map[acc] = !n ? 0 : n;
+        if(res.latest!==0)order[res.latest]=acc;
+        return self.getCount(mine, list, ck, map,order);
       });
     },
   }
 
   useEffect(() => {
     RUNTIME.getAccount((fa) => {
+      if(fa===null) return false;
       const mine=fa.address;
       RUNTIME.getContact((cs) => {
         const nlist=[];
         for(var k in cs) nlist.push(k);
 
-        self.getCount(mine,nlist,(un)=>{
-          //console.log(un);
+        self.getCount(mine,nlist,(un,order)=>{
+          //console.log(order);
           const ulist=[],zlist=[];
+          const olist=[];
           for(var k in cs){
             const atom=cs[k];
             atom.address=k;
             atom.unread=!un[k]?0:un[k];
             !un[k]?zlist.push(atom):ulist.push(atom);
           }
-          const list=ulist.concat(zlist);
+
+          if(ulist.length!==0){
+            for(var stamp in order){
+              const address=order[stamp];
+              for(let i=0;i<ulist.length;i++){
+                const row=ulist[i];
+                if(row.address===address){
+                  olist.unshift(row);
+                  break;
+                } 
+              }
+            }
+          };
+          const list=olist.concat(zlist);
           setContact(list);
         });
       });

@@ -6,6 +6,7 @@ import { mnemonicGenerate } from '@polkadot/util-crypto';
 
 import RUNTIME from '../lib/runtime';
 import Password from './password';
+//import WORDS from '../lib/words';
 
 function Login(props){
     const funs=props.funs;
@@ -20,7 +21,8 @@ function Login(props){
       },
       addAccount:(ev)=>{
         RUNTIME.getAPIs((API) => {
-          const mnemonic = mnemonicGenerate(12, undefined, true);
+          const mnemonic = mnemonicGenerate(12, true);
+          //console.log(mnemonic);
           const keyring = new API.Polkadot.Keyring({ type: 'sr25519' });
           const pair = keyring.addFromUri(mnemonic);
           funs.dialog.show(
