@@ -106,15 +106,14 @@ function Contact(props) {
                   if (chats[input.from]) chats[input.from](input);
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
-                      console.log("chat added");
+                      //console.log("chat added");
                       self.fresh();
                       if(res!==true){
                         RUNTIME.addContact(res,()=>{
                         },true);
                       }
                     })
-                  })
-                  //setCount(count++);
+                  });
                   break;
                 case "reg":
 
@@ -125,15 +124,14 @@ function Contact(props) {
                     setHidelink(true);
                     self.fresh();
                   }
-
                   break;
                 case "notice":
-                  console.log(`Notice:${JSON.stringify(input)}`);
+                  //console.log(`Notice:${JSON.stringify(input)}`);
+                  if (chats[input.from]) chats[input.from](input);
                   break;
                 default:
                   break;
               }
-
             } catch (error) {
 
             }
@@ -188,6 +186,8 @@ function Contact(props) {
       friend=true;
     });
   }
+  
+  // http://localhost/Easypolka/OS/service/chat/
   
   useEffect(() => {
     if (!active) {

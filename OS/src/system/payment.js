@@ -1,9 +1,12 @@
-import { Navbar, Container, Row, Col } from 'react-bootstrap';
+import { Navbar, Container, Row, Col,Badge } from 'react-bootstrap';
 import { useEffect,useState } from 'react';
 
 import Paybill from '../components/paybill';
 import Bill from '../components/bill';
+import Balance from '../components/balance';
 import RUNTIME from '../lib/runtime';
+
+let fresh=0;
 
 function Payment(props) {
   //const size = [3, 6, 3, 12];
@@ -13,10 +16,14 @@ function Payment(props) {
     account:[9,3],
   };
   const funs=props.funs;
+
+  let [count, setCount]=useState(0);
   
   let [from, setFrom] = useState("");
   let [account, setAccount] = useState("");
   let [amount, setAmount] = useState(0);
+
+  let [info,setInfo] =useState("");
 
   let [disable, setDisable] = useState({account:true,amount:true,pay:true});
   let [active,setActive] = useState({account:{background:"#FFFFFF"},amount:{background:"#FFFFFF"}});
@@ -55,13 +62,18 @@ function Payment(props) {
       if(!amount) map.amount.background=active_color;   
       setActive(map);
       if(!self.checkAccount(account) || !amount) return false;
-
+      
       funs.dialog.show(
         (<Paybill callback={(res) => {
-          
+          console.log(fresh);
+          self.fresh();
         }} desc={desc} from={from} target={account} amount={amount} funs={funs} />),
         "Payment confirm"
       );
+    },
+    fresh:()=>{
+      fresh++;
+      setCount(fresh);
     },
   }
 
@@ -70,11 +82,20 @@ function Payment(props) {
       if(sign===null){
         
       }else{
-        setFrom(sign.address);
-        setDisable({account:false,amount:false,pay:false});
+        if(props.target && props.target===sign.address){
+          console.log("here");
+          setInfo("Can not pay to yourself.");
+          setDisable({account:false,amount:false,pay:false});
+        }else{
+          setFrom(sign.address);
+          setDisable({account:false,amount:false,pay:false});
+        }
       }
-    });    
-  }, []);
+    });
+    if(props.target!==""){
+      setAccount(props.target);
+    }
+  },[count]);
 
   const amap = {
     "width": "66px",
@@ -85,7 +106,7 @@ function Payment(props) {
   };
 
   return (
-    <div id="page">
+    <div id="page" index={count}>
       <Navbar className="bg-body-tertiary">
         <Container>
           <Row style={{"width":"100%","margin":"0 auto"}}>
@@ -110,26 +131,21 @@ function Payment(props) {
       </Navbar>
       <Container>
         <Row className='pt-2'>
-          {/* <Col className='pb-4' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
-            lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
-            <small>From your account</small>
-            <textarea className="form-control" disabled={true} cols="10" rows="3" defaultValue={from}></textarea>     
+          <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+            <Badge bg='warning'>{info}</Badge>
           </Col>
-
-          <Col className='pb-4' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
-            lg={size.account[1]} xl={size.account[1]} xxl={size.account[1]}>
-              <img style={amap} src={`https://robohash.org/${from}.png`} alt="user logo"/>
-          </Col> */}
-
+          <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+            <Balance />
+          </Col>
           <Col className='pb-2' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
             lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
-            <small>Account to pay</small>
+            <small>Account to pay </small>
             <textarea className="form-control" disabled={disable.account} style={active.account} cols="10" rows="3" defaultValue={props.target} onChange={(ev)=>{
               self.changeAccount(ev);
             }}></textarea>
           </Col>
 
-          <Col className='pb-2' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
+          <Col className='pb-2 text-center' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
             lg={size.account[1]} xl={size.account[1]} xxl={size.account[1]}>
               <img style={amap} src={account.length===48?`https://robohash.org/${account}.png`:"icons/empty.png"} alt="user logo"/>
           </Col>
@@ -142,7 +158,7 @@ function Payment(props) {
               self.changeAmount(ev);
             }}/>
           </Col>
-          <Col className='pt-4 text-end' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
+          <Col className='pt-4 text-center' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
             lg={size.account[1]} xl={size.account[1]} xxl={size.account[1]}>
             <button className='btn btn-md btn-primary' disabled={disable.pay} onClick={(ev)=>{
               self.click(ev);

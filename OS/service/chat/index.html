@@ -16,10 +16,10 @@
     <script src="../../../gateway/test/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="../../../gateway/test/js/bootstrap.min.css">
     <script>
-        const url="ws://localhost:7788";
+        //const url="ws://localhost:7788";
         //const url="ws://45.63.91.147:7788"
         //const url="ws://android.im:7788"
-        //const url="wss://chat.metanchor.net"
+        const url="wss://chat.metanchor.net"
         const wmap={},spams={},count={};
         const accounts=[
             "5FQmGPk7qGBmU3K6kDfMSBiUHBYq5NqXpx93KFEvDvyz5sRJ",
@@ -146,6 +146,7 @@
                     spam:spams[index],
                 }
                 self.send(data,index);
+                $("#screen_"+index).prepend(`<p class="notice">Leaving from chat server.</p>`);
             })
 
             $(".btn_reg").on("click",(ev)=>{
@@ -216,6 +217,7 @@
         });
     </script>
     <body style="width: 90%;margin: 0 auto;">
+        <p>5D5K7bHqrjqEMd9sgNeb28w9TsR8hFTTHYs6KTGSAZBhcePg</p>
         <div>5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm | 5D5K7bHqrjqEMd9sgNeb28w9TsR8hFTTHYs6KTGSAZBhcePg</div>
         <div id="container" style="width: 100%;margin: 0 auto;"></div>
     </body>

@@ -10,5 +10,9 @@
     "backup":{
         "level":2,
         "interval":3000
+    },
+    "reg":{
+        "max":20000,
+        "level":"all"
     }
 }

@@ -23,7 +23,7 @@ function StrangerList(props) {
 
   const self = {
     click: (address, ev) => {
-      funs.dialog.show(<Chat address={address} mailer={props.mailer} fresh={props.fresh}/>, <ContactTitle address={address} />);
+      funs.dialog.show(<Chat address={address} mailer={props.mailer} fresh={props.fresh}/>, <ContactTitle address={address} funs={funs} />);
     },
     select: (address) => {
       select[address] = !select[address];
@@ -33,7 +33,10 @@ function StrangerList(props) {
     getCount: (mine, list, ck, map,order) => {
       if (!map) map = {};
       if( !order) order=[];
-      if (list.length === 0) return ck && ck(map,order);
+      if (list.length === 0){
+        delete order["0"];
+        return ck && ck(map,order);
+      } 
       const acc = list.pop();
       CHAT.unread(mine, acc, (res) => {
         const n=res.count;

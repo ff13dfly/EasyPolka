@@ -1,4 +1,4 @@
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button,Badge } from 'react-bootstrap';
 
 import { useState, useEffect } from 'react';
 
@@ -21,9 +21,6 @@ function Paybill(props) {
   const avatar_from = `https://robohash.org/${props.from}.png`;
   const avatar_to = `https://robohash.org/${props.target}.png`;
 
-  // 5EUFM4U2LUypvctxvqnEV2vb3hBABspWUYEjErwRpTbsYEaJ
-
-  //let wsAPI=null;
   const self = {
     change: (ev) => {
       setPassword(ev.target.value);
@@ -60,6 +57,8 @@ function Paybill(props) {
                   case 'Finalized':
                     setInfo("Payment done.");
                     setDisable(false);
+                    if(props.callback) props.callback();
+
                     setTimeout(()=>{
                       funs.dialog.hide();
                     },1500);
@@ -90,20 +89,20 @@ function Paybill(props) {
           wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
             if (status.type === 'InBlock') {
               console.log(`Transaction included at blockHash ${txHash}`);
+              console.log(`Ready to create a bill row`);
+              funs.dialog.hide();
               ck && ck({status:status.type});
             } else if (status.type === 'Finalized') {
-              //console.log(`Transaction included at blockHash ${status.asFinalized}`);
-              //console.log(`Transaction hash ${txHash.toHex()}`);
-
               events.forEach(({ phase, event: { data, method, section } }) => {
                 console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
               });
+              console.log(`Update the bill row`);
               ck && ck({status:status.type,hash:txHash.toHex(),block:status.asFinalized.toHex()});
               unsub();
             }
           });
         } catch (error) {
-          console.log(error);
+          //console.log(error);
           return ck && ck(false);
         }
       }).then((fun) => {
@@ -120,8 +119,8 @@ function Paybill(props) {
   },[]);
 
   const amap = {
-    "width": "90px",
-    "height": "90px",
+    "width": "81px",
+    "height": "81px",
     "borderRadius": "30px",
     "background": "#FFAABB",
   };
@@ -129,32 +128,34 @@ function Paybill(props) {
   const cmap = {
     whiteSpace: "pre-wrap",
     wordBreak: "break-all",
+    fontSize:"14px",
   }
 
   return (
     <Container>
       <Row>
-        <Col className='pt-2 pb-2' xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
-          lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]} >
-          <h5>{props.desc}</h5>
-        </Col>
-        <Col className='pt-4' xs={size.head[0]} sm={size.head[0]} md={size.head[0]}
+        <Col xs={size.head[0]} sm={size.head[0]} md={size.head[0]}
           lg={size.head[0]} xl={size.head[0]} xxl={size.head[0]} >
           <img style={amap} src={avatar_from} alt="user logo" />
-          <small style={cmap}>{props.from}</small>
+          <p style={cmap} className='pt-2'>{props.from}</p>
         </Col>
-        <Col className='pt-4 text-center' xs={size.head[1]} sm={size.head[1]} md={size.head[1]}
+        <Col className='text-center' xs={size.head[1]} sm={size.head[1]} md={size.head[1]}
           lg={size.head[1]} xl={size.head[1]} xxl={size.head[1]} >
           <h5 className='pt-4'>{props.amount}</h5>
           <p>{"------>"}</p>
         </Col>
-        <Col className='pt-4' xs={size.head[2]} sm={size.head[2]} md={size.head[2]}
+        <Col xs={size.head[2]} sm={size.head[2]} md={size.head[2]}
           lg={size.head[2]} xl={size.head[2]} xxl={size.head[2]} >
           <img style={amap} src={avatar_to} alt="user logo" />
-          <small style={cmap}>{props.target}</small>
+          <p style={cmap} className='pt-2'>{props.target}</p>
         </Col>
 
-        <Col className='pt-4' xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
+        <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
+          lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]} >
+          <Badge bg="warning">Warning</Badge>  <h5>{props.desc}</h5>
+        </Col>
+
+        <Col className='pt-2' xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
           lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]} >
           <input type="password" className='form-control' placeholder={`Password of ${tools.shorten(props.from)}`} onChange={(ev) => {
             self.change(ev);

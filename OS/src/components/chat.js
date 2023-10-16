@@ -120,13 +120,24 @@ function Chat(props) {
     });
 
     mailer(props.address,(res)=>{
-      const nlist=[];
-      for(let i=0;i<backup.length;i++){
-        nlist.push(backup[i]);
+      switch (res.act) {
+        case "chat":
+          const nlist=[];
+          for(let i=0;i<backup.length;i++){
+            nlist.push(backup[i]);
+          }
+          nlist.push({ type: "from", address: props.address, content: res.msg })
+          setList(nlist);
+          backup=nlist;
+          break;
+        case "error":
+          //TODO,showing notification and errors
+          console.log(res);
+
+          break;
+        default:
+          break;
       }
-      nlist.push({ type: "from", address: props.address, content: res.msg })
-      setList(nlist);
-      backup=nlist;
       self.toBottom();
     });
     
