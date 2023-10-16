@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 import RUNTIME from '../lib/runtime';
 import tools from '../lib/tools';
+import BILL from '../lib/bill';
 
 function Paybill(props) {
   const size = {
@@ -88,16 +89,37 @@ function Paybill(props) {
           //注意，如果目标账户的coin小于100的时候，会转账失败
           wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
             if (status.type === 'InBlock') {
-              console.log(`Transaction included at blockHash ${txHash}`);
               console.log(`Ready to create a bill row`);
               funs.dialog.hide();
+              const row={
+                amount:amount,
+                status:status.type,
+                hash:txHash.toHex()
+              };
+              BILL.save(pair.address,ss58,row,(res)=>{
+                console.log("Saved, force list to fresh");
+              });
               ck && ck({status:status.type});
             } else if (status.type === 'Finalized') {
-              events.forEach(({ phase, event: { data, method, section } }) => {
-                console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+              const block_hash=status.asFinalized.toHex();
+              const transfer_hash=txHash.toHex();
+              const row={
+                amount:amount,
+                status:status.type,
+                block:block_hash,
+                hash:transfer_hash,
+                stamp:tools.stamp(),
+                more:{
+                  blocknumber:3345
+                },
+              };
+              BILL.update(pair.address,[row],(res)=>{
+
               });
-              console.log(`Update the bill row`);
-              ck && ck({status:status.type,hash:txHash.toHex(),block:status.asFinalized.toHex()});
+              // BILL.save(pair.address,ss58,row,(res)=>{
+              //   console.log("Updated, force list to fresh");
+              // });
+              ck && ck({status:status.type,hash:transfer_hash,block:block_hash});
               unsub();
             }
           });

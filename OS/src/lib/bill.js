@@ -1,25 +1,45 @@
 import INDEXED from './indexed';
 import tools from './tools';
 
-const DBname='w3os_history';
-
+const DBname = "w3os_history";
 const BILL = {
-    save: (mine, from, ctx,way, ck) => {
-        // INDEXED.checkDB(DBname, (res) => {
-        //     const row = { address:from,msg: ctx,status:(way==="to"?status.NORMAL:status.UNREAD),way:way,stamp: tools.stamp()};
-        //     const tbs = res.objectStoreNames;
-        //     if (!CHAT.checkTable(mine, tbs)) {
-        //         INDEXED.initDB(DBname,[
-        //             {table: mine, keyPath: "stamp", map: {address:{ unique: false },way:{ unique: false },stamp: { unique: false }, status: { unique: false } } }
-        //         ], res.version + 1).then((db) => {
-        //             INDEXED.insertRow(db, mine, [row]);
-        //             return ck && ck(map[from]?true:from);
-        //         });
-        //     }else{
-        //         INDEXED.insertRow(res, mine, [row]);
-        //         return ck && ck(map[from]?true:from);
-        //     }
-        // });
+    save: (mine, to, details, ck) => {
+        const table=`bill_${mine}`;
+        INDEXED.checkDB(DBname, (res) => {
+            const tbs = res.objectStoreNames;
+            const row = { 
+                address:to,
+                amount:details.amount,
+                block:details.block?details.block:"",
+                hash:details.hash?details.hash:"",
+                more:null,
+                stamp:tools.stamp(),
+                status:details.status?details.status:"unknown",
+            };
+            if (!BILL.checkTable(table, tbs)) {
+                INDEXED.initDB(DBname,[
+                    {table: table, keyPath: "hash", map: {
+                        address:{ unique: false },
+                        block:{unique: false},
+                        hash:{unique: false},
+                        more:{ unique: false },
+                        stamp: { unique: false }, 
+                        status: { unique: false } } }
+                ],res.version + 1).then((db) => {
+                    INDEXED.insertRow(db, table, [row]);
+                    return ck && ck();
+                });
+            }else{
+                INDEXED.insertRow(res, table, [row]);
+                return ck && ck();
+            }
+        });
+    },
+    update:(mine,rows,ck)=>{
+        INDEXED.checkDB(DBname, (db) => {
+            const table=`bill_${mine}`;
+            INDEXED.updateRow(db,table,rows,ck);
+        });
     },
     page:(mine,from,step,page,ck)=>{
         // INDEXED.checkDB(DBname, (db) => {

@@ -8,7 +8,7 @@ let API = null;
 let wsAPI = null;
 let wss = {};
 let spams = {};
-let stranger = null;
+//let stranger = null;
 
 // let login = {
 //     md5: "",        //AES decode md5 password, avoid explosing the real one

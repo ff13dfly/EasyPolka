@@ -114,7 +114,6 @@ const INDEXED = {
 		var store = db.transaction(table, "readwrite").objectStore(table);
 		for(let i=0;i<list.length;i++){
 			const data=list[i];
-			//console.log(data);
 			const request = store.put(data);
 			request.onsuccess = function () {
 				return ck && ck(true);
