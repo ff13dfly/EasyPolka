@@ -41,12 +41,14 @@ const BILL = {
             INDEXED.updateRow(db,table,rows,ck);
         });
     },
-    page:(mine,from,step,page,ck)=>{
-        // INDEXED.checkDB(DBname, (db) => {
-        //     const tbs = db.objectStoreNames;
-        //     if (!CHAT.checkTable(mine, tbs)) return ck && ck(false);
-        //     INDEXED.searchRows(db,mine,'address',from,ck);
-        // });
+    page:(mine,page,ck)=>{
+        INDEXED.checkDB(DBname, (db) => {
+            const tbs = db.objectStoreNames;
+            const table=`bill_${mine}`;
+            if (!BILL.checkTable(table, tbs)) return ck && ck(false);
+            const step=20;
+            INDEXED.pageRows(db,table,ck,{page:page,step:step});
+        });
     },
     checkTable: (from, list) => {
         for (let i = 0; i < list.length; i++) {

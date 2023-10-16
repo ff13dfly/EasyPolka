@@ -110,7 +110,7 @@ const INDEXED = {
 		request.onerror = function (e) { };
 	},
 	updateRow: (db, table, list,ck) => {
-		console.log(table);
+		//console.log(table);
 		var store = db.transaction(table, "readwrite").objectStore(table);
 		for(let i=0;i<list.length;i++){
 			const data=list[i];
@@ -123,6 +123,36 @@ const INDEXED = {
 				return ck && ck({error:"Failed to update rows"});
 			};
 		}
+	},
+	pageRows:(db,table,ck,nav,search)=>{
+		let list = [];
+		var store = db.transaction(table, "readwrite").objectStore(table);
+		if(!search){
+			var request = store.openCursor();
+		}else{
+			//TODO, here to add the filter
+		}
+
+		let advanced = true;
+		request.onsuccess = function (e) {
+			var cursor = e.target.result;
+			if(advanced && nav!==undefined && nav.page!==undefined && nav.step!==undefined){
+				const skip=(nav.page - 1) * nav.step;
+				if(skip>0) cursor.advance((nav.page - 1) * nav.step);
+				advanced = false;
+			}
+
+			if(cursor){
+				list.push(cursor.value);
+				cursor.continue(); // 遍历了存储对象中的所有内容
+			}else {
+				//console.log(list);
+				return ck && ck(list);
+			}
+		};
+		request.onerror = function (e){
+
+		};
 	},
 
 	// getDataByKey: (db, storeName, key) => {

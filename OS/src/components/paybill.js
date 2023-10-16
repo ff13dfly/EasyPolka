@@ -94,6 +94,7 @@ function Paybill(props) {
               const row={
                 amount:amount,
                 status:status.type,
+                to:ss58,
                 hash:txHash.toHex()
               };
               BILL.save(pair.address,ss58,row,(res)=>{
@@ -106,6 +107,7 @@ function Paybill(props) {
               const row={
                 amount:amount,
                 status:status.type,
+                to:ss58,
                 block:block_hash,
                 hash:transfer_hash,
                 stamp:tools.stamp(),

@@ -1,7 +1,10 @@
 
 import { Row, Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
+
 import tools from '../lib/tools';
+import RUNTIME from '../lib/runtime';
+import BILL from '../lib/bill';
 
 function Bill(props) {
   const size = {
@@ -13,17 +16,37 @@ function Bill(props) {
   let [hide, setHide] = useState(false);
   let [history, setHistory] = useState([]);
 
-  useEffect(() => {
-    const list = [
-      {
-        to: "5CSTSUDaBdmET2n6ju9mmpEKwFVqaFtmB8YdB23GMYCJSgmw",
-        amount: 123456.223435,
-        block: 234456,
-        hash: "0x809cb2b23924d4428e0c4b42ded08dd4e6bb7504bf7ede317372d98fc941d200",
-        stamp: 1696990110577
+  const self={
+    sort:(list)=>{
+      const ss=[];
+      const map={};
+      for(let i=0;i<list.length;i++){
+        const row=list[i];
+        ss.push(row.stamp);
+        map[row.stamp]=row;
       }
-    ]
-    setHistory(list);
+      const order=ss.sort((a,b)=>{return b-a});
+
+      const arr=[];
+      for(let i=0;i<order.length;i++){
+        const stamp=order[i];
+        arr.push(map[stamp]);
+      }
+      return arr;
+    },
+  }
+
+  useEffect(() => {
+    RUNTIME.getAccount((fa)=>{
+      if(!fa) return false;
+      const acc=fa.address;
+      const page=1;
+      BILL.page(acc,page,(rows)=>{
+        //console.log(rows);
+        if(!rows) return false;
+        setHistory(self.sort(rows));
+      });
+    });
   }, [props.list])
   return (
     <Row className='pt-2'>
