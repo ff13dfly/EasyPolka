@@ -17,6 +17,8 @@ let spam = "";
 let chats = {};
 let active = false;  //account reg to server status
 let friend=false;
+let fresh_contact=0;
+let fresh_stranger=0;
 
 function Contact(props) {
   const size = [3, 6, 3];
@@ -80,7 +82,7 @@ function Contact(props) {
             const str = res.data;
             try {
               const input = JSON.parse(str);
-              //console.log(input);
+              console.log(input);
               switch (input.act) {
                 case "init":        //websocket init, use is not active yet.
                   spam = input.spam;
@@ -90,6 +92,7 @@ function Contact(props) {
                 case "history":
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
+                      console.log("history added");
                       self.fresh();
                       if(res!==true){
                         RUNTIME.addContact(res,()=>{
@@ -103,6 +106,7 @@ function Contact(props) {
                   if (chats[input.from]) chats[input.from](input);
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
+                      console.log("chat added");
                       self.fresh();
                       if(res!==true){
                         RUNTIME.addContact(res,()=>{
@@ -160,10 +164,10 @@ function Contact(props) {
       });
     },
     fresh: () => {
-      const n = count + 1;
-      setCount(n);
-      const x = stranger + 1;
-      setStranger(x);
+      fresh_contact++;
+      fresh_stranger++;
+      setCount(fresh_contact);
+      setStranger(fresh_stranger);
     },
     select: (map,cat) => {
       selected[cat]= map;

@@ -1,5 +1,4 @@
 import Encry from './encry';
-import tools from './tools';
 
 let hash = "";
 const INDEXED = {
@@ -48,18 +47,18 @@ const INDEXED = {
 		};
 	},
 
-	insertRow: (db, table, list) => {
+	insertRow: (db, table, list,ck) => {
 		const request = db.transaction([table], "readwrite").objectStore(table);
 		for (let i = 0; i < list.length; i++) {
 			request.add(list[i]);
 		}
 
 		request.onsuccess = function (ev) {
-			console.log("Insert successful");
+			return ck && ck(true);
 		};
 
 		request.onerror = function (ev) {
-			console.log("Failed to insert");
+			return ck && ck({error:"Failed to insert"});
 		};
 	},
 	searchRows: (db, table, key, val, ck) => {
@@ -115,35 +114,34 @@ const INDEXED = {
 		var store = db.transaction(table, "readwrite").objectStore(table);
 		for(let i=0;i<list.length;i++){
 			const data=list[i];
-			console.log(data);
+			//console.log(data);
 			const request = store.put(data);
 			request.onsuccess = function () {
-				//console.log("数据更新成功");
-				ck && ck(true);
+				return ck && ck(true);
 			};
 	
 			request.onerror = function () {
-				//console.log("数据更新失败");
+				return ck && ck({error:"Failed to update rows"});
 			};
 		}
 	},
 
-	getDataByKey: (db, storeName, key) => {
-		return new Promise((resolve, reject) => {
-			var transaction = db.transaction([storeName]);
-			var objectStore = transaction.objectStore(storeName);
-			var request = objectStore.get(key);
+	// getDataByKey: (db, storeName, key) => {
+	// 	return new Promise((resolve, reject) => {
+	// 		var transaction = db.transaction([storeName]);
+	// 		var objectStore = transaction.objectStore(storeName);
+	// 		var request = objectStore.get(key);
 
-			request.onerror = function (event) {
-				console.log("failed");
-			};
+	// 		request.onerror = function (event) {
+	// 			console.log("failed");
+	// 		};
 
-			request.onsuccess = function (event) {
-				console.log("Result: ", request.result);
-				resolve(request.result);
-			};
-		});
-	},
+	// 		request.onsuccess = function (event) {
+	// 			console.log("Result: ", request.result);
+	// 			resolve(request.result);
+	// 		};
+	// 	});
+	// },
 
 	test: () => {
 		//https://juejin.cn/post/7026900352968425486

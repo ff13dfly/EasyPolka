@@ -19,10 +19,11 @@ function Login(props){
       randomName:()=>{
         return 'W3OS_'+Math.ceil(Math.random()*100);
       },
+
+      // backup code
       addAccount:(ev)=>{
         RUNTIME.getAPIs((API) => {
           const mnemonic = mnemonicGenerate(12, true);
-          //console.log(mnemonic);
           const keyring = new API.Polkadot.Keyring({ type: 'sr25519' });
           const pair = keyring.addFromUri(mnemonic);
           funs.dialog.show(
@@ -36,6 +37,16 @@ function Login(props){
           );
         });
       },
+
+      // addAccount:(ev)=>{
+      //   RUNTIME.getAPIs((API) => {
+      //     const mnemonic = mnemonicGenerate(12, true);
+      //     funs.dialog.show(
+      //       (<Password callback={(pass) =>{
+      //       }} account={"5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm"} mnemonic={mnemonic} funs={funs} />)
+      //     );
+      //   });
+      // },
       changeFile:(ev)=>{
         //1.这里需要对文件内容进行处理
         try {

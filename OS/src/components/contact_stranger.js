@@ -42,6 +42,26 @@ function StrangerList(props) {
         return self.getCount(mine, list, ck, map,order);
       });
     },
+    sortList:(data,map)=>{
+      if(data.length===0) return [];
+      const raw={}
+      for(let i=0;i<data.length;i++){
+        raw[data[i].address]=i;
+      }
+
+      const target=[];
+      for(var k in map)target.push(k);
+      const order=target.sort((a,b)=>{return b-a});
+
+      const arr=[];
+      for(let i=0;i<order.length;i++){
+        const stamp=order[i];
+        const address=map[stamp];
+        const index=raw[address];
+        arr.push(data[index]);
+      }
+      return arr;
+    },
   }
 
   useEffect(() => {
@@ -55,26 +75,14 @@ function StrangerList(props) {
 
         self.getCount(mine,nlist,(un,order)=>{
           const ulist=[],zlist=[];
-          const olist=[];
-          
           for(var k in ss){
             const atom=ss[k];
             atom.address=k;
             atom.unread=!un[k]?0:un[k];
             !un[k]?zlist.push(atom):ulist.push(atom);
           }
-          if(ulist.length!==0){
-            for(var stamp in order){
-              const address=order[stamp];
-              for(let i=0;i<ulist.length;i++){
-                const row=ulist[i];
-                if(row.address===address){
-                  olist.unshift(row);
-                  break;
-                } 
-              }
-            }
-          };
+          
+          const olist=self.sortList(ulist,order);
           const list=olist.concat(zlist);
           setContact(list);
         });

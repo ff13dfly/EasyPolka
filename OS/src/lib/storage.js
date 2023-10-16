@@ -93,7 +93,7 @@ const STORAGE={
 		//console.log(hash);
 		Encry.auto(hash);
 		const res=Encry.encrypt(JSON.stringify(obj));
-		console.log(res);
+		//console.log(res);
 		localStorage.setItem(key,res);
 	},
 
