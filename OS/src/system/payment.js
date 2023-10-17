@@ -162,7 +162,7 @@ function Payment(props) {
             }}>Pay</button>
           </Col>
         </Row>
-        <Bill count={count}/>
+        <Bill count={count} funs={funs}/>
       </Container>
     </div>
   );

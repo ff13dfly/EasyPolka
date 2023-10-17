@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import tools from '../lib/tools';
 import RUNTIME from '../lib/runtime';
 import BILL from '../lib/bill';
+import Transaction from './transaction';
 
 function Bill(props) {
   const size = {
@@ -13,6 +14,7 @@ function Bill(props) {
     bill: [2, 10],
   }
   const count = props.count;
+  const funs=props.funs;
 
   let [hide, setHide] = useState(false);
   let [history, setHistory] = useState([]);
@@ -44,6 +46,9 @@ function Bill(props) {
     showDate: (stamp) => {
       const time = new Date(stamp);
       return time.toLocaleDateString() + " " + time.toLocaleTimeString();
+    },
+    click:(block_hash,transfer_hash)=>{
+      funs.dialog.show(<Transaction block={block_hash} hash={transfer_hash} />,"Transaction details")
     },
   }
 
@@ -83,6 +88,7 @@ function Bill(props) {
                 </Col>
                 <Col xs={size.bill[1]} sm={size.bill[1]} md={size.bill[1]}
                   lg={size.bill[1]} xl={size.bill[1]} xxl={size.bill[1]} onClick={(ev) => {
+                    self.click(row.block,row.hash);
                     console.log("Ready to show details")
                     //funs.dialog.show(<Chat address={row.address} mailer={props.mailer}/>,tools.shorten(address,6));
                   }}>

@@ -1,14 +1,18 @@
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col,Navbar,Container } from 'react-bootstrap';
 import { useEffect,useState} from 'react';
 
 //dialog page container, hidden default
 
 function Page(props) {
   const alink=props.anchor;
-
+  const size={
+    head:[3,6,3],
+    row:[12],
+    account:[9,3],
+  };
+  
   let [link,setLink]=useState("");
 
-  //const basic="http://localhost/easypolka/loader/frontend/code/index.html";
   const basic="loader.html";
 
   const self={
@@ -22,15 +26,36 @@ function Page(props) {
 
   return (
     <div id="page">
+      <Navbar className="bg-body-tertiary">
+        <Container>
+          <Row style={{"width":"100%","margin":"0 auto"}}>
+            <Col xs={size.head[0]} sm={size.head[0]} md={size.head[0]} 
+              lg={size.head[0]} xl={size.head[0]} xxl={size.head[0]}
+              style={{"paddingTop":"6px"}}>
+              <Navbar.Brand href="#">W<span className='logo'>3</span>OS</Navbar.Brand>
+            </Col>
+            <Col className='text-center' xs={size.head[1]} sm={size.head[1]} md={size.head[1]}
+              lg={size.head[1]} xl={size.head[1]} xxl={size.head[1]}
+              style={{"paddingTop":"10px"}}>
+              Application Loader</Col>
+            <Col className="text-end pb-2"  xs={size.head[2]} sm={size.head[2]} md={size.head[2]}
+              lg={size.head[2]} xl={size.head[2]} xxl={size.head[2]}
+              style={{"paddingTop":"10px"}}>
+              <span className="close" onClick={(ev) => {
+                props.funs.page("");
+              }}>X</span>
+            </Col>
+          </Row>
+        </Container>
+      </Navbar>
       <Row>
-        <Col lg={12} xs={12} className="pt-2">Title and Status here</Col>
-        <Col lg={12} xs={12} className="pt-2">
-          <iframe src={link}></iframe>
+        <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+            
+        </Col>
+        <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+          <iframe id="capp_container" title='capp_container' src={link}></iframe>
         </Col>
       </Row>
-      <span id="close" onClick={(ev)=>{
-        props.funs.page("");
-      }}>X</span>
     </div>
   );
 }
