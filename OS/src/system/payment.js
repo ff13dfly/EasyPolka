@@ -9,7 +9,6 @@ import RUNTIME from '../lib/runtime';
 let fresh=0;
 
 function Payment(props) {
-  //const size = [3, 6, 3, 12];
   const size={
     head:[3,6,3],
     row:[12],
@@ -65,9 +64,9 @@ function Payment(props) {
       
       funs.dialog.show(
         (<Paybill callback={(res) => {
-          console.log(fresh);
-          self.fresh();
-        }} desc={desc} from={from} target={account} amount={amount} funs={funs} />),
+          //console.log("Paybill callback");
+          //self.fresh();
+        }} fresh={self.fresh} desc={desc} from={from} target={account} amount={amount} funs={funs} />),
         "Payment confirm"
       );
     },
@@ -83,8 +82,6 @@ function Payment(props) {
         
       }else{
         if(props.target && props.target===sign.address){
-          console.log("here");
-          setInfo("Can not pay to yourself.");
           setDisable({account:false,amount:false,pay:false});
         }else{
           setFrom(sign.address);
@@ -165,7 +162,7 @@ function Payment(props) {
             }}>Pay</button>
           </Col>
         </Row>
-        <Bill />
+        <Bill count={count}/>
       </Container>
     </div>
   );

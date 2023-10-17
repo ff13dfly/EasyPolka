@@ -43,23 +43,29 @@ function Paybill(props) {
           const pair = keyring.createFromJson(acc);
           try {
             pair.decodePkcs8(password);
-            self.transfer(wsAPI, to, n, pair, (res) => {
-              if(res===false){
+            self.transfer(wsAPI, to, n, pair, (row) => {
+              if(row===false){
                 setInfo("Payment failed.");
                 setDisable(false);
                 return false;
               }else{
-                console.log(res);
-                switch (res.status) {
+                //console.log(row);
+                switch (row.status) {
                   case 'InBlock':
                     setInfo("Payment is on progress.");
-
+                    BILL.save(pair.address,to,row,(res)=>{
+                      console.log("Saved, force list to fresh");
+                      funs.dialog.hide();
+                      if(props.fresh) props.fresh();
+                    });
                     break;
                   case 'Finalized':
                     setInfo("Payment done.");
                     setDisable(false);
-                    if(props.callback) props.callback();
-
+                    BILL.update(pair.address,[row],(res)=>{
+                      console.log("Saved, force list to fresh");
+                      if(props.fresh) props.fresh();
+                    });
                     setTimeout(()=>{
                       funs.dialog.hide();
                     },1500);
@@ -89,18 +95,13 @@ function Paybill(props) {
           //注意，如果目标账户的coin小于100的时候，会转账失败
           wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
             if (status.type === 'InBlock') {
-              console.log(`Ready to create a bill row`);
-              funs.dialog.hide();
               const row={
                 amount:amount,
                 status:status.type,
                 to:ss58,
                 hash:txHash.toHex()
               };
-              BILL.save(pair.address,ss58,row,(res)=>{
-                console.log("Saved, force list to fresh");
-              });
-              ck && ck({status:status.type});
+              ck && ck(row);
             } else if (status.type === 'Finalized') {
               const block_hash=status.asFinalized.toHex();
               const transfer_hash=txHash.toHex();
@@ -115,13 +116,7 @@ function Paybill(props) {
                   blocknumber:3345
                 },
               };
-              BILL.update(pair.address,[row],(res)=>{
-
-              });
-              // BILL.save(pair.address,ss58,row,(res)=>{
-              //   console.log("Updated, force list to fresh");
-              // });
-              ck && ck({status:status.type,hash:transfer_hash,block:block_hash});
+              ck && ck(row);
               unsub();
             }
           });
