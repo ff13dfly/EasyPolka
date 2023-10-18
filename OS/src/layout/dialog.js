@@ -15,7 +15,7 @@ function Dialog(props) {
   return (
     <Modal show={show} size="lg" onHide={(ev)=>{
       props.funs.dialog.hide();
-    }}>
+    }} centered={!props.center?false:true}>
       <Modal.Header closeButton>
         <Modal.Title >{props.title}</Modal.Title>
       </Modal.Header>

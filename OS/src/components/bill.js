@@ -53,16 +53,20 @@ function Bill(props) {
   }
 
   useEffect(() => {
-    RUNTIME.getAccount((fa) => {
-      if (!fa) return false;
-      const acc = fa.address;
-      const page = 1;
-      BILL.page(acc, page, (rows) => {
-        if (!rows) return false;
-        //const bs=self.sort(rows)
-        setHistory(self.sort(rows));
+    if(props.show){
+      RUNTIME.getAccount((fa) => {
+        if (!fa) return false;
+        const acc = fa.address;
+        const page = 1;
+        BILL.page(acc, page, (rows) => {
+          if (!rows) return false;
+          //const bs=self.sort(rows)
+          setHistory(self.sort(rows));
+        });
       });
-    });
+    }else{
+      setHide(true);
+    }
   }, [count])
   return (
     <Row className='pt-2' index={count}>

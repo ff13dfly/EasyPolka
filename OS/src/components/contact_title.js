@@ -32,7 +32,7 @@ function ContactTitle(props) {
     },
     toPay:(address)=>{
       funs.dialog.hide();
-      funs.page(<Payment funs={funs} amount={0} target={address}/>);
+      funs.page(<Payment funs={funs} amount={0} target={address} history={false}/>);
     },
   };
 

@@ -15,6 +15,7 @@ function Payment(props) {
     account:[9,3],
   };
   const funs=props.funs;
+  //const history=props.history===undefined?true:props.history;
 
   let [count, setCount]=useState(0);
   
@@ -23,6 +24,7 @@ function Payment(props) {
   let [amount, setAmount] = useState(0);
 
   let [info,setInfo] =useState("");
+  let [history,setHistory]=useState(props.history===undefined?true:props.history);
 
   let [disable, setDisable] = useState({account:true,amount:true,pay:true});
   let [active,setActive] = useState({account:{background:"#FFFFFF"},amount:{background:"#FFFFFF"}});
@@ -73,6 +75,7 @@ function Payment(props) {
     fresh:()=>{
       fresh++;
       setCount(fresh);
+      setHistory(true);
     },
   }
 
@@ -162,7 +165,7 @@ function Payment(props) {
             }}>Pay</button>
           </Col>
         </Row>
-        <Bill count={count} funs={funs}/>
+        <Bill count={count} funs={funs} show={history}/>
       </Container>
     </div>
   );

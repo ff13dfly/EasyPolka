@@ -76,6 +76,11 @@ const RUNTIME = {
     isLogin: () => {
         return STORAGE.getEncry();
     },
+    isSalted:()=>{
+        const salt=STORAGE.getKey("salt");
+        //console.log(salt);
+        return !salt?false:true;
+    },
 
     getAccount: (ck) => {
         const fa = STORAGE.getKey("account");

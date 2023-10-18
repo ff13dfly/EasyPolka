@@ -23,6 +23,7 @@ function App() {
   let [content, setContent] = useState("");
   let [title, setTitle] = useState("");
   let [callback, setCallback] = useState(() => { });
+  let [center, setCenter]= useState(false);
 
   let [editing, setEditing] = useState(false);
 
@@ -39,10 +40,10 @@ function App() {
       setPageContent(ctx);
     },
     dialog: {
-      show: (ctx, title) => {
-        //console.log("here:"+show);
+      show: (ctx, title, center) => {
         setContent(ctx);
         if (title) setTitle(title);
+        setCenter(!center?false:true);
         setDialogShow(true);
         SCROLLER.allowScroll();
       },
@@ -63,12 +64,17 @@ function App() {
     select: (id) => {
       console.log(`Selected App Index: ${id}`);
     },
-    login: (ctx, title) => {
+    login: () => {
+      const ctx=RUNTIME.isSalted()?(<p>Please input your password</p>):(<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br /><br />
+      Please notes that, if skip this step, all your operation will be lost. <br />
+      The storaged setting will not include your private key.</p>);
+      const title=RUNTIME.isSalted()?"W3OS Login":"W3OS system password setting";
+
       RUNTIME.init((ck) => {
         funs.dialog.show(<SystemPassword info={ctx} callback={(pass) => {
           funs.dialog.hide();
           return ck && ck(pass);
-        }} />, title);
+        }} />, title,true);
 
       }, self.fresh);
     },
@@ -88,11 +94,7 @@ function App() {
   }
 
   useEffect(() => {
-    const info = (<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br /><br />
-      Please notes that, if skip this step, all your operation will be lost. <br />
-      The storaged setting will not include your private key.</p>);
-    const sys_title = "W3OS system password setting";
-    self.login(info, sys_title);
+    self.login();
   }, []);
 
   return (
@@ -101,7 +103,7 @@ function App() {
       <Container>
         <Board funs={funs} />
         <Grid size={size} list={apps} funs={funs} edit={editing} select={self.select} />
-        <Dialog show={show} content={content} callback={callback} title={title} funs={funs} />
+        <Dialog show={show} content={content} callback={callback} title={title} funs={funs} center={center} />
       </Container>
       {ctx_stage}
       {ctx_mask}
@@ -112,9 +114,7 @@ function App() {
           self.clickEdit(ev)
         }} />
         <img src="icons/fin.svg" hidden={RUNTIME.isLogin()} className='opt_button' alt="" onClick={(ev) => {
-          const info = (<p>Please input the system password.</p>);
-          const title = "System Login";
-          self.login(info, title);
+          self.login();
         }} />
       </div>
     </div>
