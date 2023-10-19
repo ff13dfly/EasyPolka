@@ -44,7 +44,7 @@ function SystemPassword(props) {
       lg={size.row[1]} xl={size.row[1]} xxl={size.row[1]}>
         <button className='btn btn-md btn-primary' onClick={(ev)=>{
           self.click(ev);
-        }}>Set W3OS Password</button>
+        }}>{props.button}</button>
       </Col>
     </Row>
   );

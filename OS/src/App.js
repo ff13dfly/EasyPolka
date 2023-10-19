@@ -69,9 +69,9 @@ function App() {
       Please notes that, if skip this step, all your operation will be lost. <br />
       The storaged setting will not include your private key.</p>);
       const title=RUNTIME.isSalted()?"W3OS Login":"W3OS system password setting";
-
+      const todo=RUNTIME.isSalted()?"Login":"Set W3OS password"
       RUNTIME.init((ck) => {
-        funs.dialog.show(<SystemPassword info={ctx} callback={(pass) => {
+        funs.dialog.show(<SystemPassword button={todo} info={ctx} callback={(pass) => {
           funs.dialog.hide();
           return ck && ck(pass);
         }} />, title,true);
