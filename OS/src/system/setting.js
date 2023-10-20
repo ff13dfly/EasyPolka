@@ -31,7 +31,7 @@ function Setting(props) {
                 setTimeout(()=>{
                   props.funs.page("");
                 },300);
-              }}>X</span>
+              }}><button className='btn btn-sm btn-default'>X</button></span>
             </Col>
           </Row>
         </Container>
