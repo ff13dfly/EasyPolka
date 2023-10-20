@@ -10,6 +10,7 @@ function Account(props) {
   const funs=props.funs;
   
   let [details, setDetails] = useState("");
+  let [animation,setAnimation]=useState("ani_scale_in");
 
   const self = {
     fresh:()=>{
@@ -38,7 +39,7 @@ function Account(props) {
   }, []);
 
   return (
-    <div id="page">
+    <div id="page" className={animation}>
       <Navbar className="bg-body-tertiary">
         <Container>
           <Row style={{"width":"100%","margin":"0 auto"}}>
@@ -52,7 +53,10 @@ function Account(props) {
             <Col xs={size[2]} sm={size[2]} md={size[2]} lg={size[2]} xl={size[2]} xxl={size[2]} 
               className="text-end pb-2" style={{"paddingTop":"10px"}}>
               <span className="close" onClick={(ev) => {
-                props.funs.page("");
+                setAnimation("ani_scale_out");
+                setTimeout(()=>{
+                  props.funs.page("");
+                },300);
               }}>X</span>
             </Col>
           </Row>

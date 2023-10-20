@@ -67,7 +67,7 @@ const RUNTIME = {
                 } else {  //b. no password check, create one
                     if (check !== md5) return ck && ck({ msg: "Error password" });
                     STORAGE.setEncry(md5);
-                    console.log(`vertify:${check},pass:${md5}`);
+                    //console.log(`vertify:${check},pass:${md5}`);
                     return ck && ck(true);
                 }
             });

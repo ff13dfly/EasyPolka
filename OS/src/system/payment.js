@@ -22,6 +22,7 @@ function Payment(props) {
   let [from, setFrom] = useState("");
   let [account, setAccount] = useState("");
   let [amount, setAmount] = useState(0);
+  let [animation,setAnimation]=useState("ani_scale_in");
 
   let [info,setInfo] =useState("");
   let [history,setHistory]=useState(props.history===undefined?true:props.history);
@@ -106,7 +107,7 @@ function Payment(props) {
   };
 
   return (
-    <div id="page" index={count}>
+    <div id="page" index={count} className={animation}>
       <Navbar className="bg-body-tertiary">
         <Container>
           <Row style={{"width":"100%","margin":"0 auto"}}>
@@ -123,7 +124,10 @@ function Payment(props) {
               lg={size.head[2]} xl={size.head[2]} xxl={size.head[2]}
               style={{"paddingTop":"10px"}}>
               <span className="close" onClick={(ev) => {
-                props.funs.page("");
+                setAnimation("ani_scale_out");
+                setTimeout(()=>{
+                  props.funs.page("");
+                },300);
               }}>X</span>
             </Col>
           </Row>

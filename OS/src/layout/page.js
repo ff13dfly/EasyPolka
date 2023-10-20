@@ -12,20 +12,16 @@ function Page(props) {
   };
   
   let [link,setLink]=useState("");
+  let [animation,setAnimation]=useState("ani_scale_in");
 
   const basic="loader.html";
 
-  const self={
-  };
-
   useEffect(() => {
-    //self.router(router);
     setLink(`${basic}#${alink}#`);
   }, []);
 
-
   return (
-    <div id="page">
+    <div id="page" className={animation}>
       <Navbar className="bg-body-tertiary">
         <Container>
           <Row style={{"width":"100%","margin":"0 auto"}}>
@@ -42,7 +38,10 @@ function Page(props) {
               lg={size.head[2]} xl={size.head[2]} xxl={size.head[2]}
               style={{"paddingTop":"10px"}}>
               <span className="close" onClick={(ev) => {
-                props.funs.page("");
+                setAnimation("ani_scale_out");
+                setTimeout(()=>{
+                  props.funs.page("");
+                },300);
               }}>X</span>
             </Col>
           </Row>
