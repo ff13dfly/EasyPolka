@@ -55,12 +55,17 @@ function Bill(props) {
   useEffect(() => {
     if(props.show){
       RUNTIME.getAccount((fa) => {
-        if (!fa) return false;
+        if (!fa){
+          setHide(true);
+          return false;
+        } 
         const acc = fa.address;
         const page = 1;
         BILL.page(acc, page, (rows) => {
-          if (!rows) return false;
-          //const bs=self.sort(rows)
+          if (!rows){
+            setHide(true);
+            return false;
+          } 
           setHistory(self.sort(rows));
         });
       });
@@ -78,6 +83,7 @@ function Bill(props) {
       </Col>
       <Col hidden={hide} xs={size.divide[2]} sm={size.divide[2]} md={size.divide[2]}
         lg={size.divide[2]} xl={size.divide[2]} xxl={size.divide[2]} className="pt-2"><hr /></Col>
+
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
         <Row style={{height:"100%",overflow:"hidden"}}>
           {history.map((row, index) => (

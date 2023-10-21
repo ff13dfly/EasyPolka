@@ -1,27 +1,13 @@
 import STORAGE from './storage';
 import tools from './tools';
 import Encry from './encry';
-
 import Config from '../data/setting';
 
 let API = null;
 let wsAPI = null;
 let wss = {};
 let spams = {};
-//let stranger = null;
-
-// let login = {
-//     md5: "",        //AES decode md5 password, avoid explosing the real one
-//     stamp: 0,       //Login stamp, check expired
-//     account: "",     //Login account, bind to current user
-// };
-
-// const errors = {
-//     WEBSOCKET_LINK_ERROR: {
-//         message: "Failed to link to websocket",
-//         code: 4001,
-//     }
-// }
+let nets={};
 
 //keys and prefix for localstorage
 const prefix = "w3os";
@@ -80,6 +66,17 @@ const RUNTIME = {
         const salt=STORAGE.getKey("salt");
         //console.log(salt);
         return !salt?false:true;
+    },
+    networkReg:(net,fun)=>{
+        nets[net]=fun;
+        return true;
+    },
+    networkStatus:(net,ck)=>{
+        //console.log(net);
+        //console.log(JSON.stringify(nets));
+        //console.log(nets[net]);
+        if(!nets[net]) return ck && ck(false);
+        nets[net](ck);
     },
 
     getAccount: (ck) => {
@@ -159,34 +156,6 @@ const RUNTIME = {
         });
     },
 
-    // cacheStranger:(ck)=>{
-    //     if(stranger===null){
-    //         const list = STORAGE.getKey("stranger");
-    //         stranger=list===null?[]:list;
-    //     }
-    //     return ck && ck(stranger);
-    // },
-    // removeStranger:(acc,ck)=>{
-
-    // },
-    // addStranger:(obj,ck)=>{
-    //     RUNTIME.cacheStranger((list)=>{
-    //         let same=false;
-    //         for(let i=0;i<list.length;i++){
-    //             if(list[i].address===obj.address) same=true;
-    //         }
-
-    //         if(!same){
-    //             stranger.push(obj);
-    //             STORAGE.setKey("stranger",stranger);
-    //         } 
-    //         return ck && ck(stranger);
-    //     });
-    // },
-    // getStranger:(ck)=>{
-    //     RUNTIME.cacheStranger(ck);
-    // },
-
     getApps: (ck) => {
         const list = STORAGE.getKey("apps");
         if (list === null) {
@@ -218,7 +187,6 @@ const RUNTIME = {
         return spams[uri];
     },
     websocket: (uri, ck, agent) => {
-        //console.log(uri);
         if (wss[uri]) return ck && ck(wss[uri]);
         try {
             const ws = new WebSocket(uri);
@@ -268,6 +236,11 @@ const RUNTIME = {
             return ck && ck(wsAPI, API.Polkadot.Keyring);
         }
     },
+    basicStatus:(ck)=>{
+        //console.log(API.AnchorJS.ready());
+        if(API.AnchorJS.ready) return ck && ck(API.AnchorJS.ready())
+        return ck && ck(false);
+    },
     getAPIs: (ck) => {
         if (API === null) {
             const AnchorJS = window.AnchorJS;
@@ -290,9 +263,9 @@ const RUNTIME = {
             };
 
             const endpoint = config.system.basic.endpoint[0];
+            RUNTIME.networkReg("anchor",RUNTIME.basicStatus);
             return RUNTIME.link(endpoint, ck);
         }
-        //console.log(API);
         return ck && ck(API);
     },
 }

@@ -95,6 +95,7 @@ function App() {
 
   useEffect(() => {
     self.login();
+    RUNTIME.getAPIs();  //Run the basic API init process.
   }, []);
 
   return (
