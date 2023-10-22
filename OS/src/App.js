@@ -62,15 +62,28 @@ function App() {
     clickEdit: (ev) => {
       setEditing(!editing);
       if(editing){
+        const list={};
+        for(var pg in todo){
+          if(!list[pg]) list[pg]=[];
+          const row=todo[pg];
+          for(var ord in row){
+            if(row[ord]) list[pg].push(parseInt(ord));
+          }
+        }
 
+
+        console.log(`Ready to remove apps. ${JSON.stringify(list)}`);
+        RUNTIME.removeApp(list,(res)=>{
+          self.fresh();
+        });
       };
     },
     select: (id) => {
-      const page=0;
-      
-      // RUNTIME.removeApp(page,id,(res)=>{
-      //   if(res) self.fresh();
-      // });
+      console.log(`Selected ${id}`);
+      const page = 0;
+      if(!todo[page]) todo[page]={};
+      todo[page][id]=!todo[page][id];
+      //console.log(JSON.stringify(todo));
     },
     login: () => {
       const ctx=RUNTIME.isSalted()?(<p>Please input your password</p>):(<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br /><br />

@@ -163,18 +163,32 @@ const RUNTIME = {
         }
         return ck && ck(STORAGE.getKey("apps"));
     },
-    removeApp: (page, index,ck) => {
-        const list = STORAGE.getKey("apps");
-        if(!list[page] || !list[page][index]) return ck && ck(false);
-
-        const nlist=[];
-        for(let i=0;i<list[page].length;i++){
-            const row=list[page][i];
-            if(i!==index) nlist.push(row);
+    inArray:(index,arr)=>{
+        //console.log(index);
+        //console.log(arr);
+        for(let i=0;i<arr.length;i++){
+            if(parseInt(index)===arr[i]) return true;
         }
-        list[page]=nlist;
-        STORAGE.setKey("apps", list);
-        return ck && ck(true);
+        return false;
+    },
+    removeApp:(map,ck)=>{
+        //console.log(map);
+        const list = STORAGE.getKey("apps");
+        //console.log(JSON.stringify(list));
+        for(var page in map){
+            if(!list[page]) break;
+            const todo=map[page];
+            const nlist=[];
+            for(let i=0;i<list[page].length;i++){
+                const row=list[page][i];
+                //console.log(RUNTIME.inArray(i,todo))
+                if(!RUNTIME.inArray(i,todo)) nlist.push(row);
+            }
+            list[page]=nlist;
+            STORAGE.setKey("apps", list);
+            //console.log(nlist);
+            return ck && ck(true);
+        }
     },
     installApp: (obj, page, ck) => {
         const list = STORAGE.getKey("apps");
