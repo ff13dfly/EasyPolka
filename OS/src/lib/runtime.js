@@ -163,8 +163,18 @@ const RUNTIME = {
         }
         return ck && ck(STORAGE.getKey("apps"));
     },
-    removeApp: (page, index) => {
+    removeApp: (page, index,ck) => {
+        const list = STORAGE.getKey("apps");
+        if(!list[page] || !list[page][index]) return ck && ck(false);
 
+        const nlist=[];
+        for(let i=0;i<list[page].length;i++){
+            const row=list[page][i];
+            if(i!==index) nlist.push(row);
+        }
+        list[page]=nlist;
+        STORAGE.setKey("apps", list);
+        return ck && ck(true);
     },
     installApp: (obj, page, ck) => {
         const list = STORAGE.getKey("apps");
@@ -263,7 +273,7 @@ const RUNTIME = {
             };
 
             const endpoint = config.system.basic.endpoint[0];
-            RUNTIME.networkReg("anchor",RUNTIME.basicStatus);
+            RUNTIME.networkReg("anchor",RUNTIME.basicStatus);   //reg status function for Anchor Network
             return RUNTIME.link(endpoint, ck);
         }
         return ck && ck(API);

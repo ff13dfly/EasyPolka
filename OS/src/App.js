@@ -57,12 +57,20 @@ function App() {
     },
   }
 
+  let todo={};
   const self = {
     clickEdit: (ev) => {
       setEditing(!editing);
+      if(editing){
+
+      };
     },
     select: (id) => {
-      console.log(`Selected App Index: ${id}`);
+      const page=0;
+      
+      // RUNTIME.removeApp(page,id,(res)=>{
+      //   if(res) self.fresh();
+      // });
     },
     login: () => {
       const ctx=RUNTIME.isSalted()?(<p>Please input your password</p>):(<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br /><br />
