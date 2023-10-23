@@ -19,7 +19,7 @@ function Navigator(props) {
           if(res===false || res.empty){
             return setMap({background:"#d7a3a3"});
           }
-
+          
           const napp=RUNTIME.formatApp();
           napp.name=res.name;
           napp.short=res.name;

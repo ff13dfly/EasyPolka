@@ -26,6 +26,7 @@ function App() {
   let [center, setCenter]= useState(false);
 
   let [editing, setEditing] = useState(false);
+  let [hidelink, setHidelink] = useState(false);
 
   let [apps, setApps] = useState([[]]);
 
@@ -70,9 +71,7 @@ function App() {
             if(row[ord]) list[pg].push(parseInt(ord));
           }
         }
-
-
-        console.log(`Ready to remove apps. ${JSON.stringify(list)}`);
+        //console.log(`Ready to remove apps. ${JSON.stringify(list)}`);
         RUNTIME.removeApp(list,(res)=>{
           self.fresh();
         });
@@ -83,7 +82,6 @@ function App() {
       const page = 0;
       if(!todo[page]) todo[page]={};
       todo[page][id]=!todo[page][id];
-      //console.log(JSON.stringify(todo));
     },
     login: () => {
       const ctx=RUNTIME.isSalted()?(<p>Please input your password</p>):(<p>Please set the W3OS to storage your setting on Localstorage encried by AES.<br /><br />
@@ -112,11 +110,19 @@ function App() {
         setApps(list);
       });
     },
+    linkNetwork:()=>{
+      RUNTIME.getAPIs((res)=>{
+        RUNTIME.networkStatus("anchor",(done)=>{
+          if(done) return setHidelink(true);
+          setHidelink(false);
+        });
+      });
+    },
   }
 
   useEffect(() => {
     self.login();
-    RUNTIME.getAPIs();  //Run the basic API init process.
+    self.linkNetwork();
   }, []);
 
   return (
@@ -137,6 +143,9 @@ function App() {
         }} />
         <img src="icons/fin.svg" hidden={RUNTIME.isLogin()} className='opt_button' alt="" onClick={(ev) => {
           self.login();
+        }} />
+        <img src="icons/link.svg" hidden={!RUNTIME.isLogin() || hidelink || editing} className='opt_button' alt="" onClick={(ev) => {
+          self.linkNetwork()
         }} />
       </div>
     </div>

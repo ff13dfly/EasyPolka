@@ -32,6 +32,9 @@ const self={
         if(JSON.stringify(obj)==="{}") return true;
         return false;
     },
+    toDate:(stamp)=>{
+       return  (new Date(stamp)).toLocaleString();
+    },
 }
 
 module.exports=self;

@@ -11,6 +11,9 @@ import Account from '../system/account';
 import Payment from '../system/payment';
 import Contact from '../system/contact';
 
+
+import TypeData from './type_data';
+
 function Cell(props) {
   const size = props.size;
   const row = props.data;
@@ -43,11 +46,7 @@ function Cell(props) {
       return false;
     },
     clickData:()=>{
-      const block = self.calcBlock(props.index);
-      const content=(<Overview link={data.src}/>);
-      funs.stage(<Stage block={block} content={content} callback={(ev) => {
-        funs.stage("");
-      }} />);
+      funs.dialog.show(<TypeData funs={funs} link={data.src}/>,"Anchor Data Viewer",true);
     },
     clickApp:()=>{
       //console.log("Ready to load app");
@@ -73,6 +72,7 @@ function Cell(props) {
           case "app":
             self.clickApp();
             break;
+
           default:
             self.clickData();
             break;
@@ -92,8 +92,8 @@ function Cell(props) {
 
   return (
     <Col xs={size} sm={size} md={size} lg={size} xl={size} xxl={size} className='pt-4 cell'>
-      <span className={props.index % 2 ? "status green" : "status red"}></span>
-      <span className='type'>{!row.type?"unknow":row.type}</span>
+      <span hidden={true} className={props.index % 2 ? "status green" : "status red"}></span>
+      <span hidden={true} className='type'>{!row.type?"unknow":row.type}</span>
       <img src={row.icon} alt="" onClick={(ev) => {
         props.edit?self.select():self.click()
       }}/>
