@@ -78,7 +78,7 @@ function App() {
       };
     },
     select: (id) => {
-      console.log(`Selected ${id}`);
+      //console.log(`Selected ${id}`);
       const page = 0;
       if(!todo[page]) todo[page]={};
       todo[page][id]=!todo[page][id];

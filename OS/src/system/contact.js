@@ -83,7 +83,7 @@ function Contact(props) {
             const str = res.data;
             try {
               const input = JSON.parse(str);
-              console.log(input);
+              //console.log(input);
               switch (input.act) {
                 case "init":        //websocket init, use is not active yet.
                   spam = input.spam;

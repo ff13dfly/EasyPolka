@@ -80,7 +80,7 @@ function TypeData(props) {
       </Col>
       <Col className='text-end' xs={size.owner[1]} sm={size.owner[1]} md={size.owner[1]}
         lg={size.owner[1]} xl={size.owner[1]} xxl={size.owner[1]} >
-          <Button disabled={disable} className='mt-4' size="sm" variant="primary" onClick={(ev)=>{
+          <Button disabled={disable} className='mt-4' size="sm" variant="secondary" onClick={(ev)=>{
             self.copyAddress(owner);
           }}> {clip} </Button>
       </Col>
@@ -92,12 +92,12 @@ function TypeData(props) {
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
         lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]} >
         <small>Protocol</small>
-        <textarea cols="40" rows="3" disabled={true} value={protocol}></textarea>
+        <textarea style={{width:"100%"}} rows="3" disabled={true} value={protocol}></textarea>
       </Col>
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
         lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]} >
         <small>Raw data ({bytes.toLocaleString()} Bytes)</small>
-        <textarea cols="40" rows="6" disabled={true} value={raw}></textarea>
+        <textarea style={{width:"100%"}} rows="6" disabled={true} value={raw}></textarea>
       </Col>
     </Row>
   );

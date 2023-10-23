@@ -36,13 +36,9 @@ function Account(props) {
 
   useEffect(() => {
     self.fresh();
-    //console.log("try to get network status");
-    //setTimeout(()=>{
-      RUNTIME.networkStatus("anchor",(res)=>{
-        console.log(res);
-      });
-    //},200);
-    
+    RUNTIME.networkStatus("anchor",(res)=>{
+      //console.log(res);
+    });
   }, []);
 
   return (
