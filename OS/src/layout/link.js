@@ -1,8 +1,14 @@
-import { Row, Col,Navbar,Container } from 'react-bootstrap';
+import { Row, Col,Navbar,Container,Badge } from 'react-bootstrap';
 import { useEffect,useState} from 'react';
 
 import RUNTIME from '../lib/runtime';
-//dialog page container, hidden default
+import tools from '../lib/tools';
+
+const format={
+  category:"link",
+  src:"HTTP_LINK",
+  desc:"DESCRIPTION_OF_LINK",
+}
 
 function Link(props) {
   const anchor=props.anchor;
@@ -15,7 +21,8 @@ function Link(props) {
   
   let [link,setLink]=useState("");
   let [animation,setAnimation]=useState("ani_scale_in");
-  
+  let [account,setAccount]=useState("");
+
   useEffect(() => {
     const alink=`anchor://${anchor}`;
     console.log(alink);
@@ -23,6 +30,7 @@ function Link(props) {
       APIs.Easy(alink, (res) => {
         if(res===false) return setLink("No such anchor");
         const data=res.data[`${res.location[0]}_${res.location[1]}`];
+        setAccount(tools.shorten(data.signer));
         try {
           const json=JSON.parse(data.raw);
           const src=json.src;
@@ -71,7 +79,20 @@ function Link(props) {
           lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
           {link}
         </Col>
+        
       </Row>
+      <Container>
+        <Row className='pt-2'>
+          <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} 
+            lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+              <Badge>Warning</Badge> Only the link on chain.
+          </Col>
+          <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} 
+            lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+              Supplied by {account}
+            </Col>
+        </Row>
+      </Container>
     </div>
   );
 }

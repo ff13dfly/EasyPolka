@@ -210,6 +210,14 @@ const RUNTIME = {
     getSpam: (uri) => {
         return spams[uri];
     },
+    wsCheck:(uri)=>{
+        if(!wss[uri]) return 99;
+        return wss[uri].readyState;
+    },
+    wsRemove:(uri)=>{
+        delete wss[uri];
+        return true;
+    },
     websocket: (uri, ck, agent) => {
         if (wss[uri]) return ck && ck(wss[uri]);
         try {
@@ -229,7 +237,8 @@ const RUNTIME = {
             wss[uri] = ws;
             return ck && ck(ws);
         } catch (error) {
-            return ck && ck(RUNTIME.getError("WEBSOCKET_LINK_ERROR"));
+            return ck && ck(error);
+            //return ck && ck(RUNTIME.getError("WEBSOCKET_LINK_ERROR"));
         }
     },
 

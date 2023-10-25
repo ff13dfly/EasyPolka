@@ -20,10 +20,13 @@ function Navigator(props) {
             return setMap({background:"#d7a3a3"});
           }
           
+
           const napp=RUNTIME.formatApp();
+          const type=self.checkType(res);
+          //console.log(type);
           napp.name=res.name;
           napp.short=res.name;
-          napp.type=res.protocol.type;
+          napp.type=type;
           napp.src=`anchor://${res.name}/${res.block}`;
           const page=0;
           RUNTIME.installApp(napp,page,(done)=>{
@@ -34,6 +37,18 @@ function Navigator(props) {
           });
         });
       });
+    },
+    checkType:(data)=>{
+      let type="data";
+      if(data.protocol && data.protocol.type) type=data.protocol.type;
+      try {
+        const json=JSON.parse(data.raw);
+        if(json && json.category) type=json.category;
+
+        return type;
+      } catch (error) {
+        return type;
+      }
     },
   }
 

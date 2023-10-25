@@ -113,6 +113,10 @@ module.exports = {
                             const count = self.count(spamToAccount);
                             self.success({ count: count, act: "active" }, input.spam, input.order);
 
+                            //console.log(`clients: ${JSON.stringify(clients)}`);
+                            //console.log(`accountSpam: ${JSON.stringify(accountSpam)}`);
+                            //console.log(`spamToAccount: ${JSON.stringify(spamToAccount)}`);
+
                             summary.active++;
                             self.success({ act: "summary", data: summary }, input.spam, input.order);
 

@@ -10,15 +10,16 @@ import ContactSetting from '../components/contact_setting';
 import RUNTIME from '../lib/runtime';
 import CHAT from '../lib/chat';
 
-let selected = {contact:null,stranger:null};
+let selected = { contact: null, stranger: null };
 
 let websocket = null;
 let spam = "";
 let chats = {};
 let active = false;  //account reg to server status
-let friend=false;
-let fresh_contact=0;
-let fresh_stranger=0;
+let friend = false;
+let fresh_contact = 0;
+let fresh_stranger = 0;
+let checker = null;
 
 function Contact(props) {
   const size = [3, 6, 3];
@@ -26,9 +27,9 @@ function Contact(props) {
 
   let [editing, setEditing] = useState(false);
   let [count, setCount] = useState(0);
-  let [stranger, setStranger]= useState(0);
+  let [stranger, setStranger] = useState(0);
   let [hidelink, setHidelink] = useState(false);
-  let [animation,setAnimation]=useState("ani_scale_in");
+  let [animation, setAnimation] = useState("ani_scale_in");
 
   const self = {
     clickSetting: (ev) => {
@@ -61,20 +62,27 @@ function Contact(props) {
         RUNTIME.removeContact(list, (res) => {
           selected.contact = null;
           self.fresh();
-        },true);
+        }, true);
       }
     },
     send: (obj) => {
-      if (!spam) return setTimeout(() => {
+      //console.log(websocket.readyState,spam)
+      if (!spam || websocket === null || websocket.readyState!==1) return setTimeout(() => {
         self.send(obj);
-      }, 200);
-      obj.spam = spam;
+      }, 500);
+      obj.spam=spam;
       websocket.send(JSON.stringify(obj));
     },
     mailer: (address, fun) => {
       chats[address] = fun;
     },
     linkChatting: (ev) => {
+      if (checker !== null) {
+        clearInterval(checker);
+        checker = null;
+      }
+      if (websocket !== null) websocket = null;
+
       RUNTIME.getSetting((cfg) => {
         const config = cfg.apps.contact, uri = config.node[0];
         const agent = {
@@ -83,7 +91,7 @@ function Contact(props) {
             const str = res.data;
             try {
               const input = JSON.parse(str);
-              //console.log(input);
+              console.log(input);
               switch (input.act) {
                 case "init":        //websocket init, use is not active yet.
                   spam = input.spam;
@@ -93,11 +101,11 @@ function Contact(props) {
                 case "history":
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
-                      console.log("history added");
+                      //console.log("history added");
                       self.fresh();
-                      if(res!==true){
-                        RUNTIME.addContact(res,()=>{
-                        },true);
+                      if (res !== true) {
+                        RUNTIME.addContact(res, () => {
+                        }, true);
                       }
                     })
                   })
@@ -107,11 +115,10 @@ function Contact(props) {
                   if (chats[input.from]) chats[input.from](input);
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
-                      //console.log("chat added");
                       self.fresh();
-                      if(res!==true){
-                        RUNTIME.addContact(res,()=>{
-                        },true);
+                      if (res !== true) {
+                        RUNTIME.addContact(res, () => {
+                        }, true);
                       }
                     })
                   });
@@ -127,7 +134,6 @@ function Contact(props) {
                   }
                   break;
                 case "notice":
-                  //console.log(`Notice:${JSON.stringify(input)}`);
                   if (chats[input.from]) chats[input.from](input);
                   break;
                 default:
@@ -139,25 +145,42 @@ function Contact(props) {
           },
           close: (res) => {
             websocket = null;   //remove websocket link
+            active = false;
           },
           error: (res) => {
-
+            console.log(res);
           }
         }
 
         RUNTIME.getAccount((acc) => {
-          if (acc === null || !acc.address){
+          if (acc === null || !acc.address) {
             setHidelink(true);
             return false;
-          } 
+          }
           RUNTIME.websocket(uri, (ws) => {
+            //console.log(ws.readyState);
+            console.log(`Call linkChatting, checker status: ${checker}`);
+
             websocket = ws;
+            setHidelink(true);
+            checker = setInterval(() => {
+              const status = RUNTIME.wsCheck(uri);
+              console.log(`Websocket status:${status}, checker: ${checker}`);
+              if (status === 3) {
+                setHidelink(false);
+                RUNTIME.wsRemove(uri);
+                setTimeout(() => {
+                  self.linkChatting(ev);
+                }, 1000);
+              }
+            }, 5000);
 
             const data = {
               act: "active",
               acc: acc.address,
             }
             self.send(data);
+
           }, agent);
         });
       });
@@ -168,8 +191,8 @@ function Contact(props) {
       setCount(fresh_contact);
       setStranger(fresh_stranger);
     },
-    select: (map,cat) => {
-      selected[cat]= map;
+    select: (map, cat) => {
+      selected[cat] = map;
     },
     checkActive: () => {
       RUNTIME.getSetting((cfg) => {
@@ -181,15 +204,15 @@ function Contact(props) {
     },
   };
 
-  if(!friend){
-    RUNTIME.getContact((fs)=>{
+  if (!friend) {
+    RUNTIME.getContact((fs) => {
       CHAT.friends(fs);
-      friend=true;
+      friend = true;
     });
   }
-  
+
   // http://localhost/Easypolka/OS/service/chat/
-  
+
   useEffect(() => {
     if (!active) {
       self.linkChatting();
@@ -212,9 +235,9 @@ function Contact(props) {
               className="text-end pb-2" style={{ "paddingTop": "10px" }}>
               <span className="close" onClick={(ev) => {
                 setAnimation("ani_scale_out");
-                setTimeout(()=>{
+                setTimeout(() => {
                   props.funs.page("");
-                },300);
+                }, 300);
               }}><button className='btn btn-sm btn-default'>X</button></span>
             </Col>
           </Row>
