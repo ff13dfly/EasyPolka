@@ -1,10 +1,11 @@
 import { Col } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 
-import Stage from '../layout/stage';
+//import Stage from '../layout/stage';
 import Page from '../layout/page';
+import Link from '../layout/link';
 import Device from '../lib/device';
-import Overview from './overview';
+//import Overview from './overview';
 
 import Setting from '../system/setting';
 import Account from '../system/account';
@@ -49,16 +50,18 @@ function Cell(props) {
       funs.dialog.show(<TypeData funs={funs} link={data.src}/>,"Anchor Data Viewer",true);
     },
     clickApp:()=>{
-      //console.log("Ready to load app");
       const anchor=self.getAnchor(row.src);
       funs.page(<Page anchor={anchor} funs={funs}/>);
+    },
+    clickLink:()=>{
+      const anchor=self.getAnchor(row.src);
+      funs.page(<Link anchor={anchor} funs={funs}/>);
     },
     clickBase:()=>{
       //const name="setting";
       funs.page(map[data.name]);
     },
     click: () => {
-      //console.log(data);
       if(data.base){
         self.clickBase();
       }else{
@@ -72,7 +75,9 @@ function Cell(props) {
           case "app":
             self.clickApp();
             break;
-
+          case "link":
+            self.clickLink();
+            break;
           default:
             self.clickData();
             break;

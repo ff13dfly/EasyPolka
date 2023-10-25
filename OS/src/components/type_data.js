@@ -46,7 +46,7 @@ function TypeData(props) {
 
         //console.log(data);
         setName(data.name);
-        setRaw(JSON.stringify(data.raw));
+        setRaw(typeof (data.raw) !== "string" ? JSON.stringify(data.raw): data.raw);
         setBlock(data.block);
         setOwner(data.owner);
         setBytes(bt);

@@ -129,6 +129,20 @@ module.exports=[
       "icon":"icons/app_06.jpg",
       "short":"talking",
       "desc":""
+    },
+    {
+      "name":"homepage",
+      "src":"anchor://homepage",
+      "base":false,
+      "status":"installing",
+      "type":"link",
+      "grid":{
+        "size":[1,1],
+        "position":[0,0],
+      },
+      "icon":"icons/app_05.jpg",
+      "short":"homepage",
+      "desc":""
     }
   ]
 ]
