@@ -49,7 +49,12 @@ function Chat(props) {
       setContent(ev.target.value);
     },
     send:(ctx,to)=>{
-      if(chatWS===null) return false;
+      if(chatWS===null || chatWS.readyState!==1 || !spam){
+        self.linker();
+        return setTimeout(()=>{
+          self.send(ctx,to);
+        },500);
+      }
       const msg={
         act:"chat",
         to:to,
@@ -93,6 +98,26 @@ function Chat(props) {
         element.scrollTop = element.scrollHeight;
       },100);
     },
+    linker:()=>{
+      RUNTIME.getSetting((cfg) => {
+        const config = cfg.apps.contact;
+        const uri = config.node[0];
+        RUNTIME.websocket(uri, (ws) => {
+          chatWS=ws;
+          spam = RUNTIME.getSpam(uri);
+  
+          CHAT.page(my_address,props.address,20,1,(his)=>{
+            self.showHistory(his);
+            const nlist=self.getUnread(his);
+            if(nlist.length!==0){
+              CHAT.toread(my_address,nlist,(res)=>{
+                if(props.fresh) props.fresh();
+              });
+            }
+          });
+        });
+      });
+    }
   };
 
   RUNTIME.getAccount((res) => {
@@ -100,24 +125,7 @@ function Chat(props) {
   });
 
   useEffect(() => {
-    RUNTIME.getSetting((cfg) => {
-      const config = cfg.apps.contact;
-      const uri = config.node[0];
-      RUNTIME.websocket(uri, (ws) => {
-        chatWS=ws;
-        spam = RUNTIME.getSpam(uri);
-
-        CHAT.page(my_address,props.address,20,1,(his)=>{
-          self.showHistory(his);
-          const nlist=self.getUnread(his);
-          if(nlist.length!==0){
-            CHAT.toread(my_address,nlist,(res)=>{
-              if(props.fresh) props.fresh();
-            });
-          }
-        });
-      });
-    });
+    self.linker();
 
     mailer(props.address,(res)=>{
       switch (res.act) {

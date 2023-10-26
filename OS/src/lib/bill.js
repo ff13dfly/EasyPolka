@@ -8,7 +8,7 @@ const BILL = {
         INDEXED.checkDB(DBname, (res) => {
             const tbs = res.objectStoreNames;
             const row = { 
-                address:to,
+                to:to,
                 amount:details.amount,
                 block:details.block?details.block:"",
                 hash:details.hash?details.hash:"",
@@ -19,7 +19,7 @@ const BILL = {
             if (!BILL.checkTable(table, tbs)) {
                 INDEXED.initDB(DBname,[
                     {table: table, keyPath: "hash", map: {
-                        address:{ unique: false },
+                        to:{ unique: false },
                         block:{unique: false},
                         hash:{unique: false},
                         more:{ unique: false },

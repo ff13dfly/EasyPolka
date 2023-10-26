@@ -43,6 +43,8 @@ function Paybill(props) {
           const pair = keyring.createFromJson(acc);
           try {
             pair.decodePkcs8(password);
+            setInfo("Paying, please hold ...");
+
             self.transfer(wsAPI, to, n, pair, (row) => {
               if(row===false){
                 setInfo("Payment failed.");
@@ -54,8 +56,8 @@ function Paybill(props) {
                   case 'InBlock':
                     setInfo("Payment is on progress.");
                     BILL.save(pair.address,to,row,(res)=>{
-                      console.log("Saved, force list to fresh");
                       funs.dialog.hide();
+                      if(props.callback) props.callback();
                       if(props.fresh) props.fresh();
                     });
                     break;
@@ -95,14 +97,28 @@ function Paybill(props) {
           //注意，如果目标账户的coin小于100的时候，会转账失败
           wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
             if (status.type === 'InBlock') {
+              
+              //console.log(status.toJSON());
+              //console.log(events);
+              // for(let i=0;i<events.length;i++){
+              //   console.log(events[i].toJSON());
+              // } 
+
               const row={
                 amount:amount,
                 status:status.type,
                 to:ss58,
+                block:status.toJSON().inBlock,
                 hash:txHash.toHex()
               };
               ck && ck(row);
             } else if (status.type === 'Finalized') {
+
+              // console.log(status.toJSON());
+              // for(let i=0;i<events.length;i++){
+              //   console.log(events[i].toJSON());
+              // }
+
               const block_hash=status.asFinalized.toHex();
               const transfer_hash=txHash.toHex();
               const row={

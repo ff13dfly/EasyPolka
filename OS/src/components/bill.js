@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import tools from '../lib/tools';
 import RUNTIME from '../lib/runtime';
 import BILL from '../lib/bill';
+import Chat from '../lib/chat';
 import Transaction from './transaction';
 
 function Bill(props) {
@@ -89,18 +90,21 @@ function Bill(props) {
           {history.map((row, index) => (
             <Col key={index} className='pb-4' xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
               <Row>
-                <Col xs={size.bill[0]} sm={size.bill[0]} md={size.bill[0]}
-                  lg={size.bill[0]} xl={size.bill[0]} xxl={size.bill[0]} onClick={(ev) => {
-                    console.log("Ready to chat");
-                    //funs.dialog.show(<Chat address={row.address} mailer={props.mailer}/>,tools.shorten(address,6));
-                  }}>
-                  <img style={{ width: "60px" }} src={`https://robohash.org/${row.to}.png`} alt="user logo" />
+                <Col className='text-center' xs={size.bill[0]} sm={size.bill[0]} md={size.bill[0]}
+                  lg={size.bill[0]} xl={size.bill[0]} xxl={size.bill[0]} >
+                  <img className='pb-2' style={{ width: "60px" }} src={`https://robohash.org/${row.to}.png`} alt="user logo"
+                    onClick={(ev) => {
+                      props.agent.setAccount(row.to);
+                    }}
+                  />
+                  <button className='btn btn-sm btn-default' onClick={()=>{
+                    console.log(`Ready to chat.`);
+                    //funs.dialog.show(<Chat address={row.to} mailer={props.mailer}/>,tools.shorten(row.to,6));
+                  }}>Chat</button>
                 </Col>
                 <Col xs={size.bill[1]} sm={size.bill[1]} md={size.bill[1]}
                   lg={size.bill[1]} xl={size.bill[1]} xxl={size.bill[1]} onClick={(ev) => {
-                    self.click(row.block,row.hash);
-                    console.log("Ready to show details")
-                    //funs.dialog.show(<Chat address={row.address} mailer={props.mailer}/>,tools.shorten(address,6));
+                    self.click(row.block,!row.hash?"":row.hash);
                   }}>
                   <table style={{ width: "90%" }}>
                     <thead></thead>

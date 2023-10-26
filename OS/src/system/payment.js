@@ -20,9 +20,11 @@ function Payment(props) {
   let [count, setCount]=useState(0);
   
   let [from, setFrom] = useState("");
-  let [account, setAccount] = useState("");
-  let [amount, setAmount] = useState(0);
+  let [account, setAccount] = useState(!props.target?"":props.target);
+  let [amount, setAmount] = useState(!props.amount?0:props.amount);
   let [animation,setAnimation]=useState("ani_scale_in");
+
+  //let [address,setAddress]=useState();
 
   let [info,setInfo] =useState("");
   let [history,setHistory]=useState(props.history===undefined?true:props.history);
@@ -61,14 +63,16 @@ function Payment(props) {
       const normal="#FFFFFF";
       const map={account:{background:normal},amount:{background:normal}};
       if(!self.checkAccount(account,from)) map.account.background=active_color;
+
       if(!amount) map.amount.background=active_color;   
+
       setActive(map);
       if(!self.checkAccount(account) || !amount) return false;
       
       funs.dialog.show(
-        (<Paybill callback={(res) => {
-          //console.log("Paybill callback");
-          //self.fresh();
+        (<Paybill callback={() => {
+          setAccount("");
+          setAmount(0);
         }} fresh={self.fresh} desc={desc} from={from} target={account} amount={amount} funs={funs} />),
         "Payment confirm"
       );
@@ -105,6 +109,12 @@ function Payment(props) {
     "background": "#EEEEEE",
     "marginTop":"32px",
   };
+
+  const agent={
+    setAccount:(acc)=>{
+      setAccount(acc);
+    },
+  }
 
   return (
     <div id="page" index={count} className={animation}>
@@ -144,7 +154,9 @@ function Payment(props) {
           <Col className='pb-2' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
             lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
             <small>Account to pay </small>
-            <textarea className="form-control" disabled={disable.account} style={active.account} cols="10" rows="3" defaultValue={props.target} onChange={(ev)=>{
+            <textarea className="form-control" disabled={disable.account} style={active.account} 
+              cols="10" rows="3"  value={account} onChange={(ev)=>{
+                //defaultValue={props.target}
               self.changeAccount(ev);
             }}></textarea>
           </Col>
@@ -158,7 +170,7 @@ function Payment(props) {
             lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
             <small>Amount to pay</small>
             <input type="number" className="form-control" disabled={disable.amount} style={active.amount} 
-              defaultValue={props.amount} onChange={(ev)=>{
+              value={amount} onChange={(ev)=>{
               self.changeAmount(ev);
             }}/>
           </Col>
@@ -169,7 +181,7 @@ function Payment(props) {
             }}>Pay</button>
           </Col>
         </Row>
-        <Bill count={count} funs={funs} show={history}/>
+        <Bill count={count} funs={funs} show={history} agent={agent}/>
       </Container>
     </div>
   );

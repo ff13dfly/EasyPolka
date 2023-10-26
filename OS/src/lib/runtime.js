@@ -71,10 +71,14 @@ const RUNTIME = {
         nets[net]=fun;
         return true;
     },
+
+    getConfig:(name)=>{
+        if(!name) return config;
+        if(!config[name]) return false;
+        return config[name];
+    },
+
     networkStatus:(net,ck)=>{
-        //console.log(net);
-        //console.log(JSON.stringify(nets));
-        //console.log(nets[net]);
         if(!nets[net]) return ck && ck(false);
         nets[net](ck);
     },
@@ -210,6 +214,14 @@ const RUNTIME = {
     getSpam: (uri) => {
         return spams[uri];
     },
+    wsReg:(uri,linker)=>{
+        wss[uri]=linker;
+        return true;
+    },
+    wsInstance:(uri)=>{
+        if(!wss[uri]) return false;
+        return wss[uri];
+    },
     wsCheck:(uri)=>{
         if(!wss[uri]) return 99;
         return wss[uri].readyState;
@@ -250,6 +262,7 @@ const RUNTIME = {
                 const provider = new WsProvider(endpoint);
                 ApiPromise.create({ provider: provider }).then((PokLinker) => {
                     wsAPI = PokLinker;
+                    RUNTIME.wsReg(endpoint,wsAPI);
                     API.AnchorJS.set(wsAPI);
                     ck && ck(API);
                 });
