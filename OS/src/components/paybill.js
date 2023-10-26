@@ -1,4 +1,4 @@
-import { Container, Row, Col, Button,Badge } from 'react-bootstrap';
+import { Container, Row, Col, Button, Badge } from 'react-bootstrap';
 
 import { useState, useEffect } from 'react';
 
@@ -17,7 +17,7 @@ function Paybill(props) {
 
   let [info, setInfo] = useState('');
   let [password, setPassword] = useState('');
-  let [disable, setDisable]= useState(true);
+  let [disable, setDisable] = useState(true);
 
   const avatar_from = `https://robohash.org/${props.from}.png`;
   const avatar_to = `https://robohash.org/${props.target}.png`;
@@ -35,10 +35,10 @@ function Paybill(props) {
         const to = props.target;
         const n = props.amount;
         RUNTIME.getAccount((acc) => {
-          if (!acc){
+          if (!acc) {
             setInfo("No acitve account");
             return false;
-          } 
+          }
           const keyring = new Keyring({ type: 'sr25519' });
           const pair = keyring.createFromJson(acc);
           try {
@@ -46,31 +46,31 @@ function Paybill(props) {
             setInfo("Paying, please hold ...");
 
             self.transfer(wsAPI, to, n, pair, (row) => {
-              if(row===false){
+              if (row === false) {
                 setInfo("Payment failed.");
                 setDisable(false);
                 return false;
-              }else{
+              } else {
                 //console.log(row);
                 switch (row.status) {
                   case 'InBlock':
                     setInfo("Payment is on progress.");
-                    BILL.save(pair.address,to,row,(res)=>{
+                    BILL.save(pair.address, to, row, (res) => {
                       funs.dialog.hide();
-                      if(props.callback) props.callback();
-                      if(props.fresh) props.fresh();
+                      if (props.callback) props.callback();
+                      if (props.fresh) props.fresh();
                     });
                     break;
                   case 'Finalized':
                     setInfo("Payment done.");
                     setDisable(false);
-                    BILL.update(pair.address,[row],(res)=>{
+                    BILL.update(pair.address, [row], (res) => {
                       console.log("Saved, force list to fresh");
-                      if(props.fresh) props.fresh();
+                      if (props.fresh) props.fresh();
                     });
-                    setTimeout(()=>{
+                    setTimeout(() => {
                       funs.dialog.hide();
-                    },1500);
+                    }, 1500);
                     break;
                   default:
                     break;
@@ -90,55 +90,49 @@ function Paybill(props) {
     transfer: function (wsAPI, ss58, amount, pair, ck) {
       let unsub = null;
       wsAPI.query.system.account(pair.address, ({ nonce, data: balance }) => {
+        console.log(nonce);
         unsub();
-        //console.log(`balance.free: ${balance.free}`);
         if (balance.free < self.tranform(200)) return ck && ck(false);
-        try {
-          //注意，如果目标账户的coin小于100的时候，会转账失败
-          //wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
-          wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, (tt) => {
-            //console.log(tt.toHuman());
-            console.log(tt);
-            const status=tt.status;
-            const txHash=tt.txHash;
-            if (status.type === 'InBlock') {
-              const simple=status.toJSON();
-              const row={
-                amount:amount,
-                status:status.type,
-                to:ss58,
-                block:simple.inBlock,
-                hash:txHash.toHex()
+        //注意，如果目标账户的coin小于100的时候，会转账失败
+        //wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
+        wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, (tt) => {
+          const status = tt.status;
+          const txHash = tt.txHash;
+          if (status.type === 'InBlock') {
+            const simple = status.toJSON();
+            const row = {
+              amount: amount,
+              status: status.type,
+              to: ss58,
+              block: simple.inBlock,
+              hash: txHash.toHex()
+            };
+            ck && ck(row);
+          } else if (status.type === 'Finalized') {
+            const block_hash = status.asFinalized.toHex();
+            const transfer_hash = txHash.toHex();
+            wsAPI.rpc.chain.getBlock(block_hash).then((res) => {
+              const data = res.toJSON();
+              const row = {
+                amount: amount,
+                status: status.type,
+                to: ss58,
+                block: block_hash,
+                hash: transfer_hash,
+                stamp: tools.stamp(),
+                more: {
+                  blocknumber: data.block.header.number,
+                  index: tt.txIndex,
+                },
               };
               ck && ck(row);
-            } else if (status.type === 'Finalized') {
-              //const simple=status.toJSON();
-              const block_hash=status.asFinalized.toHex();
-              const transfer_hash=txHash.toHex();
-
-              wsAPI.rpc.chain.getBlock(block_hash).then((res)=>{
-                const data=res.toJSON();
-                const row={
-                  amount:amount,
-                  status:status.type,
-                  to:ss58,
-                  block:block_hash,
-                  hash:transfer_hash,
-                  stamp:tools.stamp(),
-                  more:{
-                    blocknumber:data.block.header.number,
-                    index:tt.txIndex,
-                  },
-                };
-                ck && ck(row);
-                unsub();
-              })
-            }
-          });
-        } catch (error) {
-          //console.log(error);
+              unsub();
+            })
+          }
+        }).catch((error) => {
+          console.log(error);
           return ck && ck(false);
-        }
+        });
       }).then((fun) => {
         unsub = fun;
       });
@@ -150,7 +144,7 @@ function Paybill(props) {
 
   useEffect(() => {
     setDisable(false);
-  },[]);
+  }, []);
 
   const amap = {
     "width": "81px",
@@ -162,7 +156,7 @@ function Paybill(props) {
   const cmap = {
     whiteSpace: "pre-wrap",
     wordBreak: "break-all",
-    fontSize:"14px",
+    fontSize: "14px",
   }
 
   return (

@@ -12,7 +12,7 @@ function Bill(props) {
   const size = {
     row: [12],
     divide: [4, 4, 4],
-    bill: [2, 10],
+    bill: [3, 9],
   }
   const count = props.count;
   const funs=props.funs;
@@ -97,7 +97,7 @@ function Bill(props) {
                       props.agent.setAccount(row.to);
                     }}
                   />
-                  <button className='btn btn-sm btn-default' onClick={()=>{
+                  <button className='btn btn-sm btn-warning' onClick={()=>{
                     console.log(`Ready to chat.`);
                     //funs.dialog.show(<Chat address={row.to} mailer={props.mailer}/>,tools.shorten(row.to,6));
                   }}>Chat</button>
@@ -114,6 +114,10 @@ function Bill(props) {
                         <td style={{ textAlign: "right" }}>units</td>
                       </tr>
                       <tr>
+                        <td>On <strong>{(!row.more||!row.more.blocknumber)?"":row.more.blocknumber.toLocaleString()}</strong></td>
+                        <td style={{ textAlign: "right" }}>Index <strong>{(!row.more||!row.more.index)?"":row.more.index}</strong></td>
+                      </tr>
+                      <tr>
                         <td>{self.showDate(row.stamp)}</td>
                         <td style={{ textAlign: "right" }}></td>
                       </tr>
@@ -123,6 +127,7 @@ function Bill(props) {
                           {row.status}
                         </td>
                       </tr>
+                      
                     </tbody>
                   </table>
                 </Col>

@@ -25,33 +25,25 @@ function Transaction(props) {
       }
       return map;
     },
+    check:()=>{
+      RUNTIME.getActive((pok)=>{
+        if(pok===null) return false;
+        pok.rpc.chain.getBlock(block).then((res)=>{
+          const data=res.toHuman();
+          setDetails((<p>On <strong>{row.more.blocknumber.toLocaleString()}</strong>, 
+          amount <strong>{row.amount}</strong> index <strong>{row.more.index}</strong><br />
+          At {tools.toDate(row.stamp)}</p>));
+        }).catch((error)=>{
+          setDetails(`Invalid data.`);
+        })
+      });
+    }
   };
 
   useEffect(() => {
-    RUNTIME.getActive((pok)=>{
-      if(pok===null) return false;
-      pok.rpc.chain.getBlock(block).then((res)=>{
-        const data=res.toHuman();
-        console.log(data);
-        setDetails((<p>On <strong>{row.more.blocknumber.toLocaleString()}</strong>, 
+    setDetails((<p>On <strong>{row.more.blocknumber.toLocaleString()}</strong>, 
         amount <strong>{row.amount}</strong> index <strong>{row.more.index}</strong><br />
         At {tools.toDate(row.stamp)}</p>));
-
-        pok.query.system.events.at(block,(evs)=>{
-          const list=self.status(evs);
-          console.log(list);
-          console.log(evs);
-
-          res.block.extrinsics.forEach((ex, index) => {
-            const dt = ex.toHuman();
-            console.log(dt);
-          });
-        });
-      }).catch((error)=>{
-        console.log(error);
-        setDetails(`Invalid data.`);
-      })
-    });
   }, []);
 
   return (

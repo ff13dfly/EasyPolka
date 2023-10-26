@@ -61,7 +61,7 @@ function Payment(props) {
     click:(ev)=>{
       const active_color="#d7a3a3";
       const normal="#FFFFFF";
-      const map={account:{background:normal},amount:{background:normal}};
+      const map={account:{background:normal,width:"100%"},amount:{background:normal,width:"100%"}};
       if(!self.checkAccount(account,from)) map.account.background=active_color;
 
       if(!amount) map.amount.background=active_color;   
@@ -155,10 +155,15 @@ function Payment(props) {
             lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
             <small>Account to pay </small>
             <textarea className="form-control" disabled={disable.account} style={active.account} 
-              cols="10" rows="3"  value={account} onChange={(ev)=>{
+              rows="3"  value={account} onChange={(ev)=>{
                 //defaultValue={props.target}
               self.changeAccount(ev);
             }}></textarea>
+             <button className='btn btn-sm btn-danger' style={{marginTop:"5px"}} 
+              hidden={!account?true:false} onClick={(ev)=>{
+                setAccount("")
+              }}
+             >Reset</button>
           </Col>
 
           <Col className='pb-2 text-center' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}

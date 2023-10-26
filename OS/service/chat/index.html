@@ -204,10 +204,13 @@
                         }
                     },
                     close:(res,index)=>{
-
+                        const notice=`<p class="notice">Disconnected</p>`;
+                        $("#screen_"+index).prepend(notice);
+                        console.log(res);
                     },
                     error:(res,index)=>{
-
+                        const notice=`<p class="notice">${JSON.stringify(res)}</p>`;
+                        $("#screen_"+index).prepend(notice);
                     }
                 }
                 self.init(url,agent,(ws,index)=>{
