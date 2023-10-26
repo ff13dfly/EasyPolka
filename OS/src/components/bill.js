@@ -48,8 +48,8 @@ function Bill(props) {
       const time = new Date(stamp);
       return time.toLocaleDateString() + " " + time.toLocaleTimeString();
     },
-    click:(block_hash,transfer_hash)=>{
-      funs.dialog.show(<Transaction block={block_hash} hash={transfer_hash} />,"Transaction details")
+    click:(block_hash,transfer_hash,row)=>{
+      funs.dialog.show(<Transaction block={block_hash} hash={transfer_hash} row={JSON.stringify(row)} />,"Transaction details")
     },
   }
 
@@ -104,7 +104,7 @@ function Bill(props) {
                 </Col>
                 <Col xs={size.bill[1]} sm={size.bill[1]} md={size.bill[1]}
                   lg={size.bill[1]} xl={size.bill[1]} xxl={size.bill[1]} onClick={(ev) => {
-                    self.click(row.block,!row.hash?"":row.hash);
+                    self.click(row.block,!row.hash?"":row.hash,row);
                   }}>
                   <table style={{ width: "90%" }}>
                     <thead></thead>

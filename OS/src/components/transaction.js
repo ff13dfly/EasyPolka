@@ -10,30 +10,48 @@ function Transaction(props) {
   };
   const block=props.block;
   const hash=props.hash;
-
-  //console.log(props);
+  const row=JSON.parse(props.row);
 
   let [details, setDetails] = useState('');
 
   const self={
-    
+    status:(list)=>{
+      const evs=list.toHuman();
+      const map={};
+      for(let i=0;i<evs.length;i++){
+        const ev=evs[i],index=ev.phase.ApplyExtrinsic;
+        if(ev.event.section!=="system") continue;
+        map[index]=ev.event.method;
+      }
+      return map;
+    },
   };
 
   useEffect(() => {
     RUNTIME.getActive((pok)=>{
       if(pok===null) return false;
-      console.log(pok);
       pok.rpc.chain.getBlock(block).then((res)=>{
-        const data=res.toJSON();
+        const data=res.toHuman();
         console.log(data);
+        setDetails((<p>On <strong>{row.more.blocknumber.toLocaleString()}</strong>, 
+        amount <strong>{row.amount}</strong> index <strong>{row.more.index}</strong><br />
+        At {tools.toDate(row.stamp)}</p>));
+
+        pok.query.system.events.at(block,(evs)=>{
+          const list=self.status(evs);
+          console.log(list);
+          console.log(evs);
+
+          res.block.extrinsics.forEach((ex, index) => {
+            const dt = ex.toHuman();
+            console.log(dt);
+          });
+        });
+      }).catch((error)=>{
+        console.log(error);
+        setDetails(`Invalid data.`);
       })
     });
-    // RUNTIME.getAPIs((API) => {
-    //   const cfg=RUNTIME.getConfig("system");
-    //   const node=cfg.network.anchor[0];
-    //   const pok=RUNTIME.wsInstance(node);
-      
-    // });
   }, []);
 
   return (
@@ -44,7 +62,7 @@ function Transaction(props) {
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
         {details}
       </Col>
-      <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+      <Col className='pt-3' xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
         <small>Block Hash</small>
       </Col>
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>

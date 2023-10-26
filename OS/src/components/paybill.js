@@ -95,45 +95,44 @@ function Paybill(props) {
         if (balance.free < self.tranform(200)) return ck && ck(false);
         try {
           //注意，如果目标账户的coin小于100的时候，会转账失败
-          wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
+          //wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, ({ events = [], status, txHash }) => {
+          wsAPI.tx.balances.transfer(ss58, self.tranform(amount)).signAndSend(pair, (tt) => {
+            //console.log(tt.toHuman());
+            console.log(tt);
+            const status=tt.status;
+            const txHash=tt.txHash;
             if (status.type === 'InBlock') {
-              
-              //console.log(status.toJSON());
-              //console.log(events);
-              // for(let i=0;i<events.length;i++){
-              //   console.log(events[i].toJSON());
-              // } 
-
+              const simple=status.toJSON();
               const row={
                 amount:amount,
                 status:status.type,
                 to:ss58,
-                block:status.toJSON().inBlock,
+                block:simple.inBlock,
                 hash:txHash.toHex()
               };
               ck && ck(row);
             } else if (status.type === 'Finalized') {
-
-              // console.log(status.toJSON());
-              // for(let i=0;i<events.length;i++){
-              //   console.log(events[i].toJSON());
-              // }
-
+              //const simple=status.toJSON();
               const block_hash=status.asFinalized.toHex();
               const transfer_hash=txHash.toHex();
-              const row={
-                amount:amount,
-                status:status.type,
-                to:ss58,
-                block:block_hash,
-                hash:transfer_hash,
-                stamp:tools.stamp(),
-                more:{
-                  blocknumber:3345
-                },
-              };
-              ck && ck(row);
-              unsub();
+
+              wsAPI.rpc.chain.getBlock(block_hash).then((res)=>{
+                const data=res.toJSON();
+                const row={
+                  amount:amount,
+                  status:status.type,
+                  to:ss58,
+                  block:block_hash,
+                  hash:transfer_hash,
+                  stamp:tools.stamp(),
+                  more:{
+                    blocknumber:data.block.header.number,
+                    index:tt.txIndex,
+                  },
+                };
+                ck && ck(row);
+                unsub();
+              })
             }
           });
         } catch (error) {
