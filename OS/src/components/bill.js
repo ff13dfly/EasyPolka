@@ -7,6 +7,7 @@ import RUNTIME from '../lib/runtime';
 import BILL from '../lib/bill';
 import Chat from '../lib/chat';
 import Transaction from './transaction';
+import SCROLLER from '../lib/scroll';
 
 function Bill(props) {
   const size = {
@@ -73,6 +74,7 @@ function Bill(props) {
     }else{
       setHide(true);
     }
+    SCROLLER.allowScroll();
   }, [count])
   return (
     <Row className='pt-2' index={count}>
@@ -85,6 +87,7 @@ function Bill(props) {
       <Col hidden={hide} xs={size.divide[2]} sm={size.divide[2]} md={size.divide[2]}
         lg={size.divide[2]} xl={size.divide[2]} xxl={size.divide[2]} className="pt-2"><hr /></Col>
 
+      <div id="bill_container">
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
         <Row style={{height:"100%",overflow:"hidden"}}>
           {history.map((row, index) => (
@@ -136,6 +139,7 @@ function Bill(props) {
           ))}
         </Row>
       </Col>
+      </div>
     </Row>
   )
 }

@@ -113,8 +113,12 @@ function App() {
     linkNetwork:()=>{
       RUNTIME.getAPIs((res)=>{
         RUNTIME.networkStatus("anchor",(done)=>{
+          // RUNTIME.getActive((pok)=>{
+          //   console.log(pok.rpc.system);
+          // });
+
           if(done) return setHidelink(true);
-          setHidelink(false);
+          setHidelink(false);          
         });
       });
     },

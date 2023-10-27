@@ -75,6 +75,8 @@ code {
 /* .close{font-weight: 600;}
 .close:active{color:#FFFFFF;font-weight: 200;} */
 
+#bill_container{height: 400px;overflow-x: hidden;overflow-y: scroll !important;}
+
 /*"background": "#FFAABB",*/
 .chat_container{height: 400px; width: 360px;margin: 0 auto;background: #FFFFFF;padding:0px 5px 0px 5px ;
   overflow-x: hidden;
