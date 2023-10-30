@@ -2,11 +2,6 @@
  * Usage:
  * const [blockScroll, allowScroll] = useScrollBlock();
  */
-
-
-//let currentBlock=true;
-
-//console.log(safeDocument);
 module.exports ={
     blockScroll:() => {
         const safeDocument = typeof document !== 'undefined' ? document : {};
@@ -38,13 +33,10 @@ module.exports ={
         const html = safeDocument.documentElement;
         const { body } = safeDocument;
         if (!body || !body.style) return;
-        //console.log("here");
         html.style.position = '';
         html.style.overflow = '';
         body.style.position = '';
         body.style.overflow = '';
         body.style.paddingRight = '';
-
-        //currentBlock = false;
     }
 }

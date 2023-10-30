@@ -1,10 +1,34 @@
 import INDEXED from './indexed';
 import tools from './tools';
 
-const DBname = "w3os_history";
+//const DBname = "w3os_history";
+let DBname='w3os_mine';
+let prefix='bill_';
+
+const table={
+    table: "TABLE_NAME",
+    keyPath: "hash", 
+    map: {
+        to:{ unique: false },
+        block:{unique: false},
+        hash:{unique: false},
+        more:{ unique: false },
+        stamp: { unique: false }, 
+        status: { unique: false }
+    }
+}
 const BILL = {
+    setConfig:(name,pre)=>{
+        DBname=name;
+        prefix=pre;
+    },
+    getTable:(name)=>{
+        const data=JSON.parse(JSON.stringify(table));
+        data.table=name;
+        return data;
+    },
     save: (mine, to, details, ck) => {
-        const table=`bill_${mine}`;
+        const table=`${prefix}${mine}`;
         INDEXED.checkDB(DBname, (res) => {
             const tbs = res.objectStoreNames;
             const row = { 
@@ -17,15 +41,8 @@ const BILL = {
                 status:details.status?details.status:"unknown",
             };
             if (!BILL.checkTable(table, tbs)) {
-                INDEXED.initDB(DBname,[
-                    {table: table, keyPath: "hash", map: {
-                        to:{ unique: false },
-                        block:{unique: false},
-                        hash:{unique: false},
-                        more:{ unique: false },
-                        stamp: { unique: false }, 
-                        status: { unique: false } } }
-                ],res.version + 1).then((db) => {
+                const tb=BILL.getTable(table);
+                INDEXED.initDB(DBname,[tb],res.version + 1).then((db) => {
                     INDEXED.insertRow(db, table, [row]);
                     return ck && ck();
                 });

@@ -13,6 +13,8 @@ import RUNTIME from './lib/runtime';
 import SCROLLER from './lib/scroll';
 
 import INDEXED from './lib/indexed';
+import CHAT from './lib/chat';
+import BILL from './lib/bill';
 
 const size = Device.grids();
 
@@ -97,20 +99,40 @@ function App() {
           funs.dialog.hide();
           return ck && ck(pass);
         }} />, title,true);
-
       }, self.fresh);
     },
-    fresh: () => {
+    fresh:() => {
       RUNTIME.getApps((list) => {
         if (list === false) {
           setTimeout(() => {
-            const info = (<p>Error password, please try again.</p>);
-            const title = "System password";
-            self.login(info, title);
+            self.login();
           }, 500);
           return false;
         }
         setApps(list);
+        self.initIndexedDB();
+        
+      });
+    },
+    initIndexedDB:()=>{
+      RUNTIME.getAccount((sign)=>{
+        if(sign!==null){
+          const acc=sign.address;
+          const cfg=RUNTIME.getConfig("system");
+          const icfg=cfg.indexed;
+
+          INDEXED.checkDB(icfg.db,(idb)=>{
+            const tbs=[];
+            if(!INDEXED.checkTable(idb.objectStoreNames,`${icfg.prefix.chat}${acc}`)){
+              tbs.push(CHAT.getTable(`${icfg.prefix.chat}${acc}`));
+            }
+            if(!INDEXED.checkTable(idb.objectStoreNames,`${icfg.prefix.bill}${acc}`)){
+              tbs.push(BILL.getTable(`${icfg.prefix.bill}${acc}`));
+            }
+
+            if(tbs.length!==0) INDEXED.initDB(icfg.db,tbs);
+          });
+        }
       });
     },
     linkNetwork:()=>{
@@ -145,6 +167,7 @@ function App() {
   useEffect(() => {
     self.login();
     self.linkNetwork();
+    
   }, []);
 
   return (

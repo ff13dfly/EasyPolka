@@ -25,6 +25,13 @@ module.exports={
       "stable":"anchor://easy"
     },
   },
+  "indexed":{
+    "db":"w3os_indexed",    //w3os_indexed
+    "prefix":{
+      "chat":"chat_",
+      "bill":"bill_",
+    }
+  },
   "storage":{   //localstorage key definition
     "contact":"w3os_contact",
     "apps":"w3os_apps",

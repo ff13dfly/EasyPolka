@@ -1,7 +1,21 @@
 import INDEXED from './indexed';
 import tools from './tools';
 
-const DBname='w3os_history';
+//const DBname='w3os_history';
+let DBname='w3os_mine';
+let prefix='chat_';
+
+const table={
+    table: 'TABLE_NAME',
+    keyPath: "stamp", 
+    map: {
+        address:{ unique: false },
+        way:{ unique: false },
+        stamp: { unique: false }, 
+        status: { unique: false }
+    }
+}
+
 const status = {
     UNREAD: 3,
     NORMAL: 1,
@@ -14,19 +28,28 @@ const CHAT = {
     friends:(fs)=>{       //set friend list
         for(var k in fs) map[k]=true;
     },
+    setConfig:(name,pre)=>{
+        DBname=name;
+        prefix=pre;
+    },
+    getTable:(name)=>{
+        const data=JSON.parse(JSON.stringify(table));
+        data.table=name;
+        return data;
+    },
     save: (mine, from, ctx,way, ck) => {
+        const table=`${prefix}${mine}`;
         INDEXED.checkDB(DBname, (res) => {
             const row = { address:from,msg: ctx,status:(way==="to"?status.NORMAL:status.UNREAD),way:way,stamp: tools.stamp()};
             const tbs = res.objectStoreNames;
-            if (!CHAT.checkTable(mine, tbs)) {
-                INDEXED.initDB(DBname,[
-                    {table: mine, keyPath: "stamp", map: {address:{ unique: false },way:{ unique: false },stamp: { unique: false }, status: { unique: false } } }
-                ], res.version + 1).then((db) => {
-                    INDEXED.insertRow(db, mine, [row]);
+            if (!CHAT.checkTable(table, tbs)) {
+                const tb=CHAT.getTable(table);
+                INDEXED.initDB(DBname,[tb], res.version + 1).then((db) => {
+                    INDEXED.insertRow(db, table, [row]);
                     return ck && ck(map[from]?true:from);
                 });
             }else{
-                INDEXED.insertRow(res, mine, [row]);
+                INDEXED.insertRow(res, table, [row]);
                 return ck && ck(map[from]?true:from);
             }
         });

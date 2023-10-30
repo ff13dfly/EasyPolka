@@ -31,6 +31,9 @@ const config = {
 }
 
 const RUNTIME = {
+    /************************************************/
+    /********** System initialization ***************/
+    /************************************************/
     //1. set the password for W3OS;
     //!important, if there is no password, the data will be encode by default salt.
     //!important, the storage will be fresh when the password changed
@@ -69,10 +72,15 @@ const RUNTIME = {
         //console.log(salt);
         return !salt?false:true;
     },
-    networkReg:(net,fun)=>{
-        nets[net]=fun;
-        return true;
+    clean:()=>{
+        //1.clear all storage
+
+        //2.clear all IndexedDB data
+        
     },
+    /************************************************/
+    /************** System setting ******************/
+    /************************************************/    
 
     getConfig:(name)=>{
         if(!name) return config;
@@ -80,6 +88,18 @@ const RUNTIME = {
         return config[name];
     },
 
+    getSetting: (ck) => {
+        return ck && ck(config.system);
+    },
+
+    /************************************************/
+    /************** Network status ******************/
+    /************************************************/
+
+    networkReg:(net,fun)=>{
+        nets[net]=fun;
+        return true;
+    },
     networkStatus:(net,ck)=>{
         if(!nets[net]) return ck && ck(false);
         nets[net](ck);
@@ -97,9 +117,9 @@ const RUNTIME = {
         return true;
     },
 
-    getSetting: (ck) => {
-        return ck && ck(config.system);
-    },
+    /************************************************/
+    /************* Contcat Functions ****************/
+    /************************************************/
 
     //contact functions
     addContact: (address, ck, stranger) => {
@@ -162,6 +182,10 @@ const RUNTIME = {
         });
     },
 
+    /************************************************/
+    /************ Application Launch ****************/
+    /************************************************/
+
     getApps: (ck) => {
         const list = STORAGE.getKey("apps");
         if (list === null) {
@@ -170,8 +194,6 @@ const RUNTIME = {
         return ck && ck(STORAGE.getKey("apps"));
     },
     inArray:(index,arr)=>{
-        //console.log(index);
-        //console.log(arr);
         for(let i=0;i<arr.length;i++){
             if(parseInt(index)===arr[i]) return true;
         }
@@ -187,7 +209,6 @@ const RUNTIME = {
             const nlist=[];
             for(let i=0;i<list[page].length;i++){
                 const row=list[page][i];
-                //console.log(RUNTIME.inArray(i,todo))
                 if(!RUNTIME.inArray(i,todo)) nlist.push(row);
             }
             list[page]=nlist;
@@ -209,6 +230,10 @@ const RUNTIME = {
         const str = JSON.stringify(Config.format.app);
         return JSON.parse(str);
     },
+
+    /************************************************/
+    /************ Websocket Management **************/
+    /************************************************/
 
     setSpam: (uri, spam) => {
         spams[uri] = spam;
@@ -256,6 +281,10 @@ const RUNTIME = {
         }
     },
 
+    /************************************************/
+    /********* Network Websocket Functions **********/
+    /************************************************/
+
     link: (endpoint, ck) => {
         if (wsAPI === null) {
             const WsProvider = API.Polkadot.WsProvider;
@@ -285,10 +314,14 @@ const RUNTIME = {
         }
     },
     basicStatus:(ck)=>{
-        //console.log(API.AnchorJS.ready());
         if(API.AnchorJS.ready) return ck && ck(API.AnchorJS.ready())
         return ck && ck(false);
     },
+
+    /************************************************/
+    /****************** Open APIs *******************/
+    /************************************************/
+
     setUI:(funs)=>{
         UI=funs;
     },
