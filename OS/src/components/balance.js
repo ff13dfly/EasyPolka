@@ -42,7 +42,7 @@ function Balance(props) {
   return (
     <Row className='pt-1'>
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
-        {tools.shorten(address)} : <strong>{amount}</strong> units.
+        {tools.shorten(address,10)} : <strong>{amount}</strong> units.
       </Col>
       <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
         <hr />

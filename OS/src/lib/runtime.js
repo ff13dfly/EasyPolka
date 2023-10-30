@@ -2,12 +2,14 @@ import STORAGE from './storage';
 import tools from './tools';
 import Encry from './encry';
 import Config from '../data/setting';
+import Vertify from '../open/vertify';
 
 let API = null;
 let wsAPI = null;
 let wss = {};
 let spams = {};
 let nets={};
+let UI=null;
 
 //keys and prefix for localstorage
 const prefix = "w3os";
@@ -287,6 +289,9 @@ const RUNTIME = {
         if(API.AnchorJS.ready) return ck && ck(API.AnchorJS.ready())
         return ck && ck(false);
     },
+    setUI:(funs)=>{
+        UI=funs;
+    },
     getAPIs: (ck) => {
         if (API === null) {
             const AnchorJS = window.AnchorJS;
@@ -305,6 +310,16 @@ const RUNTIME = {
                 AnchorJS: AnchorJS,
                 Easy: (anchorLinker, ck) => {
                     window.Easy.easyRun(anchorLinker, easyAPI, ck);
+                },
+                system:{
+                    pay:(param,ck)=>{   //transaction API for cApps
+                        if(!param.amount) return ck && ck(false);
+
+                        UI.dialog.show(<Vertify />);
+                    },
+                    write:()=>{   //anchor writing API for cApps
+
+                    }
                 },
             };
 

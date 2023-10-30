@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import tools from '../lib/tools';
 import RUNTIME from '../lib/runtime';
 import BILL from '../lib/bill';
-import Chat from '../lib/chat';
+//import Chat from '../lib/chat';
 import Transaction from './transaction';
 import SCROLLER from '../lib/scroll';
 

@@ -112,7 +112,11 @@ function Payment(props) {
 
   const agent={
     setAccount:(acc)=>{
-      setAccount(acc);
+      if(account===acc){
+        setAccount("");
+      }else{
+        setAccount(acc);
+      }
     },
   }
 
@@ -159,11 +163,6 @@ function Payment(props) {
                 //defaultValue={props.target}
               self.changeAccount(ev);
             }}></textarea>
-             <button className='btn btn-sm btn-danger' style={{marginTop:"5px"}} 
-              hidden={!account?true:false} onClick={(ev)=>{
-                setAccount("")
-              }}
-             >Reset</button>
           </Col>
 
           <Col className='pb-2 text-center' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}

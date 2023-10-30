@@ -12,6 +12,8 @@ import Device from './lib/device';
 import RUNTIME from './lib/runtime';
 import SCROLLER from './lib/scroll';
 
+import INDEXED from './lib/indexed';
+
 const size = Device.grids();
 
 function App() {
@@ -57,6 +59,7 @@ function App() {
       },
     },
   }
+  RUNTIME.setUI(funs);
 
   let todo={};
   const self = {
@@ -122,6 +125,21 @@ function App() {
         });
       });
     },
+
+    test:()=>{
+      INDEXED.initDB("test",[
+        {
+          table: "abc", 
+          keyPath: "stamp", 
+          map: {
+            address:{ unique: false },
+            way:{ unique: false },
+            stamp: { unique: false },
+            status: { unique: false }
+          }
+        }
+      ]);
+    }
   }
 
   useEffect(() => {
