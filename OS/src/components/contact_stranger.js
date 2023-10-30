@@ -117,12 +117,11 @@ function StrangerList(props) {
                 style={{ minHeight: "80px" }}
               />
               <span className='count' hidden={!row.unread || row.unread === 0}>{!row.unread ? 0 : row.unread}</span>
-              <small>{row.address.length > 10 ? tools.shorten(row.address, 4) : row.address}</small><br />
               <small><input hidden={!props.edit} type="checkbox"
                 checked={!select[row.address] ? false : select[row.address]}
                 onChange={(ev) => {
                   //self.change(ev,address);
-                }} style={{ marginRight: "5px" }} />@{row.network}</small>
+                }} style={{ marginRight: "5px" }} />{tools.shorten(row.address, !props.edit?4:2)}</small><br />
             </Col>
           </Row>
         </Col>

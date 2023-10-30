@@ -98,7 +98,7 @@ function ContactList(props) {
         }}>
           <Row>
             <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}
-              className="pt-2">
+              className="pt-2 text-center">
               <Image
                 src={`https://robohash.org/${row.address}.png`}
                 rounded
@@ -106,12 +106,12 @@ function ContactList(props) {
                 style={{minHeight:"80px"}}
               />
               <span className='count' hidden={!row.unread || row.unread===0}>{!row.unread?0:row.unread}</span>
-              <small>{row.address.length > 10 ? tools.shorten(row.address, 4) : row.address}</small><br />
               <small><input hidden={!props.edit} type="checkbox"
                 checked={!select[row.address] ? false : select[row.address]}
                 onChange={(ev) => {
                   //self.change(ev,address);
-                }} style={{ marginRight: "5px" }} />@{row.network}</small>
+                }} style={{ marginRight: "5px" }} />{tools.shorten(row.address, !props.edit?4:2)}</small><br />
+              <small><strong>{row.short}</strong></small>
             </Col>
           </Row>
         </Col>
