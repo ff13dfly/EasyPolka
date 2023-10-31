@@ -257,7 +257,7 @@ function Contact(props) {
         </Container>
       </Navbar>
       <Container>
-        <ContactAdd funs={funs} fresh={self.fresh} />
+        <ContactAdd funs={funs} fresh={self.fresh} count={count}/>
         {reg}
         <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count} />
         <StrangerList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={stranger} />

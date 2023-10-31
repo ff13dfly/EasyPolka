@@ -107,7 +107,7 @@ function Payment(props) {
     "height": "66px",
     "borderRadius": "20px",
     "background": "#EEEEEE",
-    "marginTop":"32px",
+    "marginTop":"20px",
   };
 
   const agent={
@@ -153,14 +153,13 @@ function Payment(props) {
             <Badge bg='warning'>{info}</Badge>
           </Col>
           <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
-            <Balance />
+            <Balance funs={funs}/>
           </Col>
           <Col className='pb-2' xs={size.account[0]} sm={size.account[0]} md={size.account[0]}
             lg={size.account[0]} xl={size.account[0]} xxl={size.account[0]}>
             <small>Account to pay </small>
             <textarea className="form-control" disabled={disable.account} style={active.account} 
-              rows="3"  value={account} onChange={(ev)=>{
-                //defaultValue={props.target}
+              rows="2"  value={account} onChange={(ev)=>{
               self.changeAccount(ev);
             }}></textarea>
           </Col>

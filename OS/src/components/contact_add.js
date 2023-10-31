@@ -6,6 +6,7 @@ import RUNTIME from '../lib/runtime';
 function ContactAdd(props) {
   const size=[10,2];
   let [address, setAddress] = useState("");
+  let [disable,setDisalbe] = useState(true);
 
   const self={
     change:(ev)=>{
@@ -22,9 +23,10 @@ function ContactAdd(props) {
   };
 
   useEffect(() => {
-    //const startY=Device.getStart(id);
-    //console.log(startY);
-  }, [])
+    RUNTIME.getAccount((acc)=>{
+      if(acc && acc.address) setDisalbe(false);
+    });
+  }, [props.count]);
 
   return (
 
@@ -35,6 +37,7 @@ function ContactAdd(props) {
               size="md"
               type="text"
               placeholder="Address ..."
+              disabled={disable}
               value={address}
               onChange={(ev) => {
                 self.change(ev);
@@ -43,7 +46,7 @@ function ContactAdd(props) {
       </Col>
       <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}
        className="pt-2 text-end">
-          <Button variant="default" onClick={(ev)=>{
+          <Button variant="default" disabled={disable} onClick={(ev)=>{
               self.click(ev);
           }}>+</Button>
       </Col>
