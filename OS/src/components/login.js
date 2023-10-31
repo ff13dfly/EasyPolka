@@ -33,20 +33,11 @@ function Login(props){
               sign.meta.name=self.randomName();
               RUNTIME.setAccount(sign);
               props.fresh();
-            }} account={pair.address} mnemonic={mnemonic} funs={funs} />)
+            }} account={pair.address} mnemonic={mnemonic} funs={funs} />),"New account"
           );
         });
       },
 
-      // addAccount:(ev)=>{
-      //   RUNTIME.getAPIs((API) => {
-      //     const mnemonic = mnemonicGenerate(12, true);
-      //     funs.dialog.show(
-      //       (<Password callback={(pass) =>{
-      //       }} account={"5GWBZheNpuLXoJh3UxXwm5TFrGL2EHHusv33VwsYnmULdDHm"} mnemonic={mnemonic} funs={funs} />)
-      //     );
-      //   });
-      // },
       changeFile:(ev)=>{
         //1.这里需要对文件内容进行处理
         try {

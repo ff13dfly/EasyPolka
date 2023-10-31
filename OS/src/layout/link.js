@@ -22,13 +22,15 @@ function Link(props) {
   let [link,setLink]=useState("");
   let [animation,setAnimation]=useState("ani_scale_in");
   let [account,setAccount]=useState("");
+  let [show,setShow]=useState(false);
 
   useEffect(() => {
     const alink=`anchor://${anchor}`;
     console.log(alink);
     RUNTIME.getAPIs((APIs) => {
       APIs.Easy(alink, (res) => {
-        if(res===false) return setLink("No such anchor");
+        if(res.type==='unknow') return setLink("Invalid data");
+        setShow(true);
         const data=res.data[`${res.location[0]}_${res.location[1]}`];
         setAccount(tools.shorten(data.signer));
         try {
@@ -38,7 +40,6 @@ function Link(props) {
         } catch (error) {
           setLink("Invalid link format");
         }
-        //console.log(data);
       });
     });
   }, []);
@@ -75,13 +76,13 @@ function Link(props) {
           lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
             
         </Col>
-        <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} 
+        <Col className='text-center pt-2' xs={size.row[0]} sm={size.row[0]} md={size.row[0]} 
           lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
-          {link}
+          <h4>{link}</h4>
         </Col>
         
       </Row>
-      <Container>
+      <Container hidden={!show}>
         <Row className='pt-2'>
           <Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} 
             lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>

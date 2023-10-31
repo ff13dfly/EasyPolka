@@ -6,6 +6,7 @@ import ContactAdd from '../components/contact_add';
 import ContactList from '../components/contact_list';
 import StrangerList from '../components/contact_stranger';
 import ContactSetting from '../components/contact_setting';
+import Login from '../components/login';
 
 import RUNTIME from '../lib/runtime';
 import CHAT from '../lib/chat';
@@ -14,7 +15,7 @@ let selected = { contact: null, stranger: null };
 
 let websocket = null;
 let spam = "";
-let chats = {};       //mailer, need to add to RUNTIME
+//let chats = {};       //mailer, need to add to RUNTIME
 let active = false;   //account reg to server status
 let friend = false;
 let fresh_contact = 0;
@@ -22,7 +23,11 @@ let fresh_stranger = 0;
 let checker = null;
 
 function Contact(props) {
-  const size = [3, 6, 3];
+  const size ={
+    header:[3, 6, 3],
+    row:[12]
+  };
+  
   const funs = props.funs;
 
   let [editing, setEditing] = useState(false);
@@ -30,6 +35,7 @@ function Contact(props) {
   let [stranger, setStranger] = useState(0);
   let [hidelink, setHidelink] = useState(false);
   let [animation, setAnimation] = useState("ani_scale_in");
+  let [reg,setReg]=useState("");
 
   const self = {
     clickSetting: (ev) => {
@@ -73,9 +79,6 @@ function Contact(props) {
       obj.spam=spam;
       websocket.send(JSON.stringify(obj));
     },
-    mailer: (address, fun) => {
-      chats[address] = fun;
-    },
     linkChatting: (ev) => {
       if (checker !== null) {
         clearInterval(checker);
@@ -102,7 +105,6 @@ function Contact(props) {
                 case "history":
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
-                      //console.log("history added");
                       self.fresh();
                       if (res !== true) {
                         RUNTIME.addContact(res, () => {
@@ -187,10 +189,12 @@ function Contact(props) {
       });
     },
     fresh: () => {
+      //console.log(`Fresh page, new chat,${fresh_contact},${fresh_stranger}`);
       fresh_contact++;
       fresh_stranger++;
       setCount(fresh_contact);
       setStranger(fresh_stranger);
+      setReg(false);
     },
     select: (map, cat) => {
       selected[cat] = map;
@@ -216,6 +220,14 @@ function Contact(props) {
     if (!active) {
       self.linkChatting();
     }
+
+    RUNTIME.getAccount((acc) => {
+      if (acc === null || !acc.address) {
+        setReg((<Col xs={size.row[0]} sm={size.row[0]} md={size.row[0]} lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]}>
+          <Login fresh={self.fresh} funs={funs} />
+        </Col>));
+      }
+    })
   }, []);
 
   return (
@@ -223,15 +235,17 @@ function Contact(props) {
       <Navbar className="bg-body-tertiary">
         <Container>
           <Row style={{ "width": "100%", "margin": "0 auto" }}>
-            <Col xs={size[0]} sm={size[0]} md={size[0]} lg={size[0]} xl={size[0]} xxl={size[0]}
+            <Col xs={size.header[0]} sm={size.header[0]} md={size.header[0]} 
+            lg={size.header[0]} xl={size.header[0]} xxl={size.header[0]}
               style={{ "paddingTop": "6px" }}>
               <Navbar.Brand href="#">W<span className='logo'>3</span>OS</Navbar.Brand>
             </Col>
-            <Col xs={size[1]} sm={size[1]} md={size[1]} lg={size[1]} xl={size[1]} xxl={size[1]}
+            <Col xs={size.header[1]} sm={size.header[1]} md={size.header[1]} 
+            lg={size.header[1]} xl={size.header[1]} xxl={size.header[1]}
               style={{ "paddingTop": "10px" }} className='text-center'>
               Contacts</Col>
-            <Col xs={size[2]} sm={size[2]} md={size[2]} lg={size[2]} xl={size[2]} xxl={size[2]}
-              className="text-end pb-2" style={{ "paddingTop": "10px" }}>
+            <Col xs={size.header[2]} sm={size.header[2]} md={size.header[2]} 
+            lg={size.header[2]} xl={size.header[2]} xxl={size.header[2]} className="text-end pb-2" style={{ "paddingTop": "10px" }}>
               <span className="close" onClick={(ev) => {
                 setAnimation("ani_scale_out");
                 setTimeout(() => {
@@ -244,6 +258,7 @@ function Contact(props) {
       </Navbar>
       <Container>
         <ContactAdd funs={funs} fresh={self.fresh} />
+        {reg}
         <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count} />
         <StrangerList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={stranger} />
       </Container>
