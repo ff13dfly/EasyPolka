@@ -10,6 +10,7 @@ let wss = {};
 let spams = {};
 let nets={};
 let UI=null;
+let mailer={};          //mailer cache
 
 //keys and prefix for localstorage
 const prefix = "w3os";
@@ -180,6 +181,14 @@ const RUNTIME = {
             STORAGE.removeKey(nkey);
             return ck && ck(true);
         });
+    },
+
+    setMailer:(acc,fun)=>{
+        mailer[acc]=fun;
+    },
+    getMailer:(acc)=>{
+        if(!mailer[acc]) return false;
+        return mailer[acc];
     },
 
     /************************************************/

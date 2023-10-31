@@ -14,8 +14,8 @@ let selected = { contact: null, stranger: null };
 
 let websocket = null;
 let spam = "";
-let chats = {};
-let active = false;  //account reg to server status
+let chats = {};       //mailer, need to add to RUNTIME
+let active = false;   //account reg to server status
 let friend = false;
 let fresh_contact = 0;
 let fresh_stranger = 0;
@@ -91,6 +91,7 @@ function Contact(props) {
             const str = res.data;
             try {
               const input = JSON.parse(str);
+              const postman=RUNTIME.getMailer(input.from);
               console.log(input);
               switch (input.act) {
                 case "init":        //websocket init, use is not active yet.
@@ -112,7 +113,7 @@ function Contact(props) {
                   break;
 
                 case "chat":
-                  if (chats[input.from]) chats[input.from](input);
+                  if(postman) postman(input);
                   RUNTIME.getAccount((acc) => {
                     CHAT.save(acc.address, input.from, input.msg, "from", (res) => {
                       self.fresh();
@@ -134,7 +135,7 @@ function Contact(props) {
                   }
                   break;
                 case "notice":
-                  if (chats[input.from]) chats[input.from](input);
+                  if(postman) postman(input);
                   break;
                 default:
                   break;
@@ -159,13 +160,13 @@ function Contact(props) {
           }
           RUNTIME.websocket(uri, (ws) => {
             //console.log(ws.readyState);
-            console.log(`Call linkChatting, checker status: ${checker}`);
+            //console.log(`Call linkChatting, checker status: ${checker}`);
 
             websocket = ws;
             setHidelink(true);
             checker = setInterval(() => {
               const status = RUNTIME.wsCheck(uri);
-              console.log(`Websocket status:${status}, checker: ${checker}`);
+              //console.log(`Websocket status:${status}, checker: ${checker}`);
               if (status === 3) {
                 setHidelink(false);
                 RUNTIME.wsRemove(uri);
@@ -211,8 +212,6 @@ function Contact(props) {
     });
   }
 
-  // http://localhost/Easypolka/OS/service/chat/
-
   useEffect(() => {
     if (!active) {
       self.linkChatting();
@@ -245,8 +244,8 @@ function Contact(props) {
       </Navbar>
       <Container>
         <ContactAdd funs={funs} fresh={self.fresh} />
-        <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count} mailer={self.mailer} />
-        <StrangerList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={stranger} mailer={self.mailer} />
+        <ContactList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={count} />
+        <StrangerList funs={funs} fresh={self.fresh} select={self.select} edit={editing} count={stranger} />
       </Container>
       <div className="opts">
         <img src="icons/remove.svg" className='opt_button' alt="" onClick={(ev) => {

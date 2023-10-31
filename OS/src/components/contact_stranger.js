@@ -23,7 +23,7 @@ function StrangerList(props) {
 
   const self = {
     click: (address, ev) => {
-      funs.dialog.show(<Chat address={address} mailer={props.mailer} fresh={props.fresh}/>, <ContactTitle address={address} funs={funs} />);
+      funs.dialog.show(<Chat address={address} fresh={props.fresh}/>, <ContactTitle address={address} funs={funs} />);
     },
     select: (address) => {
       select[address] = !select[address];

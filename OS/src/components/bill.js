@@ -5,9 +5,12 @@ import { useState, useEffect } from 'react';
 import tools from '../lib/tools';
 import RUNTIME from '../lib/runtime';
 import BILL from '../lib/bill';
-//import Chat from '../lib/chat';
-import Transaction from './transaction';
 import SCROLLER from '../lib/scroll';
+
+import Chat from './chat';
+import ContactTitle from './contact_title';
+import Transaction from './transaction';
+
 
 function Bill(props) {
   const size = {
@@ -101,8 +104,9 @@ function Bill(props) {
                     }}
                   />
                   <button className='btn btn-sm btn-warning' onClick={()=>{
-                    console.log(`Ready to chat.`);
-                    //funs.dialog.show(<Chat address={row.to} mailer={props.mailer}/>,tools.shorten(row.to,6));
+                    //console.log(row.to);
+                    funs.dialog.show(<Chat address={row.to} fresh={()=>{}}/>,<ContactTitle address={row.to} funs={funs} />);
+                    //funs.dialog.show(<Chat address={row.to} fresh={()=>{}}/>);
                   }}>Chat</button>
                 </Col>
                 <Col xs={size.bill[1]} sm={size.bill[1]} md={size.bill[1]}

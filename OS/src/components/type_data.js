@@ -40,11 +40,11 @@ function TypeData(props) {
   useEffect(() => {
     RUNTIME.getAPIs((APIs) => {
       APIs.Easy(anchor, (res) => {
+        if(res.type==="unknow") return false;
         const target = res.location;
         const data = res.data[`${target[0]}_${target[1]}`];
         const bt = typeof (data.raw) !== "string" ? JSON.stringify(data.raw).length : data.raw.length;
 
-        //console.log(data);
         setName(data.name);
         setRaw(typeof (data.raw) !== "string" ? JSON.stringify(data.raw): data.raw);
         setBlock(data.block);

@@ -18,7 +18,6 @@ function Chat(props) {
     row:[12],
   };
   const dv = { xs: 4, sm: 4, md: 4, lg: 4, xl: 6, xxl: 6 };
-  const mailer=props.mailer;
   let [content, setContent] = useState("");
   let [list, setList] = useState([]);
 
@@ -126,8 +125,7 @@ function Chat(props) {
 
   useEffect(() => {
     self.linker();
-
-    mailer(props.address,(res)=>{
+    RUNTIME.setMailer(props.address,(res)=>{
       switch (res.act) {
         case "chat":
           const nlist=[];
