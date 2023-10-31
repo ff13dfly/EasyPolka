@@ -94,8 +94,8 @@ function Chat(props) {
     },
     toBottom:()=>{
       setTimeout(()=>{
-        const element=document.getElementById(`con_${props.address}`);
-        element.scrollTop = element.scrollHeight;
+        const ele=document.getElementById(`con_${props.address}`);
+        if(ele!==null) ele.scrollTop = ele.scrollHeight;
       },100);
     },
     linker:()=>{

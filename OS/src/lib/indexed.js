@@ -154,24 +154,6 @@ const INDEXED = {
 
 		};
 	},
-
-	// getDataByKey: (db, storeName, key) => {
-	// 	return new Promise((resolve, reject) => {
-	// 		var transaction = db.transaction([storeName]);
-	// 		var objectStore = transaction.objectStore(storeName);
-	// 		var request = objectStore.get(key);
-
-	// 		request.onerror = function (event) {
-	// 			console.log("failed");
-	// 		};
-
-	// 		request.onsuccess = function (event) {
-	// 			console.log("Result: ", request.result);
-	// 			resolve(request.result);
-	// 		};
-	// 	});
-	// },
-
 	test: () => {
 		//https://juejin.cn/post/7026900352968425486
 		const name = 'w3os_chat';

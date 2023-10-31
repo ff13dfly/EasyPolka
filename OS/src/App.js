@@ -130,6 +130,9 @@ function App() {
               tbs.push(BILL.getTable(`${icfg.prefix.bill}${acc}`));
             }
 
+            console.log(icfg.db);
+            console.log(tbs);
+
             if(tbs.length!==0) INDEXED.initDB(icfg.db,tbs);
           });
         }

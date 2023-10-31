@@ -2,7 +2,7 @@ import INDEXED from './indexed';
 import tools from './tools';
 
 //const DBname='w3os_history';
-let DBname='w3os_mine';
+let DBname='w3os_indexed';
 let prefix='chat_';
 
 const table={
@@ -56,22 +56,25 @@ const CHAT = {
     },
     page:(mine,from,step,page,ck)=>{
         INDEXED.checkDB(DBname, (db) => {
+            const target=`${prefix}${mine}`;
             const tbs = db.objectStoreNames;
-            if (!CHAT.checkTable(mine, tbs)) return ck && ck(false);
-            INDEXED.searchRows(db,mine,'address',from,ck);
+            if (!CHAT.checkTable(target, tbs)) return ck && ck(false);
+            INDEXED.searchRows(db,target,'address',from,ck);
         });
     },
 
     unread: (mine,from,ck) => {
         const status=3;
+        const target=`${prefix}${mine}`;
         INDEXED.checkDB(DBname, (db) => {
-            INDEXED.countRows(db,mine,"address",from,status,ck);
+            INDEXED.countRows(db,target,"address",from,status,ck);
         });
     },
 
     toread:(mine,rows,ck)=>{
+        const target=`${prefix}${mine}`;
         INDEXED.checkDB(DBname, (db) => {
-            INDEXED.updateRow(db,mine,rows,ck);
+            INDEXED.updateRow(db,target,rows,ck);
         });
     },
     

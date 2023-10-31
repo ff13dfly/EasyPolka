@@ -2,7 +2,7 @@ import INDEXED from './indexed';
 import tools from './tools';
 
 //const DBname = "w3os_history";
-let DBname='w3os_mine';
+let DBname='w3os_indexed';
 let prefix='bill_';
 
 const table={
@@ -40,6 +40,7 @@ const BILL = {
                 stamp:tools.stamp(),
                 status:details.status?details.status:"unknown",
             };
+            console.log(tbs);
             if (!BILL.checkTable(table, tbs)) {
                 const tb=BILL.getTable(table);
                 INDEXED.initDB(DBname,[tb],res.version + 1).then((db) => {
@@ -53,15 +54,15 @@ const BILL = {
         });
     },
     update:(mine,rows,ck)=>{
+        const table=`${prefix}${mine}`;
         INDEXED.checkDB(DBname, (db) => {
-            const table=`bill_${mine}`;
             INDEXED.updateRow(db,table,rows,ck);
         });
     },
     page:(mine,page,ck)=>{
         INDEXED.checkDB(DBname, (db) => {
             const tbs = db.objectStoreNames;
-            const table=`bill_${mine}`;
+            const table=`${prefix}${mine}`;
             if (!BILL.checkTable(table, tbs)) return ck && ck(false);
             const step=20;
             INDEXED.pageRows(db,table,ck,{page:page,step:step});

@@ -25,11 +25,14 @@ function Transaction(props) {
       }
       return map;
     },
-    check:()=>{
+    check:(ck)=>{
       RUNTIME.getActive((pok)=>{
         if(pok===null) return false;
+        console.log(block);
         pok.rpc.chain.getBlock(block).then((res)=>{
+          console.log(res);
           const data=res.toHuman();
+          console.log(data);
           setDetails((<p>On <strong>{row.more.blocknumber.toLocaleString()}</strong>, 
           amount <strong>{row.amount}</strong> index <strong>{row.more.index}</strong><br />
           At {tools.toDate(row.stamp)}</p>));
@@ -37,13 +40,28 @@ function Transaction(props) {
           setDetails(`Invalid data.`);
         })
       });
+    },
+    fresh:(row)=>{
+      switch (row.status) {
+        case "InBlock":
+          setDetails((<p>Amount <strong>{row.amount}</strong>, checking status...<br />
+          At {tools.toDate(row.stamp)}</p>));
+          self.check();
+          break;
+        case "Finalized":
+          setDetails((<p>On <strong>{row.more.blocknumber.toLocaleString()}</strong>, 
+          amount <strong>{row.amount}</strong> index <strong>{row.more.index}</strong><br />
+          At {tools.toDate(row.stamp)}</p>));
+          break;
+      
+        default:
+          break;
+      }
     }
   };
 
   useEffect(() => {
-    setDetails((<p>On <strong>{row.more.blocknumber.toLocaleString()}</strong>, 
-        amount <strong>{row.amount}</strong> index <strong>{row.more.index}</strong><br />
-        At {tools.toDate(row.stamp)}</p>));
+    self.fresh(row);
   }, []);
 
   return (
