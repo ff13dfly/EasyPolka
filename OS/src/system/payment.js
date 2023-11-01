@@ -179,7 +179,7 @@ function Payment(props) {
           </Col>
           <Col className='pt-4 text-center' xs={size.account[1]} sm={size.account[1]} md={size.account[1]}
             lg={size.account[1]} xl={size.account[1]} xxl={size.account[1]}>
-            <button className='btn btn-md btn-primary' disabled={disable.pay} onClick={(ev)=>{
+            <button className='btn btn-md btn-primary' disabled={disable.pay || !amount || !account} onClick={(ev)=>{
               self.click(ev);
             }}>Pay</button>
           </Col>

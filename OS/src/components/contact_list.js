@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import Chat from './chat';
 import ContactTitle from './contact_title';
 
+//import Friend from './friend';
+//import Contact from '../system/contact';
+
 import RUNTIME from '../lib/runtime';
 import CHAT from '../lib/chat';
 import tools from '../lib/tools';
@@ -20,6 +23,9 @@ function ContactList(props) {
 
   const self = {
     click: (address, ev) => {
+      // funs.page(<Friend funs={funs} address={address} fresh={props.fresh} callback={(page)=>{
+      //   props.funs.page(<Contact funs={funs} />);
+      // }}/>);
       funs.dialog.show(<Chat address={address} fresh={props.fresh}/>,<ContactTitle address={address} funs={funs} />);
     },
     select: (address) => {

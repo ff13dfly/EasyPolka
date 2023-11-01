@@ -185,7 +185,7 @@ function Paybill(props) {
 
         <Col className='pt-2' xs={size.row[0]} sm={size.row[0]} md={size.row[0]}
           lg={size.row[0]} xl={size.row[0]} xxl={size.row[0]} >
-          <input type="password" className='form-control' placeholder={`Password of ${tools.shorten(props.from)}`} onChange={(ev) => {
+          <input type="password" disabled={disable} className='form-control' placeholder={`Password of ${tools.shorten(props.from)}`} onChange={(ev) => {
             self.change(ev);
           }} />
         </Col>
