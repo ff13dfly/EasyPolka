@@ -1,6 +1,6 @@
 //!important, This is a node.js loader demo, to load `node on-chain application`.
 //!important, The breif rule is treating it as cache service and can be stopped anytime.
-//!important, Load unkown `node on-chain application` will face security problem.
+//!important, Load unknown `node on-chain application` will face security problem.
 
 //########## USEAGE ##########
 //node nodeJS_loader.js anchor://node_hello/ ws://127.0.0.1:9944

@@ -35,6 +35,34 @@
             ./node_modules/esbuild/bin/esbuild ../protocol/src/interpreter.js --bundle --minify --outfile=./loader/easy.loader.js --global-name=LE
         ```
 
+## Frontend Lib
+
+- There is problems, not fix yet.
+
+    1. @Polkadot/API
+
+        ```BASH
+            # API install, if not exsist
+            yarn add @polkadot/api
+
+            # Polkadot API package
+            ./node_modules/esbuild/bin/esbuild node_modules/@polkadot/api/index.js --bundle --minify --outfile=./libs/polkadot.min.js
+        ```
+
+    2. anchor.js
+
+        ```BASH
+            # Anchor.js SDK package
+            ./node_modules/esbuild/bin/esbuild ../anchorJS/publish/anchor.js --bundle --minify --outfile=./libs/anchor.min.js
+        ```
+
+    3. Easy Protocol ( v1 )
+
+        ```BASH
+            # Easy Protocol ( v1 ) package
+            ./node_modules/esbuild/bin/esbuild ../protocol/src/interpreter.js --bundle --minify --outfile=./libs/easy.min.js
+        ```
+
 ## Frontend
 
 - JS package for frontend, this package is the on-chain one.

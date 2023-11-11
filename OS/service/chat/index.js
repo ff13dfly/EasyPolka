@@ -57,6 +57,9 @@ Valid(process.argv.slice(2),(res)=>{
         offline:(from,to,msg)=>{
             History.message(from,to,msg);
         },
+        group:{
+
+        },
         get:{
             message:(address)=>{
                 return History.mine(address);
