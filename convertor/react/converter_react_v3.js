@@ -48,7 +48,8 @@ output(`Get the config file path, ready to start.`, 'dark');
 
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { Keyring } = require('@polkadot/api');
-let  anchorJS=null;
+const anchorJS = require('../../anchorJS/publish/anchor');
+//let  anchorJS=null;
 
 const fs = require('fs');
 output(`Support libraries checked.`, 'dark');
@@ -63,11 +64,13 @@ const file = {
                 if (err) return ck && ck({ error: err });
                 if (toBase64) return ck && ck(data.toString("base64"));
                 if (!toJSON) return ck && ck(data.toString());
+               
                 try {
                     const str = data.toString();
                     const json = JSON.parse(str);
                     return ck && ck(json);
                 } catch (error) {
+                    console.log(error);
                     return ck && ck({ error: 'Invalid JSON file.' });
                 }
             });
@@ -425,13 +428,11 @@ file.read(cfgFile, (xcfg) => {
     if (xcfg.error) return output(`Error: failed to load config file "${cfgFile}".`, 'error');
     output(`Read the config file successful.`, 'success');
 
-    anchorJS = require(xcfg.lib.anchorJS);
-
     //2.read React asset file
     const target = `${xcfg.directory}/${xcfg.asset}`;
     output(`Read to get asset file '${target}'`);
     file.read(target, (react) => {
-        if (react.error) return output(`Can not load "${asset}".`, 'error');;
+        if (react.error) return output(`Can not load "${xcfg.asset}".`, 'error');;
         output(`Read asset file '${target}' successful.`, 'success');
 
         //3.get target css and js file
