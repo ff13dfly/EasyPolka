@@ -155,6 +155,19 @@ const self = {
         }
         return result;
     },
+    saveCode:(name, data)=>{
+        const urlObject = window.URL || window.webkitURL || window;
+        const export_blob = new Blob([data]);
+        const save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+        save_link.href = urlObject.createObjectURL(export_blob);
+        save_link.download = name;
+        self.fakeClick(save_link);
+    },
+    fakeClick:(obj)=>{
+        var ev = document.createEvent("MouseEvents");
+        ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        obj.dispatchEvent(ev);
+    },
 }
 
 //console.log(location);
@@ -259,6 +272,8 @@ self.step(`Anchor Network server ${server}`, () => {
                                     }
                                 }, 1000);
                             } catch (error) {
+                                //self.saveCode("code.js",js);
+                                self.saveCode("resource.js",JSON.stringify(res));
                                 self.step(`Failed to load cApp.`);
                                 self.step(`Error: ${error}`);
                             }
