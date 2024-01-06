@@ -63,6 +63,34 @@
             ./node_modules/esbuild/bin/esbuild ../protocol/src/interpreter.js --bundle --minify --outfile=./libs/easy.min.js
         ```
 
+## Onchain
+
+- JS package for onchain.
+
+    1. @Polkadot/API
+
+        ```BASH
+            # API install, if not exsist
+            yarn add @polkadot/api
+
+            # Polkadot API package
+            ./node_modules/esbuild/bin/esbuild node_modules/@polkadot/api/index.js --bundle --minify --outfile=./onchain/polkadot.min.js
+        ```
+
+    2. anchor.js
+
+        ```BASH
+            # Anchor.js SDK package
+            ./node_modules/esbuild/bin/esbuild ../anchorJS/publish/anchor.js --bundle --minify --outfile=./onchain/anchor.min.js
+        ```
+
+    3. Easy Protocol ( v1 )
+
+        ```BASH
+            # Easy Protocol ( v1 ) package
+            ./node_modules/esbuild/bin/esbuild ../protocol/src/interpreter.js --bundle --minify --outfile=./onchain/easy.min.js
+        ```
+
 ## Frontend
 
 - JS package for frontend, this package is the on-chain one.
