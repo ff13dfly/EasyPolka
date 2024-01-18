@@ -122,7 +122,7 @@ const self = {
 					dt.empty=false;
 					list.push(dt);
 				}
-				return ck && ck(list,block);
+				return ck && ck(list,block,hash);
 			});
 
 		}).then((fun) => {
