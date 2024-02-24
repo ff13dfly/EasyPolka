@@ -540,6 +540,14 @@ const self = {
 		});
 	},
 
+	hash:(block,ck)=>{
+		wsAPI.rpc.chain.getBlockHash(block, (res) => {
+			const hash = res.toHex();
+			if (!hash) return ck && ck(self.format(anchor,details));
+			return ck && ck(hash);
+		});
+	},
+
 	/** 
 	 * Decode interact status of anchor node
 	 * @param {object}			obj		//polkadot status object
@@ -699,6 +707,7 @@ module.exports={
 	sell:self.sell,				//set anchor to selling status
 	unsell:self.unsell,			//revoke anchor from selling status
 	buy:self.buy,				//buy selling anchor
+	hash:self.hash,				//get hash by block number.
 };
 
 //!important, The minify lib file can be used in html file by script tag
